@@ -1,0 +1,850 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!ENTITY RFC2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
+<!ENTITY RFC4648 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4648.xml">
+<!ENTITY RFC7159 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7159.xml">
+<!ENTITY RFC7515 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7515.xml">
+<!ENTITY RFC7516 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7516.xml">
+<!ENTITY RFC7517 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7517.xml">
+<!ENTITY RFC7518 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7518.xml">
+<!ENTITY RFC8152 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.8152.xml">
+<!ENTITY RFC3629 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3629.xml">
+<!ENTITY RFC5198 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5198.xml">
+<!ENTITY RFC7049 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7049.xml">
+<!ENTITY RFC7518 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7518.xml">
+<!ENTITY RFC8126 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.8126.xml">
+<!ENTITY RFC2560 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2560.xml">
+
+<!ENTITY I-D.ietf-teep-opentrustprotocol SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-teep-opentrustprotocol.xml">
+<!ENTITY I-D.ietf-suit-manifest SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-suit-manifest.xml">
+<!ENTITY I-D.ietf-rats-eat SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-rats-eat.xml">
+<!ENTITY I-D.ietf-teep-architecture SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-teep-architecture.xml">
+<!ENTITY I-D.ietf-cbor-cddl SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-cbor-cddl.xml">
+]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<?rfc strict="yes" ?>
+<?rfc toc="yes"?>
+<?rfc tocdepth="4"?>
+<?rfc symrefs="yes"?>
+<?rfc sortrefs="yes" ?>
+<!-- <?rfc compact="yes" ?> -->
+<?rfc subcompact="no" ?>
+<rfc category="std" docName="draft-ietf-teep-protocol-00" ipr="trust200902"
+  submissionType="IETF">
+  <front>
+    <title abbrev="TEEP Protocol">Trusted Execution Environment Provisioning (TEEP) Protocol</title>
+
+    <author fullname="Hannes Tschofenig" initials="H." surname="Tschofenig">
+      <organization>Arm Ltd.</organization>
+      <address>
+        <postal>
+          <street>110 Fulbourn Rd</street>
+          <city>Cambridge</city>
+          <region>CB1</region>
+          <code>9NJ</code>
+          <country>Great Britain</country>
+        </postal>
+        <email>hannes.tschofenig@arm.com</email>
+      </address>
+    </author>
+
+    <author fullname="Mingliang Pei" initials="M." surname="Pei">
+      <organization>Broadcom</organization>
+      <address>
+        <postal>
+          <street>350 Ellis St</street>
+          <city>Mountain View</city>
+          <region>CA</region>
+          <code>94043</code>
+          <country>USA</country>
+        </postal>
+        <email>mingliang.pei@broadcom.com</email>
+      </address>
+    </author>
+
+
+        <author fullname="David Wheeler" initials="D." surname="Wheeler">
+      <organization>Intel</organization>
+      <address>
+        <postal>
+          <street></street>
+          <city></city>
+          <region></region>
+          <code></code>
+          <country>US</country>
+        </postal>
+        <email>david.m.wheeler@intel.com</email>
+      </address>
+    </author>
+   
+           <author fullname="Dave Thaler" initials="D." surname="Thaler">
+      <organization>Microsoft</organization>
+      <address>
+        <postal>
+          <street></street>
+          <city></city>
+          <region></region>
+          <code></code>
+          <country>US</country>
+        </postal>
+        <email>dthaler@microsoft.com</email>
+      </address>
+    </author>
+   
+    <date month="December" year="2019" />
+    
+    <area>Security</area>
+    <workgroup>TEEP</workgroup>
+    <keyword>Trusted Execution Environment</keyword>
+    <abstract>
+      <t>This document specifies a protocol that installs, updates, and deletes 
+      Trusted Applications (TAs) in a device with a Trusted Execution Environment (TEE).
+      This specification defines an interoperable protocol for managing the lifecycle of TAs. 
+      </t>
+      
+      <t>The protocol name is pronounced teepee. This conjures an image of a wedge-shaped 
+      protective covering for one's belongings, which sort of matches the intent of this protocol.</t>
+    </abstract>
+  </front>
+
+  <middle>
+   <section anchor="introduction" title="Introduction">
+      <t>The Trusted Execution Environment (TEE) concept has been designed to
+      separate a regular operating system, also referred as a Rich Execution
+      Environment (REE), from security-sensitive applications. In an TEE
+      ecosystem, different device vendors may use different operating systems in the 
+      REE and may use different types of TEEs. When application providers or 
+      device administrators use Trusted Application Managers (TAMs) to install, update, 
+      and delete Trusted Applications (TAs) on a wide range of devices with potentially 
+      different TEEs then an interoperability need arises.</t>
+      
+      <t>This document specifies the protocol 
+      for communicating between a TAM and a TEEP Agent, involving a TEEP Broker. 
+      </t>
+
+      <t>The Trusted Execution Environment Provisioning (TEEP) architecture
+      document <xref target="I-D.ietf-teep-architecture"/> has set to provide a design guidance
+      for such an interoperable protocol and introduces the necessary terminology.
+      Note that the term Trusted Application may include more than code; it may also include 
+      configuration data and keys needed by the TA to operate correctly.
+      </t>
+
+    </section> <!-- Introduction -->
+
+    <section title="Requirements Language">
+      <t>
+        The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+        "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+        document are to be interpreted as described in
+        <xref target="RFC2119"/>.
+      </t>
+      <t>This specification re-uses the terminology defined in 
+      <xref target="I-D.ietf-teep-architecture" />.</t>
+      
+    </section> <!-- Requirements Language -->
+
+
+    <section anchor="messages" title="Message Overview">
+      <t>The TEEP protocol consists of a couple of messages exchanged between a TAM and a TEEP Agent via a TEEP Broker. 
+      The messages are encoded either in JSON or CBOR and designed to provide end-to-end security. 
+      TEEP protocol messages are signed and/or encrypted by the endpoints, i.e., the TAM and the TEEP Agent, but trusted 
+      applications may as well be encrypted and signed by the service provider. The TEEP protocol not only re-use 
+      JSON and CBOR but also the respective security wrappers, namely JOSE (JWS <xref target="RFC7515"/>
+          and JWE <xref target="RFC7516"/>, to be more specific) and COSE <xref target="RFC8152"/>. Furthermore, 
+      for attestation the Entity Attestation Token (EAT) <xref target="I-D.ietf-rats-eat"/> and for software updates the SUIT 
+      manifest format <xref target="I-D.ietf-suit-manifest"/> are re-used.
+      </t>
+
+        <t>
+          This specification defines six messages.</t> 
+
+<t>
+          A TAM queries a device's current state with a QueryRequest message. 
+          A TEEP Agent will, after authenticating and authorizing the request, report 
+          attestation information, list all TAs, and provide information about supported 
+          algorithms and extensions in a QueryResponse message. An error message is returned if the request 
+          could not be processed. A TAM will process the QueryResponse message and determine 
+          whether subsequent message exchanges to install, update, or delete trusted applications 
+          shall be initiated. 
+          
+          <figure>
+            <artwork><![CDATA[          
+  +------------+           +-------------+
+  | TAM        |           |TEEP Agent   |
+  +------------+           +-------------+
+
+    QueryRequest ------->
+
+                           QueryResponse
+
+                 <-------     or
+
+                             Error
+           ]]></artwork>
+          </figure>
+</t> 
+
+<t>
+With the TrustedAppInstall message a TAM can instruct a TEEP Agent to install a TA. 
+The TEEP Agent will process the message, determine whether the TAM is authorized and whether the 
+TA has been signed by an authorized SP. In addition to the binary, the TAM may also provide 
+personalization data. If the TrustedAppInstall message was processed successfully then a 
+Success message is returned to the TAM, an Error message otherwise. 
+
+          <figure>
+            <artwork><![CDATA[                    
+ +------------+           +-------------+
+ | TAM        |           |TEEP Agent   |
+ +------------+           +-------------+
+
+   TrustedAppInstall ---->
+
+                            Success
+
+                    <----    or
+
+                            Error
+           ]]></artwork>
+          </figure>
+</t> 
+
+<t>With the TrustedAppDelete message a TAM can instruct a TEEP Agent to delete one or multiple TA(s). 
+A Success message is returned when the operation has been completed successfully, and an Error message
+otherwise. 
+
+          <figure>
+            <artwork><![CDATA[          
+ +------------+           +-------------+
+ | TAM        |           |TEEP Agent   |
+ +------------+           +-------------+
+
+   TrustedAppDelete  ---->
+
+                            Success
+
+                    <----    or
+
+                            Error
+           ]]></artwork>
+          </figure>
+</t>
+
+    </section> <!-- Message Overview --> 
+
+
+    <section anchor="detailmsg" title="Detailed Messages Specification">
+
+    <t>For a CBOR-based encoding the following security wrapper is used (described in CDDL format <xref target="I-D.ietf-cbor-cddl"/>). 
+    
+ <figure>
+ <artwork><![CDATA[
+Outer_Wrapper = {
+    msg-authenc-wrapper         => bstr .cbor
+                                   Msg_AuthEnc_Wrapper / nil,
+    teep-message                => (QueryRequest / 
+                                    QueryResponse / 
+                                    TrustedAppInstall / 
+                                    TrustedAppDelete / 
+                                    Error / 
+                                    Success ), 
+}
+
+msg-authenc-wrapper = 1
+teep-message = 2
+
+Msg_AuthEnc_Wrapper = [ * (COSE_Mac_Tagged / 
+                           COSE_Sign_Tagged / 
+                           COSE_Mac0_Tagged / 
+                           COSE_Sign1_Tagged)]
+                       ]]></artwork>
+          </figure>
+     </t> 
+
+<t>A future version of this specification will also describe the security wrapper for JSON (in CDDL format). 
+</t>     
+
+<section title="QueryRequest"> 
+ <t>
+ <figure>
+ <artwork><![CDATA[ 
+suite = int
+
+version = int
+
+data_items = (
+   attestation: 1,
+   trusted_apps: 2, 
+   extensions: 3,
+   suit_commands: 4
+)
+
+QueryRequest = (
+     TYPE : int, 
+     TOKEN : bstr,
+     REQUEST : [+data_items],
+     ? CIPHER_SUITE : [+suite],
+     ? NONCE : bstr,
+     ? VERSION : [+version],
+     ? OCSP_DATA : bstr, 
+     * $$extensions
+)
+                       ]]></artwork>
+          </figure>
+          </t> 
+          
+          <t>A QueryRequest message is signed by the TAM and has the following fields: 
+          
+<list style="hanging"> 
+
+<t hangText="TYPE">TYPE = 1 corresponds to a QueryRequest message sent from the TAM to the TEEP Agent.</t> 
+
+<t hangText="TOKEN">The value in the TOKEN field is used to match requests to responses.</t>
+
+<t hangText="REQUEST">The REQUEST field indicates what information the TAM requests from the TEEP Agent in form of a list of integer values. Each integer value corresponds to an IANA registered information element. This specification defines the initial set of information elements: 
+<list style="hanging"> 
+<t hangText="attestation (1)">With this value the TAM requests the TEEP Agent to return an entity attestation token (EAT) in the response. </t> 
+<t hangText="trusted_apps (2)">With this value the TAM queries the TEEP Agent for all installed TAs. </t> 
+<t hangText="extensions (3)">With this value the TAM queries the TEEP Agent for supported capabilities and extensions, which allows a TAM to discover the capabilities of a TEEP Agent implementation.</t>
+<t hangText="suit_commands (4)">With this value the TAM queries the TEEP Agent for supported commands offered by the SUIT manifest implementation.</t>
+</list> 
+Further values may be added in the future via IANA registration. </t> 
+
+<t hangText="CIPHER_SUITE">The CIPHER_SUITE field lists the ciphersuite(s) supported by the TAM. Details about the ciphersuite encoding can be found in <xref target="ciphersuite"/>.</t>
+
+<t hangText="NONCE"> NONCE is an optional field used for ensuring the refreshness of the Entity Attestation Token (EAT) contained in the response.</t>
+
+<t hangText="VERSION">The VERSION field lists the version(s) supported by the TAM. For this version of the specification this field can be omitted. </t> 
+
+<t hangText="OCSP_DATA">The OCSP_DATA field contains a list of OCSP stapling data respectively for the TAM certificate and each of the CA certificates up to the root certificate. The TAM provides OCSP data so that the TEEP Agent can validate the status of the TAM certificate chain without making its own external OCSP service call. OCSP data MUST be conveyed as a DER-encoded OCSP response (using the ASN.1 type OCSPResponse defined in <xref target="RFC2560"/>). The use of OCSP is optional to implement for both the TAM and the TEEP Agent. A TAM can query the TEEP Agent for the support of this functionality via the capability discovery exchange, as described above.</t>
+</list> 
+</t> 
+</section> 
+
+<section title="QueryResponse">
+<t>
+ <figure>
+ <artwork><![CDATA[           
+ta_id = (
+   Vendor_ID = bstr,
+   Class_ID = bstr,
+   Device_ID = bstr,
+   * $$extensions
+)
+
+ext_info = int
+
+QueryResponse = (
+     TYPE : int, 
+     TOKEN : bstr,
+     ? SELECTED_CIPHER_SUITE : suite,
+     ? SELECTED_VERSION : version,
+     ? EAT : bstr, 
+     ? TA_LIST  : [+ta_id],
+     ? EXT_LIST : [+ext_info],
+     * $$extensions
+)
+                       ]]></artwork>
+          </figure>
+</t>
+          <t>The QueryResponse message is signed and encrypted by the TEEP Agent and returned to the TAM. It has the following fields:      
+
+          <list style="hanging"> 
+          
+<t hangText="TYPE">TYPE = 2 corresponds to a QueryResponse message sent from the TEEP Agent to the TAM.</t>
+
+<t hangText="TOKEN">The value in the TOKEN field is used to match requests to responses. The value MUST correspond to the value received with the QueryRequest.</t>
+
+<t hangText="SELECTED_CIPHER_SUITE">The SELECTED_CIPHER_SUITE field indicates the selected ciphersuite. Details about the ciphersuite encoding can be found in <xref target="ciphersuite"/>.</t>
+
+<t hangText="SELECTED_VERSION">The SELECTED_VERSION field indicates the protocol version selected by the TEEP Agent.</t>
+
+<t hangText="EAT">The EAT field contains an Entity Attestation Token following the encoding defined in <xref target="I-D.ietf-rats-eat"/>.</t>
+
+<t hangText="TA_LIST">The TA_LIST field enumerates the trusted applications installed on the device in form of ta_ids, i.e., a vendor id/class id/device id triple. </t>
+
+<t hangText="EXT_LIST">The EXT_LIST field lists the supported extensions. This document does not define any extensions.</t>
+</list> 
+</t> 
+
+</section> 
+
+<section title="TrustedAppInstall">
+<t>
+ <figure>
+ <artwork><![CDATA[   
+TrustedAppInstall = (
+     TYPE : int, 
+     TOKEN : bstr,
+     ? MANIFEST_LIST  : [+ SUIT_Outer_Wrapper],
+     * $$extensions
+)
+                       ]]></artwork>
+          </figure>
+          </t>
+          
+<t>The TrustedAppInstall message is MACed and encrypted by the TAM and has the following fields:      
+
+          <list style="hanging"> 
+          
+<t hangText="TYPE">TYPE = 3 corresponds to a TrustedAppInstall message sent from the TAM to the TEEP Agent. In case of successful processing, an Success 
+message is returned by the TEEP Agent. In case of an error, an Error message is returned. Note that the TrustedAppInstall message
+is used for initial TA installation but also for TA updates. </t> 
+
+<t hangText="TOKEN">The value in the TOKEN field is used to match requests to responses.</t>
+
+<t hangText="TA">The MANIFEST_LIST field is used to convey one or multiple SUIT manifests. A manifest is
+   a bundle of metadata about the trusted app, where to
+   find the code, the devices to which it applies, and cryptographic
+   information protecting the manifest. The manifest may also convey personalization data. TA binaries and personalization data is typically signed and encrypted by the SP. Other combinations are, however, possible as well. For example, it is also possible for the TAM to sign and encrypt the personalization data and to let the SP sign and/or encrypt the TA binary.</t> 
+
+</list> 
+</t> 
+</section> 
+
+<section title ="TrustedAppDelete"> 
+<t>
+ <figure>
+ <artwork><![CDATA[ 
+TrustedAppDelete  = (
+     TYPE : int, 
+     TOKEN : bstr,
+     ? TA_LIST  : [+ta_id],
+     * $$extensions
+)
+                       ]]></artwork>
+          </figure>
+          </t>
+          
+<t>The TrustedAppDelete message is MACed and encrypted by the TAM and has the following fields:      
+
+          <list style="hanging"> 
+          
+<t hangText="TYPE">TYPE = 4 corresponds to a TrustedAppDelete message sent from the TAM to the TEEP Agent. In case of successful processing, an Success 
+message is returned by the TEEP Agent. In case of an error, an Error message is returned.</t> 
+
+
+<t hangText="TOKEN">The value in the TOKEN field is used to match requests to responses.</t>
+
+<t hangText="TA_LIST">The TA_LIST field enumerates the TAs to be deleted.</t>
+
+</list>
+</t> 
+</section> 
+
+<section title ="Success">
+<t>
+ <figure>
+ <artwork><![CDATA[ 
+Success = (
+     TYPE : int,
+     TOKEN : bstr,
+     ? MSG : tstr,
+     * $$extensions
+)
+                       ]]></artwork>
+          </figure>
+          </t>
+          
+<t>The Success message is MACed and encrypted by the TEEP Agent and has the following fields:      
+
+          <list style="hanging"> 
+          
+<t hangText="TYPE">TYPE = 5 corresponds to a Error message sent from the TEEP Agent to the TAM.</t> 
+
+<t hangText="TOKEN">The value in the TOKEN field is used to match requests to responses.</t>
+
+<t hangText="MSG">The MSG field contains optional diagnostics information encoded in UTF-8 <xref target="RFC3629"/> returned by the TEEP Agent.</t>
+
+</list> 
+</t> 
+
+</section> 
+
+<section title ="Error"> 
+
+<t>
+ <figure>
+ <artwork><![CDATA[ 
+Error = (
+     TYPE : int,
+     TOKEN : bstr,
+     ERR_CODE : int,
+     ? ERR_MSG : tstr,
+     ? CIPHER_SUITE : [+suite],
+     ? VERSION : [+version],
+     * $$extensions
+)
+                       ]]></artwork>
+          </figure>
+          </t>
+          
+                  
+<t>If possible, the Error message is MACed and encrypted by the TEEP Agent. Unprotected Error messages MUST be handled with care by the TAM due to possible downgrading attacks. It has the following fields:      
+
+          <list style="hanging"> 
+          
+<t hangText="TYPE">TYPE = 6 corresponds to a Error message sent from the TEEP Agent to the TAM.</t> 
+
+<t hangText="TOKEN">The value in the TOKEN field is used to match requests to responses.</t>
+
+<t hangText="ERR_CODE">The ERR_CODE field is populated with values listed in a registry (with the initial set of error codes listed below). Only selected messages are applicable to each message. </t>
+
+<t hangText="ERR_MSG">The ERR_MSG message is a human-readable diagnostic message that MUST be encoded using UTF-8 <xref target="RFC3629"/> using Net-Unicode form <xref target="RFC5198"/>.</t>
+
+<t hangText="VERSION">The VERSION field enumerates the protocol version(s) supported by the TEEP Agent. This field is optional but MUST be returned with the ERR_UNSUPPORTED_MSG_VERSION error message.</t>
+
+<t hangText="CIPHER_SUITE">The CIPHER_SUITE field lists the ciphersuite(s) supported by the TEEP Agent. This field is optional but MUST be returned with the ERR_UNSUPPORTED_CRYPTO_ALG error message.</t>
+</list>
+</t>
+
+<t>This specification defines the following initial error messages. Additional error code can be registered with IANA. 
+
+<list style="hanging"> 
+
+<t hangText="ERR_ILLEGAL_PARAMETER">  The TEEP Agent sends this error message when 
+     a request contains incorrect fields or fields that are inconsistent with other fields.</t>
+
+<t hangText="ERR_UNSUPPORTED_EXTENSION"> The TEEP Agent sends this error message when 
+     it recognizes an unsupported extension or unsupported message. </t>
+
+<t hangText="ERR_REQUEST_SIGNATURE_FAILED"> The TEEP Agent sends this error message when 
+     it fails to verify the signature of the message.</t>
+
+<t hangText="ERR_UNSUPPORTED_MSG_VERSION">  The TEEP Agent receives a message but does not 
+     support the indicated version. </t>
+
+<t hangText="ERR_UNSUPPORTED_CRYPTO_ALG">  The TEEP Agent receives a request message
+     encoded with an unsupported cryptographic algorithm.</t>
+
+<t hangText="ERR_BAD_CERTIFICATE">  The TEEP Agent returns this error 
+     when processing of a certificate failed. For diagnosis purposes it is 
+     RECOMMMENDED to include information about the failing certificate 
+     in the error message.</t>
+
+<t hangText="ERR_UNSUPPORTED_CERTIFICATE"> The TEEP Agent returns this error 
+     when a certificate was of an unsupported type.</t>
+
+<t hangText="ERR_CERTIFICATE_REVOKED">  The TEEP Agent returns this error 
+     when a certificate was revoked by its signer.</t>
+
+<t hangText="ERR_CERTIFICATE_EXPIRED">  The TEEP Agent returns this error 
+     when a certificate has expired or is not currently
+    valid.</t>
+
+<t hangText="ERR_INTERNAL_ERROR">  The TEEP Agent returns this error when a miscellaneous 
+     internal error occurred while processing the request.</t>
+
+<t hangText="ERR_RESOURCE_FULL">  This error is reported when a device
+     resource isn't available anymore, such as storage space is full.</t>
+
+<t hangText="ERR_TA_NOT_FOUND">  This error will occur when the target TA does not 
+     exist. This error may happen when the TAM has stale information and 
+    tries to delete a TA that has already been deleted. </t>
+
+<t hangText="ERR_TA_ALREADY_INSTALLED"> While installing a TA, a TEE will return
+     this error if the TA has already been installed.</t>
+
+<t hangText="ERR_TA_UNKNOWN_FORMAT"> The TEEP Agent returns this error when 
+     it does not recognize the format of the TA binary. </t>
+ 
+<t hangText="ERR_TA_DECRYPTION_FAILED"> The TEEP Agent returns this error when 
+     it fails to decrypt the TA binary. </t>
+
+<t hangText="ERR_TA_DECOMPRESSION_FAILED"> The TEEP Agent returns this error when 
+     it fails to decompress the TA binary. </t>
+
+<t hangText="ERR_MANIFEST_PROCESSING_FAILED"> The TEEP Agent returns this error when 
+     manifest processing failures occur that are less specific than 
+     ERR_TA_UNKNOWN_FORMAT, ERR_TA_UNKNOWN_FORMAT, and ERR_TA_DECOMPRESSION_FAILED.</t>
+
+<t hangText="ERR_PD_PROCESSING_FAILED"> The TEEP Agent returns this error when 
+     it fails to process the provided personalization data.</t>
+    
+</list> 
+</t>
+</section> 
+    
+</section> <!-- Detailed Messages Specification -->
+
+<section anchor="ciphersuite" title="Ciphersuites">
+<t>A ciphersuite consists of an AEAD algorithm, a HMAC algorithm, and a signature algorithm.
+Each ciphersuite is identified with an integer value, which corresponds to an IANA registered 
+ciphersuite. This document specifies two ciphersuites.</t>
+
+<t>
+ <figure>
+ <artwork><![CDATA[ 
+Value | Ciphersuite
+------+------------------------------------------------
+0     | AES-CCM-16-64-128, HMAC 256/256, X25519, EdDSA
+1     | AES-CCM-16-64-128, HMAC 256/256, P-256, ES256
+]]></artwork>
+</figure>
+</t>
+
+<!-- The values are taken from https://www.iana.org/assignments/cose/cose.xhtml. --> 
+
+</section> 
+
+    <section anchor="security" title="Security Consideration">
+      
+      <t>This section summarizes the security considerations discussed in this 
+      specification: 
+      
+      <list style="hanging"> 
+      
+      <t hangText="Cryptographic Algorithms">
+        This specification relies on the cryptographic algorithms provided 
+        by the security wrappers JOSE and COSE, respectively. A companion document 
+        makes algorithm recommendations but this document is written in an algorithm-agnostic way.
+        TEEP protocol messages exchanged between the TAM and the TEEP Agent are protected using JWS and JWE (for 
+        JSON-encoded messages) and COSE (for CBOR-encoded messages). Public key based authentication 
+        is used to by the TEEP Agent to authenticate the TAM and vice versa.</t>
+
+        
+      <t hangText="Attestation"> 
+      
+        A TAM may rely on the attestation information provided by the TEEP Agent and the 
+        Entity Attestation Token is re-used to convey this information. To sign the Entity Attestation 
+        Token it is necessary for the device to possess a public key (usually in the form of a certificate) 
+        along with the corresponding private key. Depending on the properties of the attestation mechanism it is possible 
+        to uniquely identify a device based on information in the attestation 
+        information or in the certificate used to sign the attestation token. 
+        This uniqueness may raise privacy concerns. To lower the privacy implications the
+        TEEP Agent MUST present its attestation information only to an 
+        authenticated and authorized TAM.</t>
+        
+        
+      <t hangText="TA Binaries">
+        TA binaries are provided by the SP.It is the responsibility
+        of the TAM to relay only verified TAs from authorized SPs.
+        Delivery of that TA to the TEEP Agent is then the responsibility 
+        of the TAM and the TEEP Broker, using the security mechanisms provided by the TEEP protocol.
+        To protect the TA binary the SUIT manifest is re-used and it offers a varity of 
+        security features, including digitial signatures and symmetric encryption. 
+        </t>
+
+      <t hangText="Personalization Data">      
+        An SP or a TAM can supply personalization data along with a TA. 
+        This data is also protected by a SUIT manifest. 
+        The personalization data may be itself is (or can be) opaque to the TAM.
+      </t>
+
+      <t hangText="TEEP Broker">
+        The TEEP protocol relies on the TEEP Broker to relay messages between the TAM and the TEEP Agent. 
+        When the TEEP Broker is compromised it can drop messages, delay the delivery of messages, and replay messages but it cannot 
+        modify those messages. (A replay would be, however, detected by the TEEP Agent.) A compromised TEEP Broker could reorder messages in an attempt to install an old 
+        version of a TA. Information in the manifest ensures that the TEEP Agents are 
+        protected against such downgrading attacks based on features offered by the manifest itself.</t>
+
+      <t hangText="CA Compromise"> 
+       The QueryRequest message from a TAM to the TEEP Agent may include
+        OCSP stapling data for the TAM's signer certificate and for
+        intermediate CA certificates up to the root certificate so that the TEEP Agent
+        can verify the certificate's revocation status. <vspace blankLines="1"/>
+
+        A certificate revocation status check on a TA signer certificate is
+        OPTIONAL by a TEEP Agent. A TAM is responsible for vetting a TA and 
+        before distributing them to TEEP Agents. TEEP Agents will
+        trust a TA signer certificate's validation status done by a TAM. </t>
+ 
+      <t hangText="CA Compromise"> 
+
+        The CA issuing certificates to a TAM or an SP may get compromised. 
+        A compromised
+        intermediate CA certificates can be detected by a TEEP Agent by using
+        OCSP information, assuming the revocation information is available. 
+        Additionally, it is RECOMMENDED to provide a way to update the trust 
+        anchor store used by the device, for example using a firmware update 
+        mechanism. <vspace blankLines="1"/>
+        
+        If the CA issuing certificates to devices gets compromised then 
+        these devices might be rejected by a TAM, if revocation is available to the 
+        TAM.
+        </t>
+
+        <t hangText="Compromised TAM">
+        The TEEP Agent SHOULD use OCSP information to verify the validity of the TAM-provided 
+        certificate (as well as the validity of intermediate CA certificates). The integrity 
+        and the accuracy of the clock within the TEE
+        determines the ability to determine an expired or revoked certificate since OCSP 
+        stapling includes signature
+        generation time, certificate validity dates are compared to the current
+        time.</t>
+
+        </list> 
+        </t> 
+
+    </section> <!-- Security Consideration -->
+
+  
+    <section anchor="IANA" title="IANA Considerations">
+  
+  <section title="Media Type Registration"> 
+  <t>IANA is requested to assign a media type for 
+          application/teep+json.</t>
+        <t>
+        <list hangIndent="2" style="hanging">
+         <t hangText="Type name:"> application</t>
+         <t hangText="Subtype name:"> teep+json</t>
+         <t hangText="Required parameters:"> none</t>
+         <t hangText="Optional parameters:"> none</t>
+         <t hangText="Encoding considerations:"> Same as encoding considerations of
+         application/json as specified in Section 11 of <xref target="RFC7159"/></t>
+         <t hangText="Security considerations:"> See Security Considerations Section of this document.</t>
+         <t hangText="Interoperability considerations:"> Same as interoperability
+         considerations of application/json as specified in
+         <xref target="RFC7159"/></t>
+         <t hangText="Published specification:"> This document.</t>
+         <t hangText="Applications that use this media type:"> TEEP protocol implementations</t>
+         <t hangText="Fragment identifier considerations:"> N/A</t>
+         <t hangText="Additional information:">
+           <list hangIndent="2" style="hanging">
+             <t hangText="Deprecated alias names for this type:"> N/A</t>
+             <t hangText="Magic number(s):"> N/A</t>
+             <t hangText="File extension(s):"> N/A</t>
+             <t hangText="Macintosh file type code(s):"> N/A</t>
+           </list>
+         </t>
+         <t hangText="Person to contact for further information:">
+            teep@ietf.org</t>
+         <t hangText="Intended usage:"> COMMON</t>
+         <t hangText="Restrictions on usage:"> none</t>
+         <t hangText="Author:"> See the "Authors' Addresses" section of this document</t>
+         <t hangText="Change controller:"> IETF</t>
+        </list>
+        </t>
+
+         <t>IANA is requested to assign a media type for  
+          application/teep+cbor.</t>
+        <t>
+        <list hangIndent="2" style="hanging">
+         <t hangText="Type name:"> application</t>
+         <t hangText="Subtype name:"> teep+cbor</t>
+         <t hangText="Required parameters:"> none</t>
+         <t hangText="Optional parameters:"> none</t>
+         <t hangText="Encoding considerations:"> Same as encoding considerations of
+         application/cbor</t>
+         <t hangText="Security considerations:"> See Security Considerations Section of this document. </t>
+         <t hangText="Interoperability considerations:"> Same as interoperability
+         considerations of application/cbor as specified in
+         <xref target="RFC7049"/></t>
+         <t hangText="Published specification:"> This document.</t>
+         <t hangText="Applications that use this media type:"> TEEP protocol implementations</t>
+         <t hangText="Fragment identifier considerations:"> N/A</t>
+         <t hangText="Additional information:">
+           <list hangIndent="2" style="hanging">
+             <t hangText="Deprecated alias names for this type:"> N/A</t>
+             <t hangText="Magic number(s):"> N/A</t>
+             <t hangText="File extension(s):"> N/A</t>
+             <t hangText="Macintosh file type code(s):"> N/A</t>
+           </list>
+         </t>
+         <t hangText="Person to contact for further information:">
+            teep@ietf.org</t>
+         <t hangText="Intended usage:"> COMMON</t>
+         <t hangText="Restrictions on usage:"> none</t>
+         <t hangText="Author:"> See the "Authors' Addresses" section of this document</t>
+         <t hangText="Change controller:"> IETF</t>
+        </list>
+        </t>
+      </section> 
+        
+      <section title="Error Code Registry"> 
+      <t>IANA is also requested to create a new registry for the error codes defined in 
+      <xref target="detailmsg"/>.</t>
+      
+     <t>Registration requests are evaluated after a
+   three-week review period on the teep-reg-review@ietf.org mailing list,
+   on the advice of one or more Designated Experts <xref target="RFC8126"/>.  However,
+   to allow for the allocation of values prior to publication, the
+   Designated Experts may approve registration once they are satisfied
+   that such a specification will be published.</t>
+
+   <t>Registration requests sent to the mailing list for review should use
+   an appropriate subject (e.g., "Request to register an error code: example").
+   Registration requests that are undetermined for a period longer than
+   21 days can be brought to the IESG's attention (using the
+   iesg@ietf.org mailing list) for resolution.</t>
+
+   <t>Criteria that should be applied by the Designated Experts includes
+   determining whether the proposed registration duplicates existing
+   functionality, whether it is likely to be of general applicability or
+   whether it is useful only for a single extension, and whether the
+   registration description is clear. </t>
+
+   <t>IANA must only accept registry updates from the Designated Experts
+   and should direct all requests for registration to the review mailing
+   list.</t>
+   </section> 
+
+      <section title="Ciphersuite Registry"> 
+      <t>IANA is also requested to create a new registry for ciphersuites, as defined in  
+      <xref target="ciphersuite"/>. 
+      </t>
+      </section> 
+    </section> <!-- IANA Considerations -->
+
+  </middle>
+
+  <back>
+    <references title="Normative References">
+     &RFC2119;
+     &RFC4648;
+     &RFC7159;
+     &RFC7515;
+     &RFC7516;
+     &RFC7517;
+     &RFC7518;
+     &RFC8152;
+     &RFC3629;
+     &RFC5198;
+     &RFC7049;
+     &I-D.ietf-rats-eat; 
+     &I-D.ietf-suit-manifest;
+     &RFC2560; 
+    </references> <!-- Normative References --> 
+
+    <references title="Informative References">
+
+      &I-D.ietf-teep-architecture;
+      &I-D.ietf-cbor-cddl; 
+      &RFC8126;
+      &I-D.ietf-teep-opentrustprotocol; 
+    </references> <!-- Informative References --> 
+
+    <section anchor="Acknowledgements" title="Acknowledgements">
+      <t>This work is based on the initial version of OTrP <xref target="I-D.ietf-teep-opentrustprotocol"/> and hence credits 
+      go to those who have contributed to it.
+      </t>
+      <t>We would like to thank Eve Schooler for the suggestion of the protocol name.</t>
+    </section> <!-- Acknowledgements --> 
+
+   <section anchor="Contributors" title="Contributors">
+    
+    <t>We would like to thank the following individuals for their contributions to an earlier version
+    of this specification.</t> 
+         
+        <figure>
+          <artwork><![CDATA[
+- Brian Witten
+  Symantec
+  brian_witten@symantec.com
+
+- Tyler Kim
+  Solacia
+  tylerkim@iotrust.kr
+
+- Nick Cook
+  Arm Ltd.
+  nicholas.cook@arm.com
+  
+- Minho Yoo  
+  IoTrust
+  minho.yoo@iotrust.kr
+         ]]></artwork>
+        </figure>
+    </section> <!-- Contributors --> 
+    
+  </back>
+</rfc>
