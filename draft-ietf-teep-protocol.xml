@@ -4,8 +4,6 @@
 <!ENTITY RFC4648 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4648.xml">
 <!ENTITY RFC7159 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7159.xml">
 <!ENTITY RFC7515 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7515.xml">
-<!ENTITY RFC7516 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7516.xml">
-<!ENTITY RFC7517 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7517.xml">
 <!ENTITY RFC7518 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7518.xml">
 <!ENTITY RFC8152 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.8152.xml">
 <!ENTITY RFC3629 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3629.xml">
@@ -29,7 +27,7 @@
 <?rfc sortrefs="yes" ?>
 <!-- <?rfc compact="yes" ?> -->
 <?rfc subcompact="no" ?>
-<rfc category="std" docName="draft-ietf-teep-protocol-00" ipr="trust200902"
+<rfc category="std" docName="draft-ietf-teep-protocol-01" ipr="trust200902"
   submissionType="IETF">
   <front>
     <title abbrev="TEEP Protocol">Trusted Execution Environment Provisioning (TEEP) Protocol</title>
@@ -147,12 +145,10 @@
     <section anchor="messages" title="Message Overview">
       <t>The TEEP protocol consists of a couple of messages exchanged between a TAM and a TEEP Agent via a TEEP Broker. 
       The messages are encoded either in JSON or CBOR and designed to provide end-to-end security. 
-      TEEP protocol messages are signed and/or encrypted by the endpoints, i.e., the TAM and the TEEP Agent, but trusted 
-      applications may as well be encrypted and signed by the service provider. The TEEP protocol not only re-use 
-      JSON and CBOR but also the respective security wrappers, namely JOSE (JWS <xref target="RFC7515"/>
-          and JWE <xref target="RFC7516"/>, to be more specific) and COSE <xref target="RFC8152"/>. Furthermore, 
+      TEEP protocol messages are signed by the communication endpoints, i.e., the TAM and the TEEP Agent. TAs may be encrypted and signed by the service provider. The TEEP protocol not only re-use 
+      JSON and CBOR but also the respective security wrappers, namely JOSE (with JWS <xref target="RFC7515"/>) and COSE <xref target="RFC8152"/>. Furthermore, 
       for attestation the Entity Attestation Token (EAT) <xref target="I-D.ietf-rats-eat"/> and for software updates the SUIT 
-      manifest format <xref target="I-D.ietf-suit-manifest"/> are re-used.
+      manifest format <xref target="I-D.ietf-suit-manifest"/> are re-used. Attestation information may be encrypted and signed by the TEEP device. 
       </t>
 
         <t>
@@ -185,11 +181,11 @@
 </t> 
 
 <t>
-With the TrustedAppInstall message a TAM can instruct a TEEP Agent to install a TA. 
+With the Install message a TAM can instruct a TEEP Agent to install a TA. 
 The TEEP Agent will process the message, determine whether the TAM is authorized and whether the 
 TA has been signed by an authorized SP. In addition to the binary, the TAM may also provide 
-personalization data. If the TrustedAppInstall message was processed successfully then a 
-Success message is returned to the TAM, an Error message otherwise. 
+personalization data. If the Install message was processed successfully then a 
+Success message is returned to the TAM, and an Error message otherwise. 
 
           <figure>
             <artwork><![CDATA[                    
@@ -197,7 +193,7 @@ Success message is returned to the TAM, an Error message otherwise.
  | TAM        |           |TEEP Agent   |
  +------------+           +-------------+
 
-   TrustedAppInstall ---->
+   Install          ---->
 
                             Success
 
@@ -208,7 +204,7 @@ Success message is returned to the TAM, an Error message otherwise.
           </figure>
 </t> 
 
-<t>With the TrustedAppDelete message a TAM can instruct a TEEP Agent to delete one or multiple TA(s). 
+<t>With the Delete message a TAM can instruct a TEEP Agent to delete one or multiple TA(s). 
 A Success message is returned when the operation has been completed successfully, and an Error message
 otherwise. 
 
@@ -218,7 +214,7 @@ otherwise.
  | TAM        |           |TEEP Agent   |
  +------------+           +-------------+
 
-   TrustedAppDelete  ---->
+   Delete           ---->
 
                             Success
 
@@ -238,30 +234,24 @@ otherwise.
     
  <figure>
  <artwork><![CDATA[
-Outer_Wrapper = {
-    msg-authenc-wrapper         => bstr .cbor
-                                   Msg_AuthEnc_Wrapper / nil,
-    teep-message                => (QueryRequest / 
-                                    QueryResponse / 
-                                    TrustedAppInstall / 
-                                    TrustedAppDelete / 
-                                    Error / 
-                                    Success ), 
+teep_message = {
+    signature          => bstr .cbor
+                          COSE_Sign1_Tagged / nil,
+    msg                => (QueryRequest / 
+                           QueryResponse / 
+                           Install / 
+                           Delete / 
+                           Error / 
+                           Success ), 
 }
 
-msg-authenc-wrapper = 1
-teep-message = 2
-
-Msg_AuthEnc_Wrapper = [ * (COSE_Mac_Tagged / 
-                           COSE_Sign_Tagged / 
-                           COSE_Mac0_Tagged / 
-                           COSE_Sign1_Tagged)]
+signature = 1
+msg = 2
                        ]]></artwork>
           </figure>
      </t> 
 
-<t>A future version of this specification will also describe the security wrapper for JSON (in CDDL format). 
-</t>     
+<t>[Editor's Note: The description of the JSON message format goes in here.]</t>     
 
 <section title="QueryRequest"> 
  <t>
@@ -279,13 +269,13 @@ data_items = (
 )
 
 QueryRequest = (
-     TYPE : int, 
-     TOKEN : bstr,
-     REQUEST : [+data_items],
-     ? CIPHER_SUITE : [+suite],
-     ? NONCE : bstr,
-     ? VERSION : [+version],
-     ? OCSP_DATA : bstr, 
+     type : int, 
+     token : bstr,
+     request : [+data_items],
+     ? signature_algorithm : [+suite],
+     ? nonce : bstr,
+     ? version : [+version],
+     ? ocsp : bstr, 
      * $$extensions
 )
                        ]]></artwork>
@@ -296,11 +286,11 @@ QueryRequest = (
           
 <list style="hanging"> 
 
-<t hangText="TYPE">TYPE = 1 corresponds to a QueryRequest message sent from the TAM to the TEEP Agent.</t> 
+<t hangText="type">A value of one (1) in the 'type' field corresponds to a QueryRequest message. It is sent from the TAM to the TEEP Agent.</t> 
 
-<t hangText="TOKEN">The value in the TOKEN field is used to match requests to responses.</t>
+<t hangText="token">The value in the 'token' field is used to match requests to responses.</t>
 
-<t hangText="REQUEST">The REQUEST field indicates what information the TAM requests from the TEEP Agent in form of a list of integer values. Each integer value corresponds to an IANA registered information element. This specification defines the initial set of information elements: 
+<t hangText="request">The 'request' field indicates what information the TAM requests from the TEEP Agent in form of a list of integer values. Each integer value corresponds to an IANA registered information element. This specification defines the initial set of information elements: 
 <list style="hanging"> 
 <t hangText="attestation (1)">With this value the TAM requests the TEEP Agent to return an entity attestation token (EAT) in the response. </t> 
 <t hangText="trusted_apps (2)">With this value the TAM queries the TEEP Agent for all installed TAs. </t> 
@@ -309,13 +299,13 @@ QueryRequest = (
 </list> 
 Further values may be added in the future via IANA registration. </t> 
 
-<t hangText="CIPHER_SUITE">The CIPHER_SUITE field lists the ciphersuite(s) supported by the TAM. Details about the ciphersuite encoding can be found in <xref target="ciphersuite"/>.</t>
+<t hangText="signature_algorithms">The 'signature_algorithms' field lists the signature algorithm(s) supported by the TAM. Details about the signature algorithms can be found in <xref target="signature_algorithm"/>.</t>
 
-<t hangText="NONCE"> NONCE is an optional field used for ensuring the refreshness of the Entity Attestation Token (EAT) contained in the response.</t>
+<t hangText="nonce">The 'nonce field is optional and used to ensure refreshness of the returned attestation information via the Entity Attestation Token (EAT).</t>
 
-<t hangText="VERSION">The VERSION field lists the version(s) supported by the TAM. For this version of the specification this field can be omitted. </t> 
+<t hangText="version">The 'version' field lists the protocol version(s) supported by the TAM. For version 1, this specification, this field can be omitted. </t> 
 
-<t hangText="OCSP_DATA">The OCSP_DATA field contains a list of OCSP stapling data respectively for the TAM certificate and each of the CA certificates up to the root certificate. The TAM provides OCSP data so that the TEEP Agent can validate the status of the TAM certificate chain without making its own external OCSP service call. OCSP data MUST be conveyed as a DER-encoded OCSP response (using the ASN.1 type OCSPResponse defined in <xref target="RFC2560"/>). The use of OCSP is optional to implement for both the TAM and the TEEP Agent. A TAM can query the TEEP Agent for the support of this functionality via the capability discovery exchange, as described above.</t>
+<t hangText="ocsp">The 'ocsp' field contains a list of OCSP stapling data respectively for the TAM certificate and each of the CA certificates up to the root certificate. The TAM provides OCSP data so that the TEEP Agent can validate the status of the TAM certificate chain without making its own external OCSP service call. OCSP data MUST be conveyed as a DER-encoded OCSP response (using the ASN.1 type OCSPResponse defined in <xref target="RFC2560"/>). The use of OCSP is optional to implement for both the TAM and the TEEP Agent. A TAM can query the TEEP Agent for the support of this functionality via the capability discovery exchange, as described above.</t>
 </list> 
 </t> 
 </section> 
@@ -325,74 +315,74 @@ Further values may be added in the future via IANA registration. </t>
  <figure>
  <artwork><![CDATA[           
 ta_id = (
-   Vendor_ID = bstr,
-   Class_ID = bstr,
-   Device_ID = bstr,
+   vendor_id = bstr,
+   class_id = bstr,
+   device_id = bstr,
    * $$extensions
 )
 
 ext_info = int
 
 QueryResponse = (
-     TYPE : int, 
-     TOKEN : bstr,
-     ? SELECTED_CIPHER_SUITE : suite,
-     ? SELECTED_VERSION : version,
-     ? EAT : bstr, 
-     ? TA_LIST  : [+ta_id],
-     ? EXT_LIST : [+ext_info],
+     type : int, 
+     token : bstr,
+     ? selected_signature_algorithm : suite,
+     ? selected_version : version,
+     ? eat : bstr, 
+     ? ta_list  : [+ta_id],
+     ? ext_list : [+ext_info],
      * $$extensions
 )
                        ]]></artwork>
           </figure>
 </t>
-          <t>The QueryResponse message is signed and encrypted by the TEEP Agent and returned to the TAM. It has the following fields:      
+          <t>The QueryResponse message is signed by the TEEP Agent and returned to the TAM. It has the following fields:      
 
           <list style="hanging"> 
           
-<t hangText="TYPE">TYPE = 2 corresponds to a QueryResponse message sent from the TEEP Agent to the TAM.</t>
+<t hangText="type">A value of two (2) in the 'type' field corresponds to a QueryResponse message. This message is sent from the TEEP Agent to the TAM.</t>
 
-<t hangText="TOKEN">The value in the TOKEN field is used to match requests to responses. The value MUST correspond to the value received with the QueryRequest.</t>
+<t hangText="token">The value in the TOKEN field is used to match requests to responses. The value MUST correspond to the value received with the QueryRequest.</t>
 
-<t hangText="SELECTED_CIPHER_SUITE">The SELECTED_CIPHER_SUITE field indicates the selected ciphersuite. Details about the ciphersuite encoding can be found in <xref target="ciphersuite"/>.</t>
+<t hangText="selected_signature_algorithm">The 'selected_signature_algorithm' field indicates the signature algorithm selected by the TEEP Agent. Details about the signature algorithm can be found in <xref target="signature_algorithm"/>.</t>
 
-<t hangText="SELECTED_VERSION">The SELECTED_VERSION field indicates the protocol version selected by the TEEP Agent.</t>
+<t hangText="selected_version">The 'selected_version' field indicates the protocol version selected by the TEEP Agent.</t>
 
-<t hangText="EAT">The EAT field contains an Entity Attestation Token following the encoding defined in <xref target="I-D.ietf-rats-eat"/>.</t>
+<t hangText="eat">The 'eat' field contains an Entity Attestation Token following the encoding defined in <xref target="I-D.ietf-rats-eat"/>.</t>
 
-<t hangText="TA_LIST">The TA_LIST field enumerates the trusted applications installed on the device in form of ta_ids, i.e., a vendor id/class id/device id triple. </t>
+<t hangText="ta_list">The 'ta_list' field enumerates the trusted applications installed on the device in form of ta_ids, i.e., a vendor id/class id/device id triple. </t>
 
-<t hangText="EXT_LIST">The EXT_LIST field lists the supported extensions. This document does not define any extensions.</t>
+<t hangText="ext_list">The 'ext_list' field lists the supported extensions. This document does not define any extensions.</t>
 </list> 
 </t> 
 
 </section> 
 
-<section title="TrustedAppInstall">
+<section title="Install">
 <t>
  <figure>
  <artwork><![CDATA[   
-TrustedAppInstall = (
-     TYPE : int, 
-     TOKEN : bstr,
-     ? MANIFEST_LIST  : [+ SUIT_Outer_Wrapper],
+Install = (
+     type : int, 
+     token : bstr,
+     ? manifest_list  : [+ SUIT_Outer_Wrapper],
      * $$extensions
 )
                        ]]></artwork>
           </figure>
           </t>
           
-<t>The TrustedAppInstall message is MACed and encrypted by the TAM and has the following fields:      
+<t>The Install message is signed by the TAM and has the following fields:      
 
           <list style="hanging"> 
           
-<t hangText="TYPE">TYPE = 3 corresponds to a TrustedAppInstall message sent from the TAM to the TEEP Agent. In case of successful processing, an Success 
-message is returned by the TEEP Agent. In case of an error, an Error message is returned. Note that the TrustedAppInstall message
-is used for initial TA installation but also for TA updates. </t> 
+<t hangText="type">A value of three (3) in the 'type' field corresponds to a Install message sent from the TAM to the TEEP Agent. In case of successful processing, an Success 
+message is returned by the TEEP Agent. In case of an error, an Error message is returned. Note that the Install message
+is used for initial TA installation but also for TA updates. Furthermore, it is used for delivering configuration data the TEEP Agent, when necessary. </t> 
 
-<t hangText="TOKEN">The value in the TOKEN field is used to match requests to responses.</t>
+<t hangText="token">The value in the 'token' field is used to match requests to responses.</t>
 
-<t hangText="TA">The MANIFEST_LIST field is used to convey one or multiple SUIT manifests. A manifest is
+<t hangText="manifest_list">The 'manifest_list' field is used to convey one or multiple manifests. A manifest is
    a bundle of metadata about the trusted app, where to
    find the code, the devices to which it applies, and cryptographic
    information protecting the manifest. The manifest may also convey personalization data. TA binaries and personalization data is typically signed and encrypted by the SP. Other combinations are, however, possible as well. For example, it is also possible for the TAM to sign and encrypt the personalization data and to let the SP sign and/or encrypt the TA binary.</t> 
@@ -401,31 +391,31 @@ is used for initial TA installation but also for TA updates. </t>
 </t> 
 </section> 
 
-<section title ="TrustedAppDelete"> 
+<section title ="Delete"> 
 <t>
  <figure>
  <artwork><![CDATA[ 
-TrustedAppDelete  = (
-     TYPE : int, 
-     TOKEN : bstr,
-     ? TA_LIST  : [+ta_id],
+Delete  = (
+     type : int, 
+     token : bstr,
+     ? ta_list  : [+ta_id],
      * $$extensions
 )
                        ]]></artwork>
           </figure>
           </t>
           
-<t>The TrustedAppDelete message is MACed and encrypted by the TAM and has the following fields:      
+<t>The Delete message is signed by the TAM and has the following fields:      
 
           <list style="hanging"> 
           
-<t hangText="TYPE">TYPE = 4 corresponds to a TrustedAppDelete message sent from the TAM to the TEEP Agent. In case of successful processing, an Success 
+<t hangText="type">A value of four (4) in the 'type' field corresponds to a Delete message sent from the TAM to the TEEP Agent. In case of successful processing, an Success 
 message is returned by the TEEP Agent. In case of an error, an Error message is returned.</t> 
 
 
-<t hangText="TOKEN">The value in the TOKEN field is used to match requests to responses.</t>
+<t hangText="token">The value in the 'token' field is used to match requests to responses.</t>
 
-<t hangText="TA_LIST">The TA_LIST field enumerates the TAs to be deleted.</t>
+<t hangText="ta_list">The 'ta_list' field enumerates the TAs to be deleted.</t>
 
 </list>
 </t> 
@@ -436,24 +426,25 @@ message is returned by the TEEP Agent. In case of an error, an Error message is 
  <figure>
  <artwork><![CDATA[ 
 Success = (
-     TYPE : int,
-     TOKEN : bstr,
-     ? MSG : tstr,
+     type : int,
+     token : bstr,
+     code : int, 
+     ? msg : tstr,
      * $$extensions
 )
                        ]]></artwork>
           </figure>
           </t>
           
-<t>The Success message is MACed and encrypted by the TEEP Agent and has the following fields:      
+<t>The Success message is signed by the TEEP Agent and has the following fields:      
 
           <list style="hanging"> 
           
-<t hangText="TYPE">TYPE = 5 corresponds to a Error message sent from the TEEP Agent to the TAM.</t> 
+<t hangText="type">A value of five (5) in the 'type' field corresponds to a Success message sent from the TEEP Agent to the TAM.</t> 
 
-<t hangText="TOKEN">The value in the TOKEN field is used to match requests to responses.</t>
+<t hangText="token">The value in the 'token' field is used to match requests to responses.</t>
 
-<t hangText="MSG">The MSG field contains optional diagnostics information encoded in UTF-8 <xref target="RFC3629"/> returned by the TEEP Agent.</t>
+<t hangText="msg">The 'msg' field contains optional diagnostics information encoded in UTF-8 <xref target="RFC3629"/> returned by the TEEP Agent.</t>
 
 </list> 
 </t> 
@@ -466,12 +457,12 @@ Success = (
  <figure>
  <artwork><![CDATA[ 
 Error = (
-     TYPE : int,
-     TOKEN : bstr,
-     ERR_CODE : int,
-     ? ERR_MSG : tstr,
-     ? CIPHER_SUITE : [+suite],
-     ? VERSION : [+version],
+     type : int,
+     token : bstr,
+     code : int,
+     ? msg : tstr,
+     ? selected_signature_algorithm : [+suite],
+     ? version : [+version],
      * $$extensions
 )
                        ]]></artwork>
@@ -479,27 +470,27 @@ Error = (
           </t>
           
                   
-<t>If possible, the Error message is MACed and encrypted by the TEEP Agent. Unprotected Error messages MUST be handled with care by the TAM due to possible downgrading attacks. It has the following fields:      
+<t>If the type of error permits, the Error message is signed by the TEEP Agent. Unprotected Error messages MUST be handled with care by the TAM due to possible downgrading attacks. It has the following fields:      
 
           <list style="hanging"> 
           
-<t hangText="TYPE">TYPE = 6 corresponds to a Error message sent from the TEEP Agent to the TAM.</t> 
+<t hangText="type">A value of six (6) in the 'type' field corresponds to an Error message sent from the TEEP Agent to the TAM.</t> 
 
-<t hangText="TOKEN">The value in the TOKEN field is used to match requests to responses.</t>
+<t hangText="token">The value in the 'token' field is used to match requests to responses.</t>
 
-<t hangText="ERR_CODE">The ERR_CODE field is populated with values listed in a registry (with the initial set of error codes listed below). Only selected messages are applicable to each message. </t>
+<t hangText="code">The 'code field is populated with values listed in a registry (with the initial set of error codes listed below). Not all error codes are applicable to each message.</t>
 
-<t hangText="ERR_MSG">The ERR_MSG message is a human-readable diagnostic message that MUST be encoded using UTF-8 <xref target="RFC3629"/> using Net-Unicode form <xref target="RFC5198"/>.</t>
+<t hangText="msg">The 'message' filed is a human-readable diagnostic text that MUST be encoded using UTF-8 <xref target="RFC3629"/> using Net-Unicode form <xref target="RFC5198"/>.</t>
 
-<t hangText="VERSION">The VERSION field enumerates the protocol version(s) supported by the TEEP Agent. This field is optional but MUST be returned with the ERR_UNSUPPORTED_MSG_VERSION error message.</t>
+<t hangText="version">The 'version' field enumerates the protocol version(s) supported by the TEEP Agent. This field is optional but MUST be returned with the ERR_UNSUPPORTED_VERSION error message.</t>
 
-<t hangText="CIPHER_SUITE">The CIPHER_SUITE field lists the ciphersuite(s) supported by the TEEP Agent. This field is optional but MUST be returned with the ERR_UNSUPPORTED_CRYPTO_ALG error message.</t>
+<t hangText="signature_algorithms">The 'signature_algorithms' field lists the signature algorithm(s) supported by the TEEP Agent. This field is optional but MUST be returned with the ERR_UNSUPPORTED_SIGNATURE_ALGORITHM error message.</t>
 </list>
 </t>
 
-<t>This specification defines the following initial error messages. Additional error code can be registered with IANA. 
+<t>This specification defines the following error codes. Numerical error codes are used with a CBOR-based encoding and the textual representation is used for a JSON-based encoding. Additional error codes can be registered with IANA. 
 
-<list style="hanging"> 
+<list style="hanging">
 
 <t hangText="ERR_ILLEGAL_PARAMETER">  The TEEP Agent sends this error message when 
      a request contains incorrect fields or fields that are inconsistent with other fields.</t>
@@ -510,11 +501,8 @@ Error = (
 <t hangText="ERR_REQUEST_SIGNATURE_FAILED"> The TEEP Agent sends this error message when 
      it fails to verify the signature of the message.</t>
 
-<t hangText="ERR_UNSUPPORTED_MSG_VERSION">  The TEEP Agent receives a message but does not 
+<t hangText="ERR_UNSUPPORTED_VERSION">  The TEEP Agent receives a message but does not 
      support the indicated version. </t>
-
-<t hangText="ERR_UNSUPPORTED_CRYPTO_ALG">  The TEEP Agent receives a request message
-     encoded with an unsupported cryptographic algorithm.</t>
 
 <t hangText="ERR_BAD_CERTIFICATE">  The TEEP Agent returns this error 
      when processing of a certificate failed. For diagnosis purposes it is 
@@ -559,25 +547,56 @@ Error = (
 
 <t hangText="ERR_PD_PROCESSING_FAILED"> The TEEP Agent returns this error when 
      it fails to process the provided personalization data.</t>
+
+<t hangText="ERR_UNSUPPORTED_SIGNATURE_ALGORITHM">  The TEEP Agent receives a request message
+     protected with an unsupported signature algorithm.</t>     
     
 </list> 
 </t>
+
+<t>This specification defines the return codes used in the Success and the Error message. Negative values indicate errors and positive values indicate success. 
+ <figure>
+ <artwork><![CDATA[ 
+Value  | Return Code
+-------+------------------------------------
+0      |  SUCCESS
+-1     |  ERR_ILLEGAL_PARAMETER
+-2     |  ERR_UNSUPPORTED_EXTENSION
+-3     |  ERR_REQUEST_SIGNATURE_FAILED
+-4     |  ERR_UNSUPPORTED_VERSION
+-5     |  ERR_BAD_CERTIFICATE
+-6     |  ERR_UNSUPPORTED_CERTIFICATE
+-7     |  ERR_CERTIFICATE_REVOKED
+-8     |  ERR_CERTIFICATE_EXPIRED
+-9     |  ERR_INTERNAL_ERROR
+-10    |  ERR_RESOURCE_FULL
+-11    |  ERR_TA_NOT_FOUND
+-12    |  ERR_TA_ALREADY_INSTALLED
+-13    |  ERR_TA_UNKNOWN_FORMAT
+-14    |  ERR_TA_DECRYPTION_FAILED
+-15    |  ERR_TA_DECOMPRESSION_FAILED
+-16    |  ERR_MANIFEST_PROCESSING_FAILED
+-17    |  ERR_PD_PROCESSING_FAILED
+-18    |  ERR_UNSUPPORTED_SIGNATURE_ALGORITHM
+]]></artwork>
+</figure>
+</t>
+
+
 </section> 
     
 </section> <!-- Detailed Messages Specification -->
 
-<section anchor="ciphersuite" title="Ciphersuites">
-<t>A ciphersuite consists of an AEAD algorithm, a HMAC algorithm, and a signature algorithm.
-Each ciphersuite is identified with an integer value, which corresponds to an IANA registered 
-ciphersuite. This document specifies two ciphersuites.</t>
+<section anchor="signature_algorithm" title="Signature Algorithms">
+<t>This document makes use of digital signatures and defines the following algorithms for use in the TEEP protocol. Additional algorithms can be defined in the future. </t>
 
 <t>
  <figure>
  <artwork><![CDATA[ 
-Value | Ciphersuite
-------+------------------------------------------------
-0     | AES-CCM-16-64-128, HMAC 256/256, X25519, EdDSA
-1     | AES-CCM-16-64-128, HMAC 256/256, P-256, ES256
+Value | Signature Algorithms
+------+---------------------
+1     | X25519, EdDSA
+2     | P-256, ES256
 ]]></artwork>
 </figure>
 </t>
@@ -589,15 +608,14 @@ Value | Ciphersuite
     <section anchor="security" title="Security Consideration">
       
       <t>This section summarizes the security considerations discussed in this 
-      specification: 
+      specification. 
       
       <list style="hanging"> 
       
       <t hangText="Cryptographic Algorithms">
         This specification relies on the cryptographic algorithms provided 
-        by the security wrappers JOSE and COSE, respectively. A companion document 
-        makes algorithm recommendations but this document is written in an algorithm-agnostic way.
-        TEEP protocol messages exchanged between the TAM and the TEEP Agent are protected using JWS and JWE (for 
+        by JOSE and COSE. 
+        TEEP protocol messages exchanged between the TAM and the TEEP Agent are protected using JWS (for 
         JSON-encoded messages) and COSE (for CBOR-encoded messages). Public key based authentication 
         is used to by the TEEP Agent to authenticate the TAM and vice versa.</t>
 
@@ -616,7 +634,7 @@ Value | Ciphersuite
         
         
       <t hangText="TA Binaries">
-        TA binaries are provided by the SP.It is the responsibility
+        TA binaries are provided by the SP. It is the responsibility
         of the TAM to relay only verified TAs from authorized SPs.
         Delivery of that TA to the TEEP Agent is then the responsibility 
         of the TAM and the TEEP Broker, using the security mechanisms provided by the TEEP protocol.
@@ -648,9 +666,9 @@ Value | Ciphersuite
         before distributing them to TEEP Agents. TEEP Agents will
         trust a TA signer certificate's validation status done by a TAM. </t>
  
-      <t hangText="CA Compromise"> 
+      <t hangText="TAM/SP Compromise"> 
 
-        The CA issuing certificates to a TAM or an SP may get compromised. 
+        The CA issuing certificates to an SP may get compromised. 
         A compromised
         intermediate CA certificates can be detected by a TEEP Agent by using
         OCSP information, assuming the revocation information is available. 
@@ -663,7 +681,7 @@ Value | Ciphersuite
         TAM.
         </t>
 
-        <t hangText="Compromised TAM">
+        <t hangText="TAM Compromise">
         The TEEP Agent SHOULD use OCSP information to verify the validity of the TAM-provided 
         certificate (as well as the validity of intermediate CA certificates). The integrity 
         and the accuracy of the clock within the TEE
@@ -750,8 +768,8 @@ Value | Ciphersuite
         </t>
       </section> 
         
-      <section title="Error Code Registry"> 
-      <t>IANA is also requested to create a new registry for the error codes defined in 
+      <section title="Return Code Registry"> 
+      <t>IANA is also requested to create a new registry for the return codes defined in 
       <xref target="detailmsg"/>.</t>
       
      <t>Registration requests are evaluated after a
@@ -778,9 +796,9 @@ Value | Ciphersuite
    list.</t>
    </section> 
 
-      <section title="Ciphersuite Registry"> 
-      <t>IANA is also requested to create a new registry for ciphersuites, as defined in  
-      <xref target="ciphersuite"/>. 
+      <section title="Signature Algorithm Registry"> 
+      <t>IANA is also requested to create a new registry for signature algorithms, as defined in  
+      <xref target="signature_algorithm"/>. 
       </t>
       </section> 
     </section> <!-- IANA Considerations -->
@@ -793,8 +811,6 @@ Value | Ciphersuite
      &RFC4648;
      &RFC7159;
      &RFC7515;
-     &RFC7516;
-     &RFC7517;
      &RFC7518;
      &RFC8152;
      &RFC3629;
@@ -803,11 +819,11 @@ Value | Ciphersuite
      &I-D.ietf-rats-eat; 
      &I-D.ietf-suit-manifest;
      &RFC2560; 
+     &I-D.ietf-teep-architecture;
     </references> <!-- Normative References --> 
 
     <references title="Informative References">
 
-      &I-D.ietf-teep-architecture;
       &I-D.ietf-cbor-cddl; 
       &RFC8126;
       &I-D.ietf-teep-opentrustprotocol; 
@@ -818,6 +834,7 @@ Value | Ciphersuite
       go to those who have contributed to it.
       </t>
       <t>We would like to thank Eve Schooler for the suggestion of the protocol name.</t>
+      <t>We would like to thank the TEEP working group for feedback on the design of this protocol.</t>
     </section> <!-- Acknowledgements --> 
 
    <section anchor="Contributors" title="Contributors">
