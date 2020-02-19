@@ -315,7 +315,8 @@ Further values may be added in the future via IANA registration. </t>
 
 <t hangText="VERSION">The VERSION field lists the version(s) supported by the TAM. For this version of the specification this field can be omitted. </t> 
 
-<t hangText="OCSP_DATA">The OCSP_DATA field contains a list of OCSP stapling data respectively for the TAM certificate and each of the CA certificates up to the root certificate. The TAM provides OCSP data so that the TEEP Agent can validate the status of the TAM certificate chain without making its own external OCSP service call. OCSP data MUST be conveyed as a DER-encoded OCSP response (using the ASN.1 type OCSPResponse defined in <xref target="RFC2560"/>). The use of OCSP is optional to implement for both the TAM and the TEEP Agent. A TAM can query the TEEP Agent for the support of this functionality via the capability discovery exchange, as described above.</t>
+<t hangText="OCSP_DATA">The OCSP_DATA field contains a list of OCSP stapling data respectively for the TAM certificate and each of the CA certificates up to the root certificate. The TAM provides OCSP data so that the TEEP Agent can validate the status of the TAM certificate chain without making its own external OCSP service call. OCSP data MUST be conveyed as a DER-encoded OCSP response (using the ASN.1 type OCSPResponse defined in <xref target="RFC2560"/>). The use of OCSP is optional to implement for bo
+th the TAM and the TEEP Agent. A TAM can query the TEEP Agent for the support of this functionality via the capability discovery exchange, as described above.</t>
 </list> 
 </t> 
 </section> 
@@ -501,63 +502,63 @@ Error = (
 
 <list style="hanging"> 
 
-<t hangText="ERR_ILLEGAL_PARAMETER">  The TEEP Agent sends this error message when 
+<t hangText="ERR_ILLEGAL_PARAMETER (1)">  The TEEP Agent sends this error message when 
      a request contains incorrect fields or fields that are inconsistent with other fields.</t>
 
-<t hangText="ERR_UNSUPPORTED_EXTENSION"> The TEEP Agent sends this error message when 
+<t hangText="ERR_UNSUPPORTED_EXTENSION (2)"> The TEEP Agent sends this error message when 
      it recognizes an unsupported extension or unsupported message. </t>
 
-<t hangText="ERR_REQUEST_SIGNATURE_FAILED"> The TEEP Agent sends this error message when 
+<t hangText="ERR_REQUEST_SIGNATURE_FAILED (3)"> The TEEP Agent sends this error message when 
      it fails to verify the signature of the message.</t>
 
-<t hangText="ERR_UNSUPPORTED_MSG_VERSION">  The TEEP Agent receives a message but does not 
+<t hangText="ERR_UNSUPPORTED_MSG_VERSION (4)">  The TEEP Agent receives a message but does not 
      support the indicated version. </t>
 
-<t hangText="ERR_UNSUPPORTED_CRYPTO_ALG">  The TEEP Agent receives a request message
+<t hangText="ERR_UNSUPPORTED_CRYPTO_ALG (5)">  The TEEP Agent receives a request message
      encoded with an unsupported cryptographic algorithm.</t>
 
-<t hangText="ERR_BAD_CERTIFICATE">  The TEEP Agent returns this error 
+<t hangText="ERR_BAD_CERTIFICATE (6)">  The TEEP Agent returns this error 
      when processing of a certificate failed. For diagnosis purposes it is 
      RECOMMMENDED to include information about the failing certificate 
      in the error message.</t>
 
-<t hangText="ERR_UNSUPPORTED_CERTIFICATE"> The TEEP Agent returns this error 
+<t hangText="ERR_UNSUPPORTED_CERTIFICATE (7)"> The TEEP Agent returns this error 
      when a certificate was of an unsupported type.</t>
 
-<t hangText="ERR_CERTIFICATE_REVOKED">  The TEEP Agent returns this error 
+<t hangText="ERR_CERTIFICATE_REVOKED (8)">  The TEEP Agent returns this error 
      when a certificate was revoked by its signer.</t>
 
-<t hangText="ERR_CERTIFICATE_EXPIRED">  The TEEP Agent returns this error 
+<t hangText="ERR_CERTIFICATE_EXPIRED (9)">  The TEEP Agent returns this error 
      when a certificate has expired or is not currently
     valid.</t>
 
-<t hangText="ERR_INTERNAL_ERROR">  The TEEP Agent returns this error when a miscellaneous 
+<t hangText="ERR_INTERNAL_ERROR (10)">  The TEEP Agent returns this error when a miscellaneous 
      internal error occurred while processing the request.</t>
 
-<t hangText="ERR_RESOURCE_FULL">  This error is reported when a device
+<t hangText="ERR_RESOURCE_FULL (11)">  This error is reported when a device
      resource isn't available anymore, such as storage space is full.</t>
 
-<t hangText="ERR_TA_NOT_FOUND">  This error will occur when the target TA does not 
+<t hangText="ERR_TA_NOT_FOUND (12)">  This error will occur when the target TA does not 
      exist. This error may happen when the TAM has stale information and 
     tries to delete a TA that has already been deleted. </t>
 
-<t hangText="ERR_TA_ALREADY_INSTALLED"> While installing a TA, a TEE will return
+<t hangText="ERR_TA_ALREADY_INSTALLED (13)"> While installing a TA, a TEE will return
      this error if the TA has already been installed.</t>
 
-<t hangText="ERR_TA_UNKNOWN_FORMAT"> The TEEP Agent returns this error when 
+<t hangText="ERR_TA_UNKNOWN_FORMAT (14)"> The TEEP Agent returns this error when 
      it does not recognize the format of the TA binary. </t>
  
-<t hangText="ERR_TA_DECRYPTION_FAILED"> The TEEP Agent returns this error when 
+<t hangText="ERR_TA_DECRYPTION_FAILED (15)"> The TEEP Agent returns this error when 
      it fails to decrypt the TA binary. </t>
 
-<t hangText="ERR_TA_DECOMPRESSION_FAILED"> The TEEP Agent returns this error when 
+<t hangText="ERR_TA_DECOMPRESSION_FAILED (16)"> The TEEP Agent returns this error when 
      it fails to decompress the TA binary. </t>
 
-<t hangText="ERR_MANIFEST_PROCESSING_FAILED"> The TEEP Agent returns this error when 
+<t hangText="ERR_MANIFEST_PROCESSING_FAILED (17)"> The TEEP Agent returns this error when 
      manifest processing failures occur that are less specific than 
      ERR_TA_UNKNOWN_FORMAT, ERR_TA_UNKNOWN_FORMAT, and ERR_TA_DECOMPRESSION_FAILED.</t>
 
-<t hangText="ERR_PD_PROCESSING_FAILED"> The TEEP Agent returns this error when 
+<t hangText="ERR_PD_PROCESSING_FAILED (18)"> The TEEP Agent returns this error when 
      it fails to process the provided personalization data.</t>
     
 </list> 
