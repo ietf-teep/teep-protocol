@@ -322,16 +322,9 @@ th the TAM and the TEEP Agent. A TAM can query the TEEP Agent for the support of
 </section> 
 
 <section title="QueryResponse">
-<t>
+<t
  <figure>
  <artwork><![CDATA[           
-ta_id = (
-   Vendor_ID = bstr,
-   Class_ID = bstr,
-   Device_ID = bstr,
-   * $$extensions
-)
-
 ext_info = int
 
 QueryResponse = (
@@ -340,7 +333,7 @@ QueryResponse = (
      ? SELECTED_CIPHER_SUITE : suite,
      ? SELECTED_VERSION : version,
      ? EAT : bstr, 
-     ? TA_LIST  : [+ta_id],
+     ? TA_LIST  : [+bstr],
      ? EXT_LIST : [+ext_info],
      * $$extensions
 )
@@ -361,7 +354,7 @@ QueryResponse = (
 
 <t hangText="EAT">The EAT field contains an Entity Attestation Token following the encoding defined in <xref target="I-D.ietf-rats-eat"/>.</t>
 
-<t hangText="TA_LIST">The TA_LIST field enumerates the trusted applications installed on the device in form of ta_ids, i.e., a vendor id/class id/device id triple. </t>
+<t hangText="TA_LIST">The TA_LIST field enumerates the trusted applications installed on the device in form of TA ID strings. </t>
 
 <t hangText="EXT_LIST">The EXT_LIST field lists the supported extensions. This document does not define any extensions.</t>
 </list> 
@@ -409,7 +402,7 @@ is used for initial TA installation but also for TA updates. </t>
 TrustedAppDelete  = (
      TYPE : int, 
      TOKEN : bstr,
-     ? TA_LIST  : [+ta_id],
+     ? TA_LIST  : [+bstr],
      * $$extensions
 )
                        ]]></artwork>
