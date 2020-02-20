@@ -322,7 +322,7 @@ th the TAM and the TEEP Agent. A TAM can query the TEEP Agent for the support of
 </section> 
 
 <section title="QueryResponse">
-<t
+<t>
  <figure>
  <artwork><![CDATA[           
 ext_info = int
