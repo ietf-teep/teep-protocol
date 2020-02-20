@@ -273,7 +273,7 @@ version = int
 
 data_item = int
 
-QueryRequest = (
+QueryRequest = {
      TYPE : int, 
      TOKEN : bstr,
      REQUEST : [+data_item],
@@ -282,7 +282,7 @@ QueryRequest = (
      ? VERSION : [+version],
      ? OCSP_DATA : bstr, 
      * $$extensions
-)
+}
                        ]]></artwork>
           </figure>
           </t> 
@@ -322,7 +322,7 @@ th the TAM and the TEEP Agent. A TAM can query the TEEP Agent for the support of
  <artwork><![CDATA[           
 ext_info = int
 
-QueryResponse = (
+QueryResponse = {
      TYPE : int, 
      TOKEN : bstr,
      ? SELECTED_CIPHER_SUITE : suite,
@@ -331,7 +331,7 @@ QueryResponse = (
      ? TA_LIST  : [+bstr],
      ? EXT_LIST : [+ext_info],
      * $$extensions
-)
+}
                        ]]></artwork>
           </figure>
 </t>
@@ -361,12 +361,12 @@ QueryResponse = (
 <t>
  <figure>
  <artwork><![CDATA[   
-TrustedAppInstall = (
+TrustedAppInstall = {
      TYPE : int, 
      TOKEN : bstr,
      ? MANIFEST_LIST  : [+ SUIT_Outer_Wrapper],
      * $$extensions
-)
+}
                        ]]></artwork>
           </figure>
           </t>
@@ -394,12 +394,12 @@ is used for initial TA installation but also for TA updates. </t>
 <t>
  <figure>
  <artwork><![CDATA[ 
-TrustedAppDelete  = (
+TrustedAppDelete  = {
      TYPE : int, 
      TOKEN : bstr,
      ? TA_LIST  : [+bstr],
      * $$extensions
-)
+}
                        ]]></artwork>
           </figure>
           </t>
@@ -424,12 +424,12 @@ message is returned by the TEEP Agent. In case of an error, an Error message is 
 <t>
  <figure>
  <artwork><![CDATA[ 
-Success = (
+Success = {
      TYPE : int,
      TOKEN : bstr,
      ? MSG : tstr,
      * $$extensions
-)
+}
                        ]]></artwork>
           </figure>
           </t>
@@ -454,7 +454,7 @@ Success = (
 <t>
  <figure>
  <artwork><![CDATA[ 
-Error = (
+Error = {
      TYPE : int,
      TOKEN : bstr,
      ERR_CODE : int,
@@ -462,7 +462,7 @@ Error = (
      ? CIPHER_SUITE : [+suite],
      ? VERSION : [+version],
      * $$extensions
-)
+}
                        ]]></artwork>
           </figure>
           </t>
