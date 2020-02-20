@@ -271,12 +271,12 @@ suite = int
 
 version = int
 
-data_items = int
+data_item = int
 
 QueryRequest = (
      TYPE : int, 
      TOKEN : bstr,
-     REQUEST : [+data_items],
+     REQUEST : [+data_item],
      ? CIPHER_SUITE : [+suite],
      ? NONCE : bstr,
      ? VERSION : [+version],
