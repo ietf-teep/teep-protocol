@@ -271,12 +271,7 @@ suite = int
 
 version = int
 
-data_items = (
-   attestation: 1,
-   trusted_apps: 2, 
-   extensions: 3,
-   suit_commands: 4
-)
+data_items = int
 
 QueryRequest = (
      TYPE : int, 
