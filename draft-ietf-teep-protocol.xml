@@ -23,7 +23,7 @@
 <?rfc sortrefs="yes" ?>
 <!-- <?rfc compact="yes" ?> -->
 <?rfc subcompact="no" ?>
-<rfc category="std" docName="draft-ietf-teep-protocol-00" ipr="trust200902"
+<rfc category="std" docName="draft-ietf-teep-protocol-latest" ipr="trust200902"
   submissionType="IETF">
   <front>
     <title abbrev="TEEP Protocol">Trusted Execution Environment Provisioning (TEEP) Protocol</title>
@@ -32,11 +32,11 @@
       <organization>Arm Ltd.</organization>
       <address>
         <postal>
-          <street>110 Fulbourn Rd</street>
-          <city>Cambridge</city>
-          <region>CB1</region>
-          <code>9NJ</code>
-          <country>Great Britain</country>
+          <street></street>
+          <city>Absam</city>
+          <region>Tirol</region>
+          <code>6067</code>
+          <country>Austria</country>
         </postal>
         <email>hannes.tschofenig@arm.com</email>
       </address>
@@ -57,7 +57,7 @@
     </author>
 
 
-        <author fullname="David Wheeler" initials="D." surname="Wheeler">
+    <author fullname="David Wheeler" initials="D." surname="Wheeler">
       <organization>Intel</organization>
       <address>
         <postal>
@@ -71,7 +71,7 @@
       </address>
     </author>
    
-           <author fullname="Dave Thaler" initials="D." surname="Thaler">
+    <author fullname="Dave Thaler" initials="D." surname="Thaler">
       <organization>Microsoft</organization>
       <address>
         <postal>
@@ -85,7 +85,7 @@
       </address>
     </author>
    
-    <date month="December" year="2019" />
+    <date month="March" year="2020" />
     
     <area>Security</area>
     <workgroup>TEEP</workgroup>
@@ -756,6 +756,8 @@ Value | Ciphersuite
       go to those who have contributed to it.
       </t>
       <t>We would like to thank Eve Schooler for the suggestion of the protocol name.</t>
+
+      <t>We would like to thank Akira Tsukamoto, Isobe Kohei, Kohei Isobe, Tsukasa Ooi, and Yuichi Takita for their valuable implementation feedback. </t>
 
     </section> <!-- Acknowledgements --> 
 
