@@ -2,25 +2,19 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
 <!ENTITY RFC2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
 <!ENTITY RFC4648 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4648.xml">
-<!ENTITY RFC7159 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7159.xml">
-<!ENTITY RFC7515 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7515.xml">
-<!ENTITY RFC7516 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7516.xml">
-<!ENTITY RFC7517 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7517.xml">
-<!ENTITY RFC7518 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7518.xml">
 <!ENTITY RFC8152 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.8152.xml">
 <!ENTITY RFC3629 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3629.xml">
 <!ENTITY RFC5198 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5198.xml">
 <!ENTITY RFC7049 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7049.xml">
-<!ENTITY RFC7518 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7518.xml">
 <!ENTITY RFC8126 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.8126.xml">
 <!ENTITY RFC2560 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2560.xml">
-
 <!ENTITY I-D.ietf-teep-opentrustprotocol SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-teep-opentrustprotocol.xml">
 <!ENTITY I-D.ietf-suit-manifest SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-suit-manifest.xml">
 <!ENTITY I-D.ietf-rats-eat SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-rats-eat.xml">
 <!ENTITY I-D.ietf-teep-architecture SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-teep-architecture.xml">
 <!ENTITY I-D.ietf-cbor-cddl SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-cbor-cddl.xml">
 ]>
+
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 <?rfc strict="yes" ?>
 <?rfc toc="yes"?>
@@ -112,7 +106,7 @@
       <t>The Trusted Execution Environment (TEE) concept has been designed to
       separate a regular operating system, also referred as a Rich Execution
       Environment (REE), from security-sensitive applications. In an TEE
-      ecosystem, different device vendors may use different operating systems in the 
+      ecosystem, device vendors may use different operating systems in the 
       REE and may use different types of TEEs. When application providers or 
       device administrators use Trusted Application Managers (TAMs) to install, update, 
       and delete Trusted Applications (TAs) on a wide range of devices with potentially 
@@ -146,11 +140,10 @@
 
     <section anchor="messages" title="Message Overview">
       <t>The TEEP protocol consists of a couple of messages exchanged between a TAM and a TEEP Agent via a TEEP Broker. 
-      The messages are encoded either in JSON or CBOR and designed to provide end-to-end security. 
-      TEEP protocol messages are signed and/or encrypted by the endpoints, i.e., the TAM and the TEEP Agent, but trusted 
+      The messages are encoded in CBOR and designed to provide end-to-end security. 
+      TEEP protocol messages are signed by the endpoints, i.e., the TAM and the TEEP Agent, but trusted 
       applications may as well be encrypted and signed by the service provider. The TEEP protocol not only re-use 
-      JSON and CBOR but also the respective security wrappers, namely JOSE (JWS <xref target="RFC7515"/>
-          and JWE <xref target="RFC7516"/>, to be more specific) and COSE <xref target="RFC8152"/>. Furthermore, 
+      CBOR but also the respective security wrapper, namely COSE <xref target="RFC8152"/>. Furthermore, 
       for attestation the Entity Attestation Token (EAT) <xref target="I-D.ietf-rats-eat"/> and for software updates the SUIT 
       manifest format <xref target="I-D.ietf-suit-manifest"/> are re-used.
       </t>
@@ -234,7 +227,7 @@ otherwise.
 
     <section anchor="detailmsg" title="Detailed Messages Specification">
 
-    <t>For a CBOR-based encoding the following security wrapper is used (described in CDDL format <xref target="I-D.ietf-cbor-cddl"/>). 
+    <t>The CBOR-encoded messages are protected by COSE, as described in CDDL format <xref target="I-D.ietf-cbor-cddl"/> below. 
     
  <figure>
  <artwork><![CDATA[
@@ -259,9 +252,6 @@ Msg_AuthEnc_Wrapper = [ * (COSE_Mac_Tagged /
                        ]]></artwork>
           </figure>
      </t> 
-
-<t>A future version of this specification will also describe the security wrapper for JSON (in CDDL format). 
-</t>     
 
 <section title="QueryRequest"> 
  <t>
@@ -583,11 +573,9 @@ Value | Ciphersuite
       <list style="hanging"> 
       
       <t hangText="Cryptographic Algorithms">
-        This specification relies on the cryptographic algorithms provided 
-        by the security wrappers JOSE and COSE, respectively. A companion document 
-        makes algorithm recommendations but this document is written in an algorithm-agnostic way.
-        TEEP protocol messages exchanged between the TAM and the TEEP Agent are protected using JWS and JWE (for 
-        JSON-encoded messages) and COSE (for CBOR-encoded messages). Public key based authentication 
+        TEEP protocol messages exchanged between the TAM and the TEEP Agent are 
+        protected using COSE. This specification relies on the cryptographic algorithms provided 
+        by COSE.  Public key based authentication 
         is used to by the TEEP Agent to authenticate the TAM and vice versa.</t>
 
         
@@ -616,7 +604,7 @@ Value | Ciphersuite
       <t hangText="Personalization Data">      
         An SP or a TAM can supply personalization data along with a TA. 
         This data is also protected by a SUIT manifest. 
-        The personalization data may be itself is (or can be) opaque to the TAM.
+        The personalization data may be opaque to the TAM.
       </t>
 
       <t hangText="TEEP Broker">
@@ -670,40 +658,6 @@ Value | Ciphersuite
     <section anchor="IANA" title="IANA Considerations">
   
   <section title="Media Type Registration"> 
-  <t>IANA is requested to assign a media type for 
-          application/teep+json.</t>
-        <t>
-        <list hangIndent="2" style="hanging">
-         <t hangText="Type name:"> application</t>
-         <t hangText="Subtype name:"> teep+json</t>
-         <t hangText="Required parameters:"> none</t>
-         <t hangText="Optional parameters:"> none</t>
-         <t hangText="Encoding considerations:"> Same as encoding considerations of
-         application/json as specified in Section 11 of <xref target="RFC7159"/></t>
-         <t hangText="Security considerations:"> See Security Considerations Section of this document.</t>
-         <t hangText="Interoperability considerations:"> Same as interoperability
-         considerations of application/json as specified in
-         <xref target="RFC7159"/></t>
-         <t hangText="Published specification:"> This document.</t>
-         <t hangText="Applications that use this media type:"> TEEP protocol implementations</t>
-         <t hangText="Fragment identifier considerations:"> N/A</t>
-         <t hangText="Additional information:">
-           <list hangIndent="2" style="hanging">
-             <t hangText="Deprecated alias names for this type:"> N/A</t>
-             <t hangText="Magic number(s):"> N/A</t>
-             <t hangText="File extension(s):"> N/A</t>
-             <t hangText="Macintosh file type code(s):"> N/A</t>
-           </list>
-         </t>
-         <t hangText="Person to contact for further information:">
-            teep@ietf.org</t>
-         <t hangText="Intended usage:"> COMMON</t>
-         <t hangText="Restrictions on usage:"> none</t>
-         <t hangText="Author:"> See the "Authors' Addresses" section of this document</t>
-         <t hangText="Change controller:"> IETF</t>
-        </list>
-        </t>
-
          <t>IANA is requested to assign a media type for  
           application/teep+cbor.</t>
         <t>
@@ -780,11 +734,6 @@ Value | Ciphersuite
     <references title="Normative References">
      &RFC2119;
      &RFC4648;
-     &RFC7159;
-     &RFC7515;
-     &RFC7516;
-     &RFC7517;
-     &RFC7518;
      &RFC8152;
      &RFC3629;
      &RFC5198;
@@ -807,13 +756,14 @@ Value | Ciphersuite
       go to those who have contributed to it.
       </t>
       <t>We would like to thank Eve Schooler for the suggestion of the protocol name.</t>
+
       <t>We would like to thank Akira Tsukamoto, Isobe Kohei, Kohei Isobe, Tsukasa Ooi, and Yuichi Takita for their valuable implementation feedback. </t>
-      
+
     </section> <!-- Acknowledgements --> 
 
    <section anchor="Contributors" title="Contributors">
     
-    <t>We would like to thank the following individuals for their contributions to an earlier version
+    <t>We would like to thank the following individuals for their contributions to an initial version
     of this specification.</t> 
          
         <figure>
