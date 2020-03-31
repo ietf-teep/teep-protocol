@@ -265,7 +265,7 @@ data_item = int
 
 QueryRequest = {
      TYPE : int, 
-     TOKEN : bstr,
+     TOKEN : int,
      REQUEST : [+data_item],
      ? CIPHER_SUITE : [+suite],
      ? NONCE : bstr,
@@ -314,7 +314,7 @@ ext_info = int
 
 QueryResponse = {
      TYPE : int, 
-     TOKEN : bstr,
+     TOKEN : int,
      ? SELECTED_CIPHER_SUITE : suite,
      ? SELECTED_VERSION : version,
      ? EAT : bstr, 
@@ -353,7 +353,7 @@ QueryResponse = {
  <artwork><![CDATA[   
 TrustedAppInstall = {
      TYPE : int, 
-     TOKEN : bstr,
+     TOKEN : int,
      ? MANIFEST_LIST  : [+ SUIT_Outer_Wrapper],
      * $$extensions
 }
@@ -386,7 +386,7 @@ is used for initial TA installation but also for TA updates. </t>
  <artwork><![CDATA[ 
 TrustedAppDelete  = {
      TYPE : int, 
-     TOKEN : bstr,
+     TOKEN : int,
      ? TA_LIST  : [+bstr],
      * $$extensions
 }
@@ -416,7 +416,7 @@ message is returned by the TEEP Agent. In case of an error, an Error message is 
  <artwork><![CDATA[ 
 Success = {
      TYPE : int,
-     TOKEN : bstr,
+     TOKEN : int,
      ? MSG : tstr,
      * $$extensions
 }
@@ -446,7 +446,7 @@ Success = {
  <artwork><![CDATA[ 
 Error = {
      TYPE : int,
-     TOKEN : bstr,
+     TOKEN : int,
      ERR_CODE : int,
      ? ERR_MSG : tstr,
      ? CIPHER_SUITE : [+suite],
