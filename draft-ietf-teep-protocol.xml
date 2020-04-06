@@ -428,7 +428,7 @@ Success = {
 
           <list style="hanging"> 
           
-<t hangText="TYPE">TYPE = 5 corresponds to a Error message sent from the TEEP Agent to the TAM.</t> 
+<t hangText="TYPE">TYPE = 5 corresponds to a Success message sent from the TEEP Agent to the TAM.</t> 
 
 <t hangText="TOKEN">The value in the TOKEN field is used to match requests to responses.</t>
 
