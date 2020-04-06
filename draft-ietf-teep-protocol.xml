@@ -85,7 +85,7 @@
       </address>
     </author>
    
-    <date month="March" year="2020" />
+    <date year="2020" />
     
     <area>Security</area>
     <workgroup>TEEP</workgroup>
@@ -227,13 +227,11 @@ otherwise.
 
     <section anchor="detailmsg" title="Detailed Messages Specification">
 
-    <t>The CBOR-encoded messages are protected by COSE, as described in CDDL format <xref target="I-D.ietf-cbor-cddl"/> below. 
+    <t>TEEP messages are protected by the COSE_Sign1 structure.
+      The TEEP protocol messages are described in CDDL format <xref target="I-D.ietf-cbor-cddl"/> below. 
     
  <figure>
  <artwork><![CDATA[
-Outer_Wrapper = {
-    msg-authenc-wrapper         => bstr .cbor
-                                   Msg_AuthEnc_Wrapper / nil,
     teep-message                => (QueryRequest / 
                                     QueryResponse / 
                                     TrustedAppInstall / 
@@ -241,18 +239,79 @@ Outer_Wrapper = {
                                     Error / 
                                     Success ), 
 }
-
-msg-authenc-wrapper = 1
-teep-message = 2
-
-Msg_AuthEnc_Wrapper = [ * (COSE_Mac_Tagged / 
-                           COSE_Sign_Tagged / 
-                           COSE_Mac0_Tagged / 
-                           COSE_Sign1_Tagged)]
                        ]]></artwork>
           </figure>
      </t> 
 
+ <section title="Creating and Validating Teep Messages">
+
+<section title="Creating a Teep message">
+
+  <t> To create a Teep message, the following steps are performed.</t>
+
+<t>        
+<list style="numbers"> 
+
+   <t> Create a Teep message according to the description below and populate 
+       it with the respective content.</t>
+
+   <t>  Create a COSE Header containing the desired set of Header
+       Parameters.  The COSE Header MUST be valid per the [RFC8152]
+       specification.</t>
+
+   <t>  If the Teep message is signed create a COSE_Sign1 object
+          using the Teep message as the COSE_Sign1 Payload; all
+          steps specified in [RFC8152] for creating a 
+          COSE_Sign1 object MUST be followed.</t>
+          
+   <t> Prepend the COSE object with the
+       Teep CBOR tag to indicate that the CBOR-encoded message is indeed a 
+       Teep message. </t> 
+       
+</list>
+</t>
+
+<t>Note: Teep messages are identified 
+
+</section>
+
+<section title="Validating a Teep Message">
+
+<t>When validating a Teep message, the following steps are performed. If any of
+   the listed steps fail, then the Teep message MUST be rejected.</t> 
+   
+<t>
+<list style="numbers"> 
+
+   <t> Verify that the received message is a valid CBOR object.</t>
+
+   <t>Remove the Teep message CBOR tag and verify
+       that one of the COSE CBOR tags follows it.</t>
+
+   <t> Verify that the message contains a COSE_Sign1 structure. 
+
+   <t> Verify that the resulting COSE Header includes only parameters
+       and values whose syntax and semantics are both understood and
+       supported or that are specified as being ignored when not
+       understood.
+   </t> 
+   
+   <t> Follow the steps specified in Section 4 of [RFC8152] ("Signing Objects") for
+          validating a COSE_Sign1 object. The COSE_Sign1 payload is the content 
+          of the Teep message.
+   </t>
+   
+   <t> Verify that the Teep message is a valid CBOR map and verify the fields of the 
+       Teep message according to this specification. 
+   </t>
+</list> 
+</t> 
+
+</section> 
+
+</section> 
+      
+      
 <section title="QueryRequest"> 
  <t>
  <figure>
@@ -726,8 +785,28 @@ Value | Ciphersuite
       <xref target="ciphersuite"/>. 
       </t>
       </section> 
+      
+      <section title="CBOR Tag Registry">
+
+    <t>IANA is requested to register a CWT CBOR tag in the "CBOR Tags" registry
+      [IANA.CBOR.Tags] for use with Teep messages.</t>
+
+    <t>The registry contents is:</t>
+     <t>
+      <list style="items">
+        <t>CBOR Tag: TBD1</t>
+        <t>Data Item: Teep Message</t>
+        <t>Semantics: Teep Message, as defined in [[TBD: This RFC]]</t>
+        <t>Reference: [[TBD: This RFC]]</t>
+        <t>Point of Contact: TEEP working group (teep@ietf.org)</t>
+      </list>
+     </t>
+      </section>  
+      
     </section> <!-- IANA Considerations -->
 
+   
+  
   </middle>
 
   <back>
