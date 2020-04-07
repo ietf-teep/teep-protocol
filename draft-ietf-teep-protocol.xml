@@ -286,7 +286,7 @@ otherwise.
    <t>Remove the TEEP message CBOR tag and verify
        that one of the COSE CBOR tags follows it.</t>
 
-   <t> Verify that the message contains a COSE_Sign1 structure. 
+  <t> Verify that the message contains a COSE_Sign1 structure. </t>
 
    <t> Verify that the resulting COSE Header includes only parameters
        and values whose syntax and semantics are both understood and
