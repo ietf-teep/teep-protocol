@@ -1,13 +1,10 @@
-IETF_DRAFT_XML = $(wildcard *.xml)
+IETF_DRAFT_MD = $(wildcard draft-*.md)
 
-IETF_DRAFT = $(patsubst %.xml,%, $(IETF_DRAFT_XML))
+IETF_DRAFT = $(patsubst %.md,%, $(IETF_DRAFT_MD))
 
-$(IETF_DRAFT).txt: %.txt: %.xml
+$(IETF_DRAFT).txt: $(IETF_DRAFT).md
 	echo $(IETF_DRAFT)
-	xml2rfc $<
-
-#$(IETF_DRAFT).xml: $(IETF_DRAFT).md
-#	kramdown-rfc2629 $< > $@
+	kdrfc -3 $<
 
 .PHONY: clean
 clean:
