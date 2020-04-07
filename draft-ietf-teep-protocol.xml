@@ -545,32 +545,39 @@ Error = {
     
 </section> <!-- Detailed Messages Specification -->
 
-<section anchor="tags" title="Mapping of Message Parameters to CBOR Tags">
+<section anchor="tags" title="Mapping of TEEP Message Parameters to CBOR Labels">
 
+  <t>
+  In COSE, maps use strings, negative integers, and unsigned
+   integers as map keys. Integers are used for compactness of
+   encoding. Since the word "key" is mainly used in its other meaning, as a
+   cryptographic key, this specification uses the term "label" for this usage as a map
+    key.</t>
+  
   <t>This specification uses the following tags for protocol fields.</t>
   
 <t>
 <figure>
 <artwork><![CDATA[ 
-+----------------------+-----+----------------+
-| Name                 | Tag | Data Type      |
-+----------------------+-----+----------------+
-| type                 | 0   | uint           |
-| token                | 1   | uint           |
-| request              | 2   | array          |
-| cipher_suite         | 3   | array          |
-| nonce                | 4   | bstr           |
-| version              | 5   | array          |
-| ocsp_data            | 6   | bstr           |
-| selected_ciphersuite | 7   | uint           |
-| selected_version     | 8   | uint           |
-| eat                  | 9   | bstr           |
-| ta_list              | 10  | array          |
-| ext_list             | 11  | array          |
-| manifest_list        | 12  | array          |
-| err_code             | 13  | uint           |
-| err_msg              | 14  | tstr           |
-+----------------------+-----+----------------+
++----------------------+-------+
+| Name                 | Label |
++----------------------+-------+
+| type                 | 0     |
+| token                | 1     |
+| request              | 2     |
+| cipher_suite         | 3     |
+| nonce                | 4     |
+| version              | 5     |
+| ocsp_data            | 6     |
+| selected_ciphersuite | 7     |
+| selected_version     | 8     |
+| eat                  | 9     |
+| ta_list              | 10    |
+| ext_list             | 11    |
+| manifest_list        | 12    |
+| err_code             | 13    |
+| err_msg              | 14    |
++----------------------+-------+
 ]]></artwork>
 </figure>
 </t>
