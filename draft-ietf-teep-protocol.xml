@@ -12,7 +12,7 @@
 <!ENTITY I-D.ietf-suit-manifest SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-suit-manifest.xml">
 <!ENTITY I-D.ietf-rats-eat SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-rats-eat.xml">
 <!ENTITY I-D.ietf-teep-architecture SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-teep-architecture.xml">
-<!ENTITY I-D.ietf-cbor-cddl SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-cbor-cddl.xml">
+<!ENTITY RFC8610 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.8610.xml">
 ]>
 
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
@@ -85,7 +85,7 @@
       </address>
     </author>
    
-    <date month="March" year="2020" />
+    <date year="2020" />
     
     <area>Security</area>
     <workgroup>TEEP</workgroup>
@@ -227,13 +227,11 @@ otherwise.
 
     <section anchor="detailmsg" title="Detailed Messages Specification">
 
-    <t>The CBOR-encoded messages are protected by COSE, as described in CDDL format <xref target="I-D.ietf-cbor-cddl"/> below. 
+    <t>TEEP messages are protected by the COSE_Sign1 structure.
+      The TEEP protocol messages are described in CDDL format <xref target="RFC8610"/> below. 
     
  <figure>
  <artwork><![CDATA[
-Outer_Wrapper = {
-    msg-authenc-wrapper         => bstr .cbor
-                                   Msg_AuthEnc_Wrapper / nil,
     teep-message                => (QueryRequest / 
                                     QueryResponse / 
                                     TrustedAppInstall / 
@@ -241,18 +239,77 @@ Outer_Wrapper = {
                                     Error / 
                                     Success ), 
 }
-
-msg-authenc-wrapper = 1
-teep-message = 2
-
-Msg_AuthEnc_Wrapper = [ * (COSE_Mac_Tagged / 
-                           COSE_Sign_Tagged / 
-                           COSE_Mac0_Tagged / 
-                           COSE_Sign1_Tagged)]
                        ]]></artwork>
           </figure>
      </t> 
 
+ <section title="Creating and Validating TEEP Messages">
+
+<section title="Creating a TEEP message">
+
+  <t> To create a TEEP message, the following steps are performed.</t>
+
+<t>        
+<list style="numbers"> 
+
+   <t> Create a TEEP message according to the description below and populate 
+       it with the respective content.</t>
+
+   <t>  Create a COSE Header containing the desired set of Header
+       Parameters.  The COSE Header MUST be valid per the <xref target="RFC8152"/>
+       specification.</t>
+
+   <t> Create a COSE_Sign1 object
+          using the TEEP message as the COSE_Sign1 Payload; all
+          steps specified in <xref target="RFC8152"/> for creating a 
+          COSE_Sign1 object MUST be followed.</t>
+          
+   <t> Prepend the COSE object with the
+       TEEP CBOR tag to indicate that the CBOR-encoded message is indeed a 
+       TEEP message. </t> 
+       
+</list>
+</t>
+
+</section>
+
+<section title="Validating a TEEP Message">
+
+<t>When validating a TEEP message, the following steps are performed. If any of
+   the listed steps fail, then the TEEP message MUST be rejected.</t> 
+   
+<t>
+<list style="numbers"> 
+
+   <t> Verify that the received message is a valid CBOR object.</t>
+
+   <t>Remove the TEEP message CBOR tag and verify
+       that one of the COSE CBOR tags follows it.</t>
+
+   <t> Verify that the message contains a COSE_Sign1 structure. 
+
+   <t> Verify that the resulting COSE Header includes only parameters
+       and values whose syntax and semantics are both understood and
+       supported or that are specified as being ignored when not
+       understood.
+   </t> 
+   
+   <t> Follow the steps specified in Section 4 of <xref target="RFC8152"/> ("Signing Objects") for
+          validating a COSE_Sign1 object. The COSE_Sign1 payload is the content 
+          of the TEEP message.
+   </t>
+   
+   <t> Verify that the TEEP message is a valid CBOR map and verify the fields of the 
+       TEEP message according to this specification. 
+   </t>
+</list> 
+</t> 
+
+</section> 
+
+</section> 
+      
+      
 <section title="QueryRequest"> 
  <t>
  <figure>
@@ -726,8 +783,28 @@ Value | Ciphersuite
       <xref target="ciphersuite"/>. 
       </t>
       </section> 
+      
+      <section title="CBOR Tag Registry">
+
+    <t>IANA is requested to register a CBOR tag in the "CBOR Tags" registry
+      for use with TEEP messages.</t>
+
+    <t>The registry contents is:</t>
+     <t>
+      <list style="items">
+        <t>CBOR Tag: TBD1</t>
+        <t>Data Item: TEEP Message</t>
+        <t>Semantics: TEEP Message, as defined in [[TBD: This RFC]]</t>
+        <t>Reference: [[TBD: This RFC]]</t>
+        <t>Point of Contact: TEEP working group (teep@ietf.org)</t>
+      </list>
+     </t>
+      </section>  
+      
     </section> <!-- IANA Considerations -->
 
+   
+  
   </middle>
 
   <back>
@@ -746,7 +823,7 @@ Value | Ciphersuite
     <references title="Informative References">
 
       &I-D.ietf-teep-architecture;
-      &I-D.ietf-cbor-cddl; 
+      &RFC8610; 
       &RFC8126;
       &I-D.ietf-teep-opentrustprotocol; 
     </references> <!-- Informative References --> 
