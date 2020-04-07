@@ -321,8 +321,8 @@ version = int
 data_item = int
 
 QueryRequest = {
-     TYPE : int, 
-     TOKEN : bstr,
+     TYPE : uint, 
+     TOKEN : uint,
      REQUEST : [+data_item],
      ? CIPHER_SUITE : [+suite],
      ? NONCE : bstr,
@@ -370,8 +370,8 @@ th the TAM and the TEEP Agent. A TAM can query the TEEP Agent for the support of
 ext_info = int
 
 QueryResponse = {
-     TYPE : int, 
-     TOKEN : bstr,
+     TYPE : uint, 
+     TOKEN : uint,
      ? SELECTED_CIPHER_SUITE : suite,
      ? SELECTED_VERSION : version,
      ? EAT : bstr, 
@@ -409,8 +409,8 @@ QueryResponse = {
  <figure>
  <artwork><![CDATA[   
 TrustedAppInstall = {
-     TYPE : int, 
-     TOKEN : bstr,
+     TYPE : uint, 
+     TOKEN : uint,
      ? MANIFEST_LIST  : [+ SUIT_Outer_Wrapper],
      * $$extensions
 }
@@ -442,8 +442,8 @@ is used for initial TA installation but also for TA updates. </t>
  <figure>
  <artwork><![CDATA[ 
 TrustedAppDelete  = {
-     TYPE : int, 
-     TOKEN : bstr,
+     TYPE : uint, 
+     TOKEN : uint,
      ? TA_LIST  : [+bstr],
      * $$extensions
 }
@@ -472,8 +472,8 @@ message is returned by the TEEP Agent. In case of an error, an Error message is 
  <figure>
  <artwork><![CDATA[ 
 Success = {
-     TYPE : int,
-     TOKEN : bstr,
+     TYPE : uint,
+     TOKEN : uint,
      ? MSG : tstr,
      * $$extensions
 }
@@ -502,9 +502,9 @@ Success = {
  <figure>
  <artwork><![CDATA[ 
 Error = {
-     TYPE : int,
-     TOKEN : bstr,
-     ERR_CODE : int,
+     TYPE : uint,
+     TOKEN : uint,
+     ERR_CODE : uint,
      ? ERR_MSG : tstr,
      ? CIPHER_SUITE : [+suite],
      ? VERSION : [+version],
@@ -602,6 +602,45 @@ Error = {
     
 </section> <!-- Detailed Messages Specification -->
 
+<section anchor="tags" title="Mapping of TEEP Message Parameters to CBOR Labels">
+
+  <t>
+  In COSE, maps use strings, negative integers, and unsigned
+   integers as map keys. Integers are used for compactness of
+   encoding. Since the word "key" is mainly used in its other meaning, as a
+   cryptographic key, this specification uses the term "label" for this usage as a map
+    key.</t>
+  
+  <t>This specification uses the following tags for protocol fields.</t>
+  
+<t>
+<figure>
+<artwork><![CDATA[ 
++----------------------+-------+
+| Name                 | Label |
++----------------------+-------+
+| type                 | 0     |
+| token                | 1     |
+| request              | 2     |
+| cipher_suite         | 3     |
+| nonce                | 4     |
+| version              | 5     |
+| ocsp_data            | 6     |
+| selected_ciphersuite | 7     |
+| selected_version     | 8     |
+| eat                  | 9     |
+| ta_list              | 10    |
+| ext_list             | 11    |
+| manifest_list        | 12    |
+| err_code             | 13    |
+| err_msg              | 14    |
++----------------------+-------+
+]]></artwork>
+</figure>
+</t>
+  
+</section> 
+    
 <section anchor="ciphersuite" title="Ciphersuites">
 <t>A ciphersuite consists of an AEAD algorithm, a HMAC algorithm, and a signature algorithm.
 Each ciphersuite is identified with an integer value, which corresponds to an IANA registered 
