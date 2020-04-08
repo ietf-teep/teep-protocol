@@ -919,4 +919,4 @@ We would like to thank Akira Tsukamoto (AIST), Kohei Isobe (TRASIO/SECOM),
 Kuniyasu Suzaki (TRASIO/AIST), Tsukasa Oi (TRASIO), and Yuichi Takita (SECOM)
 for their valuable implementation feedback.
 
-We would like to thank Carsten Bormann for help with the CDDL. 
+Thanks to Carsten Bormann for helping us with the CDDL. 
