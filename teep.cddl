@@ -79,7 +79,7 @@ query-response = [
     ? eat => bytes,
     ? ta-list  => [ + bytes ],
     ? ext-list => [ + ext-info ],
-    * $$query-response-extensions
+    * $$query-response-extensions,
     * $$teep-option-extensions
   }
 ]
@@ -89,7 +89,7 @@ trusted-app-install = [
   token: uint,
   option: {
     ? manifest-list => [ + SUIT-envelope ],
-    * $$trusted-app-install-extensions
+    * $$trusted-app-install-extensions,
     * $$teep-option-extensions
   }
 ]
@@ -109,7 +109,7 @@ teep-success = [
   token: uint,
   option: {
     ? msg => text,
-    * $$query-request-extensions
+    * $$teep-success-extensions,
     * $$teep-option-extensions
   }
 ]
@@ -121,7 +121,7 @@ teep-error = [
      ? err-msg => text,
      ? cipher-suites => [ + suite ],
      ? versions => [ + version ],
-     * $$query-request-extensions
+     * $$teep-error--extensions,
      * $$teep-option-extensions
   }
   err-code: uint,
