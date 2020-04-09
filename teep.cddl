@@ -36,33 +36,35 @@ TEEP-TYPE-teep-error = 5
 TEEP-TYPE-teep-success = 6
 
 version = uint .size 4
-ext-info = uint
+ext-info = uint 
 
-data-item-requested = $data-item-requested .within uint
+; data items as bitmaps
+data-item-requested = $data-item-requested .within uint .size 8
 attestation = 1
 $data-item-requested /=  attestation
 trusted-apps = 2
 $data-item-requested /= trusted-apps
-extensions = 3
+extensions = 4
 $data-item-requested /= extensions
-suit-commands = 4
+suit-commands = 8
 $data-item-requested /= suit-commands
 
 query-request = [
   type: TEEP-TYPE-query-request,
   token: uint,
   options: {
-    ? cipher-suites => [ + suite ],
+    ? supported-cipher-suites => suite,
     ? nonce => bytes,
     ? version => [ + version ],
     ? oscp-data => bytes,
     * $$query-request-extensions
     * $$teep-option-extensions
   },
-  * data-item-requested,  ; why is this not a bitmap?
+  data-item-requested  
 ]
 
-suite = $TEEP-suite .within uint
+; ciphersuites as bitmaps
+suite = $TEEP-suite .within uint .size 8
 
 TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA = 1
 TEEP-AES-CCM-16-64-128-HMAC256--256-P-256-ES256  = 2
@@ -100,7 +102,7 @@ trusted-app-delete = [
   option: {
     ? ta-list => [ + bytes ],
     * $$trusted-app-delete-extensions,
-    * $$teep-option-extensions,
+    * $$teep-option-extensions
   }
 ]
 
@@ -127,22 +129,16 @@ teep-error = [
   err-code: uint,
 ]
 
-;options integer labels, plesse check and rearrange
-
-; type = 0 ; not required due to array structure
-; toke = 1 ; not required due to array structure
-; request = 2 ; not required due to array structure
-cipher-suites = 3
-nonce = 4
-versions = 5
-oscp-data = 6
-selected-cipher-suite = 7
-selected-version = 8
-eat = 9
-ta-list = 10
-ext-list = 11
-manifest-list = 12
-; err-code = 13 ; not required due to array structure
-msg = 14 ; added missing msg label
-err-msg = 15
+cipher-suites = 1
+nonce = 2
+versions = 3
+oscp-data = 4
+selected-cipher-suite = 5
+selected-version = 6
+eat = 7
+ta-list = 8
+ext-list = 9
+manifest-list = 10
+msg = 11
+err-msg = 12
 
