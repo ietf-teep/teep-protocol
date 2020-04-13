@@ -55,6 +55,15 @@ author:
   code: ''
   country: US
   email: dthaler@microsoft.com
+- ins: A. Tsukamoto
+  name: Akira Tsukamoto
+  org: AIST
+  street: ''
+  city: ''
+  region: ''
+  code: ''
+  country: US
+  email: akira.tsukamoto@aist.go.jp
 normative:
   RFC4648: 
   RFC8152: 
