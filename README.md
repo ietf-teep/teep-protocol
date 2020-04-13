@@ -8,10 +8,11 @@ TEEP Protocol Draft
 ### Prerequisite packages
 
 ```
-sudo apt install xml2rfc ruby-kramdown-rfc2629
+sudo apt install xml2rfc
+sudo gem install kramdown-rfc2629
 ```
 
-### Converting
+### Generating draft from markdown file
 
 ```
 make
