@@ -939,13 +939,13 @@ The registry contents is:
 --- back
 
 
-# Contributors {#Contributors}
+# A. Contributors {#Contributors}
 {: numbered='no'}
 
 We would like to thank Brian Witten (Symantec), Tyler Kim (Solacia), Nick Cook (Arm), and  Minho Yoo (IoTrust) for their contributions
 to an initial version of this specification.
 
-# Acknowledgements {#Acknowledgements}
+# B. Acknowledgements {#Acknowledgements}
 {: numbered='no'}
 
 This work is based on the initial version of OTrP {{I-D.ietf-teep-opentrustprotocol}} and hence credits
@@ -959,7 +959,7 @@ for their valuable implementation feedback.
 
 We would also like to thank Carsten Bormann and Henk Birkholz for their help with the CDDL. 
 
-# Complete CDDL {#CDDL}
+# C. Complete CDDL {#CDDL}
 {: numbered='no'}
 
 ~~~~
