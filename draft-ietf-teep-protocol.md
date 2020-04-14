@@ -62,7 +62,7 @@ author:
   city: ''
   region: ''
   code: ''
-  country: US
+  country: JP
   email: akira.tsukamoto@aist.go.jp
 normative:
   RFC8152: 
