@@ -288,79 +288,85 @@ the listed steps fail, then the TEEP message MUST be rejected.
 
 
 ~~~~
-suite = int
+suite = uint
 
-version = int
+version = uint
 
-data_item = int
+data_item = uint
 
-QueryRequest = {
-     TYPE : uint,
-     TOKEN : uint,
-     REQUEST : [+data_item],
-     ? CIPHER_SUITE : [+suite],
-     ? NONCE : bstr,
-     ? VERSION : [+version],
-     ? OCSP_DATA : bstr,
-     * $$extensions
-}
+QueryRequest = [
+     type : uint,
+     token : uint,
+     request : [+data_item],
+     {
+        ? cipher_suite : [+suite],
+        ? nonce : bstr,
+        ? version : [+version],
+        ? ocsp_data : bstr
+     }
+]
 ~~~~
 
 
 A QueryRequest message is signed by the TAM and has the following fields:
 
 {: vspace='0'}
-TYPE
-: TYPE = 1 corresponds to a QueryRequest message sent from the TAM to the TEEP
-  Agent.
+type
+: The value of (1) corresponds to a QueryRequest message sent from the TAM to 
+  the TEEP Agent.
 
-TOKEN
-: The value in the TOKEN field is used to match requests to responses.
+token
+: The value in the token field is used to match responses to requests. This is 
+useful when a TAM issues multiple concurrent requests to a TEEP Agent. 
 
-REQUEST
-: The REQUEST field indicates what information the TAM requests from the TEEP
-  Agent in form of a list of integer values. Each integer value corresponds
-  to an IANA registered information element. This specification defines the
-  initial set of information elements:
+request
+: The request field indicates what information the TAM requests from the TEEP
+  Agent in form of a list of unsigned integer values. Each unsigned integer 
+  value corresponds to an IANA registered information element. This 
+  specification defines the following initial set of information elements:
 
-attestation (1)
-: With this value the TAM requests the TEEP Agent to return an entity attestation
-  token (EAT) in the response.
+   attestation (1)
+   : With this value the TAM requests the TEEP Agent to return an entity attestation
+     token (EAT) in the response.
 
-trusted_apps (2)
-: With this value the TAM queries the TEEP Agent for all installed TAs.
+   trusted_apps (2)
+   : With this value the TAM queries the TEEP Agent for all installed TAs.
 
-extensions (3)
-: With this value the TAM queries the TEEP Agent for supported capabilities
-  and extensions, which allows a TAM to discover the capabilities of a TEEP
-  Agent implementation.
+   extensions (3)
+   : With this value the TAM queries the TEEP Agent for supported capabilities
+     and extensions, which allows a TAM to discover the capabilities of a TEEP
+     Agent implementation.
 
-suit_commands (4)
-: With this value the TAM queries the TEEP Agent for supported commands offered
-  by the SUIT manifest implementation.
-  Further values may be added in the future via IANA registration.
+   suit_commands (4)
+   : With this value the TAM queries the TEEP Agent for supported commands offered
+     by the SUIT manifest implementation.
+  
+   Further values may be added in the future via IANA registration.
 
-CIPHER_SUITE
-: The CIPHER_SUITE field lists the ciphersuite(s) supported by the TAM. Details
+cipher_suite
+: The cipher_suite field lists the ciphersuite(s) supported by the TAM. Details
   about the ciphersuite encoding can be found in {{ciphersuite}}.
 
-NONCE
-: NONCE is an optional field used for ensuring the refreshness of the Entity
-  Attestation Token (EAT) contained in the response.
+nonce
+: The none field is an optional field used for ensuring the refreshness of the Entity
+  Attestation Token (EAT) returned with a QueryResponse message. When a nonce is 
+  provided in the QueryRequest and an EAT is returned with the QueryResponse message
+  then the nonce contained in this request MUST be copied into the nonce claim found 
+  in the EAT token. 
 
-VERSION
-: The VERSION field lists the version(s) supported by the TAM. For this version
+version
+: The version field lists the version(s) supported by the TAM. For this version
   of the specification this field can be omitted.
 
-OCSP_DATA
-: The OCSP_DATA field contains a list of OCSP stapling data
+ocsp_data
+: The ocsp_data field contains a list of OCSP stapling data
   respectively for the TAM certificate and each of the CA certificates
   up to the root certificate.  The TAM provides OCSP data so that the
   TEEP Agent can validate the status of the TAM certificate chain
   without making its own external OCSP service call. OCSP data MUST be
   conveyed as a DER-encoded OCSP response (using the ASN.1 type
   OCSPResponse defined in {{RFC2560}}). The use of OCSP is optional to
-  implement for bo th the TAM and the TEEP Agent. A TAM can query the
+  implement for both the TAM and the TEEP Agent. A TAM can query the
   TEEP Agent for the support of this functionality via the capability
   discovery exchange, as described above.
 
@@ -368,81 +374,84 @@ OCSP_DATA
 ## QueryResponse
 
 ~~~~
-ext_info = int
+ext_info = uint
+ta_id = bstr
 
-QueryResponse = {
-     TYPE : uint,
-     TOKEN : uint,
-     ? SELECTED_CIPHER_SUITE : suite,
-     ? SELECTED_VERSION : version,
-     ? EAT : bstr,
-     ? TA_LIST  : [+bstr],
-     ? EXT_LIST : [+ext_info],
-     * $$extensions
-}
+QueryResponse = [
+     type : uint,
+     token : uint,
+     {
+        ? selected_cipher_suite : suite,
+        ? selected_version : version,
+        ? eat : bstr,
+        ? ta_list  : [+ta_id],
+        ? ext_list : [+ext_info]
+     }
+]
+
 ~~~~
 
 The QueryResponse message is signed and encrypted by the TEEP Agent and returned
 to the TAM. It has the following fields:
 
 {: vspace='0'}
-TYPE
-: TYPE = 2 corresponds to a QueryResponse message sent from the TEEP Agent
+type
+: The value of (2) corresponds to a QueryResponse message sent from the TEEP Agent
   to the TAM.
 
-TOKEN
-: The value in the TOKEN field is used to match requests to responses. The
+token
+: The value in the token field is used to match responses to requests. The
   value MUST correspond to the value received with the QueryRequest.
 
 
-SELECTED_CIPHER_SUITE
-: The SELECTED_CIPHER_SUITE field indicates the selected ciphersuite. Details
+selected_cipher_suite
+: The selected_cipher_suite field indicates the selected ciphersuite. Details
   about the ciphersuite encoding can be found in {{ciphersuite}}.
 
-SELECTED_VERSION
-: The SELECTED_VERSION field indicates the protocol version selected by the
+selected_version
+: The selected_version field indicates the protocol version selected by the
   TEEP Agent.
 
-EAT
-: The EAT field contains an Entity Attestation Token following the encoding
+eat
+: The eat field contains an Entity Attestation Token following the encoding
   defined in {{I-D.ietf-rats-eat}}.
 
-TA_LIST
-: The TA_LIST field enumerates the trusted applications installed on the device
-  in form of TA ID strings.
+ta_list
+: The ta_list field enumerates the trusted applications installed on the device
+  in form of TA_ID byte strings.
 
-EXT_LIST
-: The EXT_LIST field lists the supported extensions. This document does not
+ext_list
+: The ext_list field lists the supported extensions. This document does not
   define any extensions.
 
 
 ## TrustedAppInstall
 
 ~~~~
-TrustedAppInstall = {
-     TYPE : uint,
-     TOKEN : uint,
-     ? MANIFEST_LIST  : [+ SUIT_Outer_Wrapper],
-     * $$extensions
-}
+TrustedAppInstall = ]
+     type : uint,
+     token : uint,
+     {
+         ? manifest_list  : [+ SUIT_Outer_Wrapper]
+     }
+]
 ~~~~
 
-The TrustedAppInstall message is MACed and encrypted by the TAM and has the
-following fields:
+The TrustedAppInstall message has the following fields:
 
 {: vspace='0'}
-TYPE
-: TYPE = 3 corresponds to a TrustedAppInstall message sent from the TAM to
+type
+: The value of (3) corresponds to a TrustedAppInstall message sent from the TAM to
   the TEEP Agent. In case of successful processing, an Success
   message is returned by the TEEP Agent. In case of an error, an Error message
   is returned. Note that the TrustedAppInstall message
   is used for initial TA installation but also for TA updates.
 
-TOKEN
-: The value in the TOKEN field is used to match requests to responses.
+token
+: The value in the token field is used to match responses to requests.
 
-TA
-: The MANIFEST_LIST field is used to convey one or multiple SUIT manifests.
+manifest_list
+: The manifest_list field is used to convey one or multiple SUIT manifests.
   A manifest is
   a bundle of metadata about the trusted app, where to
   find the code, the devices to which it applies, and cryptographic
@@ -455,104 +464,102 @@ TA
 ## TrustedAppDelete
 
 ~~~~
-TrustedAppDelete  = {
+TrustedAppDelete  = [
      TYPE : uint,
-     TOKEN : uint,
-     ? TA_LIST  : [+bstr],
-     * $$extensions
-}
+     token : uint,
+     {
+         ? ta_list  : [+ta_id]
+     }
+]
 ~~~~
 
-The TrustedAppDelete message is MACed and encrypted by the TAM and has the
-following fields:
+The TrustedAppDelete message has the following fields:
 
 {: vspace='0'}
-TYPE
-: TYPE = 4 corresponds to a TrustedAppDelete message sent from the TAM to the
+type
+: The value of (4) corresponds to a TrustedAppDelete message sent from the TAM to the
   TEEP Agent. In case of successful processing, an Success
   message is returned by the TEEP Agent. In case of an error, an Error message
   is returned.
 
-TOKEN
-: The value in the TOKEN field is used to match requests to responses.
+token
+: The value in the token field is used to match responses to requests.
 
-TA_LIST
-: The TA_LIST field enumerates the TAs to be deleted.
+ta_list
+: The ta_list field enumerates the TAs to be deleted.
 
 
 ## Success
 
 ~~~~
-Success = {
-     TYPE : uint,
-     TOKEN : uint,
-     ? MSG : tstr,
-     * $$extensions
-}
+Success = [
+     type : uint,
+     token : uint,
+     {
+        ? msg : tstr
+     }
+]
 ~~~~
 
-The Success message is MACed and encrypted by the TEEP Agent and has the
-following fields:
+The Success message has the following fields:
 
 {: vspace='0'}
-TYPE
-: TYPE = 5 corresponds to a Success message sent from the TEEP Agent to the
+type
+: The value of (5) corresponds to corresponds to a Success message sent from the TEEP Agent to the
   TAM.
 
-TOKEN
-: The value in the TOKEN field is used to match requests to responses.
+token
+: The value in the token field is used to match responses to requests.
 
-MSG
-: The MSG field contains optional diagnostics information encoded in
+msg
+: The msg field contains optional diagnostics information encoded in
   UTF-8 {{RFC3629}} returned by the TEEP Agent.
 
 
 ## Error
 
 ~~~~
-Error = {
-     TYPE : uint,
-     TOKEN : uint,
-     ERR_CODE : uint,
-     ? ERR_MSG : tstr,
-     ? CIPHER_SUITE : [+suite],
-     ? VERSION : [+version],
-     * $$extensions
-}
+Error = [
+     type : uint,
+     token : uint,
+     error_code : uint,
+     {
+        ? err_msg : tstr,
+        ? cipher_suite : [+suite],
+        ? version : [+version]
+     }
+]
 ~~~~
 
-If possible, the Error message is MACed and encrypted by the TEEP Agent.
-Unprotected Error messages MUST be handled with care by the TAM due to possible
-downgrading attacks. It has the following fields:
+The Error message has the following fields:
 
 {: vspace='0'}
-TYPE
-: TYPE = 6 corresponds to a Error message sent from the TEEP Agent to the TAM.
+type
+: The value of (6) corresponds to an Error message sent from the TEEP Agent to the TAM.
 
-TOKEN
-: The value in the TOKEN field is used to match requests to responses.
+token
+: The value in the token field is used to match responses to requests.
 
-ERR_CODE
-: The ERR_CODE field is populated with values listed in a registry (with the
+err_code
+: The err_code field is populated with values listed in a registry (with the
   initial set of error codes listed below). Only selected messages are applicable
   to each message.
 
-ERR_MSG
-: The ERR_MSG message is a human-readable diagnostic message that MUST be encoded
+err_msg
+: The err_msg message is a human-readable diagnostic message that MUST be encoded
   using UTF-8 {{RFC3629}} using Net-Unicode form {{RFC5198}}.
 
-VERSION
-: The VERSION field enumerates the protocol version(s) supported by the TEEP
+version
+: The version field enumerates the protocol version(s) supported by the TEEP
   Agent. This field is optional but MUST be returned with the ERR_UNSUPPORTED_MSG_VERSION
   error message.
 
-CIPHER_SUITE
-: The CIPHER_SUITE field lists the ciphersuite(s) supported by the TEEP Agent.
+cipher_suite
+: The cipher_suite field lists the ciphersuite(s) supported by the TEEP Agent.
   This field is optional but MUST be returned with the ERR_UNSUPPORTED_CRYPTO_ALG
   error message.
 
-This specification defines the following initial error messages. Additional
-error code can be registered with IANA.
+This specification defines the following initial error messages:
 
 {: vspace='0'}
 ERR_ILLEGAL_PARAMETER (1)
@@ -633,6 +640,7 @@ ERR_PD_PROCESSING_FAILED (18)
 : The TEEP Agent returns this error when
   it fails to process the provided personalization data.
 
+Additional error code can be registered with IANA.
 
 # Mapping of TEEP Message Parameters to CBOR Labels {#tags}
 
@@ -646,21 +654,17 @@ key.
 This specification uses the following tags for protocol fields.
 
 | Name                  | Label |
-| type                  |     0 |
-| token                 |     1 |
-| request               |     2 |
-| cipher\_suite         |     3 |
-| nonce                 |     4 |
-| version               |     5 |
-| ocsp_data             |     6 |
-| selected\_ciphersuite |     7 |
-| selected\_version     |     8 |
-| eat                   |     9 |
-| ta\_list              |    10 |
-| ext\_list             |    11 |
-| manifest\_list        |    12 |
-| err\_code             |    13 |
-| err\_msg              |    14 |
+| cipher\_suite         |     1 |
+| nonce                 |     2 |
+| version               |     3 |
+| ocsp_data             |     4 |
+| selected\_ciphersuite |     5 |
+| selected\_version     |     6 |
+| eat                   |     7 |
+| ta\_list              |     8 |
+| ext\_list             |     9 |
+| manifest\_list        |    10 |
+| err\_msg              |    11 |
 
 
 # Ciphersuites {#ciphersuite}
@@ -674,7 +678,6 @@ ciphersuite. This document specifies two ciphersuites.
 | Value | Ciphersuite                                    |
 |     0 | AES-CCM-16-64-128, HMAC 256/256, X25519, EdDSA |
 |     1 | AES-CCM-16-64-128, HMAC 256/256, P-256, ES256  |
-
 
 # Security Considerations {#security}
 
