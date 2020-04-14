@@ -76,7 +76,6 @@ informative:
   I-D.ietf-teep-architecture: 
   RFC8610: 
   RFC8126: 
-  I-D.ietf-teep-opentrustprotocol: 
 
 --- abstract
 
@@ -943,13 +942,10 @@ The registry contents is:
 {: numbered='no'}
 
 We would like to thank Brian Witten (Symantec), Tyler Kim (Solacia), Nick Cook (Arm), and  Minho Yoo (IoTrust) for their contributions
-to an initial version of this specification.
+to the Open Trust Protocol (OTrP), which influenced the design of this specification.
 
 # B. Acknowledgements {#Acknowledgements}
 {: numbered='no'}
-
-This work is based on the initial version of OTrP {{I-D.ietf-teep-opentrustprotocol}} and hence credits
-go to those who have contributed to it.
 
 We would like to thank Eve Schooler for the suggestion of the protocol name.
 
