@@ -921,6 +921,149 @@ go to those who have contributed to it.
 
 We would like to thank Eve Schooler for the suggestion of the protocol name.
 
-We would like to thank Akira Tsukamoto (AIST), Kohei Isobe (TRASIO/SECOM),
+We would like to thank Kohei Isobe (TRASIO/SECOM),
 Kuniyasu Suzaki (TRASIO/AIST), Tsukasa Oi (TRASIO), and Yuichi Takita (SECOM)
 for their valuable implementation feedback.
+
+We would also like to thank Carsten Bormann and Henk Birkholz for their help with the CDDL. 
+
+# Complete CDDL
+
+```
+teep-message = $teep-message-type .within teep-message-framework
+
+SUIT-envelope = bytes ; placeholder
+
+teep-message-framework = [
+  type: 0..23 / $teep-type-extension,
+  token: uint,
+  options: { * teep-option },
+  * int; further integers, e.g. for data-item-requested
+]
+
+teep-option = (uint => any)
+
+; messages defined below:
+$teep-message-type /= query-request
+$teep-message-type /= query-response
+$teep-message-type /= trusted-app-install
+$teep-message-type /= trusted-app-delete
+$teep-message-type /= teep-error
+$teep-message-type /= teep-success
+
+; message type numbers
+TEEP-TYPE-query-request = 1
+TEEP-TYPE-query-response = 2
+TEEP-TYPE-trusted-app-install = 3
+TEEP-TYPE-trusted-app-delete = 4
+TEEP-TYPE-teep-error = 5
+TEEP-TYPE-teep-success = 6
+
+version = uint .size 4
+ext-info = uint 
+
+; data items as bitmaps
+data-item-requested = $data-item-requested .within uint .size 8
+attestation = 1
+$data-item-requested /=  attestation
+trusted-apps = 2
+$data-item-requested /= trusted-apps
+extensions = 4
+$data-item-requested /= extensions
+suit-commands = 8
+$data-item-requested /= suit-commands
+
+query-request = [
+  type: TEEP-TYPE-query-request,
+  token: uint,
+  options: {
+    ? supported-cipher-suites => suite,
+    ? nonce => bytes .size (8..64), 
+    ? version => [ + version ],
+    ? oscp-data => bytes,
+    * $$query-request-extensions
+    * $$teep-option-extensions
+  },
+  data-item-requested  
+]
+
+; ciphersuites as bitmaps
+suite = $TEEP-suite .within uint .size 8
+
+TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA = 1
+TEEP-AES-CCM-16-64-128-HMAC256--256-P-256-ES256  = 2
+
+$TEEP-suite /= TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA
+$TEEP-suite /= TEEP-AES-CCM-16-64-128-HMAC256--256-P-256-ES256
+
+query-response = [
+  type: TEEP-TYPE-query-response,
+  token: uint,
+  options: {
+    ? selected-cipher-suite => suite,
+    ? selected-version => version,
+    ? eat => bytes,
+    ? ta-list  => [ + bytes ],
+    ? ext-list => [ + ext-info ],
+    * $$query-response-extensions,
+    * $$teep-option-extensions
+  }
+]
+
+trusted-app-install = [
+  type: TEEP-TYPE-trusted-app-install,
+  token: uint,
+  option: {
+    ? manifest-list => [ + SUIT-envelope ],
+    * $$trusted-app-install-extensions,
+    * $$teep-option-extensions
+  }
+]
+
+trusted-app-delete = [
+  type: TEEP-TYPE-trusted-app-delete,
+  token: uint,
+  option: {
+    ? ta-list => [ + bytes ],
+    * $$trusted-app-delete-extensions,
+    * $$teep-option-extensions
+  }
+]
+
+teep-success = [
+  type: TEEP-TYPE-teep-success,
+  token: uint,
+  option: {
+    ? msg => text,
+    * $$teep-success-extensions,
+    * $$teep-option-extensions
+  }
+]
+
+teep-error = [
+  type: TEEP-TYPE-teep-error,
+  token: uint,
+  options: {
+     ? err-msg => text,
+     ? cipher-suites => [ + suite ],
+     ? versions => [ + version ],
+     * $$teep-error--extensions,
+     * $$teep-option-extensions
+  }
+  err-code: uint,
+]
+
+cipher-suites = 1
+nonce = 2
+versions = 3
+oscp-data = 4
+selected-cipher-suite = 5
+selected-version = 6
+eat = 7
+ta-list = 8
+ext-list = 9
+manifest-list = 10
+msg = 11
+err-msg = 12
+```
+
