@@ -233,8 +233,6 @@ The TEEP protocol messages are described in CDDL format {{RFC8610}} below.
 
 To create a TEEP message, the following steps are performed.
 
-
-
 1. Create a TEEP message according to the description below and populate
   it with the respective content.
 
@@ -286,29 +284,40 @@ the listed steps fail, then the TEEP message MUST be rejected.
 ## QueryRequest
 
 
+A QueryRequest message is used by the TAM to learn 
+information from the TEEP Agent. The TAM can learn 
+the features supported by the TEEP Agent, including 
+ciphersuites, and protocol versions. Additionally, 
+the TAM can selectively request data items from the 
+TEEP Agent via the request parameter. Currently, 
+the following features are supported: 
+
+ - Request for attestation information,
+ - Listing supported extensions, 
+ - Querying installed software (trusted apps), and 
+ - Listing supporting SUIT commands.
+
+Like other TEEP messages, the QueryRequest message is
+signed, and the relevant CDDL snippet is shown below. 
+The complete CDDL structure is shown in {{CDDL}}.
 
 ~~~~
-suite = uint
-
-version = uint
-
-data_item = uint
-
-QueryRequest = [
-     type : uint,
-     token : uint,
-     request : [+data_item],
-     {
-        ? cipher_suite : [+suite],
-        ? nonce : bstr,
-        ? version : [+version],
-        ? ocsp_data : bstr
-     }
+query-request = [
+  type: TEEP-TYPE-query-request,
+  token: uint,
+  options: {
+    ? supported-cipher-suites => suite,
+    ? nonce => bytes .size (8..64), 
+    ? version => [ + version ],
+    ? oscp-data => bytes,
+    * $$query-request-extensions
+    * $$teep-option-extensions
+  },
+  data-item-requested  
 ]
 ~~~~
 
-
-A QueryRequest message is signed by the TAM and has the following fields:
+The message has the following fields: 
 
 {: vspace='0'}
 type
@@ -316,50 +325,52 @@ type
   the TEEP Agent.
 
 token
-: The value in the token field is used to match responses to requests. This is 
-useful when a TAM issues multiple concurrent requests to a TEEP Agent. 
+: The value in the token parameter is used to match responses to requests. This is 
+particualrly useful when a TAM issues multiple concurrent requests to a TEEP Agent. 
 
 request
-: The request field indicates what information the TAM requests from the TEEP
-  Agent in form of a list of unsigned integer values. Each unsigned integer 
-  value corresponds to an IANA registered information element. This 
+: The request parameter indicates what information the TAM requests from the TEEP
+  Agent in form of a bitmap. Each value in the bitmap corresponds to an 
+  IANA registered information element. This 
   specification defines the following initial set of information elements:
 
    attestation (1)
    : With this value the TAM requests the TEEP Agent to return an entity attestation
-     token (EAT) in the response.
+     token (EAT) in the response. If the TAM requests an attestation token to be 
+     returned by the TEEP Agent then it MUST also include the nonce in the message.
+     The nonce is subsequently placed into the EAT token for replay protection. 
 
    trusted_apps (2)
    : With this value the TAM queries the TEEP Agent for all installed TAs.
 
-   extensions (3)
+   extensions (4)
    : With this value the TAM queries the TEEP Agent for supported capabilities
      and extensions, which allows a TAM to discover the capabilities of a TEEP
      Agent implementation.
 
-   suit_commands (4)
+   suit_commands (8)
    : With this value the TAM queries the TEEP Agent for supported commands offered
      by the SUIT manifest implementation.
   
    Further values may be added in the future via IANA registration.
 
-cipher_suite
-: The cipher_suite field lists the ciphersuite(s) supported by the TAM. Details
+cipher-suites
+: The cipher-suites parameter lists the ciphersuite(s) supported by the TAM. Details
   about the ciphersuite encoding can be found in {{ciphersuite}}.
 
 nonce
-: The none field is an optional field used for ensuring the refreshness of the Entity
+: The none field is an optional parameter used for ensuring the refreshness of the Entity
   Attestation Token (EAT) returned with a QueryResponse message. When a nonce is 
   provided in the QueryRequest and an EAT is returned with the QueryResponse message
   then the nonce contained in this request MUST be copied into the nonce claim found 
   in the EAT token. 
 
 version
-: The version field lists the version(s) supported by the TAM. For this version
+: The version field parameter the version(s) supported by the TAM. For this version
   of the specification this field can be omitted.
 
 ocsp_data
-: The ocsp_data field contains a list of OCSP stapling data
+: The ocsp_data parameter contains a list of OCSP stapling data
   respectively for the TAM certificate and each of the CA certificates
   up to the root certificate.  The TAM provides OCSP data so that the
   TEEP Agent can validate the status of the TAM certificate chain
@@ -373,67 +384,80 @@ ocsp_data
 
 ## QueryResponse
 
-~~~~
-ext_info = uint
-ta_id = bstr
+The QueryResponse message is the successful response by the TEEP Agent after 
+receiving a QueryRequest message. 
 
-QueryResponse = [
-     type : uint,
-     token : uint,
-     {
-        ? selected_cipher_suite : suite,
-        ? selected_version : version,
-        ? eat : bstr,
-        ? ta_list  : [+ta_id],
-        ? ext_list : [+ext_info]
-     }
+Like other TEEP messages, the QueryResponse message is
+signed, and the relevant CDDL snippet is shown below. 
+The complete CDDL structure is shown in {{CDDL}}.
+
+~~~~
+query-response = [
+  type: TEEP-TYPE-query-response,
+  token: uint,
+  options: {
+    ? selected-cipher-suite => suite,
+    ? selected-version => version,
+    ? eat => bytes,
+    ? ta-list  => [ + bytes ],
+    ? ext-list => [ + ext-info ],
+    * $$query-response-extensions,
+    * $$teep-option-extensions
+  }
 ]
-
 ~~~~
 
-The QueryResponse message is signed and encrypted by the TEEP Agent and returned
-to the TAM. It has the following fields:
+The message has the following fields:
 
 {: vspace='0'}
+
 type
 : The value of (2) corresponds to a QueryResponse message sent from the TEEP Agent
   to the TAM.
 
 token
-: The value in the token field is used to match responses to requests. The
-  value MUST correspond to the value received with the QueryRequest.
+: The value in the token parameter is used to match responses to requests. The
+  value MUST correspond to the value received with the QueryRequest message.
 
-
-selected_cipher_suite
-: The selected_cipher_suite field indicates the selected ciphersuite. Details
+selected-cipher-suite
+: The selected-cipher-suite parameter indicates the selected ciphersuite. Details
   about the ciphersuite encoding can be found in {{ciphersuite}}.
 
-selected_version
-: The selected_version field indicates the protocol version selected by the
+selected-version
+: The selected-version parameter indicates the protocol version selected by the
   TEEP Agent.
 
 eat
-: The eat field contains an Entity Attestation Token following the encoding
+: The eat parameter contains an Entity Attestation Token following the encoding
   defined in {{I-D.ietf-rats-eat}}.
 
-ta_list
-: The ta_list field enumerates the trusted applications installed on the device
+ta-list
+: The ta-list parameter enumerates the trusted applications installed on the device
   in form of TA_ID byte strings.
 
-ext_list
-: The ext_list field lists the supported extensions. This document does not
+ext-list
+: The ext-list parameter lists the supported extensions. This document does not
   define any extensions.
 
 
 ## TrustedAppInstall
 
+The TrustedAppInstall message is used by the TAM to install software (trusted apps)
+via the TEEP Agent. 
+
+Like other TEEP messages, the TrustedAppInstall message is
+signed, and the relevant CDDL snippet is shown below. 
+The complete CDDL structure is shown in {{CDDL}}.
+
 ~~~~
-TrustedAppInstall = ]
-     type : uint,
-     token : uint,
-     {
-         ? manifest_list  : [+ SUIT_Outer_Wrapper]
-     }
+trusted-app-install = [
+  type: TEEP-TYPE-trusted-app-install,
+  token: uint,
+  option: {
+    ? manifest-list => [ + SUIT-envelope ],
+    * $$trusted-app-install-extensions,
+    * $$teep-option-extensions
+  }
 ]
 ~~~~
 
@@ -450,8 +474,8 @@ type
 token
 : The value in the token field is used to match responses to requests.
 
-manifest_list
-: The manifest_list field is used to convey one or multiple SUIT manifests.
+manifest-list
+: The manifest-list field is used to convey one or multiple SUIT manifests.
   A manifest is
   a bundle of metadata about the trusted app, where to
   find the code, the devices to which it applies, and cryptographic
@@ -463,13 +487,22 @@ manifest_list
 
 ## TrustedAppDelete
 
+The TrustedAppDelete message is used by the TAM to remove 
+software (trust apps) from the device. 
+
+Like other TEEP messages, the TrustedAppDelete message is
+signed, and the relevant CDDL snippet is shown below. 
+The complete CDDL structure is shown in {{CDDL}}.
+
 ~~~~
-TrustedAppDelete  = [
-     TYPE : uint,
-     token : uint,
-     {
-         ? ta_list  : [+ta_id]
-     }
+trusted-app-delete = [
+  type: TEEP-TYPE-trusted-app-delete,
+  token: uint,
+  option: {
+    ? ta-list => [ + bytes ],
+    * $$trusted-app-delete-extensions,
+    * $$teep-option-extensions
+  }
 ]
 ~~~~
 
@@ -483,23 +516,32 @@ type
   is returned.
 
 token
-: The value in the token field is used to match responses to requests.
+: The value in the token parameter is used to match responses to requests.
 
-ta_list
-: The ta_list field enumerates the TAs to be deleted.
+ta-list
+: The ta-list parameter enumerates the TAs to be deleted.
 
 
 ## Success
 
+The TEEP protocol defines two implicit success messages and this explicit 
+Success message for the cases where the TEEP Agent cannot return another reply, 
+such as for the TrustedAppInstall and the TrustedAppDelete messages. 
+
+Like other TEEP messages, the Success message is
+signed, and the relevant CDDL snippet is shown below. 
+The complete CDDL structure is shown in {{CDDL}}.
+
 ~~~~
-Success = [
-     type : uint,
-     token : uint,
-     {
-        ? msg : tstr
-     }
+teep-success = [
+  type: TEEP-TYPE-teep-success,
+  token: uint,
+  option: {
+    ? msg => text,
+    * $$teep-success-extensions,
+    * $$teep-option-extensions
+  }
 ]
-~~~~
 
 The Success message has the following fields:
 
@@ -509,25 +551,33 @@ type
   TAM.
 
 token
-: The value in the token field is used to match responses to requests.
+: The value in the token parameter is used to match responses to requests.
 
 msg
-: The msg field contains optional diagnostics information encoded in
+: The msg parameter contains optional diagnostics information encoded in
   UTF-8 {{RFC3629}} returned by the TEEP Agent.
 
 
 ## Error
 
+The Error message is used by the TEEP Agent to return an error. 
+
+Like other TEEP messages, the Error message is
+signed, and the relevant CDDL snippet is shown below. 
+The complete CDDL structure is shown in {{CDDL}}.
+
 ~~~~
-Error = [
-     type : uint,
-     token : uint,
-     error_code : uint,
-     {
-        ? err_msg : tstr,
-        ? cipher_suite : [+suite],
-        ? version : [+version]
-     }
+teep-error = [
+  type: TEEP-TYPE-teep-error,
+  token: uint,
+  err-code: uint,
+  options: {
+     ? err-msg => text,
+     ? cipher-suites => [ + suite ],
+     ? versions => [ + version ],
+     * $$teep-error--extensions,
+     * $$teep-option-extensions
+  }
 ]
 ~~~~
 
@@ -538,25 +588,25 @@ type
 : The value of (6) corresponds to an Error message sent from the TEEP Agent to the TAM.
 
 token
-: The value in the token field is used to match responses to requests.
+: The value in the token parameter is used to match responses to requests.
 
-err_code
-: The err_code field is populated with values listed in a registry (with the
+err-code
+: The err-code parameter is populated with values listed in a registry (with the
   initial set of error codes listed below). Only selected messages are applicable
   to each message.
 
-err_msg
-: The err_msg message is a human-readable diagnostic message that MUST be encoded
+err-msg
+: The err-msg parameter is a human-readable diagnostic text that MUST be encoded
   using UTF-8 {{RFC3629}} using Net-Unicode form {{RFC5198}}.
 
-version
-: The version field enumerates the protocol version(s) supported by the TEEP
-  Agent. This field is optional but MUST be returned with the ERR_UNSUPPORTED_MSG_VERSION
+cipher-suites
+: The cipher-suites parameter lists the ciphersuite(s) supported by the TEEP Agent.
+  This field is optional but MUST be returned with the ERR_UNSUPPORTED_CRYPTO_ALG
   error message.
 
-cipher_suite
-: The cipher_suite field lists the ciphersuite(s) supported by the TEEP Agent.
-  This field is optional but MUST be returned with the ERR_UNSUPPORTED_CRYPTO_ALG
+versions
+: The version parameter enumerates the protocol version(s) supported by the TEEP
+  Agent. This otherwise optional parameter MUST be returned with the ERR_UNSUPPORTED_MSG_VERSION
   error message.
 
 This specification defines the following initial error messages:
@@ -648,23 +698,23 @@ In COSE, maps use strings, negative integers, and unsigned
 integers as map keys. Integers are used for compactness of
 encoding. Since the word "key" is mainly used in its other meaning, as a
 cryptographic key, this specification uses the term "label" for this usage
-as a map
-key.
+as a map key.
 
-This specification uses the following tags for protocol fields.
+This specification uses the following mapping:
 
 | Name                  | Label |
-| cipher\_suite         |     1 |
+| cipher-suites         |     1 |
 | nonce                 |     2 |
 | version               |     3 |
-| ocsp_data             |     4 |
-| selected\_ciphersuite |     5 |
-| selected\_version     |     6 |
+| ocsp-data             |     4 |
+| selected-cipher-suite |     5 |
+| selected-version      |     6 |
 | eat                   |     7 |
-| ta\_list              |     8 |
-| ext\_list             |     9 |
-| manifest\_list        |    10 |
-| err\_msg              |    11 |
+| ta-list               |     8 |
+| ext-list              |     9 |
+| manifest-list         |    10 |
+| msg                   |    11 |
+| err-msg               |    12 |
 
 
 # Ciphersuites {#ciphersuite}
@@ -676,8 +726,8 @@ an IANA registered
 ciphersuite. This document specifies two ciphersuites.
 
 | Value | Ciphersuite                                    |
-|     0 | AES-CCM-16-64-128, HMAC 256/256, X25519, EdDSA |
-|     1 | AES-CCM-16-64-128, HMAC 256/256, P-256, ES256  |
+|     1 | AES-CCM-16-64-128, HMAC 256/256, X25519, EdDSA |
+|     2 | AES-CCM-16-64-128, HMAC 256/256, P-256, ES256  |
 
 # Security Considerations {#security}
 
@@ -706,7 +756,7 @@ Attestation
   information only to an authenticated and authorized TAM.
 
 TA Binaries
-: TA binaries are provided by the SP.It is the responsibility of the
+: TA binaries are provided by the SP. It is the responsibility of the
   TAM to relay only verified TAs from authorized SPs.  Delivery of
   that TA to the TEEP Agent is then the responsibility of the TAM and
   the TEEP Broker, using the security mechanisms provided by the TEEP
@@ -892,29 +942,8 @@ The registry contents is:
 # Contributors {#Contributors}
 {: numbered='no'}
 
-We would like to thank the following individuals for their contributions
-to an initial version
-of this specification.
-
-
-~~~~
-- Brian Witten
-  Symantec
-  brian_witten@symantec.com
-
-- Tyler Kim
-  Solacia
-  tylerkim@iotrust.kr
-
-- Nick Cook
-  Arm Ltd.
-  nicholas.cook@arm.com
-
-- Minho Yoo
-  IoTrust
-  minho.yoo@iotrust.kr
-~~~~
-
+We would like to thank Brian Witten (Symantec), Tyler Kim (Solacia), Nick Cook (Arm), and  Minho Yoo (IoTrust) for their contributions
+to an initial version of this specification.
 
 # Acknowledgements {#Acknowledgements}
 {: numbered='no'}
@@ -930,7 +959,7 @@ for their valuable implementation feedback.
 
 We would also like to thank Carsten Bormann and Henk Birkholz for their help with the CDDL. 
 
-# Complete CDDL
+# Complete CDDL {#CDDL}
 
 ```
 teep-message = $teep-message-type .within teep-message-framework
