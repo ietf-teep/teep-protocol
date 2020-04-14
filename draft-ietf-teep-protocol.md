@@ -542,6 +542,7 @@ teep-success = [
     * $$teep-option-extensions
   }
 ]
+~~~~
 
 The Success message has the following fields:
 
@@ -960,8 +961,9 @@ for their valuable implementation feedback.
 We would also like to thank Carsten Bormann and Henk Birkholz for their help with the CDDL. 
 
 # Complete CDDL {#CDDL}
+{: numbered='no'}
 
-```
+~~~~
 teep-message = $teep-message-type .within teep-message-framework
 
 SUIT-envelope = bytes ; placeholder
@@ -1097,5 +1099,4 @@ ext-list = 9
 manifest-list = 10
 msg = 11
 err-msg = 12
-```
-
+~~~~
