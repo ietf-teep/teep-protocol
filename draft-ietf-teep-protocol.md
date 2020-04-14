@@ -65,7 +65,6 @@ author:
   country: US
   email: akira.tsukamoto@aist.go.jp
 normative:
-  RFC4648: 
   RFC8152: 
   RFC3629: 
   RFC5198: 
