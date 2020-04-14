@@ -694,8 +694,8 @@ Additional error code can be registered with IANA.
 
 # Mapping of TEEP Message Parameters to CBOR Labels {#tags}
 
-In COSE, maps use strings, negative integers, and unsigned
-integers as map keys. Integers are used for compactness of
+In COSE, arrays and maps use strings, negative integers, and unsigned
+integers as their keys. Integers are used for compactness of
 encoding. Since the word "key" is mainly used in its other meaning, as a
 cryptographic key, this specification uses the term "label" for this usage
 as a map key.
