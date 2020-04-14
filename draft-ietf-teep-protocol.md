@@ -19,7 +19,9 @@ wg: TEEP
 kw: Trusted Execution Environment
 date: 2020
 author:
-- ins: H. Tschofenig
+
+ -
+  ins: H. Tschofenig
   name: Hannes Tschofenig
   org: Arm Ltd.
   street: ''
@@ -28,7 +30,9 @@ author:
   code: '6067'
   country: Austria
   email: hannes.tschofenig@arm.com
-- ins: M. Pei
+
+ -
+  ins: M. Pei
   name: Mingliang Pei
   org: Broadcom
   street: 350 Ellis St
@@ -37,7 +41,9 @@ author:
   code: '94043'
   country: USA
   email: mingliang.pei@broadcom.com
-- ins: D. Wheeler
+
+ -
+  ins: D. Wheeler
   name: David Wheeler
   org: Intel
   street: ''
@@ -46,7 +52,9 @@ author:
   code: ''
   country: US
   email: david.m.wheeler@intel.com
-- ins: D. Thaler
+
+ -
+  ins: D. Thaler
   name: Dave Thaler
   org: Microsoft
   street: ''
@@ -55,7 +63,9 @@ author:
   code: ''
   country: US
   email: dthaler@microsoft.com
-- ins: A. Tsukamoto
+
+ -
+  ins: A. Tsukamoto
   name: Akira Tsukamoto
   org: AIST
   street: ''
@@ -64,6 +74,7 @@ author:
   code: ''
   country: JP
   email: akira.tsukamoto@aist.go.jp
+
 normative:
   RFC8152: 
   RFC3629: 
