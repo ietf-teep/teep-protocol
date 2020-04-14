@@ -306,9 +306,9 @@ query-request = [
   token: uint,
   options: {
     ? supported-cipher-suites => suite,
-    ? nonce => bytes .size (8..64), 
+    ? nonce => bstr .size (8..64),
     ? version => [ + version ],
-    ? oscp-data => bytes,
+    ? oscp-data => bstr,
     * $$query-request-extensions
     * $$teep-option-extensions
   },
@@ -397,8 +397,8 @@ query-response = [
   options: {
     ? selected-cipher-suite => suite,
     ? selected-version => version,
-    ? eat => bytes,
-    ? ta-list  => [ + bytes ],
+    ? eat => bstr,
+    ? ta-list  => [ + bstr ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
     * $$teep-option-extensions
@@ -498,7 +498,7 @@ trusted-app-delete = [
   type: TEEP-TYPE-trusted-app-delete,
   token: uint,
   option: {
-    ? ta-list => [ + bytes ],
+    ? ta-list => [ + bstr ],
     * $$trusted-app-delete-extensions,
     * $$teep-option-extensions
   }
@@ -965,7 +965,7 @@ We would also like to thank Carsten Bormann and Henk Birkholz for their help wit
 ~~~~
 teep-message = $teep-message-type .within teep-message-framework
 
-SUIT-envelope = bytes ; placeholder
+SUIT-envelope = bstr ; placeholder
 
 teep-message-framework = [
   type: 0..23 / $teep-type-extension,
@@ -1011,9 +1011,9 @@ query-request = [
   token: uint,
   options: {
     ? supported-cipher-suites => suite,
-    ? nonce => bytes .size (8..64), 
+    ? nonce => bstr .size (8..64),
     ? version => [ + version ],
-    ? oscp-data => bytes,
+    ? oscp-data => bstr,
     * $$query-request-extensions
     * $$teep-option-extensions
   },
@@ -1035,8 +1035,8 @@ query-response = [
   options: {
     ? selected-cipher-suite => suite,
     ? selected-version => version,
-    ? eat => bytes,
-    ? ta-list  => [ + bytes ],
+    ? eat => bstr,
+    ? ta-list  => [ + bstr ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
     * $$teep-option-extensions
@@ -1057,7 +1057,7 @@ trusted-app-delete = [
   type: TEEP-TYPE-trusted-app-delete,
   token: uint,
   option: {
-    ? ta-list => [ + bytes ],
+    ? ta-list => [ + bstr ],
     * $$trusted-app-delete-extensions,
     * $$teep-option-extensions
   }
