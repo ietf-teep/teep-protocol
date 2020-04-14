@@ -62,10 +62,9 @@ author:
   city: ''
   region: ''
   code: ''
-  country: US
+  country: JP
   email: akira.tsukamoto@aist.go.jp
 normative:
-  RFC4648: 
   RFC8152: 
   RFC3629: 
   RFC5198: 
@@ -307,9 +306,9 @@ query-request = [
   token: uint,
   options: {
     ? supported-cipher-suites => suite,
-    ? nonce => bytes .size (8..64), 
+    ? nonce => bstr .size (8..64),
     ? version => [ + version ],
-    ? oscp-data => bytes,
+    ? oscp-data => bstr,
     * $$query-request-extensions
     * $$teep-option-extensions
   },
@@ -398,8 +397,8 @@ query-response = [
   options: {
     ? selected-cipher-suite => suite,
     ? selected-version => version,
-    ? eat => bytes,
-    ? ta-list  => [ + bytes ],
+    ? eat => bstr,
+    ? ta-list  => [ + bstr ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
     * $$teep-option-extensions
@@ -499,7 +498,7 @@ trusted-app-delete = [
   type: TEEP-TYPE-trusted-app-delete,
   token: uint,
   option: {
-    ? ta-list => [ + bytes ],
+    ? ta-list => [ + bstr ],
     * $$trusted-app-delete-extensions,
     * $$teep-option-extensions
   }
@@ -542,6 +541,7 @@ teep-success = [
     * $$teep-option-extensions
   }
 ]
+~~~~
 
 The Success message has the following fields:
 
@@ -694,8 +694,8 @@ Additional error code can be registered with IANA.
 
 # Mapping of TEEP Message Parameters to CBOR Labels {#tags}
 
-In COSE, maps use strings, negative integers, and unsigned
-integers as map keys. Integers are used for compactness of
+In COSE, arrays and maps use strings, negative integers, and unsigned
+integers as their keys. Integers are used for compactness of
 encoding. Since the word "key" is mainly used in its other meaning, as a
 cryptographic key, this specification uses the term "label" for this usage
 as a map key.
@@ -939,13 +939,13 @@ The registry contents is:
 --- back
 
 
-# Contributors {#Contributors}
+# A. Contributors {#Contributors}
 {: numbered='no'}
 
 We would like to thank Brian Witten (Symantec), Tyler Kim (Solacia), Nick Cook (Arm), and  Minho Yoo (IoTrust) for their contributions
 to an initial version of this specification.
 
-# Acknowledgements {#Acknowledgements}
+# B. Acknowledgements {#Acknowledgements}
 {: numbered='no'}
 
 This work is based on the initial version of OTrP {{I-D.ietf-teep-opentrustprotocol}} and hence credits
@@ -959,12 +959,13 @@ for their valuable implementation feedback.
 
 We would also like to thank Carsten Bormann and Henk Birkholz for their help with the CDDL. 
 
-# Complete CDDL {#CDDL}
+# C. Complete CDDL {#CDDL}
+{: numbered='no'}
 
-```
+~~~~
 teep-message = $teep-message-type .within teep-message-framework
 
-SUIT-envelope = bytes ; placeholder
+SUIT-envelope = bstr ; placeholder
 
 teep-message-framework = [
   type: 0..23 / $teep-type-extension,
@@ -1010,9 +1011,9 @@ query-request = [
   token: uint,
   options: {
     ? supported-cipher-suites => suite,
-    ? nonce => bytes .size (8..64), 
+    ? nonce => bstr .size (8..64),
     ? version => [ + version ],
-    ? oscp-data => bytes,
+    ? oscp-data => bstr,
     * $$query-request-extensions
     * $$teep-option-extensions
   },
@@ -1034,8 +1035,8 @@ query-response = [
   options: {
     ? selected-cipher-suite => suite,
     ? selected-version => version,
-    ? eat => bytes,
-    ? ta-list  => [ + bytes ],
+    ? eat => bstr,
+    ? ta-list  => [ + bstr ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
     * $$teep-option-extensions
@@ -1056,7 +1057,7 @@ trusted-app-delete = [
   type: TEEP-TYPE-trusted-app-delete,
   token: uint,
   option: {
-    ? ta-list => [ + bytes ],
+    ? ta-list => [ + bstr ],
     * $$trusted-app-delete-extensions,
     * $$teep-option-extensions
   }
@@ -1097,5 +1098,4 @@ ext-list = 9
 manifest-list = 10
 msg = 11
 err-msg = 12
-```
-
+~~~~
