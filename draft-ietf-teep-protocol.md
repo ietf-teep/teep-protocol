@@ -763,7 +763,11 @@ Attestation
   information or in the certificate used to sign the attestation
   token.  This uniqueness may raise privacy concerns. To lower the
   privacy implications the TEEP Agent MUST present its attestation
-  information only to an authenticated and authorized TAM.
+  information only to an authenticated and authorized TAM and SHOULD
+  use encryption in EATs as discussed in {{I-D.ietf-rats-eat}} since
+  confidentiality is not provided by the TEEP protocol itself, and
+  the transport protocol under the TEEP protocol might be implemented
+  outside of any TEE.
 
 TA Binaries
 : TA binaries are provided by the SP. It is the responsibility of the
