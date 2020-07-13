@@ -1000,8 +1000,8 @@ TEEP-TYPE-query-request = 1
 TEEP-TYPE-query-response = 2
 TEEP-TYPE-trusted-app-install = 3
 TEEP-TYPE-trusted-app-delete = 4
-TEEP-TYPE-teep-error = 5
-TEEP-TYPE-teep-success = 6
+TEEP-TYPE-teep-success = 5
+TEEP-TYPE-teep-error = 6
 
 version = uint .size 4
 ext-info = uint 
