@@ -463,7 +463,7 @@ trusted-app-install = [
   type: TEEP-TYPE-trusted-app-install,
   token: uint,
   option: {
-    ? manifest-list => [ + SUIT-envelope ],
+    ? manifest-list => [ + SUIT_Envelope ],
     * $$trusted-app-install-extensions,
     * $$teep-option-extensions
   }
@@ -969,10 +969,13 @@ We would also like to thank Carsten Bormann and Henk Birkholz for their help wit
 # C. Complete CDDL {#CDDL}
 {: numbered='no'}
 
+Valid TEEP messages MUST adhere to the following CDDL data definitions,
+except that `SUIT_Envelope` is specified in {{I-D.ietf-suit-manifest}}.
+
 ~~~~
 teep-message = $teep-message-type .within teep-message-framework
 
-SUIT-envelope = bstr ; placeholder
+SUIT_Envelope = any
 
 teep-message-framework = [
   type: 0..23 / $teep-type-extension,
@@ -1054,7 +1057,7 @@ trusted-app-install = [
   type: TEEP-TYPE-trusted-app-install,
   token: uint,
   option: {
-    ? manifest-list => [ + SUIT-envelope ],
+    ? manifest-list => [ + SUIT_Envelope ],
     * $$trusted-app-install-extensions,
     * $$teep-option-extensions
   }
