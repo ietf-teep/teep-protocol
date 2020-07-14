@@ -318,7 +318,7 @@ query-request = [
     ? supported-cipher-suites => suite,
     ? nonce => bstr .size (8..64),
     ? version => [ + version ],
-    ? oscp-data => bstr,
+    ? ocsp-data => bstr,
     * $$query-request-extensions
     * $$teep-option-extensions
   },
@@ -378,10 +378,10 @@ version
 : The version field parameter the version(s) supported by the TAM. For this version
   of the specification this field can be omitted.
 
-ocsp_data
-: The ocsp_data parameter contains a list of OCSP stapling data
+ocsp-data
+: The ocsp-data parameter contains a list of OCSP stapling data
   respectively for the TAM certificate and each of the CA certificates
-  up to the root certificate.  The TAM provides OCSP data so that the
+  up to the root certificate. The TAM provides OCSP data so that the
   TEEP Agent can validate the status of the TAM certificate chain
   without making its own external OCSP service call. OCSP data MUST be
   conveyed as a DER-encoded OCSP response (using the ASN.1 type
@@ -1027,7 +1027,7 @@ query-request = [
     ? supported-cipher-suites => suite,
     ? nonce => bstr .size (8..64),
     ? version => [ + version ],
-    ? oscp-data => bstr,
+    ? ocsp-data => bstr,
     * $$query-request-extensions
     * $$teep-option-extensions
   },
@@ -1103,7 +1103,7 @@ teep-error = [
 cipher-suites = 1
 nonce = 2
 versions = 3
-oscp-data = 4
+ocsp-data = 4
 selected-cipher-suite = 5
 selected-version = 6
 eat = 7
