@@ -414,6 +414,8 @@ query-response = [
     ? evidence-format => text,
     ? evidence => bstr,
     ? ta-list  => [ + bstr ],
+    ? requested-ta-list  => [ + bstr ],
+    ? unneeded-ta-list  => [ + bstr ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
     * $$teep-option-extensions
@@ -458,6 +460,20 @@ evidence
 ta-list
 : The ta-list parameter enumerates the Trusted Applications installed on the device
   in form of TA_ID byte strings.
+
+requested-ta-list
+: The requested-ta-list parameter enumerates the Trusted Applications that are
+  not currently installed in the TEE, but which are requested to be installed,
+  for example by an installer of an Untrusted Application that has a TA
+  as a dependency.  Like the ta-list, requested TAs are expressed in the form
+  of TA_ID byte strings.
+
+unneeded-ta-list
+: The unneeded-ta-list parameter enumerates the Trusted Applications that are
+  currently installed in the TEE, but which are no longer needed by any
+  other application.  The TAM can use this information in determining
+  whether a TA can be deleted.  Like the ta-list, unneeded TAs are expressed
+  in the form of TA_ID byte strings.
 
 ext-list
 : The ext-list parameter lists the supported extensions. This document does not
@@ -735,7 +751,8 @@ This specification uses the following mapping:
 | msg                     |    11 |
 | err-msg                 |    12 |
 | evidence-format         |    13 |
-
+| requested-ta-list       |    14 |
+| unneeded-ta-list        |    15 |
 
 # Ciphersuites {#ciphersuite}
 
@@ -1067,6 +1084,8 @@ query-response = [
     ? evidence-format => text,
     ? evidence => bstr,
     ? ta-list  => [ + bstr ],
+    ? requested-ta-list  => [ + bstr ],
+    ? unneeded-ta-list  => [ + bstr ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
     * $$teep-option-extensions
@@ -1129,4 +1148,5 @@ manifest-list = 10
 msg = 11
 err-msg = 12
 evidence-format = 13
-~~~~
+requested-ta-list = 14
+unneeded-ta-list = 15
