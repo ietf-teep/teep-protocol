@@ -421,9 +421,15 @@ query-response = [
     * $$teep-option-extensions
   }
 ]
+
+requested-ta-info = {
+  ta-uuid: bstr,
+  ? ta-manifest-sequence-number: uint,
+  ? have-binary: bool
+}
 ~~~~
 
-The message has the following fields:
+The QueryResponse message has the following fields:
 
 {: vspace='0'}
 
@@ -465,8 +471,8 @@ requested-ta-list
 : The requested-ta-list parameter enumerates the Trusted Applications that are
   not currently installed in the TEE, but which are requested to be installed,
   for example by an installer of an Untrusted Application that has a TA
-  as a dependency.  Like the ta-list, requested TAs are expressed in the form
-  of TA_ID byte strings.
+  as a dependency.  Requested TAs are expressed in the form of
+  requested-ta-info objects.
 
 unneeded-ta-list
 : The unneeded-ta-list parameter enumerates the Trusted Applications that are
@@ -479,6 +485,22 @@ ext-list
 : The ext-list parameter lists the supported extensions. This document does not
   define any extensions.
 
+The requested-ta-info message has the following fields:
+
+{: vspace='0'}
+
+ta-uuid
+: A 16-byte UUID {{RFC4122}} encoded as a CBOR bstr.
+
+ta-manifest-sequence-number
+: The minimum suit-manifest-sequence-number value from a SUIT manifest for
+  the TA.  If not present, indicates that any version will do.
+
+have-binary
+: If present with a value of true, indicates that the TEEP agent already has
+  the TA binary and only needs TrustedAppInstall message with a SUIT manifest
+  that authorizes installing it.  If have-binary is true, the
+  ta-manifest-sequence-number field MUST be present.
 
 ## TrustedAppInstall
 
@@ -737,6 +759,7 @@ as a map key.
 
 This specification uses the following mapping:
 
+<<<<<<< HEAD
 | Name                    | Label |
 | supported-cipher-suites |     1 |
 | challenge               |     2 |
@@ -753,6 +776,27 @@ This specification uses the following mapping:
 | evidence-format         |    13 |
 | requested-ta-list       |    14 |
 | unneeded-ta-list        |    15 |
+=======
+| Name                        | Label |
+| cipher-suites               |     1 |
+| nonce                       |     2 |
+| version                     |     3 |
+| ocsp-data                   |     4 |
+| selected-cipher-suite       |     5 |
+| selected-version            |     6 |
+| eat                         |     7 |
+| ta-list                     |     8 |
+| ext-list                    |     9 |
+| manifest-list               |    10 |
+| msg                         |    11 |
+| err-msg                     |    12 |
+| requested-ta-list           |    13 |
+| unneeded-ta-list            |    14 |
+| ta-uuid                     |    15 |
+| ta-manifest-sequence-number |    16 |
+| have-binary                 |    17 |
+
+>>>>>>> 9f31a6f... Also add indication of whether TEEP Agent already has requested TA
 
 # Ciphersuites {#ciphersuite}
 
@@ -1092,6 +1136,12 @@ query-response = [
   }
 ]
 
+requested-ta-info = {
+  ta-uuid: bstr,
+  ? ta-manifest-sequence-number: uint,
+  ? have-binary: bool
+}
+
 trusted-app-install = [
   type: TEEP-TYPE-trusted-app-install,
   token: uint,
@@ -1150,3 +1200,7 @@ err-msg = 12
 evidence-format = 13
 requested-ta-list = 14
 unneeded-ta-list = 15
+ta-uuid = 16
+ta-manifest-sequence-number = 17
+have-binary = 18
+~~~~
