@@ -78,6 +78,7 @@ author:
 normative:
   RFC8152: 
   RFC3629: 
+  RFC4122: 
   RFC5198: 
   RFC7049: 
   I-D.ietf-rats-eat: 
@@ -428,18 +429,23 @@ query-response = [
     ? selected-version => version,
     ? evidence-format => text,
     ? evidence => bstr,
-    ? tc-list  => [ + bstr ],
-    ? requested-tc-list  => [ + requested-tc-info ],
-    ? unneeded-tc-list  => [ + bstr ],
+    ? tc-list => [ + tc-info ],
+    ? requested-ta-list => [ + requested-ta-info ],
+    ? unneeded-ta-list => [ + bstr ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
     * $$teep-option-extensions
   }
 ]
 
+tc-info = {
+  tc-uuid: bstr,
+  ? tc-manifest-sequence-number: uint
+}
+
 requested-ta-info = {
-  ta-uuid: bstr,
-  ? ta-manifest-sequence-number: uint,
+  tc-uuid: bstr,
+  ? tc-manifest-sequence-number: uint,
   ? have-binary: bool
 }
 ~~~~
@@ -480,7 +486,7 @@ evidence
 
 tc-list
 : The tc-list parameter enumerates the Trusted Components installed on the device
-  in the form of component-id byte strings.
+  in the form of tc-info objects.
 
 requested-ta-list
 : The requested-ta-list parameter enumerates the Trusted Applications that are
@@ -493,21 +499,32 @@ unneeded-ta-list
 : The unneeded-ta-list parameter enumerates the Trusted Applications that are
   currently installed in the TEE, but which are no longer needed by any
   other application.  The TAM can use this information in determining
-  whether a TA can be deleted.  Like the ta-list, unneeded TAs are expressed
-  in the form of TA_ID byte strings.
+  whether a TA can be deleted.  Each unneeded TA is expressed
+  in the form of a component-id byte string.
 
 ext-list
 : The ext-list parameter lists the supported extensions. This document does not
   define any extensions.
 
+The tc-info object has the following fields:
+
+{: vspace='0'}
+
+tc-uuid
+: A 16-byte UUID {{RFC4122}} encoded as a CBOR bstr.
+
+tc-manifest-sequence-number
+: The suit-manifest-sequence-number value from the SUIT manifest for the Trusted Component,
+  if a SUIT manifest was used.
+
 The requested-ta-info message has the following fields:
 
 {: vspace='0'}
 
-ta-uuid
+tc-uuid
 : A 16-byte UUID {{RFC4122}} encoded as a CBOR bstr.
 
-ta-manifest-sequence-number
+tc-manifest-sequence-number
 : The minimum suit-manifest-sequence-number value from a SUIT manifest for
   the TA.  If not present, indicates that any version will do.
 
@@ -515,7 +532,7 @@ have-binary
 : If present with a value of true, indicates that the TEEP agent already has
   the TA binary and only needs an Install message with a SUIT manifest
   that authorizes installing it.  If have-binary is true, the
-  ta-manifest-sequence-number field MUST be present.
+  tc-manifest-sequence-number field MUST be present.
 
 ## Install Message
 
@@ -596,9 +613,8 @@ token
 : The value in the token parameter is used to match responses to requests.
 
 tc-list
-: The tc-list parameter enumerates the Trusted Components to be deleted,
-  in the form of component-id byte strings.
-
+: The tc-list parameter enumerates the Trusted Components to be deleted.  Each Trusted Component is
+  identified by its 16-byte UUID {{RFC4122}} encoded as a CBOR bstr.
 
 ## Success Message
 
@@ -1113,18 +1129,23 @@ query-response = [
     ? selected-version => version,
     ? evidence-format => text,
     ? evidence => bstr,
-    ? tc-list  => [ + bstr ],
-    ? requested-tc-list  => [ + requested-tc-info ],
-    ? unneeded-tc-list  => [ + bstr ],
+    ? tc-list => [ + tc-info ],
+    ? requested-tc-list => [ + requested-tc-info ],
+    ? unneeded-tc-list => [ + bstr ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
     * $$teep-option-extensions
   }
 ]
 
+tc-info = {
+  tc-uuid: bstr,
+  ? tc-manifest-sequence-number: uint
+}
+
 requested-ta-info = {
-  ta-uuid: bstr,
-  ? ta-manifest-sequence-number: uint,
+  tc-uuid: bstr,
+  ? tc-manifest-sequence-number: uint,
   ? have-binary: bool
 }
 
