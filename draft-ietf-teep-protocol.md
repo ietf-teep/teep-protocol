@@ -87,6 +87,7 @@ informative:
   I-D.ietf-teep-architecture: 
   RFC8610: 
   RFC8126: 
+  RFC8915: 
 
 --- abstract
 
@@ -106,26 +107,26 @@ matches the intent of this protocol.
 
 The Trusted Execution Environment (TEE) concept has been designed to
 separate a regular operating system, also referred as a Rich Execution
-Environment (REE), from security-sensitive applications. In an TEE
+Environment (REE), from security-sensitive applications. In a TEE
 ecosystem, device vendors may use different operating systems in the
-REE and may use different types of TEEs. When application providers or
-device administrators use Trusted Application Managers (TAMs) to
+REE and may use different types of TEEs. When TA Developers or
+Device Administrators use Trusted Application Managers (TAMs) to
 install, update, and delete Trusted Applications (TAs) on a wide range
 of devices with potentially different TEEs then an interoperability
 need arises.
 
 This document specifies the protocol for communicating between a TAM
-and a TEEP Agent, involving a TEEP Broker.
+and a TEEP Agent.
 
 The Trusted Execution Environment Provisioning (TEEP) architecture
-document {{I-D.ietf-teep-architecture}} has set to provide a design
-guidance for such an interoperable protocol and introduces the
+document {{I-D.ietf-teep-architecture}} provides design
+guidance and introduces the
 necessary terminology.  Note that the term Trusted Application may
 include more than code; it may also include configuration data and
 keys needed by the TA to operate correctly.
 
 
-# Requirements Language
+# Terminology
 
 {::boilerplate bcp14}
 
@@ -134,16 +135,17 @@ This specification re-uses the terminology defined in {{I-D.ietf-teep-architectu
 
 # Message Overview {#messages}
 
-The TEEP protocol consists of a couple of messages exchanged between a TAM
-and a TEEP Agent via a TEEP Broker.
+The TEEP protocol consists of messages exchanged between a TAM
+and a TEEP Agent.
 The messages are encoded in CBOR and designed to provide end-to-end security.
 TEEP protocol messages are signed by the endpoints, i.e., the TAM and the
-TEEP Agent, but trusted
-applications may as well be encrypted and signed by the service provider.
-The TEEP protocol not only re-use
+TEEP Agent, but Trusted
+Applications may also be encrypted and signed by a TA Developer or
+Device Administrator.
+The TEEP protocol not only uses
 CBOR but also the respective security wrapper, namely COSE {{RFC8152}}. Furthermore,
 for attestation the Entity Attestation Token (EAT) {{I-D.ietf-rats-eat}} and for software updates the SUIT
-manifest format {{I-D.ietf-suit-manifest}} are re-used.
+manifest format {{I-D.ietf-suit-manifest}} are used.
 
 This specification defines six messages.
 
@@ -154,9 +156,8 @@ algorithms and extensions in a QueryResponse message. An error message is
 returned if the request
 could not be processed. A TAM will process the QueryResponse message and
 determine
-whether subsequent message exchanges to install, update, or delete trusted
-applications
-shall be initiated.
+whether to initiate subsequent message exchanges to install, update, or delete Trusted
+Applications.
 
 ~~~~
   +------------+           +-------------+
@@ -177,11 +178,11 @@ With the TrustedAppInstall message a TAM can instruct a TEEP Agent to install
 a TA.
 The TEEP Agent will process the message, determine whether the TAM is authorized
 and whether the
-TA has been signed by an authorized SP. In addition to the binary, the TAM
+TA has been signed by an authorized TA Signer. In addition to the binary, the TAM
 may also provide
 personalization data. If the TrustedAppInstall message was processed successfully
 then a
-Success message is returned to the TAM, an Error message otherwise.
+Success message is returned to the TAM, or an Error message otherwise.
 
 ~~~~
  +------------+           +-------------+
@@ -201,7 +202,7 @@ Success message is returned to the TAM, an Error message otherwise.
 With the TrustedAppDelete message a TAM can instruct a TEEP Agent to delete
 one or multiple TA(s).
 A Success message is returned when the operation has been completed successfully,
-and an Error message
+or an Error message
 otherwise.
 
 ~~~~
@@ -226,12 +227,13 @@ TEEP messages are protected by the COSE_Sign1 structure.
 The TEEP protocol messages are described in CDDL format {{RFC8610}} below.
 
 ~~~~
-    teep-message                => (QueryRequest /
-                                    QueryResponse /
-                                    TrustedAppInstall /
-                                    TrustedAppDelete /
-                                    Error /
-                                    Success ),
+{
+    teep-message                => (query-request /
+                                    query-response /
+                                    trusted-app-install /
+                                    trusted-app-delete /
+                                    teep-success /
+                                    teep-error ),
 }
 ~~~~
 
@@ -294,7 +296,7 @@ the listed steps fail, then the TEEP message MUST be rejected.
 
 
 A QueryRequest message is used by the TAM to learn 
-information from the TEEP Agent. The TAM can learn 
+information from the TEEP Agent, such as
 the features supported by the TEEP Agent, including 
 ciphersuites, and protocol versions. Additionally, 
 the TAM can selectively request data items from the 
@@ -303,7 +305,7 @@ the following features are supported:
 
  - Request for attestation information,
  - Listing supported extensions, 
- - Querying installed software (trusted apps), and 
+ - Querying installed software (TAs), and 
  - Listing supporting SUIT commands.
 
 Like other TEEP messages, the QueryRequest message is
@@ -317,7 +319,7 @@ query-request = [
   options: {
     ? supported-cipher-suites => suite,
     ? nonce => bstr .size (8..64),
-    ? version => [ + version ],
+    ? versions => [ + version ],
     ? ocsp-data => bstr,
     * $$query-request-extensions
     * $$teep-option-extensions
@@ -335,11 +337,11 @@ type
 
 token
 : The value in the token parameter is used to match responses to requests. This is 
-particualrly useful when a TAM issues multiple concurrent requests to a TEEP Agent. 
+particularly useful when a TAM issues multiple concurrent requests to a TEEP Agent. 
 
 request
 : The request parameter indicates what information the TAM requests from the TEEP
-  Agent in form of a bitmap. Each value in the bitmap corresponds to an 
+  Agent in the form of a bitmap. Each value in the bitmap corresponds to an 
   IANA registered information element. This 
   specification defines the following initial set of information elements:
 
@@ -368,15 +370,15 @@ cipher-suites
   about the ciphersuite encoding can be found in {{ciphersuite}}.
 
 nonce
-: The none field is an optional parameter used for ensuring the refreshness of the Entity
+: The nonce field is an optional parameter used for ensuring the refreshness of the Entity
   Attestation Token (EAT) returned with a QueryResponse message. When a nonce is 
   provided in the QueryRequest and an EAT is returned with the QueryResponse message
   then the nonce contained in this request MUST be copied into the nonce claim found 
   in the EAT token. 
 
-version
-: The version field parameter the version(s) supported by the TAM. For this version
-  of the specification this field can be omitted.
+versions
+: The versions parameter enumerates the TEEP protocol version(s) supported by the TAM
+  For this version of the specification this field can be omitted.
 
 ocsp-data
 : The ocsp-data parameter contains a list of OCSP stapling data
@@ -385,7 +387,7 @@ ocsp-data
   TEEP Agent can validate the status of the TAM certificate chain
   without making its own external OCSP service call. OCSP data MUST be
   conveyed as a DER-encoded OCSP response (using the ASN.1 type
-  OCSPResponse defined in {{RFC2560}}). The use of OCSP is optional to
+  OCSPResponse defined in {{RFC2560}}). The use of OCSP is OPTIONAL to
   implement for both the TAM and the TEEP Agent. A TAM can query the
   TEEP Agent for the support of this functionality via the capability
   discovery exchange, as described above.
@@ -433,7 +435,7 @@ selected-cipher-suite
   about the ciphersuite encoding can be found in {{ciphersuite}}.
 
 selected-version
-: The selected-version parameter indicates the protocol version selected by the
+: The selected-version parameter indicates the TEEP protocol version selected by the
   TEEP Agent.
 
 eat
@@ -441,7 +443,7 @@ eat
   defined in {{I-D.ietf-rats-eat}}.
 
 ta-list
-: The ta-list parameter enumerates the trusted applications installed on the device
+: The ta-list parameter enumerates the Trusted Applications installed on the device
   in form of TA_ID byte strings.
 
 ext-list
@@ -451,7 +453,7 @@ ext-list
 
 ## TrustedAppInstall
 
-The TrustedAppInstall message is used by the TAM to install software (trusted apps)
+The TrustedAppInstall message is used by the TAM to install software (TAs)
 via the TEEP Agent. 
 
 Like other TEEP messages, the TrustedAppInstall message is
@@ -475,10 +477,10 @@ The TrustedAppInstall message has the following fields:
 {: vspace='0'}
 type
 : The value of (3) corresponds to a TrustedAppInstall message sent from the TAM to
-  the TEEP Agent. In case of successful processing, an Success
+  the TEEP Agent. In case of successful processing, a Success
   message is returned by the TEEP Agent. In case of an error, an Error message
   is returned. Note that the TrustedAppInstall message
-  is used for initial TA installation but also for TA updates.
+  is used for initial TA installation as well as for TA updates.
 
 token
 : The value in the token field is used to match responses to requests.
@@ -486,18 +488,18 @@ token
 manifest-list
 : The manifest-list field is used to convey one or multiple SUIT manifests.
   A manifest is
-  a bundle of metadata about the trusted app, where to
+  a bundle of metadata about the TA, where to
   find the code, the devices to which it applies, and cryptographic
   information protecting the manifest. The manifest may also convey personalization
-  data. TA binaries and personalization data is typically signed and encrypted
-  by the SP. Other combinations are, however, possible as well. For example,
+  data. TA binaries and personalization data can be signed and encrypted
+  by the same TA Signer. Other combinations are, however, possible as well. For example,
   it is also possible for the TAM to sign and encrypt the personalization data
-  and to let the SP sign and/or encrypt the TA binary.
+  and to let the TA Developer sign and/or encrypt the TA binary.
 
 ## TrustedAppDelete
 
 The TrustedAppDelete message is used by the TAM to remove 
-software (trust apps) from the device. 
+software (TAs) from the device. 
 
 Like other TEEP messages, the TrustedAppDelete message is
 signed, and the relevant CDDL snippet is shown below. 
@@ -520,7 +522,7 @@ The TrustedAppDelete message has the following fields:
 {: vspace='0'}
 type
 : The value of (4) corresponds to a TrustedAppDelete message sent from the TAM to the
-  TEEP Agent. In case of successful processing, an Success
+  TEEP Agent. In case of successful processing, a Success
   message is returned by the TEEP Agent. In case of an error, an Error message
   is returned.
 
@@ -601,21 +603,23 @@ token
 : The value in the token parameter is used to match responses to requests.
 
 err-code
-: The err-code parameter is populated with values listed in a registry (with the
-  initial set of error codes listed below). Only selected messages are applicable
+: The err-code parameter contains one of the values listed in the registry
+  defined in {{error-code-registry}} (with the
+  initial set of error codes listed below). Only selected values are applicable
   to each message.
 
 err-msg
-: The err-msg parameter is a human-readable diagnostic text that MUST be encoded
+: The err-msg parameter is human-readable diagnostic text that MUST be encoded
   using UTF-8 {{RFC3629}} using Net-Unicode form {{RFC5198}}.
 
 cipher-suites
 : The cipher-suites parameter lists the ciphersuite(s) supported by the TEEP Agent.
+  Details about the ciphersuite encoding can be found in {{ciphersuite}}.
   This field is optional but MUST be returned with the ERR_UNSUPPORTED_CRYPTO_ALG
   error message.
 
 versions
-: The version parameter enumerates the protocol version(s) supported by the TEEP
+: The versions parameter enumerates the TEEP protocol version(s) supported by the TEEP
   Agent. This otherwise optional parameter MUST be returned with the ERR_UNSUPPORTED_MSG_VERSION
   error message.
 
@@ -623,84 +627,76 @@ This specification defines the following initial error messages:
 
 {: vspace='0'}
 ERR_ILLEGAL_PARAMETER (1)
-: The TEEP Agent sends this error message when
-  a request contains incorrect fields or fields that are inconsistent with
+: The TEEP 
+  request contained incorrect fields or fields that are inconsistent with
   other fields.
 
 ERR_UNSUPPORTED_EXTENSION (2)
-: The TEEP Agent sends this error message when
-  it recognizes an unsupported extension or unsupported message.
+: The TEEP Agent does not support the request message or
+  an extension it indicated.
 
 ERR_REQUEST_SIGNATURE_FAILED (3)
-: The TEEP Agent sends this error message when
-  it fails to verify the signature of the message.
+: The TEEP Agent
+  could not verify the signature of the request message.
 
 ERR_UNSUPPORTED_MSG_VERSION (4)
-: The TEEP Agent receives a message but does not
-  support the indicated version.
+: The TEEP Agent does not
+  support the TEEP protocol version indicated in the request message.
 
 ERR_UNSUPPORTED_CRYPTO_ALG (5)
-: The TEEP Agent receives a request message
-  encoded with an unsupported cryptographic algorithm.
+: The TEEP Agent does not
+  support the cryptographic algorithm indicated in the request message.
 
 ERR_BAD_CERTIFICATE (6)
-: The TEEP Agent returns this error
-  when processing of a certificate failed. For diagnosis purposes it is
+: Processing of a certificate failed. For diagnosis purposes it is
   RECOMMMENDED to include information about the failing certificate
   in the error message.
 
 ERR_UNSUPPORTED_CERTIFICATE (7)
-: The TEEP Agent returns this error
-  when a certificate was of an unsupported type.
+: A certificate was of an unsupported type.
 
 ERR_CERTIFICATE_REVOKED (8)
-: The TEEP Agent returns this error
-  when a certificate was revoked by its signer.
+: A certificate was revoked by its signer.
 
 ERR_CERTIFICATE_EXPIRED (9)
-: The TEEP Agent returns this error
-  when a certificate has expired or is not currently
+: A certificate has expired or is not currently
   valid.
 
 ERR_INTERNAL_ERROR (10)
-: The TEEP Agent returns this error when a miscellaneous
-  internal error occurred while processing the request.
+: A miscellaneous
+  internal error occurred while processing the request message.
 
 ERR_RESOURCE_FULL (11)
-: This error is reported when a device
+: A device
   resource isn't available anymore, such as storage space is full.
 
 ERR_TA_NOT_FOUND (12)
-: This error will occur when the target TA does not
+: The target TA does not
   exist. This error may happen when the TAM has stale information and
   tries to delete a TA that has already been deleted.
 
 ERR_TA_ALREADY_INSTALLED (13)
-: While installing a TA, a TEE will return
-  this error if the TA has already been installed.
+: The TEEP Agent received a request to install a TA that
+  has already been installed.
 
 ERR_TA_UNKNOWN_FORMAT (14)
-: The TEEP Agent returns this error when
-  it does not recognize the format of the TA binary.
+: The TEEP Agent did not recognize the format of the TA binary.
 
 ERR_TA_DECRYPTION_FAILED (15)
-: The TEEP Agent returns this error when
-  it fails to decrypt the TA binary.
+: The TEEP Agent could not decrypt the TA binary.
 
 ERR_TA_DECOMPRESSION_FAILED (16)
-: The TEEP Agent returns this error when
-  it fails to decompress the TA binary.
+: The TEEP Agent could not decompress the TA binary.
 
 ERR_MANIFEST_PROCESSING_FAILED (17)
-: The TEEP Agent returns this error when
-  manifest processing failures occur that are less specific than
+: The TEEP Agent encountered
+  manifest processing failures that are less specific than
   ERR_TA_UNKNOWN_FORMAT, ERR_TA_UNKNOWN_FORMAT, and ERR_TA_DECOMPRESSION_FAILED.
 
 ERR_PD_PROCESSING_FAILED (18)
-: The TEEP Agent returns this error when
-  it fails to process the provided personalization data.
+: The TEEP Agent failed to process the provided personalization data.
 
-Additional error code can be registered with IANA.
+Additional error codes can be registered with IANA.
 
 # Mapping of TEEP Message Parameters to CBOR Labels {#tags}
 
@@ -729,11 +725,11 @@ This specification uses the following mapping:
 
 # Ciphersuites {#ciphersuite}
 
-A ciphersuite consists of an AEAD algorithm, a HMAC algorithm, and a signature
+A ciphersuite consists of an AEAD algorithm, an HMAC algorithm, and a signature
 algorithm.
 Each ciphersuite is identified with an integer value, which corresponds to
 an IANA registered
-ciphersuite. This document specifies two ciphersuites.
+ciphersuite (see {{ciphersuit-registry}}. This document specifies two ciphersuites.
 
 | Value | Ciphersuite                                    |
 |     1 | AES-CCM-16-64-128, HMAC 256/256, X25519, EdDSA |
@@ -749,82 +745,87 @@ Cryptographic Algorithms
 : TEEP protocol messages exchanged between the TAM and the TEEP Agent
   are protected using COSE. This specification relies on the
   cryptographic algorithms provided by COSE.  Public key based
-  authentication is used to by the TEEP Agent to authenticate the TAM
+  authentication is used by the TEEP Agent to authenticate the TAM
   and vice versa.
 
 Attestation
-: A TAM may rely on the attestation information provided by the TEEP
-  Agent and the Entity Attestation Token is re-used to convey this
-  information. To sign the Entity Attestation Token it is necessary
+: A TAM can rely on the attestation information provided by the TEEP
+  Agent, and the Entity Attestation Token is used to convey this
+  information. To sign the Entity Attestation Token, it is necessary
   for the device to possess a public key (usually in the form of a
   certificate) along with the corresponding private key. Depending on
-  the properties of the attestation mechanism it is possible to
+  the properties of the attestation mechanism, it is possible to
   uniquely identify a device based on information in the attestation
   information or in the certificate used to sign the attestation
   token.  This uniqueness may raise privacy concerns. To lower the
   privacy implications the TEEP Agent MUST present its attestation
   information only to an authenticated and authorized TAM and SHOULD
-  use encryption in EATs as discussed in {{I-D.ietf-rats-eat}} since
-  confidentiality is not provided by the TEEP protocol itself, and
+  use encryption in EATs as discussed in {{I-D.ietf-rats-eat}}, since
+  confidentiality is not provided by the TEEP protocol itself and
   the transport protocol under the TEEP protocol might be implemented
   outside of any TEE.
 
 TA Binaries
-: TA binaries are provided by the SP. It is the responsibility of the
-  TAM to relay only verified TAs from authorized SPs.  Delivery of
-  that TA to the TEEP Agent is then the responsibility of the TAM and
-  the TEEP Broker, using the security mechanisms provided by the TEEP
-  protocol.  To protect the TA binary the SUIT manifest is re-used and
-  it offers a varity of security features, including digitial
+: Each TA binary is signed by a TA Signer. It is the responsibility of the
+  TAM to relay only verified TAs from authorized TA Signers.  Delivery of
+  a TA to the TEEP Agent is then the responsibility of the TAM,
+  using the security mechanisms provided by the TEEP
+  protocol.  To protect the TA binary, the SUIT manifest format is used and
+  it offers a variety of security features, including digitial
   signatures and symmetric encryption.
 
 Personalization Data
-: An SP or a TAM can supply personalization data along with a TA.
+: A TA Signer or TAM can supply personalization data along with a TA.
   This data is also protected by a SUIT manifest.
-  The personalization data may be opaque to the TAM.
+  Personalization data signed and encrypted by a TA Signer other than
+  the TAM is opaque to the TAM.
 
 TEEP Broker
-: The TEEP protocol relies on the TEEP Broker to relay messages
+: As discussed in section 6 of {{I-D.ietf-teep-architecture}},
+  the TEEP protocol typically relies on a TEEP Broker to relay messages
   between the TAM and the TEEP Agent.  When the TEEP Broker is
   compromised it can drop messages, delay the delivery of messages,
   and replay messages but it cannot modify those messages. (A replay
   would be, however, detected by the TEEP Agent.) A compromised TEEP
   Broker could reorder messages in an attempt to install an old
-  version of a TA. Information in the manifest ensures that the TEEP
-  Agents are protected against such downgrading attacks based on
+  version of a TA. Information in the manifest ensures that TEEP
+  Agents are protected against such downgrade attacks based on
   features offered by the manifest itself.
 
 CA Compromise
-: The QueryRequest message from a TAM to the TEEP Agent may include
-  OCSP stapling data for the TAM's signer certificate and for
+: The QueryRequest message from a TAM to the TEEP Agent can include
+  OCSP stapling data for the TAM's certificate and for
   intermediate CA certificates up to the root certificate so that the
   TEEP Agent can verify the certificate's revocation status.  A
-  certificate revocation status check on a TA signer certificate is
+  certificate revocation status check on a TA Signer certificate is
   OPTIONAL by a TEEP Agent. A TAM is responsible for vetting a TA and
-  before distributing them to TEEP Agents. TEEP Agents will trust a TA
-  signer certificate's validation status done by a TAM.
+  before distributing them to TEEP Agents, so TEEP Agents can instead
+  simply trust that a TA Signer certificate's status was done by the TAM.
 
 CA Compromise
-: The CA issuing certificates to a TAM or an SP may get compromised.
-  A compromised intermediate CA certificates can be detected by a TEEP
+: The CA issuing certificates to a TAM or a TA Signer might get compromised.
+  A compromised intermediate CA certificate can be detected by a TEEP
   Agent by using OCSP information, assuming the revocation information
   is available.  Additionally, it is RECOMMENDED to provide a way to
-  update the trust anchor store used by the device, for example using
+  update the trust anchor store used by the TEE, for example using
   a firmware update mechanism. If the CA issuing certificates to
   devices gets compromised then these devices might be rejected by a
   TAM, if revocation is available to the TAM.
 
 Compromised TAM
 : The TEEP Agent SHOULD use OCSP information to verify the validity of
-  the TAM-provided certificate (as well as the validity of
+  the TAM's certificate (as well as the validity of
   intermediate CA certificates). The integrity and the accuracy of the
   clock within the TEE determines the ability to determine an expired
-  or revoked certificate since OCSP stapling includes signature
-  generation time, certificate validity dates are compared to the
+  or revoked certificate. OCSP stapling data includes signature
+  generation time, allowing certificate validity dates to be compared to the
   current time.
 
-
-
+Compromised Time Source
+: As discussed above, certificate validity checks rely on comparing
+  validity dates to the current time, which relies on having a trusted
+  source of time, such as {{RFC8915}}.  A compromised time source could
+  thus be used to subvert such validity checks.
 
 # IANA Considerations {#IANA}
 
@@ -847,14 +848,14 @@ Optional parameters:
 
 Encoding considerations:
 : Same as encoding considerations of
-  application/cbor
+  application/cbor.
 
 Security considerations:
 : See Security Considerations Section of this document.
 
 Interoperability considerations:
 : Same as interoperability
-  considerations of application/cbor as specified in {{RFC7049}}
+  considerations of application/cbor as specified in {{RFC7049}}.
 
 Published specification:
 : This document.
@@ -895,7 +896,7 @@ Change controller:
 
 
 
-## Error Code Registry
+## Error Code Registry {#error-code-registry}
 
 IANA is also requested to create a new registry for the error codes defined
 in {{detailmsg}}.
@@ -924,7 +925,7 @@ and should direct all requests for registration to the review mailing
 list.
 
 
-## Ciphersuite Registry
+## Ciphersuite Registry {#ciphersuite-registry}
 
 IANA is also requested to create a new registry for ciphersuites, as defined
 in {{ciphersuite}}.
@@ -995,8 +996,8 @@ $teep-message-type /= query-request
 $teep-message-type /= query-response
 $teep-message-type /= trusted-app-install
 $teep-message-type /= trusted-app-delete
-$teep-message-type /= teep-error
 $teep-message-type /= teep-success
+$teep-message-type /= teep-error
 
 ; message type numbers
 TEEP-TYPE-query-request = 1
@@ -1026,7 +1027,7 @@ query-request = [
   options: {
     ? supported-cipher-suites => suite,
     ? nonce => bstr .size (8..64),
-    ? version => [ + version ],
+    ? versions => [ + version ],
     ? ocsp-data => bstr,
     * $$query-request-extensions
     * $$teep-option-extensions
