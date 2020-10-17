@@ -378,7 +378,9 @@ nonce
 
 versions
 : The versions parameter enumerates the TEEP protocol version(s) supported by the TAM
-  For this version of the specification this field can be omitted.
+  A value of 0 refers to the current version of the TEEP protocol.
+  If this field is not present, it is to be treated the same as if
+  it contained only version 0.
 
 ocsp-data
 : The ocsp-data parameter contains a list of OCSP stapling data
@@ -436,7 +438,8 @@ selected-cipher-suite
 
 selected-version
 : The selected-version parameter indicates the TEEP protocol version selected by the
-  TEEP Agent.
+  TEEP Agent. The absense of this parameter indicates the same as if it
+  was present with a value of 0.
 
 eat
 : The eat parameter contains an Entity Attestation Token following the encoding
