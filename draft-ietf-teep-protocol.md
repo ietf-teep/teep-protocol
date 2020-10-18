@@ -143,9 +143,10 @@ TEEP Agent, but Trusted
 Applications may also be encrypted and signed by a TA Developer or
 Device Administrator.
 The TEEP protocol not only uses
-CBOR but also the respective security wrapper, namely COSE {{RFC8152}}. Furthermore,
-for attestation the Entity Attestation Token (EAT) {{I-D.ietf-rats-eat}} and for software updates the SUIT
-manifest format {{I-D.ietf-suit-manifest}} are used.
+CBOR but also the respective security wrapper, namely COSE {{RFC8152}}. Furthermore, for software updates the SUIT
+manifest format {{I-D.ietf-suit-manifest}} is used, and
+for attestation the Entity Attestation Token (EAT) {{I-D.ietf-rats-eat}}
+format is supported although other attestation formats are also permitted.
 
 This specification defines six messages.
 
@@ -318,7 +319,7 @@ query-request = [
   token: uint,
   options: {
     ? supported-cipher-suites => suite,
-    ? nonce => bstr .size (8..64),
+    ? challenge => bstr .size (8..64),
     ? versions => [ + version ],
     ? ocsp-data => bstr,
     * $$query-request-extensions
@@ -346,10 +347,8 @@ request
   specification defines the following initial set of information elements:
 
    attestation (1)
-   : With this value the TAM requests the TEEP Agent to return an entity attestation
-     token (EAT) in the response. If the TAM requests an attestation token to be 
-     returned by the TEEP Agent then it MUST also include the nonce in the message.
-     The nonce is subsequently placed into the EAT token for replay protection. 
+   : With this value the TAM requests the TEEP Agent to return attestation
+     evidence (e.g., an EAT) in the response.
 
    trusted_apps (2)
    : With this value the TAM queries the TEEP Agent for all installed TAs.
@@ -369,12 +368,13 @@ cipher-suites
 : The cipher-suites parameter lists the ciphersuite(s) supported by the TAM. Details
   about the ciphersuite encoding can be found in {{ciphersuite}}.
 
-nonce
-: The nonce field is an optional parameter used for ensuring the refreshness of the Entity
-  Attestation Token (EAT) returned with a QueryResponse message. When a nonce is 
+challenge
+: The challenge field is an optional parameter used for ensuring the refreshness of the
+  attestation evidence returned with a QueryResponse message. When a challenge is 
   provided in the QueryRequest and an EAT is returned with the QueryResponse message
-  then the nonce contained in this request MUST be copied into the nonce claim found 
-  in the EAT token. 
+  then the challenge contained in this request MUST be copied into the nonce claim found 
+  in the EAT. If any format other than EAT is used, it is up to that
+  format to define the use of the challenge field.
 
 versions
 : The versions parameter enumerates the TEEP protocol version(s) supported by the TAM
@@ -409,7 +409,8 @@ query-response = [
   options: {
     ? selected-cipher-suite => suite,
     ? selected-version => version,
-    ? eat => bstr,
+    ? evidence-format => text,
+    ? evidence => bstr,
     ? ta-list  => [ + bstr ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
@@ -438,8 +439,17 @@ selected-version
 : The selected-version parameter indicates the TEEP protocol version selected by the
   TEEP Agent.
 
-eat
-: The eat parameter contains an Entity Attestation Token following the encoding
+evidence-format
+: The evidence-format parameter indicates the IANA Media Type of the
+  attestation evidence contained in the evidence parameter.  It MUST be
+  present if the evidence parameter is present and the format is not an EAT.
+
+evidence
+: The evidence parameter contains the attestation evidence.  This parameter
+  MUST be present if the QueryResponse is sent in response to a QueryRequest
+  with the attestation bit set.  If the evidence-format parameter is absent,
+  the attestation evidence contained in this parameter MUST be
+  an Entity Attestation Token following the encoding
   defined in {{I-D.ietf-rats-eat}}.
 
 ta-list
@@ -710,17 +720,18 @@ This specification uses the following mapping:
 
 | Name                  | Label |
 | cipher-suites         |     1 |
-| nonce                 |     2 |
+| challenge             |     2 |
 | version               |     3 |
 | ocsp-data             |     4 |
 | selected-cipher-suite |     5 |
 | selected-version      |     6 |
-| eat                   |     7 |
+| evidence              |     7 |
 | ta-list               |     8 |
 | ext-list              |     9 |
 | manifest-list         |    10 |
 | msg                   |    11 |
 | err-msg               |    12 |
+| evidence-format       |    13 |
 
 
 # Ciphersuites {#ciphersuite}
@@ -749,21 +760,21 @@ Cryptographic Algorithms
   and vice versa.
 
 Attestation
-: A TAM can rely on the attestation information provided by the TEEP
-  Agent, and the Entity Attestation Token is used to convey this
-  information. To sign the Entity Attestation Token, it is necessary
+: A TAM can rely on the attestation evidence provided by the TEEP
+  Agent.  To sign the attestation evidence, it is necessary
   for the device to possess a public key (usually in the form of a
   certificate) along with the corresponding private key. Depending on
   the properties of the attestation mechanism, it is possible to
   uniquely identify a device based on information in the attestation
-  information or in the certificate used to sign the attestation
-  token.  This uniqueness may raise privacy concerns. To lower the
+  evidence or in the certificate used to sign the attestation
+  evidence.  This uniqueness may raise privacy concerns. To lower the
   privacy implications the TEEP Agent MUST present its attestation
-  information only to an authenticated and authorized TAM and SHOULD
-  use encryption in EATs as discussed in {{I-D.ietf-rats-eat}}, since
+  evidence only to an authenticated and authorized TAM and when using
+  EATS, it SHOULD use encryption as discussed in {{I-D.ietf-rats-eat}}, since
   confidentiality is not provided by the TEEP protocol itself and
   the transport protocol under the TEEP protocol might be implemented
-  outside of any TEE.
+  outside of any TEE. If any mechanism other than EATs is used, it is
+  up to that mechanism to specify how privacy is provided.
 
 TA Binaries
 : Each TA binary is signed by a TA Signer. It is the responsibility of the
@@ -1026,7 +1037,7 @@ query-request = [
   token: uint,
   options: {
     ? supported-cipher-suites => suite,
-    ? nonce => bstr .size (8..64),
+    ? challenge => bstr .size (8..64),
     ? versions => [ + version ],
     ? ocsp-data => bstr,
     * $$query-request-extensions
@@ -1050,7 +1061,8 @@ query-response = [
   options: {
     ? selected-cipher-suite => suite,
     ? selected-version => version,
-    ? eat => bstr,
+    ? evidence-format => text,
+    ? evidence => bstr,
     ? ta-list  => [ + bstr ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
@@ -1102,15 +1114,16 @@ teep-error = [
 ]
 
 cipher-suites = 1
-nonce = 2
+challenge = 2
 versions = 3
 ocsp-data = 4
 selected-cipher-suite = 5
 selected-version = 6
-eat = 7
+evidence = 7
 ta-list = 8
 ext-list = 9
 manifest-list = 10
 msg = 11
 err-msg = 12
+evidence-format = 13
 ~~~~
