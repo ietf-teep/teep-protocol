@@ -1,11 +1,8 @@
-IETF_DRAFT_MD = $(wildcard draft-*.md)
+FN := $(shell grep 'docname: draft-ietf-teep-protocol' draft-ietf-teep-protocol.md | awk '{print $$2}')
 
-IETF_DRAFT = $(patsubst %.md,%, $(IETF_DRAFT_MD))
+$(FN).txt: $(FN).xml
+	xml2rfc $(FN).xml
 
-$(IETF_DRAFT).txt: $(IETF_DRAFT).md
-	echo $(IETF_DRAFT)
-	kdrfc -3 $<
+$(FN).xml: draft-ietf-teep-protocol.md
+	kramdown-rfc2629 draft-ietf-teep-protocol.md > $(FN).xml
 
-.PHONY: clean
-clean:
-	rm -f $(IETF_DRAFT).txt
