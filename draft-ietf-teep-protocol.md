@@ -806,7 +806,7 @@ TEEP Broker
   Agents are protected against such downgrade attacks based on
   features offered by the manifest itself.
 
-CA Compromise
+TA Signer Compromise
 : The QueryRequest message from a TAM to the TEEP Agent can include
   OCSP stapling data for the TAM's certificate and for
   intermediate CA certificates up to the root certificate so that the
