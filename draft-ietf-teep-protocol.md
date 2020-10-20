@@ -364,8 +364,8 @@ request
   
    Further values may be added in the future via IANA registration.
 
-cipher-suites
-: The cipher-suites parameter lists the ciphersuite(s) supported by the TAM. Details
+supported-cipher-suites
+: The supported-cipher-suites parameter lists the ciphersuite(s) supported by the TAM. Details
   about the ciphersuite encoding can be found in {{ciphersuite}}.
 
 challenge
@@ -598,7 +598,7 @@ teep-error = [
   err-code: uint,
   options: {
      ? err-msg => text,
-     ? cipher-suites => [ + suite ],
+     ? supported-cipher-suites => [ + suite ],
      ? versions => [ + version ],
      * $$teep-error--extensions,
      * $$teep-option-extensions
@@ -625,8 +625,8 @@ err-msg
 : The err-msg parameter is human-readable diagnostic text that MUST be encoded
   using UTF-8 {{RFC3629}} using Net-Unicode form {{RFC5198}}.
 
-cipher-suites
-: The cipher-suites parameter lists the ciphersuite(s) supported by the TEEP Agent.
+supported-cipher-suites
+: The supported-cipher-suites parameter lists the ciphersuite(s) supported by the TEEP Agent.
   Details about the ciphersuite encoding can be found in {{ciphersuite}}.
   This field is optional but MUST be returned with the ERR_UNSUPPORTED_CRYPTO_ALG
   error message.
@@ -721,20 +721,20 @@ as a map key.
 
 This specification uses the following mapping:
 
-| Name                  | Label |
-| cipher-suites         |     1 |
-| challenge             |     2 |
-| version               |     3 |
-| ocsp-data             |     4 |
-| selected-cipher-suite |     5 |
-| selected-version      |     6 |
-| evidence              |     7 |
-| ta-list               |     8 |
-| ext-list              |     9 |
-| manifest-list         |    10 |
-| msg                   |    11 |
-| err-msg               |    12 |
-| evidence-format       |    13 |
+| Name                    | Label |
+| supported-cipher-suites |     1 |
+| challenge               |     2 |
+| version                 |     3 |
+| ocsp-data               |     4 |
+| selected-cipher-suite   |     5 |
+| selected-version        |     6 |
+| evidence                |     7 |
+| ta-list                 |     8 |
+| ext-list                |     9 |
+| manifest-list           |    10 |
+| msg                     |    11 |
+| err-msg                 |    12 |
+| evidence-format         |    13 |
 
 
 # Ciphersuites {#ciphersuite}
@@ -1108,7 +1108,7 @@ teep-error = [
   token: uint,
   options: {
      ? err-msg => text,
-     ? cipher-suites => [ + suite ],
+     ? supported-cipher-suites => [ + suite ],
      ? versions => [ + version ],
      * $$teep-error--extensions,
      * $$teep-option-extensions
@@ -1116,7 +1116,7 @@ teep-error = [
   err-code: uint,
 ]
 
-cipher-suites = 1
+supported-cipher-suites = 1
 challenge = 2
 versions = 3
 ocsp-data = 4
