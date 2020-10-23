@@ -82,6 +82,7 @@ normative:
   RFC7049: 
   I-D.ietf-rats-eat: 
   I-D.ietf-suit-manifest: 
+  I-D.moran-suit-report: 
   RFC2560: 
 informative:
   I-D.ietf-teep-architecture: 
@@ -600,6 +601,7 @@ teep-success = [
   token: uint,
   option: {
     ? msg => text,
+    ? suit-reports => [ + suit-report ],
     * $$teep-success-extensions,
     * $$teep-option-extensions
   }
@@ -620,6 +622,9 @@ msg
 : The msg parameter contains optional diagnostics information encoded in
   UTF-8 {{RFC3629}} returned by the TEEP Agent.
 
+suit-reports
+: If present, the suit-reports parameter contains a set of SUIT Reports
+  as defined in Section 4 of {{I-D.moran-suit-report}}.
 
 ## Error
 
@@ -638,6 +643,7 @@ teep-error = [
      ? err-msg => text,
      ? supported-cipher-suites => [ + suite ],
      ? versions => [ + version ],
+     ? suit-reports => [ + suit-report ],
      * $$teep-error--extensions,
      * $$teep-option-extensions
   }
@@ -673,6 +679,10 @@ versions
 : The versions parameter enumerates the TEEP protocol version(s) supported by the TEEP
   Agent. This otherwise optional parameter MUST be returned with the ERR_UNSUPPORTED_MSG_VERSION
   error message.
+
+suit-reports
+: If present, the suit-reports parameter contains a set of SUIT Reports
+  as defined in Section 4 of {{I-D.moran-suit-report}}.
 
 This specification defines the following initial error messages:
 
@@ -730,20 +740,6 @@ ERR_TA_ALREADY_INSTALLED (13)
 : The TEEP Agent received a request to install a TA that
   has already been installed.
 
-ERR_TA_UNKNOWN_FORMAT (14)
-: The TEEP Agent did not recognize the format of the TA binary.
-
-ERR_TA_DECRYPTION_FAILED (15)
-: The TEEP Agent could not decrypt the TA binary.
-
-ERR_TA_DECOMPRESSION_FAILED (16)
-: The TEEP Agent could not decompress the TA binary.
-
-ERR_MANIFEST_PROCESSING_FAILED (17)
-: The TEEP Agent encountered
-  manifest processing failures that are less specific than
-  ERR_TA_UNKNOWN_FORMAT, ERR_TA_UNKNOWN_FORMAT, and ERR_TA_DECOMPRESSION_FAILED.
-
 ERR_PD_PROCESSING_FAILED (18)
 : The TEEP Agent failed to process the provided personalization data.
 
@@ -778,6 +774,7 @@ This specification uses the following mapping:
 | ta-uuid                     |    16 |
 | ta-manifest-sequence-number |    17 |
 | have-binary                 |    18 |
+| suit-reports                |    19 |
 
 # Ciphersuites {#ciphersuite}
 
@@ -1148,6 +1145,7 @@ teep-success = [
   token: uint,
   option: {
     ? msg => text,
+    ? suit-reports => [ + suit-report ],
     * $$teep-success-extensions,
     * $$teep-option-extensions
   }
@@ -1160,6 +1158,7 @@ teep-error = [
      ? err-msg => text,
      ? supported-cipher-suites => [ + suite ],
      ? versions => [ + version ],
+     ? suit-reports => [ + suit-report ],
      * $$teep-error--extensions,
      * $$teep-option-extensions
   }
@@ -1184,4 +1183,5 @@ unneeded-ta-list = 15
 ta-uuid = 16
 ta-manifest-sequence-number = 17
 have-binary = 18
+suit-reports = 19
 ~~~~
