@@ -414,7 +414,7 @@ query-response = [
     ? evidence-format => text,
     ? evidence => bstr,
     ? ta-list  => [ + bstr ],
-    ? requested-ta-list  => [ + bstr ],
+    ? requested-ta-list  => [ + requested-ta-info ],
     ? unneeded-ta-list  => [ + bstr ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
@@ -759,44 +759,25 @@ as a map key.
 
 This specification uses the following mapping:
 
-<<<<<<< HEAD
-| Name                    | Label |
-| supported-cipher-suites |     1 |
-| challenge               |     2 |
-| version                 |     3 |
-| ocsp-data               |     4 |
-| selected-cipher-suite   |     5 |
-| selected-version        |     6 |
-| evidence                |     7 |
-| ta-list                 |     8 |
-| ext-list                |     9 |
-| manifest-list           |    10 |
-| msg                     |    11 |
-| err-msg                 |    12 |
-| evidence-format         |    13 |
-| requested-ta-list       |    14 |
-| unneeded-ta-list        |    15 |
-=======
 | Name                        | Label |
-| cipher-suites               |     1 |
-| nonce                       |     2 |
+| supported-cipher-suites     |     1 |
+| challenge                   |     2 |
 | version                     |     3 |
 | ocsp-data                   |     4 |
 | selected-cipher-suite       |     5 |
 | selected-version            |     6 |
-| eat                         |     7 |
+| evidence                    |     7 |
 | ta-list                     |     8 |
 | ext-list                    |     9 |
 | manifest-list               |    10 |
 | msg                         |    11 |
 | err-msg                     |    12 |
-| requested-ta-list           |    13 |
-| unneeded-ta-list            |    14 |
-| ta-uuid                     |    15 |
-| ta-manifest-sequence-number |    16 |
-| have-binary                 |    17 |
-
->>>>>>> 9f31a6f... Also add indication of whether TEEP Agent already has requested TA
+| evidence-format             |    13 |
+| requested-ta-list           |    14 |
+| unneeded-ta-list            |    15 |
+| ta-uuid                     |    16 |
+| ta-manifest-sequence-number |    17 |
+| have-binary                 |    18 |
 
 # Ciphersuites {#ciphersuite}
 
@@ -1128,7 +1109,7 @@ query-response = [
     ? evidence-format => text,
     ? evidence => bstr,
     ? ta-list  => [ + bstr ],
-    ? requested-ta-list  => [ + bstr ],
+    ? requested-ta-list  => [ + requested-ta-info ],
     ? unneeded-ta-list  => [ + bstr ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
