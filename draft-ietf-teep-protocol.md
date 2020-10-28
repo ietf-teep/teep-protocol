@@ -318,7 +318,7 @@ query-request = [
   type: TEEP-TYPE-query-request,
   token: uint,
   options: {
-    ? supported-cipher-suites => suite,
+    ? supported-cipher-suites => [ + suite ],
     ? challenge => bstr .size (8..64),
     ? versions => [ + version ],
     ? ocsp-data => bstr,
@@ -1081,7 +1081,7 @@ query-request = [
   type: TEEP-TYPE-query-request,
   token: uint,
   options: {
-    ? supported-cipher-suites => suite,
+    ? supported-cipher-suites => [ + suite ],
     ? challenge => bstr .size (8..64),
     ? versions => [ + version ],
     ? ocsp-data => bstr,
