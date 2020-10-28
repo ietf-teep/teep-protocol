@@ -786,7 +786,7 @@ A ciphersuite consists of an AEAD algorithm, an HMAC algorithm, and a signature
 algorithm.
 Each ciphersuite is identified with an integer value, which corresponds to
 an IANA registered
-ciphersuite (see {{ciphersuit-registry}}. This document specifies two ciphersuites.
+ciphersuite (see {{ciphersuite-registry}}. This document specifies two ciphersuites.
 
 | Value | Ciphersuite                                    |
 |     1 | AES-CCM-16-64-128, HMAC 256/256, X25519, EdDSA |
