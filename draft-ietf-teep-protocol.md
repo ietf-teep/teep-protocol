@@ -1157,6 +1157,7 @@ teep-success = [
 teep-error = [
   type: TEEP-TYPE-teep-error,
   token: uint,
+  err-code: uint,
   options: {
      ? err-msg => text,
      ? supported-cipher-suites => [ + suite ],
@@ -1164,7 +1165,6 @@ teep-error = [
      * $$teep-error--extensions,
      * $$teep-option-extensions
   }
-  err-code: uint,
 ]
 
 supported-cipher-suites = 1
