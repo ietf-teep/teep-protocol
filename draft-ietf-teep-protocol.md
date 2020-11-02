@@ -1227,7 +1227,7 @@ suit-reports = 19
 ~~~~
 84                        # array(4), 
    01                     # unsigned(1)
-   1a 77777777            # unsigned(2004318071, 0x77777777)
+   1A 77777777            # unsigned(2004318071, 0x77777777)
    A3                     # map(3)
       01                  # unsigned(1)
       01                  # unsigned(1) within .size 8
@@ -1268,7 +1268,7 @@ suit-reports = 19
 ~~~~
 83                        # array(3)
    02                     # unsigned(2)
-   1a 77777777            # unsigned(2004318071, 0x77777777)
+   1A 77777777            # unsigned(2004318071, 0x77777777)
    A3                     # map(3)
       05                  # unsigned(5)
       01                  # unsigned(1) within .size 8
@@ -1305,7 +1305,7 @@ suit-reports = 19
 ~~~~
 83                        # array(3)
    03                     # unsigned(3)
-   1a 77777778            # unsigned(2004318072, 0x77777778)
+   1A 77777778            # unsigned(2004318072, 0x77777778)
    A1                     # map(1)
       0A                  # unsigned(10)
       80                  # array(0)
@@ -1328,7 +1328,7 @@ suit-reports = 19
 ~~~~
 83                        # array(3)
     05                    # unsigned(5)
-    1a 77777778           # unsigned(2004318072, 0x77777778)
+    1A 77777778           # unsigned(2004318072, 0x77777778)
 ~~~~
 
 
@@ -1355,8 +1355,8 @@ suit-reports = 19
 ~~~~
 83                        # array(3)
     06                    # unsigned(6)
-    1a 77777778           # unsigned(2004318072, 0x77777778)
-    0b                    # unsigned(11)
+    1A 77777778           # unsigned(2004318072, 0x77777778)
+    0B                    # unsigned(11)
     A1                    # map(1)
        0B                 # unsigned(12)
        69                 # text(9)
