@@ -78,16 +78,15 @@ author:
 normative:
   RFC8152: 
   RFC3629: 
-  RFC4122: 
   RFC5198: 
   RFC7049: 
   I-D.ietf-rats-eat: 
   I-D.ietf-suit-manifest: 
-  I-D.ietf-sacm-coswid:
   I-D.moran-suit-report: 
   RFC2560: 
 informative:
   I-D.ietf-teep-architecture: 
+  I-D.ietf-sacm-coswid:
   RFC8610: 
   RFC8126: 
   RFC8915: 
@@ -1277,17 +1276,20 @@ suit-reports = 19
 / query-response = /
 [
     2,          / type : TEEP-TYPE-query-response = 2 (fixed int) /
-    2004318071, / token : 0x77777777 (uint), from TAM's QueryRequest message /
+    2004318071, / token : 0x77777777 (uint), from TAM's QueryRequest
+                      message /
     / options : /
     {
         5 : 1,  / selected-cipher-suite = 5(mapkey) :/
                 / TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA = 
                       1 (uint .size 8) /
         6 : 0,  / selected-version = 6 (mapkey) : 0 (uint .size 4) /
-        8 : [ h'0102030405060708090a0b0c0d0e0f', h'1102030405060708090a0b0c0d0e0f' ]   
+        8 : [ h'0102030405060708090a0b0c0d0e0f',
+              h'1102030405060708090a0b0c0d0e0f' ]   
                 / ta-list = 8 (mapkey) : 
                       [ 0x0102030405060708090a0b0c0d0e0f,
-                        0x1102030405060708090a0b0c0d0e0f ] (array of bstr) /
+                        0x1102030405060708090a0b0c0d0e0f ]
+                      (array of bstr) /
     }
 ]
 ~~~~
@@ -1370,7 +1372,8 @@ suit-reports = 19
 [
     6,          / type : TEEP-TYPE-teep-error = 6 (fixed int) /
     2004318072, / token : 0x777777778 (uint), from Install message /
-    ERR_MANIFEST_PROCESSING_FAILED, / err-code : ERR_MANIFEST_PROCESSING_FAILED = 17 (uint) /
+    ERR_MANIFEST_PROCESSING_FAILED,
+        / err-code : ERR_MANIFEST_PROCESSING_FAILED = 17 (uint) /
     / options :  /
     {
         12 : "disk-full"  / err-msg = 12 (mapkey) : 
