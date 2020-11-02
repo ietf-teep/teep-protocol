@@ -728,18 +728,14 @@ ERR_INTERNAL_ERROR (10)
 : A miscellaneous
   internal error occurred while processing the request message.
 
-ERR_RESOURCE_FULL (11)
-: A device
-  resource isn't available anymore, such as storage space is full.
-
 ERR_TA_NOT_FOUND (12)
 : The target TA does not
   exist. This error may happen when the TAM has stale information and
   tries to delete a TA that has already been deleted.
 
-ERR_TA_ALREADY_INSTALLED (13)
-: The TEEP Agent received a request to install a TA that
-  has already been installed.
+ERR_MANIFEST_PROCESSING_FAILED (17)
+: The TEEP Agent encountered one or more manifest processing failures.
+  If the suit-reports parameter is present, it contains the failure details.
 
 ERR_PD_PROCESSING_FAILED (18)
 : The TEEP Agent failed to process the provided personalization data.
