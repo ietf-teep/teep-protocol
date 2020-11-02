@@ -1192,7 +1192,7 @@ suit-reports = 19
 
 ### Some assumptions in examples
 
-- TAM supports 2 versions: 0, 1
+- TAM supports TEEP protocol versions 0
 - OCSP stapling data = h'010203'
 - TEEP Device will have 2 TAs
   - TA-ID: 0x0102030405060708090a0b0c0d0e0f,
@@ -1214,8 +1214,8 @@ suit-reports = 19
         1 : 1,  / supported-cipher-suites = 1 (mapkey) : /
                 / TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA = 
                       1 (uint .size 8) /
-        3 : [ 0, 1 ], / version = 3 (mapkey) : 
-                      [ 0, 1 ] (array of uint .size 4) /
+        3 : [ 0 ]  / version = 3 (mapkey) : 
+                     [ 0 ] (array of uint .size 4) /
         4 : h'010203' / ocsp-data = 4 (mapkey) : 0x010203 (bstr) /
     },
     2           / data-item-requested : trusted-apps = 2 (uint) /
@@ -1232,9 +1232,8 @@ suit-reports = 19
       01                  # unsigned(1)
       01                  # unsigned(1) within .size 8
       03                  # unsigned(3)
-      82                  # array(2)
+      81                  # array(1)
          00               # unsigned(0) within .size 4
-         01               # unsigned(1) within .size 4
       04                  # unsigned(4)
       43                  # bytes(3)
          010203           # "\x01\x02\x03"
