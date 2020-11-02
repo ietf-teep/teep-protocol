@@ -82,6 +82,7 @@ normative:
   RFC7049: 
   I-D.ietf-rats-eat: 
   I-D.ietf-suit-manifest: 
+  I-D.ietf-sacm-coswid:
   I-D.moran-suit-report: 
   RFC2560: 
 informative:
@@ -123,9 +124,7 @@ and a TEEP Agent.
 The Trusted Execution Environment Provisioning (TEEP) architecture
 document {{I-D.ietf-teep-architecture}} provides design
 guidance and introduces the
-necessary terminology.  Note that the term Trusted Application may
-include more than code; it may also include configuration data and
-keys needed by the TA to operate correctly.
+necessary terminology.
 
 
 # Terminology
@@ -134,6 +133,21 @@ keys needed by the TA to operate correctly.
 
 This specification re-uses the terminology defined in {{I-D.ietf-teep-architecture}}.
 
+As explained in Section 4.4 of that document, the TEEP protocol treats
+each TA, any dependencies the TA has, and personalization data as separate
+components that are expressed in SUIT manifests, and a SUIT manifest
+might contain or reference multiple binaries (see {{I-D.ietf-suit-manifest}}
+for more details).
+
+As such, the term Trusted Component in this document refers to a
+set of binaries expressed in a SUIT manifest, to be installed in
+a TEE.  Note that a Trusted Component may include one or more TAs
+and/or configuration data and keys needed by a TA to operate correctly.
+
+Each Trusted Component is uniquely identified by a "component-id" byte string.
+If Concise Software Identifiers {{I-D.ietf-sacm-coswid}} are used (e.g.,
+in the suit-coswid field of SUIT manifests), the component-id value is the
+CoSWID tag-id value.
 
 # Message Overview {#messages}
 
@@ -154,7 +168,7 @@ This specification defines six messages.
 
 A TAM queries a device's current state with a QueryRequest message.
 A TEEP Agent will, after authenticating and authorizing the request, report
-attestation information, list all TAs, and provide information about supported
+attestation information, list all Trusted Components, and provide information about supported
 algorithms and extensions in a QueryResponse message. An error message is
 returned if the request
 could not be processed. A TAM will process the QueryResponse message and
@@ -178,12 +192,11 @@ Applications.
 
 
 With the TrustedAppInstall message a TAM can instruct a TEEP Agent to install
-a TA.
+a Trusted Component.
 The TEEP Agent will process the message, determine whether the TAM is authorized
 and whether the
-TA has been signed by an authorized TA Signer. In addition to the binary, the TAM
-may also provide
-personalization data. If the TrustedAppInstall message was processed successfully
+Trusted Component has been signed by an authorized TA Signer.
+If the TrustedAppInstall message was processed successfully
 then a
 Success message is returned to the TAM, or an Error message otherwise.
 
@@ -203,7 +216,7 @@ Success message is returned to the TAM, or an Error message otherwise.
 
 
 With the TrustedAppDelete message a TAM can instruct a TEEP Agent to delete
-one or multiple TA(s).
+one or multiple Trusted Components.
 A Success message is returned when the operation has been completed successfully,
 or an Error message
 otherwise.
@@ -308,7 +321,7 @@ the following features are supported:
 
  - Request for attestation information,
  - Listing supported extensions, 
- - Querying installed software (TAs), and 
+ - Querying installed Trusted Components, and 
  - Listing supporting SUIT commands.
 
 Like other TEEP messages, the QueryRequest message is
@@ -415,9 +428,9 @@ query-response = [
     ? selected-version => version,
     ? evidence-format => text,
     ? evidence => bstr,
-    ? ta-list  => [ + bstr ],
-    ? requested-ta-list  => [ + requested-ta-info ],
-    ? unneeded-ta-list  => [ + bstr ],
+    ? tc-list  => [ + bstr ],
+    ? requested-tc-list  => [ + requested-tc-info ],
+    ? unneeded-tc-list  => [ + bstr ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
     * $$teep-option-extensions
@@ -465,9 +478,9 @@ evidence
   an Entity Attestation Token following the encoding
   defined in {{I-D.ietf-rats-eat}}.
 
-ta-list
-: The ta-list parameter enumerates the Trusted Applications installed on the device
-  in form of TA_ID byte strings.
+tc-list
+: The tc-list parameter enumerates the Trusted Components installed on the device
+  in the form of component-id byte strings.
 
 requested-ta-list
 : The requested-ta-list parameter enumerates the Trusted Applications that are
@@ -506,8 +519,8 @@ have-binary
 
 ## TrustedAppInstall
 
-The TrustedAppInstall message is used by the TAM to install software (TAs)
-via the TEEP Agent. 
+The TrustedAppInstall message is used by the TAM to install a Trusted
+Component via the TEEP Agent. 
 
 Like other TEEP messages, the TrustedAppInstall message is
 signed, and the relevant CDDL snippet is shown below. 
@@ -533,7 +546,7 @@ type
   the TEEP Agent. In case of successful processing, a Success
   message is returned by the TEEP Agent. In case of an error, an Error message
   is returned. Note that the TrustedAppInstall message
-  is used for initial TA installation as well as for TA updates.
+  is used for initial Trusted Component installation as well as for updates.
 
 token
 : The value in the token field is used to match responses to requests.
@@ -541,7 +554,7 @@ token
 manifest-list
 : The manifest-list field is used to convey one or multiple SUIT manifests.
   A manifest is
-  a bundle of metadata about the TA, where to
+  a bundle of metadata about a TA, such as where to
   find the code, the devices to which it applies, and cryptographic
   information protecting the manifest. The manifest may also convey personalization
   data. TA binaries and personalization data can be signed and encrypted
@@ -551,8 +564,8 @@ manifest-list
 
 ## TrustedAppDelete
 
-The TrustedAppDelete message is used by the TAM to remove 
-software (TAs) from the device. 
+The TrustedAppDelete message is used by the TAM to remove a Trusted
+Component from the device. 
 
 Like other TEEP messages, the TrustedAppDelete message is
 signed, and the relevant CDDL snippet is shown below. 
@@ -563,7 +576,7 @@ trusted-app-delete = [
   type: TEEP-TYPE-trusted-app-delete,
   token: uint,
   option: {
-    ? ta-list => [ + bstr ],
+    ? tc-list => [ + bstr ],
     * $$trusted-app-delete-extensions,
     * $$teep-option-extensions
   }
@@ -582,8 +595,9 @@ type
 token
 : The value in the token parameter is used to match responses to requests.
 
-ta-list
-: The ta-list parameter enumerates the TAs to be deleted.
+tc-list
+: The tc-list parameter enumerates the Trusted Components to be deleted,
+  in the form of component-id byte strings.
 
 
 ## Success
@@ -728,17 +742,14 @@ ERR_INTERNAL_ERROR (10)
 : A miscellaneous
   internal error occurred while processing the request message.
 
-ERR_TA_NOT_FOUND (12)
-: The target TA does not
+ERR_TC_NOT_FOUND (12)
+: The target Trusted Component does not
   exist. This error may happen when the TAM has stale information and
-  tries to delete a TA that has already been deleted.
+  tries to delete a Trusted Component that has already been deleted.
 
 ERR_MANIFEST_PROCESSING_FAILED (17)
 : The TEEP Agent encountered one or more manifest processing failures.
   If the suit-reports parameter is present, it contains the failure details.
-
-ERR_PD_PROCESSING_FAILED (18)
-: The TEEP Agent failed to process the provided personalization data.
 
 Additional error codes can be registered with IANA.
 
@@ -760,16 +771,16 @@ This specification uses the following mapping:
 | selected-cipher-suite       |     5 |
 | selected-version            |     6 |
 | evidence                    |     7 |
-| ta-list                     |     8 |
+| tc-list                     |     8 |
 | ext-list                    |     9 |
 | manifest-list               |    10 |
 | msg                         |    11 |
 | err-msg                     |    12 |
 | evidence-format             |    13 |
-| requested-ta-list           |    14 |
-| unneeded-ta-list            |    15 |
-| ta-uuid                     |    16 |
-| ta-manifest-sequence-number |    17 |
+| requested-tc-list           |    14 |
+| unneeded-tc-list            |    15 |
+| tc-uuid                     |    16 |
+| tc-manifest-sequence-number |    17 |
 | have-binary                 |    18 |
 | suit-reports                |    19 |
 
@@ -1063,7 +1074,7 @@ ext-info = uint
 ; data items as bitmaps
 data-item-requested = $data-item-requested .within uint .size 8
 attestation = 1
-$data-item-requested /=  attestation
+$data-item-requested /= attestation
 trusted-apps = 2
 $data-item-requested /= trusted-apps
 extensions = 4
@@ -1082,7 +1093,7 @@ query-request = [
     * $$query-request-extensions
     * $$teep-option-extensions
   },
-  data-item-requested  
+  data-item-requested
 ]
 
 ; ciphersuites as bitmaps
@@ -1102,9 +1113,9 @@ query-response = [
     ? selected-version => version,
     ? evidence-format => text,
     ? evidence => bstr,
-    ? ta-list  => [ + bstr ],
-    ? requested-ta-list  => [ + requested-ta-info ],
-    ? unneeded-ta-list  => [ + bstr ],
+    ? tc-list  => [ + bstr ],
+    ? requested-tc-list  => [ + requested-tc-info ],
+    ? unneeded-tc-list  => [ + bstr ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
     * $$teep-option-extensions
@@ -1131,7 +1142,7 @@ trusted-app-delete = [
   type: TEEP-TYPE-trusted-app-delete,
   token: uint,
   option: {
-    ? ta-list => [ + bstr ],
+    ? tc-list => [ + bstr ],
     * $$trusted-app-delete-extensions,
     * $$teep-option-extensions
   }
@@ -1169,16 +1180,16 @@ ocsp-data = 4
 selected-cipher-suite = 5
 selected-version = 6
 evidence = 7
-ta-list = 8
+tc-list = 8
 ext-list = 9
 manifest-list = 10
 msg = 11
 err-msg = 12
 evidence-format = 13
-requested-ta-list = 14
-unneeded-ta-list = 15
-ta-uuid = 16
-ta-manifest-sequence-number = 17
+requested-tc-list = 14
+unneeded-tc-list = 15
+tc-uuid = 16
+tc-manifest-sequence-number = 17
 have-binary = 18
 suit-reports = 19
 ~~~~
