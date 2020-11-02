@@ -1345,7 +1345,7 @@ suit-reports = 19
     ERR_RESOURCE_FULL, / err-code : ERR_RESOURCE_FULL = 11 (uint) /
     / options :  /
     {
-        11 : "disk-full"  / err-msg = 12 (mapkey) : 
+        12 : "disk-full"  / err-msg = 12 (mapkey) : 
                                 "disk-full" (UTF-8 string) /
     }
 ]
