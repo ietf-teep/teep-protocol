@@ -78,6 +78,7 @@ author:
 normative:
   RFC8152: 
   RFC3629: 
+  RFC4122: 
   RFC5198: 
   RFC7049: 
   I-D.ietf-rats-eat: 
@@ -144,7 +145,8 @@ set of binaries expressed in a SUIT manifest, to be installed in
 a TEE.  Note that a Trusted Component may include one or more TAs
 and/or configuration data and keys needed by a TA to operate correctly.
 
-Each Trusted Component is uniquely identified by a "component-id" byte string.
+Each Trusted Component is uniquely identified by a "component-id" byte string,
+such as a 16-byte UUID {{RFC4122}}.
 If Concise Software Identifiers {{I-D.ietf-sacm-coswid}} are used (e.g.,
 in the suit-coswid field of SUIT manifests), the component-id value is the
 CoSWID tag-id value.
@@ -428,18 +430,23 @@ query-response = [
     ? selected-version => version,
     ? evidence-format => text,
     ? evidence => bstr,
-    ? tc-list  => [ + bstr ],
-    ? requested-tc-list  => [ + requested-tc-info ],
-    ? unneeded-tc-list  => [ + bstr ],
+    ? tc-list => [ + tc-info ],
+    ? requested-ta-list => [ + requested-ta-info ],
+    ? unneeded-ta-list => [ + bstr ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
     * $$teep-option-extensions
   }
 ]
 
+tc-info = {
+  component-id: bstr,
+  ? tc-manifest-sequence-number: uint
+}
+
 requested-ta-info = {
-  ta-uuid: bstr,
-  ? ta-manifest-sequence-number: uint,
+  component-id: bstr,
+  ? tc-manifest-sequence-number: uint,
   ? have-binary: bool
 }
 ~~~~
@@ -480,7 +487,7 @@ evidence
 
 tc-list
 : The tc-list parameter enumerates the Trusted Components installed on the device
-  in the form of component-id byte strings.
+  in the form of tc-info objects.
 
 requested-ta-list
 : The requested-ta-list parameter enumerates the Trusted Applications that are
@@ -493,21 +500,32 @@ unneeded-ta-list
 : The unneeded-ta-list parameter enumerates the Trusted Applications that are
   currently installed in the TEE, but which are no longer needed by any
   other application.  The TAM can use this information in determining
-  whether a TA can be deleted.  Like the ta-list, unneeded TAs are expressed
-  in the form of TA_ID byte strings.
+  whether a TA can be deleted.  Each unneeded TA is expressed
+  in the form of a component-id byte string.
 
 ext-list
 : The ext-list parameter lists the supported extensions. This document does not
   define any extensions.
 
+The tc-info object has the following fields:
+
+{: vspace='0'}
+
+component-id
+: A unique identifier encoded as a CBOR bstr.
+
+tc-manifest-sequence-number
+: The suit-manifest-sequence-number value from the SUIT manifest for the Trusted Component,
+  if a SUIT manifest was used.
+
 The requested-ta-info message has the following fields:
 
 {: vspace='0'}
 
-ta-uuid
-: A 16-byte UUID {{RFC4122}} encoded as a CBOR bstr.
+component-id
+: A unique identifier encoded as a CBOR bstr.
 
-ta-manifest-sequence-number
+tc-manifest-sequence-number
 : The minimum suit-manifest-sequence-number value from a SUIT manifest for
   the TA.  If not present, indicates that any version will do.
 
@@ -515,7 +533,7 @@ have-binary
 : If present with a value of true, indicates that the TEEP agent already has
   the TA binary and only needs an Install message with a SUIT manifest
   that authorizes installing it.  If have-binary is true, the
-  ta-manifest-sequence-number field MUST be present.
+  tc-manifest-sequence-number field MUST be present.
 
 ## Install Message
 
@@ -598,7 +616,6 @@ token
 tc-list
 : The tc-list parameter enumerates the Trusted Components to be deleted,
   in the form of component-id byte strings.
-
 
 ## Success Message
 
@@ -779,7 +796,7 @@ This specification uses the following mapping:
 | evidence-format             |    13 |
 | requested-tc-list           |    14 |
 | unneeded-tc-list            |    15 |
-| tc-uuid                     |    16 |
+| component-id                |    16 |
 | tc-manifest-sequence-number |    17 |
 | have-binary                 |    18 |
 | suit-reports                |    19 |
@@ -1113,18 +1130,23 @@ query-response = [
     ? selected-version => version,
     ? evidence-format => text,
     ? evidence => bstr,
-    ? tc-list  => [ + bstr ],
-    ? requested-tc-list  => [ + requested-tc-info ],
-    ? unneeded-tc-list  => [ + bstr ],
+    ? tc-list => [ + tc-info ],
+    ? requested-tc-list => [ + requested-tc-info ],
+    ? unneeded-tc-list => [ + bstr ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
     * $$teep-option-extensions
   }
 ]
 
+tc-info = {
+  component-id: bstr,
+  ? tc-manifest-sequence-number: uint
+}
+
 requested-ta-info = {
-  ta-uuid: bstr,
-  ? ta-manifest-sequence-number: uint,
+  component-id: bstr,
+  ? tc-manifest-sequence-number: uint,
   ? have-binary: bool
 }
 
@@ -1188,7 +1210,7 @@ err-msg = 12
 evidence-format = 13
 requested-tc-list = 14
 unneeded-tc-list = 15
-tc-uuid = 16
+component-id = 16
 tc-manifest-sequence-number = 17
 have-binary = 18
 suit-reports = 19
