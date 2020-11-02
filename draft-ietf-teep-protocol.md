@@ -1194,10 +1194,10 @@ suit-reports = 19
 
 - TAM supports 2 versions: 0, 1
 - OCSP stapling data = h'010203'
-- TEEP Device has 2 TAs
-  - TA-ID: 0x010203, 0x040506
+- TEEP Device will have 2 TAs
+  - TA-ID: 0x0102030405060708090a0b0c0d0e0f,
+           0x1102030405060708090a0b0c0d0e0f
 - SUIT manifest-list is set empty only for example purpose
-  - "SUIT_Envelope" is specified in [I-D.ietf-suit-manifest].
 - Not including Entity Attestation Token (EAT) parameters for example purpose
 
 ## QueryRequest
@@ -1258,7 +1258,8 @@ suit-reports = 19
         6 : 0,  / selected-version = 6 (mapkey) : 0 (uint .size 4) /
         8 : [ h'010203', h'040506' ]   
                 / ta-list = 8 (mapkey) : 
-                      [ 0x010203, 0x040506 ] (array of bstr) /
+                      [ 0x0102030405060708090a0b0c0d0e0f,
+                        0x1102030405060708090a0b0c0d0e0f ] (array of bstr) /
     }
 ]
 ~~~~
@@ -1276,10 +1277,10 @@ suit-reports = 19
       00                  # unsigned(0) within .size 4
       08                  # unsigned(8)
       82                  # array(2)
-         43               # bytes(3)
-            010203        # "\x01\x02\x03"
-         43               # bytes(3)
-            040506        # "\x04\x05\x06"
+         4F               # bytes(16)
+            0102030405060708090A0B0C0D0D0F
+         4F               # bytes(16)
+            1102030405060708090A0B0C0D0D0F
 ~~~~
 
 ## TrustedAppInstall
