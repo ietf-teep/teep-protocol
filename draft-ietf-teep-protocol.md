@@ -191,12 +191,12 @@ Applications.
 ~~~~
 
 
-With the TrustedAppInstall message a TAM can instruct a TEEP Agent to install
+With the Install message a TAM can instruct a TEEP Agent to install
 a Trusted Component.
 The TEEP Agent will process the message, determine whether the TAM is authorized
 and whether the
 Trusted Component has been signed by an authorized TA Signer.
-If the TrustedAppInstall message was processed successfully
+If the Install message was processed successfully
 then a
 Success message is returned to the TAM, or an Error message otherwise.
 
@@ -205,7 +205,7 @@ Success message is returned to the TAM, or an Error message otherwise.
  | TAM        |           |TEEP Agent   |
  +------------+           +-------------+
 
-   TrustedAppInstall ---->
+             Install ---->
 
                             Success
 
@@ -215,7 +215,7 @@ Success message is returned to the TAM, or an Error message otherwise.
 ~~~~
 
 
-With the TrustedAppDelete message a TAM can instruct a TEEP Agent to delete
+With the Delete message a TAM can instruct a TEEP Agent to delete
 one or multiple Trusted Components.
 A Success message is returned when the operation has been completed successfully,
 or an Error message
@@ -226,7 +226,7 @@ otherwise.
  | TAM        |           |TEEP Agent   |
  +------------+           +-------------+
 
-   TrustedAppDelete  ---->
+             Delete  ---->
 
                             Success
 
@@ -246,8 +246,8 @@ The TEEP protocol messages are described in CDDL format {{RFC8610}} below.
 {
     teep-message                => (query-request /
                                     query-response /
-                                    trusted-app-install /
-                                    trusted-app-delete /
+                                    install /
+                                    delete /
                                     teep-success /
                                     teep-error ),
 }
@@ -308,7 +308,7 @@ the listed steps fail, then the TEEP message MUST be rejected.
 
 
 
-## QueryRequest
+## QueryRequest Message
 
 
 A QueryRequest message is used by the TAM to learn 
@@ -355,8 +355,8 @@ token
 : The value in the token parameter is used to match responses to requests. This is 
 particularly useful when a TAM issues multiple concurrent requests to a TEEP Agent. 
 
-request
-: The request parameter indicates what information the TAM requests from the TEEP
+data-item-requested
+: The data-item-requested parameter indicates what information the TAM requests from the TEEP
   Agent in the form of a bitmap. Each value in the bitmap corresponds to an 
   IANA registered information element. This 
   specification defines the following initial set of information elements:
@@ -365,15 +365,15 @@ request
    : With this value the TAM requests the TEEP Agent to return attestation
      evidence (e.g., an EAT) in the response.
 
-   trusted_apps (2)
-   : With this value the TAM queries the TEEP Agent for all installed TAs.
+   trusted-components (2)
+   : With this value the TAM queries the TEEP Agent for all installed Trusted Components.
 
    extensions (4)
    : With this value the TAM queries the TEEP Agent for supported capabilities
      and extensions, which allows a TAM to discover the capabilities of a TEEP
      Agent implementation.
 
-   suit_commands (8)
+   suit-commands (8)
    : With this value the TAM queries the TEEP Agent for supported commands offered
      by the SUIT manifest implementation.
   
@@ -410,7 +410,7 @@ ocsp-data
   discovery exchange, as described above.
 
 
-## QueryResponse
+## QueryResponse Message
 
 The QueryResponse message is the successful response by the TEEP Agent after 
 receiving a QueryRequest message. 
@@ -513,39 +513,39 @@ ta-manifest-sequence-number
 
 have-binary
 : If present with a value of true, indicates that the TEEP agent already has
-  the TA binary and only needs TrustedAppInstall message with a SUIT manifest
+  the TA binary and only needs an Install message with a SUIT manifest
   that authorizes installing it.  If have-binary is true, the
   ta-manifest-sequence-number field MUST be present.
 
-## TrustedAppInstall
+## Install Message
 
-The TrustedAppInstall message is used by the TAM to install a Trusted
+The Install message is used by the TAM to install a Trusted
 Component via the TEEP Agent. 
 
-Like other TEEP messages, the TrustedAppInstall message is
+Like other TEEP messages, the Install message is
 signed, and the relevant CDDL snippet is shown below. 
 The complete CDDL structure is shown in {{CDDL}}.
 
 ~~~~
-trusted-app-install = [
-  type: TEEP-TYPE-trusted-app-install,
+install = [
+  type: TEEP-TYPE-install,
   token: uint,
   option: {
     ? manifest-list => [ + SUIT_Envelope ],
-    * $$trusted-app-install-extensions,
+    * $$install-extensions,
     * $$teep-option-extensions
   }
 ]
 ~~~~
 
-The TrustedAppInstall message has the following fields:
+The Install message has the following fields:
 
 {: vspace='0'}
 type
-: The value of (3) corresponds to a TrustedAppInstall message sent from the TAM to
+: The value of (3) corresponds to an Install message sent from the TAM to
   the TEEP Agent. In case of successful processing, a Success
   message is returned by the TEEP Agent. In case of an error, an Error message
-  is returned. Note that the TrustedAppInstall message
+  is returned. Note that the Install message
   is used for initial Trusted Component installation as well as for updates.
 
 token
@@ -562,32 +562,32 @@ manifest-list
   it is also possible for the TAM to sign and encrypt the personalization data
   and to let the TA Developer sign and/or encrypt the TA binary.
 
-## TrustedAppDelete
+## Delete Message
 
-The TrustedAppDelete message is used by the TAM to remove a Trusted
+The Delete message is used by the TAM to remove a Trusted
 Component from the device. 
 
-Like other TEEP messages, the TrustedAppDelete message is
+Like other TEEP messages, the Delete message is
 signed, and the relevant CDDL snippet is shown below. 
 The complete CDDL structure is shown in {{CDDL}}.
 
 ~~~~
-trusted-app-delete = [
-  type: TEEP-TYPE-trusted-app-delete,
+delete = [
+  type: TEEP-TYPE-delete,
   token: uint,
   option: {
     ? tc-list => [ + bstr ],
-    * $$trusted-app-delete-extensions,
+    * $$delete-extensions,
     * $$teep-option-extensions
   }
 ]
 ~~~~
 
-The TrustedAppDelete message has the following fields:
+The Delete message has the following fields:
 
 {: vspace='0'}
 type
-: The value of (4) corresponds to a TrustedAppDelete message sent from the TAM to the
+: The value of (4) corresponds to a Delete message sent from the TAM to the
   TEEP Agent. In case of successful processing, a Success
   message is returned by the TEEP Agent. In case of an error, an Error message
   is returned.
@@ -600,11 +600,11 @@ tc-list
   in the form of component-id byte strings.
 
 
-## Success
+## Success Message
 
 The TEEP protocol defines two implicit success messages and this explicit 
 Success message for the cases where the TEEP Agent cannot return another reply, 
-such as for the TrustedAppInstall and the TrustedAppDelete messages. 
+such as for the Install and the Delete messages. 
 
 Like other TEEP messages, the Success message is
 signed, and the relevant CDDL snippet is shown below. 
@@ -641,7 +641,7 @@ suit-reports
 : If present, the suit-reports parameter contains a set of SUIT Reports
   as defined in Section 4 of {{I-D.moran-suit-report}}.
 
-## Error
+## Error Message
 
 The Error message is used by the TEEP Agent to return an error. 
 
@@ -1055,16 +1055,16 @@ teep-option = (uint => any)
 ; messages defined below:
 $teep-message-type /= query-request
 $teep-message-type /= query-response
-$teep-message-type /= trusted-app-install
-$teep-message-type /= trusted-app-delete
+$teep-message-type /= install
+$teep-message-type /= delete
 $teep-message-type /= teep-success
 $teep-message-type /= teep-error
 
 ; message type numbers
 TEEP-TYPE-query-request = 1
 TEEP-TYPE-query-response = 2
-TEEP-TYPE-trusted-app-install = 3
-TEEP-TYPE-trusted-app-delete = 4
+TEEP-TYPE-install = 3
+TEEP-TYPE-delete = 4
 TEEP-TYPE-teep-success = 5
 TEEP-TYPE-teep-error = 6
 
@@ -1075,8 +1075,8 @@ ext-info = uint
 data-item-requested = $data-item-requested .within uint .size 8
 attestation = 1
 $data-item-requested /= attestation
-trusted-apps = 2
-$data-item-requested /= trusted-apps
+trusted-components = 2
+$data-item-requested /= trusted-components
 extensions = 4
 $data-item-requested /= extensions
 suit-commands = 8
@@ -1128,22 +1128,22 @@ requested-ta-info = {
   ? have-binary: bool
 }
 
-trusted-app-install = [
-  type: TEEP-TYPE-trusted-app-install,
+install = [
+  type: TEEP-TYPE-install,
   token: uint,
   option: {
     ? manifest-list => [ + SUIT_Envelope ],
-    * $$trusted-app-install-extensions,
+    * $$install-extensions,
     * $$teep-option-extensions
   }
 ]
 
-trusted-app-delete = [
-  type: TEEP-TYPE-trusted-app-delete,
+delete = [
+  type: TEEP-TYPE-delete,
   token: uint,
   option: {
     ? tc-list => [ + bstr ],
-    * $$trusted-app-delete-extensions,
+    * $$delete-extensions,
     * $$teep-option-extensions
   }
 ]
@@ -1206,7 +1206,7 @@ suit-reports = 19
 - SUIT manifest-list is set empty only for example purposes
 - Not including Entity Attestation Token (EAT) parameters for example purposes
 
-## QueryRequest
+## QueryRequest Message
 
 ### CBOR Diagnostic Notation
 
@@ -1224,7 +1224,7 @@ suit-reports = 19
                      [ 0 ] (array of uint .size 4) /
         4 : h'010203' / ocsp-data = 4 (mapkey) : 0x010203 (bstr) /
     },
-    2           / data-item-requested : trusted-apps = 2 (uint) /
+    2           / data-item-requested : trusted-components = 2 (uint) /
 ]
 ~~~~
 
@@ -1247,7 +1247,7 @@ suit-reports = 19
    02                     # unsigned(2)
 ~~~~
 
-## QueryResponse
+## QueryResponse Message
 
 ### CBOR Diagnostic Notation
 
@@ -1255,7 +1255,7 @@ suit-reports = 19
 / query-response = /
 [
     2,          / type : TEEP-TYPE-query-response = 2 (fixed int) /
-    2004318071, / token : 0x77777777 (uint), from TAM's QueryRequest /
+    2004318071, / token : 0x77777777 (uint), from TAM's QueryRequest message /
     / options : /
     {
         5 : 1,  / selected-cipher-suite = 5(mapkey) :/
@@ -1289,14 +1289,14 @@ suit-reports = 19
             1102030405060708090A0B0C0D0D0F
 ~~~~
 
-## TrustedAppInstall
+## Install Message
 
 ### CBOR Diagnostic Notation
 
 ~~~~
-/ trusted-app-install = /
+/ install = /
 [
-    3,          / type : TEEP-TYPE-trusted-app-install = 3 (fixed int) /
+    3,          / type : TEEP-TYPE-install = 3 (fixed int) /
     2004318072,  / token : 0x777777778 (uint), generated by TAM /
     / options :  /
     {
@@ -1318,7 +1318,7 @@ suit-reports = 19
       80                  # array(0)
 ~~~~
 
-## Success (for TrustedAppInstall)
+## Success Message (for Install)
 
 ### CBOR Diagnostic Notation
 
@@ -1326,7 +1326,7 @@ suit-reports = 19
 / teep-success = /
 [
     5,          / type : TEEP-TYPE-teep-success = 5 (fixed int) /
-    2004318072, / token : 0x777777778 (uint), from TrustedAppInstall /
+    2004318072, / token : 0x777777778 (uint), from Install message /
 ]
 ~~~~
 
@@ -1339,7 +1339,7 @@ suit-reports = 19
 ~~~~
 
 
-## Error (for TrustedAppInstall)
+## Error Message (for Install)
 
 ### CBOR Diagnostic Notation
 
@@ -1347,7 +1347,7 @@ suit-reports = 19
 / teep-error = /
 [
     6,          / type : TEEP-TYPE-teep-error = 6 (fixed int) /
-    2004318072, / token : 0x777777778 (uint), from TrustedAppInstall /
+    2004318072, / token : 0x777777778 (uint), from Install message /
     ERR_MANIFEST_PROCESSING_FAILED, / err-code : ERR_MANIFEST_PROCESSING_FAILED = 17 (uint) /
     / options :  /
     {
