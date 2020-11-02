@@ -145,7 +145,8 @@ set of binaries expressed in a SUIT manifest, to be installed in
 a TEE.  Note that a Trusted Component may include one or more TAs
 and/or configuration data and keys needed by a TA to operate correctly.
 
-Each Trusted Component is uniquely identified by a "component-id" byte string.
+Each Trusted Component is uniquely identified by a "component-id" byte string,
+such as a 16-byte UUID {{RFC4122}}.
 If Concise Software Identifiers {{I-D.ietf-sacm-coswid}} are used (e.g.,
 in the suit-coswid field of SUIT manifests), the component-id value is the
 CoSWID tag-id value.
@@ -439,12 +440,12 @@ query-response = [
 ]
 
 tc-info = {
-  tc-uuid: bstr,
+  component-id: bstr,
   ? tc-manifest-sequence-number: uint
 }
 
 requested-ta-info = {
-  tc-uuid: bstr,
+  component-id: bstr,
   ? tc-manifest-sequence-number: uint,
   ? have-binary: bool
 }
@@ -510,8 +511,8 @@ The tc-info object has the following fields:
 
 {: vspace='0'}
 
-tc-uuid
-: A 16-byte UUID {{RFC4122}} encoded as a CBOR bstr.
+component-id
+: A unique identifier encoded as a CBOR bstr.
 
 tc-manifest-sequence-number
 : The suit-manifest-sequence-number value from the SUIT manifest for the Trusted Component,
@@ -521,8 +522,8 @@ The requested-ta-info message has the following fields:
 
 {: vspace='0'}
 
-tc-uuid
-: A 16-byte UUID {{RFC4122}} encoded as a CBOR bstr.
+component-id
+: A unique identifier encoded as a CBOR bstr.
 
 tc-manifest-sequence-number
 : The minimum suit-manifest-sequence-number value from a SUIT manifest for
@@ -613,8 +614,8 @@ token
 : The value in the token parameter is used to match responses to requests.
 
 tc-list
-: The tc-list parameter enumerates the Trusted Components to be deleted.  Each Trusted Component is
-  identified by its 16-byte UUID {{RFC4122}} encoded as a CBOR bstr.
+: The tc-list parameter enumerates the Trusted Components to be deleted,
+  in the form of component-id byte strings.
 
 ## Success Message
 
@@ -795,7 +796,7 @@ This specification uses the following mapping:
 | evidence-format             |    13 |
 | requested-tc-list           |    14 |
 | unneeded-tc-list            |    15 |
-| tc-uuid                     |    16 |
+| component-id                |    16 |
 | tc-manifest-sequence-number |    17 |
 | have-binary                 |    18 |
 | suit-reports                |    19 |
@@ -1139,12 +1140,12 @@ query-response = [
 ]
 
 tc-info = {
-  tc-uuid: bstr,
+  component-id: bstr,
   ? tc-manifest-sequence-number: uint
 }
 
 requested-ta-info = {
-  tc-uuid: bstr,
+  component-id: bstr,
   ? tc-manifest-sequence-number: uint,
   ? have-binary: bool
 }
@@ -1209,7 +1210,7 @@ err-msg = 12
 evidence-format = 13
 requested-tc-list = 14
 unneeded-tc-list = 15
-tc-uuid = 16
+component-id = 16
 tc-manifest-sequence-number = 17
 have-binary = 18
 suit-reports = 19
