@@ -1192,13 +1192,12 @@ suit-reports = 19
 
 ### Some assumptions in examples
 
-- TAM supports TEEP protocol versions 0
 - OCSP stapling data = h'010203'
 - TEEP Device will have 2 TAs
   - TA-ID: 0x0102030405060708090a0b0c0d0e0f,
            0x1102030405060708090a0b0c0d0e0f
-- SUIT manifest-list is set empty only for example purpose
-- Not including Entity Attestation Token (EAT) parameters for example purpose
+- SUIT manifest-list is set empty only for example purposes
+- Not including Entity Attestation Token (EAT) parameters for example purposes
 
 ## QueryRequest
 
@@ -1256,7 +1255,7 @@ suit-reports = 19
                 / TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA = 
                       1 (uint .size 8) /
         6 : 0,  / selected-version = 6 (mapkey) : 0 (uint .size 4) /
-        8 : [ h'010203', h'040506' ]   
+        8 : [ h'0102030405060708090a0b0c0d0e0f', h'1102030405060708090a0b0c0d0e0f' ]   
                 / ta-list = 8 (mapkey) : 
                       [ 0x0102030405060708090a0b0c0d0e0f,
                         0x1102030405060708090a0b0c0d0e0f ] (array of bstr) /
@@ -1342,7 +1341,7 @@ suit-reports = 19
 [
     6,          / type : TEEP-TYPE-teep-error = 6 (fixed int) /
     2004318072, / token : 0x777777778 (uint), from TrustedAppInstall /
-    ERR_RESOURCE_FULL, / err-code : ERR_RESOURCE_FULL = 11 (uint) /
+    ERR_MANIFEST_PROCESSING_FAILED, / err-code : ERR_MANIFEST_PROCESSING_FAILED = 17 (uint) /
     / options :  /
     {
         12 : "disk-full"  / err-msg = 12 (mapkey) : 
