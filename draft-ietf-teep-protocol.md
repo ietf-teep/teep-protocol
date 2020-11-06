@@ -430,8 +430,8 @@ query-response = [
     ? evidence-format => text,
     ? evidence => bstr,
     ? tc-list => [ + tc-info ],
-    ? requested-ta-list => [ + requested-ta-info ],
-    ? unneeded-ta-list => [ + bstr ],
+    ? requested-tc-list => [ + requested-tc-info ],
+    ? unneeded-tc-list => [ + bstr ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
     * $$teep-option-extensions
@@ -443,7 +443,7 @@ tc-info = {
   ? tc-manifest-sequence-number: uint
 }
 
-requested-ta-info = {
+requested-tc-info = {
   component-id: bstr,
   ? tc-manifest-sequence-number: uint,
   ? have-binary: bool
@@ -488,19 +488,20 @@ tc-list
 : The tc-list parameter enumerates the Trusted Components installed on the device
   in the form of tc-info objects.
 
-requested-ta-list
-: The requested-ta-list parameter enumerates the Trusted Applications that are
+requested-tc-list
+: The requested-tc-list parameter enumerates the Trusted Components that are
   not currently installed in the TEE, but which are requested to be installed,
   for example by an installer of an Untrusted Application that has a TA
-  as a dependency.  Requested TAs are expressed in the form of
-  requested-ta-info objects.
+  as a dependency, or by a Trusted Application that has another Trusted
+  Component as a dependency.  Requested Trusted Components are expressed in
+  the form of requested-tc-info objects.
 
-unneeded-ta-list
-: The unneeded-ta-list parameter enumerates the Trusted Applications that are
+unneeded-tc-list
+: The unneeded-tc-list parameter enumerates the Trusted Components that are
   currently installed in the TEE, but which are no longer needed by any
   other application.  The TAM can use this information in determining
-  whether a TA can be deleted.  Each unneeded TA is expressed
-  in the form of a component-id byte string.
+  whether a Trusted Component can be deleted.  Each unneeded Trusted Component is identified
+  by its component-id byte string.
 
 ext-list
 : The ext-list parameter lists the supported extensions. This document does not
@@ -517,7 +518,7 @@ tc-manifest-sequence-number
 : The suit-manifest-sequence-number value from the SUIT manifest for the Trusted Component,
   if a SUIT manifest was used.
 
-The requested-ta-info message has the following fields:
+The requested-tc-info message has the following fields:
 
 {: vspace='0'}
 
@@ -526,11 +527,11 @@ component-id
 
 tc-manifest-sequence-number
 : The minimum suit-manifest-sequence-number value from a SUIT manifest for
-  the TA.  If not present, indicates that any version will do.
+  the Trusted Component.  If not present, indicates that any version will do.
 
 have-binary
 : If present with a value of true, indicates that the TEEP agent already has
-  the TA binary and only needs an Install message with a SUIT manifest
+  the Trusted Component binary and only needs an Install message with a SUIT manifest
   that authorizes installing it.  If have-binary is true, the
   tc-manifest-sequence-number field MUST be present.
 
@@ -1143,7 +1144,7 @@ tc-info = {
   ? tc-manifest-sequence-number: uint
 }
 
-requested-ta-info = {
+requested-tc-info = {
   component-id: bstr,
   ? tc-manifest-sequence-number: uint,
   ? have-binary: bool
