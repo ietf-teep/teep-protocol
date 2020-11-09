@@ -1220,6 +1220,7 @@ suit-reports = 19
 {: numbered='no'}
 
 ### Some assumptions in examples
+{: numbered='no'}
 
 - OCSP stapling data = h'010203'
 - TEEP Device will have 2 TAs
@@ -1229,8 +1230,10 @@ suit-reports = 19
 - Not including Entity Attestation Token (EAT) parameters for example purposes
 
 ## QueryRequest Message
+{: numbered='no'}
 
 ### CBOR Diagnostic Notation
+{: numbered='no'}
 
 ~~~~
 / query-request = /
@@ -1251,6 +1254,7 @@ suit-reports = 19
 ~~~~
 
 ### CBOR Binary Representation
+{: numbered='no'}
 
 ~~~~
 84                        # array(4), 
@@ -1270,8 +1274,10 @@ suit-reports = 19
 ~~~~
 
 ## QueryResponse Message
+{: numbered='no'}
 
 ### CBOR Diagnostic Notation
+{: numbered='no'}
 
 ~~~~
 / query-response = /
@@ -1296,6 +1302,7 @@ suit-reports = 19
 ~~~~
 
 ### CBOR Binary Representation
+{: numbered='no'}
 
 ~~~~
 83                        # array(3)
@@ -1315,8 +1322,10 @@ suit-reports = 19
 ~~~~
 
 ## Install Message
+{: numbered='no'}
 
 ### CBOR Diagnostic Notation
+{: numbered='no'}
 
 ~~~~
 / install = /
@@ -1333,6 +1342,7 @@ suit-reports = 19
 ~~~~
 
 ### CBOR Binary Representation
+{: numbered='no'}
 
 ~~~~
 83                        # array(3)
@@ -1344,8 +1354,10 @@ suit-reports = 19
 ~~~~
 
 ## Success Message (for Install)
+{: numbered='no'}
 
 ### CBOR Diagnostic Notation
+{: numbered='no'}
 
 ~~~~
 / teep-success = /
@@ -1356,6 +1368,7 @@ suit-reports = 19
 ~~~~
 
 ### CBOR Binary Representation
+{: numbered='no'}
 
 ~~~~
 83                        # array(3)
@@ -1365,8 +1378,10 @@ suit-reports = 19
 
 
 ## Error Message (for Install)
+{: numbered='no'}
 
 ### CBOR Diagnostic Notation
+{: numbered='no'}
 
 ~~~~
 / teep-error = /
@@ -1384,6 +1399,7 @@ suit-reports = 19
 ~~~~
 
 ### CBOR binary Representation
+{: numbered='no'}
 
 ~~~~
 83                        # array(3)
