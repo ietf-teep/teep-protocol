@@ -1371,7 +1371,7 @@ suit-reports = 19
 {: numbered='no'}
 
 ~~~~
-83                        # array(3)
+82                        # array(2)
     05                    # unsigned(5)
     1A 77777778           # unsigned(2004318072, 0x77777778)
 ~~~~
@@ -1402,12 +1402,12 @@ suit-reports = 19
 {: numbered='no'}
 
 ~~~~
-83                        # array(3)
+84                        # array(4)
     06                    # unsigned(6)
     1A 77777778           # unsigned(2004318072, 0x77777778)
     11                    # unsigned(17)
     A1                    # map(1)
-       0B                 # unsigned(12)
+       0C                 # unsigned(12)
        69                 # text(9)
           6469736b2d66756c6c  # "disk-full"
 ~~~~
