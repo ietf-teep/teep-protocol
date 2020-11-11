@@ -6,3 +6,6 @@ $(FN).txt: $(FN).xml
 $(FN).xml: draft-ietf-teep-protocol.md
 	kramdown-rfc2629 draft-ietf-teep-protocol.md > $(FN).xml
 
+.PHONY: clean
+clean:
+	rm -fr $(FN).txt $(FN).xml
