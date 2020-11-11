@@ -486,7 +486,9 @@ evidence
 
 tc-list
 : The tc-list parameter enumerates the Trusted Components installed on the device
-  in the form of tc-info objects.
+  in the form of tc-info objects.  This parameter MUST be present if the
+  QueryResponse is sent in response to a QueryRequest with the
+  trusted-components bit set.
 
 requested-tc-list
 : The requested-tc-list parameter enumerates the Trusted Components that are
