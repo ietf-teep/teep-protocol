@@ -336,7 +336,7 @@ query-request = [
     * $$query-request-extensions
     * $$teep-option-extensions
   },
-  data-item-requested  
+  data-item-requested: data-item-requested  
 ]
 ~~~~
 
@@ -434,14 +434,14 @@ query-response = [
 ]
 
 tc-info = {
-  component-id: SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number: uint
+  component-id => SUIT_Component_Identifier,
+  ? tc-manifest-sequence-number => uint
 }
 
 requested-tc-info = {
-  component-id: SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number: uint,
-  ? have-binary: bool
+  component-id => SUIT_Component_Identifier,
+  ? tc-manifest-sequence-number => uint,
+  ? have-binary => bool
 }
 ~~~~
 
@@ -545,7 +545,7 @@ The complete CDDL structure is shown in {{CDDL}}.
 install = [
   type: TEEP-TYPE-install,
   token: uint,
-  option: {
+  options: {
     ? manifest-list => [ + SUIT_Envelope ],
     * $$install-extensions,
     * $$teep-option-extensions
@@ -590,7 +590,7 @@ The complete CDDL structure is shown in {{CDDL}}.
 delete = [
   type: TEEP-TYPE-delete,
   token: uint,
-  option: {
+  options: {
     ? tc-list => [ + SUIT_Component_Identifier ],
     * $$delete-extensions,
     * $$teep-option-extensions
@@ -628,7 +628,7 @@ The complete CDDL structure is shown in {{CDDL}}.
 teep-success = [
   type: TEEP-TYPE-teep-success,
   token: uint,
-  option: {
+  options: {
     ? msg => text,
     ? suit-reports => [ + suit-report ],
     * $$teep-success-extensions,
@@ -1108,7 +1108,7 @@ query-request = [
     * $$query-request-extensions
     * $$teep-option-extensions
   },
-  data-item-requested
+  data-item-requested: data-item-requested
 ]
 
 ; ciphersuites as bitmaps
@@ -1138,20 +1138,20 @@ query-response = [
 ]
 
 tc-info = {
-  component-id: SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number: uint
+  component-id => SUIT_Component_Identifier,
+  ? tc-manifest-sequence-number => uint
 }
 
 requested-tc-info = {
-  component-id: SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number: uint,
-  ? have-binary: bool
+  component-id => SUIT_Component_Identifier,
+  ? tc-manifest-sequence-number => uint,
+  ? have-binary => bool
 }
 
 install = [
   type: TEEP-TYPE-install,
   token: uint,
-  option: {
+  options: {
     ? manifest-list => [ + SUIT_Envelope ],
     * $$install-extensions,
     * $$teep-option-extensions
@@ -1161,7 +1161,7 @@ install = [
 delete = [
   type: TEEP-TYPE-delete,
   token: uint,
-  option: {
+  options: {
     ? tc-list => [ + SUIT_Component_Identifier ],
     * $$delete-extensions,
     * $$teep-option-extensions
@@ -1171,7 +1171,7 @@ delete = [
 teep-success = [
   type: TEEP-TYPE-teep-success,
   token: uint,
-  option: {
+  options: {
     ? msg => text,
     ? suit-reports => [ + suit-report ],
     * $$teep-success-extensions,
