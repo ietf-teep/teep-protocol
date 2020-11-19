@@ -381,7 +381,8 @@ data-item-requested
    Further values may be added in the future via IANA registration.
 
 supported-cipher-suites
-: The supported-cipher-suites parameter lists the ciphersuite(s) supported by the TAM. Details
+: The supported-cipher-suites parameter lists the ciphersuite(s) supported by the TAM. If this parameter is not present, it is to be treated the same as if
+  it contained both ciphersuites defined in this document. Details
   about the ciphersuite encoding can be found in {{ciphersuite}}.
 
 challenge
@@ -815,6 +816,10 @@ ciphersuite (see {{ciphersuite-registry}}. This document specifies two ciphersui
 |     1 | AES-CCM-16-64-128, HMAC 256/256, X25519, EdDSA |
 |     2 | AES-CCM-16-64-128, HMAC 256/256, P-256, ES256  |
 
+A TAM MUST support both ciphersuites.  A TEEP Agent MUST support at least
+one of the two but can choose which one.  For example, a TEEP Agent might
+choose ciphersuite 2 if it has hardware support for it.
+
 # Security Considerations {#security}
 
 This section summarizes the security considerations discussed in this
@@ -1115,8 +1120,8 @@ query-request = [
   data-item-requested
 ]
 
-; ciphersuites as bitmaps
-suite = $TEEP-suite .within uint .size 8
+; ciphersuites
+suite = $TEEP-suite .within uint .size 4
 
 TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA = 1
 TEEP-AES-CCM-16-64-128-HMAC256--256-P-256-ES256  = 2
