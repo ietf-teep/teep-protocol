@@ -473,6 +473,8 @@ requested-tc-list
   as a dependency, or by a Trusted Application that has another Trusted
   Component as a dependency.  Requested Trusted Components are expressed in
   the form of requested-tc-info objects.
+  A TEEP Agent can get this information from the UnrequestTA conceptual API
+  defined in {{I-D.ietf-teep-architecture}} section 6.2.1.
 
 unneeded-tc-list
 : The unneeded-tc-list parameter enumerates the Trusted Components that are
@@ -480,6 +482,8 @@ unneeded-tc-list
   other application.  The TAM can use this information in determining
   whether a Trusted Component can be deleted.  Each unneeded Trusted Component is identified
   by its SUIT Component Identifier.
+  A TEEP Agent can get this information from the UnrequestTA conceptual API
+  defined in {{I-D.ietf-teep-architecture}} section 6.2.1.
 
 ext-list
 : The ext-list parameter lists the supported extensions. This document does not
