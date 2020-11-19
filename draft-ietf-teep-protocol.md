@@ -160,7 +160,7 @@ manifest format {{I-D.ietf-suit-manifest}} is used, and
 for attestation the Entity Attestation Token (EAT) {{I-D.ietf-rats-eat}}
 format is supported although other attestation formats are also permitted.
 
-This specification defines six messages.
+This specification defines five messages.
 
 A TAM queries a device's current state with a QueryRequest message.
 A TEEP Agent will, after authenticating and authorizing the request, report
@@ -187,32 +187,11 @@ Applications.
 ~~~~
 
 
-With the Install message a TAM can instruct a TEEP Agent to install
-a Trusted Component.
+With the Update message a TAM can instruct a TEEP Agent to install and/or
+delete one or more Trusted Components.
 The TEEP Agent will process the message, determine whether the TAM is authorized
 and whether the
 Trusted Component has been signed by an authorized TA Signer.
-If the Install message was processed successfully
-then a
-Success message is returned to the TAM, or an Error message otherwise.
-
-~~~~
- +------------+           +-------------+
- | TAM        |           |TEEP Agent   |
- +------------+           +-------------+
-
-             Install ---->
-
-                            Success
-
-                    <----    or
-
-                            Error
-~~~~
-
-
-With the Delete message a TAM can instruct a TEEP Agent to delete
-one or multiple Trusted Components.
 A Success message is returned when the operation has been completed successfully,
 or an Error message
 otherwise.
@@ -222,7 +201,7 @@ otherwise.
  | TAM        |           |TEEP Agent   |
  +------------+           +-------------+
 
-             Delete  ---->
+             Update  ---->
 
                             Success
 
@@ -242,8 +221,7 @@ The TEEP protocol messages are described in CDDL format {{RFC8610}} below.
 {
     teep-message                => (query-request /
                                     query-response /
-                                    install /
-                                    delete /
+                                    update /
                                     teep-success /
                                     teep-error ),
 }
@@ -531,47 +509,53 @@ tc-manifest-sequence-number
 
 have-binary
 : If present with a value of true, indicates that the TEEP agent already has
-  the Trusted Component binary and only needs an Install message with a SUIT manifest
+  the Trusted Component binary and only needs an Update message with a SUIT manifest
   that authorizes installing it.  If have-binary is true, the
   tc-manifest-sequence-number field MUST be present.
 
-## Install Message
+## Update Message
 
-The Install message is used by the TAM to install a Trusted
-Component via the TEEP Agent. 
+The Update message is used by the TAM to install and/or delete one or more Trusted
+Components via the TEEP Agent. 
 
-Like other TEEP messages, the Install message is
+Like other TEEP messages, the Update message is
 signed, and the relevant CDDL snippet is shown below. 
 The complete CDDL structure is shown in {{CDDL}}.
 
 ~~~~
-install = [
-  type: TEEP-TYPE-install,
+update = [
+  type: TEEP-TYPE-update,
   options: {
     ? token => uint,
+    ? tc-list => [ + bstr ],
     ? manifest-list => [ + SUIT_Envelope ],
-    * $$install-extensions,
+    * $$update-extensions,
     * $$teep-option-extensions
   }
 ]
 ~~~~
 
-The Install message has the following fields:
+The Update message has the following fields:
 
 {: vspace='0'}
 type
-: The value of (3) corresponds to an Install message sent from the TAM to
+: The value of (3) corresponds to an Update message sent from the TAM to
   the TEEP Agent. In case of successful processing, a Success
   message is returned by the TEEP Agent. In case of an error, an Error message
-  is returned. Note that the Install message
-  is used for initial Trusted Component installation as well as for updates.
+  is returned. Note that the Update message
+  is used for initial Trusted Component installation as well as for updates
+  and deletes.
 
 token
 : The value in the token field is used to match responses to requests.
 
+tc-list
+: The tc-list parameter enumerates the Trusted Components to be deleted,
+  in the form of component-id byte strings.
+
 manifest-list
-: The manifest-list field is used to convey one or multiple SUIT manifests.
-  A manifest is
+: The manifest-list field is used to convey one or multiple SUIT manifests
+  to install.  A manifest is
   a bundle of metadata about a TA, such as where to
   find the code, the devices to which it applies, and cryptographic
   information protecting the manifest. The manifest may also convey personalization
@@ -580,50 +564,10 @@ manifest-list
   it is also possible for the TAM to sign and encrypt the personalization data
   and to let the TA Developer sign and/or encrypt the TA binary.
 
-## Delete Message
-
-The Delete message is used by the TAM to remove a Trusted
-Component from the device. 
-
-Like other TEEP messages, the Delete message is
-signed, and the relevant CDDL snippet is shown below. 
-The complete CDDL structure is shown in {{CDDL}}.
-
-~~~~
-delete = [
-  type: TEEP-TYPE-delete,
-  options: {
-  option: {
-    ? token => uint,
-    ? tc-list => [ + bstr ],
-    ? tc-list => [ + SUIT_Component_Identifier ],
-    * $$delete-extensions,
-    * $$teep-option-extensions
-  }
-]
-~~~~
-
-The Delete message has the following fields:
-
-{: vspace='0'}
-type
-: The value of (4) corresponds to a Delete message sent from the TAM to the
-  TEEP Agent. In case of successful processing, a Success
-  message is returned by the TEEP Agent. In case of an error, an Error message
-  is returned.
-
-token
-: The value in the token parameter is used to match responses to requests.
-
-tc-list
-: The tc-list parameter enumerates the Trusted Components to be deleted,
-  in the form of SUIT Component Identifiers.
-
 ## Success Message
 
-The TEEP protocol defines two implicit success messages and this explicit 
-Success message for the cases where the TEEP Agent cannot return another reply, 
-such as for the Install and the Delete messages. 
+The Success message is used by the TEEP Agent to return a success in
+response to an Update message. 
 
 Like other TEEP messages, the Success message is
 signed, and the relevant CDDL snippet is shown below. 
@@ -665,7 +609,8 @@ suit-reports
 
 ## Error Message
 
-The Error message is used by the TEEP Agent to return an error. 
+The Error message is used by the TEEP Agent to return an error in
+response to an Update message. 
 
 Like other TEEP messages, the Error message is
 signed, and the relevant CDDL snippet is shown below. 
@@ -1085,16 +1030,14 @@ teep-option = (uint => any)
 ; messages defined below:
 $teep-message-type /= query-request
 $teep-message-type /= query-response
-$teep-message-type /= install
-$teep-message-type /= delete
+$teep-message-type /= update
 $teep-message-type /= teep-success
 $teep-message-type /= teep-error
 
 ; message type numbers
 TEEP-TYPE-query-request = 1
 TEEP-TYPE-query-response = 2
-TEEP-TYPE-install = 3
-TEEP-TYPE-delete = 4
+TEEP-TYPE-update = 3
 TEEP-TYPE-teep-success = 5
 TEEP-TYPE-teep-error = 6
 
@@ -1163,22 +1106,13 @@ requested-tc-info = {
   ? have-binary => bool
 }
 
-install = [
-  type: TEEP-TYPE-install,
-  options: {
-    ? token => uint,
-    ? manifest-list => [ + SUIT_Envelope ],
-    * $$install-extensions,
-    * $$teep-option-extensions
-  }
-]
-
-delete = [
-  type: TEEP-TYPE-delete,
+update = [
+  type: TEEP-TYPE-update,
   options: {
     ? token => uint,
     ? tc-list => [ + SUIT_Component_Identifier ],
-    * $$delete-extensions,
+    ? manifest-list => [ + SUIT_Envelope ],
+    * $$update-extensions,
     * $$teep-option-extensions
   }
 ]
@@ -1338,16 +1272,16 @@ suit-reports = 19
                1102030405060708090A0B0C0D0D0F
 ~~~~
 
-## Install Message
+## Update Message
 {: numbered='no'}
 
 ### CBOR Diagnostic Notation
 {: numbered='no'}
 
 ~~~~
-/ install = /
+/ update = /
 [
-    3,          / type : TEEP-TYPE-install = 3 (fixed int) /
+    3,          / type : TEEP-TYPE-update = 3 (fixed int) /
     / options :  /
     {
         20 : 2004318072, / token : 0x777777778 (uint), generated by TAM /
@@ -1371,7 +1305,7 @@ suit-reports = 19
       80                  # array(0)
 ~~~~
 
-## Success Message (for Install)
+## Success Message
 {: numbered='no'}
 
 ### CBOR Diagnostic Notation
@@ -1383,7 +1317,7 @@ suit-reports = 19
     5,          / type : TEEP-TYPE-teep-success = 5 (fixed int) /
     / options :  /
     {
-        20 : 2004318072, / token : 0x777777778 (uint), from Install message /
+        20 : 2004318072, / token : 0x777777778 (uint), from Update message /
     }
 ]
 ~~~~
@@ -1400,7 +1334,7 @@ suit-reports = 19
 ~~~~
 
 
-## Error Message (for Install)
+## Error Message
 {: numbered='no'}
 
 ### CBOR Diagnostic Notation
@@ -1412,7 +1346,7 @@ suit-reports = 19
     6,          / type : TEEP-TYPE-teep-error = 6 (fixed int) /
     / options :  /
     {
-        20 : 2004318072, / token : 0x777777778 (uint), from Install message /
+        20 : 2004318072, / token : 0x777777778 (uint), from Update message /
         12 : "disk-full"  / err-msg = 12 (mapkey) : 
                                 "disk-full" (UTF-8 string) /
     },
