@@ -86,11 +86,9 @@ normative:
   RFC2560: 
 informative:
   I-D.ietf-teep-architecture: 
-  I-D.ietf-sacm-coswid:
   RFC8610: 
   RFC8126: 
   RFC8915: 
-  RFC4122: 
 
 --- abstract
 
@@ -144,11 +142,8 @@ set of binaries expressed in a SUIT manifest, to be installed in
 a TEE.  Note that a Trusted Component may include one or more TAs
 and/or configuration data and keys needed by a TA to operate correctly.
 
-Each Trusted Component is uniquely identified by a "component-id" byte string,
-such as a 16-byte UUID {{RFC4122}}.
-If Concise Software Identifiers {{I-D.ietf-sacm-coswid}} are used (e.g.,
-in the suit-coswid field of SUIT manifests), the component-id value is the
-CoSWID tag-id value.
+Each Trusted Component is uniquely identified by a SUIT Component Identifier
+(see {{I-D.ietf-suit-manifest}} Section 8.7.2.2).
 
 # Message Overview {#messages}
 
@@ -341,7 +336,7 @@ query-request = [
     * $$query-request-extensions
     * $$teep-option-extensions
   },
-  data-item-requested  
+  data-item-requested: data-item-requested  
 ]
 ~~~~
 
@@ -432,7 +427,7 @@ query-response = [
     ? evidence => bstr,
     ? tc-list => [ + tc-info ],
     ? requested-tc-list => [ + requested-tc-info ],
-    ? unneeded-tc-list => [ + bstr ],
+    ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
     * $$teep-option-extensions
@@ -440,14 +435,14 @@ query-response = [
 ]
 
 tc-info = {
-  component-id: bstr,
-  ? tc-manifest-sequence-number: uint
+  component-id => SUIT_Component_Identifier,
+  ? tc-manifest-sequence-number => uint
 }
 
 requested-tc-info = {
-  component-id: bstr,
-  ? tc-manifest-sequence-number: uint,
-  ? have-binary: bool
+  component-id => SUIT_Component_Identifier,
+  ? tc-manifest-sequence-number => uint,
+  ? have-binary => bool
 }
 ~~~~
 
@@ -504,7 +499,7 @@ unneeded-tc-list
   currently installed in the TEE, but which are no longer needed by any
   other application.  The TAM can use this information in determining
   whether a Trusted Component can be deleted.  Each unneeded Trusted Component is identified
-  by its component-id byte string.
+  by its SUIT Component Identifier.
 
 ext-list
 : The ext-list parameter lists the supported extensions. This document does not
@@ -515,7 +510,7 @@ The tc-info object has the following fields:
 {: vspace='0'}
 
 component-id
-: A unique identifier encoded as a CBOR bstr.
+: A SUIT Component Identifier.
 
 tc-manifest-sequence-number
 : The suit-manifest-sequence-number value from the SUIT manifest for the Trusted Component,
@@ -526,7 +521,7 @@ The requested-tc-info message has the following fields:
 {: vspace='0'}
 
 component-id
-: A unique identifier encoded as a CBOR bstr.
+: A SUIT Component Identifier.
 
 tc-manifest-sequence-number
 : The minimum suit-manifest-sequence-number value from a SUIT manifest for
@@ -551,7 +546,7 @@ The complete CDDL structure is shown in {{CDDL}}.
 install = [
   type: TEEP-TYPE-install,
   token: uint,
-  option: {
+  options: {
     ? manifest-list => [ + SUIT_Envelope ],
     * $$install-extensions,
     * $$teep-option-extensions
@@ -596,8 +591,8 @@ The complete CDDL structure is shown in {{CDDL}}.
 delete = [
   type: TEEP-TYPE-delete,
   token: uint,
-  option: {
-    ? tc-list => [ + bstr ],
+  options: {
+    ? tc-list => [ + SUIT_Component_Identifier ],
     * $$delete-extensions,
     * $$teep-option-extensions
   }
@@ -618,7 +613,7 @@ token
 
 tc-list
 : The tc-list parameter enumerates the Trusted Components to be deleted,
-  in the form of component-id byte strings.
+  in the form of SUIT Component Identifiers.
 
 ## Success Message
 
@@ -634,7 +629,7 @@ The complete CDDL structure is shown in {{CDDL}}.
 teep-success = [
   type: TEEP-TYPE-teep-success,
   token: uint,
-  option: {
+  options: {
     ? msg => text,
     ? suit-reports => [ + suit-report ],
     * $$teep-success-extensions,
@@ -1060,7 +1055,8 @@ We would also like to thank Carsten Bormann and Henk Birkholz for their help wit
 {: numbered='no'}
 
 Valid TEEP messages MUST adhere to the following CDDL data definitions,
-except that `SUIT_Envelope` is specified in {{I-D.ietf-suit-manifest}}.
+except that `SUIT_Envelope` and `SUIT_Component_Identifier` are
+specified in {{I-D.ietf-suit-manifest}}.
 
 ~~~~
 teep-message = $teep-message-type .within teep-message-framework
@@ -1117,7 +1113,7 @@ query-request = [
     * $$query-request-extensions
     * $$teep-option-extensions
   },
-  data-item-requested
+  data-item-requested: data-item-requested
 ]
 
 ; ciphersuites
@@ -1139,7 +1135,7 @@ query-response = [
     ? evidence => bstr,
     ? tc-list => [ + tc-info ],
     ? requested-tc-list => [ + requested-tc-info ],
-    ? unneeded-tc-list => [ + bstr ],
+    ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
     * $$teep-option-extensions
@@ -1147,20 +1143,20 @@ query-response = [
 ]
 
 tc-info = {
-  component-id: bstr,
-  ? tc-manifest-sequence-number: uint
+  component-id => SUIT_Component_Identifier,
+  ? tc-manifest-sequence-number => uint
 }
 
 requested-tc-info = {
-  component-id: bstr,
-  ? tc-manifest-sequence-number: uint,
-  ? have-binary: bool
+  component-id => SUIT_Component_Identifier,
+  ? tc-manifest-sequence-number => uint,
+  ? have-binary => bool
 }
 
 install = [
   type: TEEP-TYPE-install,
   token: uint,
-  option: {
+  options: {
     ? manifest-list => [ + SUIT_Envelope ],
     * $$install-extensions,
     * $$teep-option-extensions
@@ -1170,8 +1166,8 @@ install = [
 delete = [
   type: TEEP-TYPE-delete,
   token: uint,
-  option: {
-    ? tc-list => [ + bstr ],
+  options: {
+    ? tc-list => [ + SUIT_Component_Identifier ],
     * $$delete-extensions,
     * $$teep-option-extensions
   }
@@ -1180,7 +1176,7 @@ delete = [
 teep-success = [
   type: TEEP-TYPE-teep-success,
   token: uint,
-  option: {
+  options: {
     ? msg => text,
     ? suit-reports => [ + suit-report ],
     * $$teep-success-extensions,
@@ -1230,9 +1226,9 @@ suit-reports = 19
 {: numbered='no'}
 
 - OCSP stapling data = h'010203'
-- TEEP Device will have 2 TAs
-  - TA-ID: 0x0102030405060708090a0b0c0d0e0f,
-           0x1102030405060708090a0b0c0d0e0f
+- TEEP Device will have 2 TAs with the following SUIT Component Identifiers:
+  - [ 0x0102030405060708090a0b0c0d0e0f ]
+  - [ 0x1102030405060708090a0b0c0d0e0f ]
 - SUIT manifest-list is set empty only for example purposes
 - Not including Entity Attestation Token (EAT) parameters for example purposes
 
@@ -1298,11 +1294,11 @@ suit-reports = 19
                 / TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA = 
                       1 (uint .size 8) /
         6 : 0,  / selected-version = 6 (mapkey) : 0 (uint .size 4) /
-        8 : [ h'0102030405060708090a0b0c0d0e0f',
-              h'1102030405060708090a0b0c0d0e0f' ]   
+        8 : [ [ h'0102030405060708090a0b0c0d0e0f' ],
+              [ h'1102030405060708090a0b0c0d0e0f' ] ]
                 / ta-list = 8 (mapkey) : 
-                      [ 0x0102030405060708090a0b0c0d0e0f,
-                        0x1102030405060708090a0b0c0d0e0f ]
+                      [ [ 0x0102030405060708090a0b0c0d0e0f ],
+                        [ 0x1102030405060708090a0b0c0d0e0f ] ]
                       (array of bstr) /
     }
 ]
@@ -1322,10 +1318,12 @@ suit-reports = 19
       00                  # unsigned(0) within .size 4
       08                  # unsigned(8)
       82                  # array(2)
-         4F               # bytes(16)
-            0102030405060708090A0B0C0D0D0F
-         4F               # bytes(16)
-            1102030405060708090A0B0C0D0D0F
+         81               # array(1)
+            4F            # bytes(16)
+               0102030405060708090A0B0C0D0D0F
+         81               # array(1)
+            4F            # bytes(16)
+               1102030405060708090A0B0C0D0D0F
 ~~~~
 
 ## Install Message
