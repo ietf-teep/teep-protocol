@@ -327,8 +327,8 @@ The complete CDDL structure is shown in {{CDDL}}.
 ~~~~
 query-request = [
   type: TEEP-TYPE-query-request,
-  token: uint,
   options: {
+    ? token => uint,
     ? supported-cipher-suites => [ + suite ],
     ? challenge => bstr .size (8..64),
     ? versions => [ + version ],
@@ -349,7 +349,7 @@ type
 
 token
 : The value in the token parameter is used to match responses to requests. This is 
-particularly useful when a TAM issues multiple concurrent requests to a TEEP Agent. 
+particularly useful when a TAM issues multiple concurrent requests to a TEEP Agent. The token is not needed when the attestation bit is set in the data-item-requested value.
 
 data-item-requested
 : The data-item-requested parameter indicates what information the TAM requests from the TEEP
@@ -419,8 +419,8 @@ The complete CDDL structure is shown in {{CDDL}}.
 ~~~~
 query-response = [
   type: TEEP-TYPE-query-response,
-  token: uint,
   options: {
+    ? token => uint,
     ? selected-cipher-suite => suite,
     ? selected-version => version,
     ? evidence-format => text,
@@ -456,7 +456,9 @@ type
 
 token
 : The value in the token parameter is used to match responses to requests. The
-  value MUST correspond to the value received with the QueryRequest message.
+  value MUST correspond to the value received with the QueryRequest message
+  if one was present, and MUST be absent if no token was present in the
+  QueryRequest.
 
 selected-cipher-suite
 : The selected-cipher-suite parameter indicates the selected ciphersuite. Details
@@ -545,8 +547,8 @@ The complete CDDL structure is shown in {{CDDL}}.
 ~~~~
 install = [
   type: TEEP-TYPE-install,
-  token: uint,
   options: {
+    ? token => uint,
     ? manifest-list => [ + SUIT_Envelope ],
     * $$install-extensions,
     * $$teep-option-extensions
@@ -590,8 +592,10 @@ The complete CDDL structure is shown in {{CDDL}}.
 ~~~~
 delete = [
   type: TEEP-TYPE-delete,
-  token: uint,
   options: {
+  option: {
+    ? token => uint,
+    ? tc-list => [ + bstr ],
     ? tc-list => [ + SUIT_Component_Identifier ],
     * $$delete-extensions,
     * $$teep-option-extensions
@@ -628,8 +632,8 @@ The complete CDDL structure is shown in {{CDDL}}.
 ~~~~
 teep-success = [
   type: TEEP-TYPE-teep-success,
-  token: uint,
   options: {
+    ? token => uint,
     ? msg => text,
     ? suit-reports => [ + suit-report ],
     * $$teep-success-extensions,
@@ -647,6 +651,9 @@ type
 
 token
 : The value in the token parameter is used to match responses to requests.
+  It MUST match the value of the token parameter in the Install or Delete
+  message the Success is in response to, if one was present.  If none was
+  present, the token MUST be absent in the Success message.
 
 msg
 : The msg parameter contains optional diagnostics information encoded in
@@ -667,16 +674,16 @@ The complete CDDL structure is shown in {{CDDL}}.
 ~~~~
 teep-error = [
   type: TEEP-TYPE-teep-error,
-  token: uint,
-  err-code: uint,
   options: {
+     ? token => uint,
      ? err-msg => text,
      ? supported-cipher-suites => [ + suite ],
      ? versions => [ + version ],
      ? suit-reports => [ + suit-report ],
-     * $$teep-error--extensions,
+     * $$teep-error-extensions,
      * $$teep-option-extensions
-  }
+  },
+  err-code: uint
 ]
 ~~~~
 
@@ -688,12 +695,9 @@ type
 
 token
 : The value in the token parameter is used to match responses to requests.
-
-err-code
-: The err-code parameter contains one of the values listed in the registry
-  defined in {{error-code-registry}} (with the
-  initial set of error codes listed below). Only selected values are applicable
-  to each message.
+  It MUST match the value of the token parameter in the Install or Delete
+  message the Success is in response to, if one was present.  If none was
+  present, the token MUST be absent in the Error message.
 
 err-msg
 : The err-msg parameter is human-readable diagnostic text that MUST be encoded
@@ -713,6 +717,12 @@ versions
 suit-reports
 : If present, the suit-reports parameter contains a set of SUIT Reports
   as defined in Section 4 of {{I-D.moran-suit-report}}.
+
+err-code
+: The err-code parameter contains one of the values listed in the registry
+  defined in {{error-code-registry}} (with the
+  initial set of error codes listed below). Only selected values are applicable
+  to each message.
 
 This specification defines the following initial error messages:
 
@@ -798,6 +808,7 @@ This specification uses the following mapping:
 | tc-manifest-sequence-number |    17 |
 | have-binary                 |    18 |
 | suit-reports                |    19 |
+| token                       |    20 |
 
 # Ciphersuites {#ciphersuite}
 
@@ -1065,9 +1076,8 @@ SUIT_Envelope = any
 
 teep-message-framework = [
   type: 0..23 / $teep-type-extension,
-  token: uint,
   options: { * teep-option },
-  * int; further integers, e.g. for data-item-requested
+  * uint; further integers, e.g., for data-item-requested
 ]
 
 teep-option = (uint => any)
@@ -1104,8 +1114,8 @@ $data-item-requested /= suit-commands
 
 query-request = [
   type: TEEP-TYPE-query-request,
-  token: uint,
   options: {
+    ? token => uint,
     ? supported-cipher-suites => [ + suite ],
     ? challenge => bstr .size (8..64),
     ? versions => [ + version ],
@@ -1127,8 +1137,8 @@ $TEEP-suite /= TEEP-AES-CCM-16-64-128-HMAC256--256-P-256-ES256
 
 query-response = [
   type: TEEP-TYPE-query-response,
-  token: uint,
   options: {
+    ? token => uint,
     ? selected-cipher-suite => suite,
     ? selected-version => version,
     ? evidence-format => text,
@@ -1155,8 +1165,8 @@ requested-tc-info = {
 
 install = [
   type: TEEP-TYPE-install,
-  token: uint,
   options: {
+    ? token => uint,
     ? manifest-list => [ + SUIT_Envelope ],
     * $$install-extensions,
     * $$teep-option-extensions
@@ -1165,8 +1175,8 @@ install = [
 
 delete = [
   type: TEEP-TYPE-delete,
-  token: uint,
   options: {
+    ? token => uint,
     ? tc-list => [ + SUIT_Component_Identifier ],
     * $$delete-extensions,
     * $$teep-option-extensions
@@ -1175,8 +1185,8 @@ delete = [
 
 teep-success = [
   type: TEEP-TYPE-teep-success,
-  token: uint,
   options: {
+    ? token => uint,
     ? msg => text,
     ? suit-reports => [ + suit-report ],
     * $$teep-success-extensions,
@@ -1186,16 +1196,16 @@ teep-success = [
 
 teep-error = [
   type: TEEP-TYPE-teep-error,
-  token: uint,
-  err-code: uint,
   options: {
+     ? token => uint,
      ? err-msg => text,
      ? supported-cipher-suites => [ + suite ],
      ? versions => [ + version ],
      ? suit-reports => [ + suit-report ],
-     * $$teep-error--extensions,
+     * $$teep-error-extensions,
      * $$teep-option-extensions
-  }
+  },
+  err-code: uint
 ]
 
 supported-cipher-suites = 1
@@ -1242,13 +1252,13 @@ suit-reports = 19
 / query-request = /
 [
     1,          / type : TEEP-TYPE-query-request = 1 (fixed int) /
-    2004318071, / token : 0x77777777 (uint), generated by TAM /
     / options : /
     {
-        1 : [ 1 ]  / supported-cipher-suites = 1 (mapkey) : /
+        20 : 2004318071, / token : 0x77777777 (uint), generated by TAM /
+        1 : [ 1 ], / supported-cipher-suites = 1 (mapkey) : /
                    / TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA =
                      [ 1 ] (array of uint .size 8) /
-        3 : [ 0 ]  / version = 3 (mapkey) : 
+        3 : [ 0 ], / version = 3 (mapkey) : 
                      [ 0 ] (array of uint .size 4) /
         4 : h'010203' / ocsp-data = 4 (mapkey) : 0x010203 (bstr) /
     },
@@ -1262,8 +1272,9 @@ suit-reports = 19
 ~~~~
 84                        # array(4), 
    01                     # unsigned(1)
-   1A 77777777            # unsigned(2004318071, 0x77777777)
-   A3                     # map(3)
+   A4                     # map(4)
+      14                  # unsigned(20)
+      1A 77777777         # unsigned(2004318071, 0x77777777)
       01                  # unsigned(1)
       81                  # array(1)
          01               # unsigned(1) within .size 8
@@ -1286,10 +1297,10 @@ suit-reports = 19
 / query-response = /
 [
     2,          / type : TEEP-TYPE-query-response = 2 (fixed int) /
-    2004318071, / token : 0x77777777 (uint), from TAM's QueryRequest
-                      message /
     / options : /
     {
+        20 : 2004318071, / token : 0x77777777 (uint), from TAM's QueryRequest
+                           message /
         5 : 1,  / selected-cipher-suite = 5(mapkey) :/
                 / TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA = 
                       1 (uint .size 8) /
@@ -1310,8 +1321,9 @@ suit-reports = 19
 ~~~~
 83                        # array(3)
    02                     # unsigned(2)
-   1A 77777777            # unsigned(2004318071, 0x77777777)
-   A3                     # map(3)
+   A4                     # map(4)
+      14                  # unsigned(20)
+      1A 77777777         # unsigned(2004318071, 0x77777777)
       05                  # unsigned(5)
       01                  # unsigned(1) within .size 8
       06                  # unsigned(6)
@@ -1336,9 +1348,9 @@ suit-reports = 19
 / install = /
 [
     3,          / type : TEEP-TYPE-install = 3 (fixed int) /
-    2004318072,  / token : 0x777777778 (uint), generated by TAM /
     / options :  /
     {
+        20 : 2004318072, / token : 0x777777778 (uint), generated by TAM /
         10 : [ ] / manifest-list = 10 (mapkey) : 
                        [ ] (array of SUIT_Envelope(any)) /
                  / empty, example purpose only /
@@ -1352,8 +1364,9 @@ suit-reports = 19
 ~~~~
 83                        # array(3)
    03                     # unsigned(3)
-   1A 77777778            # unsigned(2004318072, 0x77777778)
-   A1                     # map(1)
+   A2                     # map(2)
+      14                  # unsigned(20)
+      1A 77777778         # unsigned(2004318072, 0x77777778)
       0A                  # unsigned(10)
       80                  # array(0)
 ~~~~
@@ -1368,7 +1381,10 @@ suit-reports = 19
 / teep-success = /
 [
     5,          / type : TEEP-TYPE-teep-success = 5 (fixed int) /
-    2004318072, / token : 0x777777778 (uint), from Install message /
+    / options :  /
+    {
+        20 : 2004318072, / token : 0x777777778 (uint), from Install message /
+    }
 ]
 ~~~~
 
@@ -1378,6 +1394,8 @@ suit-reports = 19
 ~~~~
 82                        # array(2)
     05                    # unsigned(5)
+    A1                    # map(1)
+    14                    # unsigned(20)
     1A 77777778           # unsigned(2004318072, 0x77777778)
 ~~~~
 
@@ -1392,14 +1410,14 @@ suit-reports = 19
 / teep-error = /
 [
     6,          / type : TEEP-TYPE-teep-error = 6 (fixed int) /
-    2004318072, / token : 0x777777778 (uint), from Install message /
-    ERR_MANIFEST_PROCESSING_FAILED,
-        / err-code : ERR_MANIFEST_PROCESSING_FAILED = 17 (uint) /
     / options :  /
     {
+        20 : 2004318072, / token : 0x777777778 (uint), from Install message /
         12 : "disk-full"  / err-msg = 12 (mapkey) : 
                                 "disk-full" (UTF-8 string) /
-    }
+    },
+    ERR_MANIFEST_PROCESSING_FAILED
+        / err-code : ERR_MANIFEST_PROCESSING_FAILED = 17 (uint) /
 ]
 ~~~~
 
@@ -1409,10 +1427,11 @@ suit-reports = 19
 ~~~~
 84                        # array(4)
     06                    # unsigned(6)
-    1A 77777778           # unsigned(2004318072, 0x77777778)
-    11                    # unsigned(17)
     A1                    # map(1)
+       14                 # unsigned(20)
+       1A 77777778        # unsigned(2004318072, 0x77777778)
        0C                 # unsigned(12)
        69                 # text(9)
           6469736b2d66756c6c  # "disk-full"
+    11                    # unsigned(17)
 ~~~~
