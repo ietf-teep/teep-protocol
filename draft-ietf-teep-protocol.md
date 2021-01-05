@@ -1205,7 +1205,7 @@ token = 20
 {: numbered='no'}
 
 ~~~~
-84                        # array(4), 
+83                        # array(3),
    01                     # unsigned(1)
    A4                     # map(4)
       14                  # unsigned(20)
@@ -1254,7 +1254,7 @@ token = 20
 {: numbered='no'}
 
 ~~~~
-83                        # array(3)
+82                        # array(2)
    02                     # unsigned(2)
    A4                     # map(4)
       14                  # unsigned(20)
@@ -1297,7 +1297,7 @@ token = 20
 {: numbered='no'}
 
 ~~~~
-83                        # array(3)
+82                        # array(2)
    03                     # unsigned(3)
    A2                     # map(2)
       14                  # unsigned(20)
@@ -1360,7 +1360,7 @@ token = 20
 {: numbered='no'}
 
 ~~~~
-84                        # array(4)
+83                        # array(3)
     06                    # unsigned(6)
     A1                    # map(1)
        14                 # unsigned(20)
