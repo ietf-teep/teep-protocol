@@ -527,7 +527,7 @@ update = [
   type: TEEP-TYPE-update,
   options: {
     ? token => uint,
-    ? tc-list => [ + bstr ],
+    ? tc-list => [ + tc-info ],
     ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
     * $$update-extensions,
     * $$teep-option-extensions
@@ -1110,7 +1110,7 @@ update = [
   type: TEEP-TYPE-update,
   options: {
     ? token => uint,
-    ? tc-list => [ + SUIT_Component_Identifier ],
+    ? tc-list => [ + tc-info ],
     ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
     * $$update-extensions,
     * $$teep-option-extensions
