@@ -1240,12 +1240,18 @@ token = 20
                 / TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA = 
                       1 (uint .size 8) /
         6 : 0,  / selected-version = 6 (mapkey) : 0 (uint .size 4) /
-        8 : [ [ h'0102030405060708090a0b0c0d0e0f' ],
-              [ h'1102030405060708090a0b0c0d0e0f' ] ]
-                / ta-list = 8 (mapkey) : 
-                      [ [ 0x0102030405060708090a0b0c0d0e0f ],
-                        [ 0x1102030405060708090a0b0c0d0e0f ] ]
-                      (array of bstr) /
+        8 : [   / tc-list = 8 (mapkey) : (array of tc-info) /
+              {
+                16 : [ 0x0102030405060708090a0b0c0d0e0f ]
+                  / component-id = 16 (mapkey) : [ h'0102030405060708090a0b0c0d0e0f' ]
+                    (SUIT_Component_Identifier, bstr) /
+              },
+              {
+                16 : [ 0x1102030405060708090a0b0c0d0e0f ]
+                  / component-id = 16 (mapkey) : [ h'1102030405060708090a0b0c0d0e0f' ]
+                    (SUIT_Component_Identifier, bstr) /
+              }
+            ]
     }
 ]
 ~~~~
