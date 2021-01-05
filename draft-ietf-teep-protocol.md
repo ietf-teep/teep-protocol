@@ -1334,10 +1334,10 @@ token = 20
 
 ~~~~
 82                        # array(2)
-    05                    # unsigned(5)
-    A1                    # map(1)
-    14                    # unsigned(20)
-    1A 77777778           # unsigned(2004318072, 0x77777778)
+   05                     # unsigned(5)
+   A1                     # map(1)
+      14                  # unsigned(20)
+      1A 77777778         # unsigned(2004318072, 0x77777778)
 ~~~~
 
 
@@ -1368,7 +1368,7 @@ token = 20
 ~~~~
 84                        # array(4)
     06                    # unsigned(6)
-    A1                    # map(1)
+    A2                    # map(2)
        14                 # unsigned(20)
        1A 77777778        # unsigned(2004318072, 0x77777778)
        0C                 # unsigned(12)
