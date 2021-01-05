@@ -550,7 +550,7 @@ token
 : The value in the token field is used to match responses to requests.
 
 tc-list
-: The tc-list parameter enumerates the Trusted Components to be deleted,
+: The tc-list parameter enumerates the Trusted Components to be updated,
   in the form of component-id byte strings.
 
 manifest-list
