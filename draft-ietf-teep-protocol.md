@@ -1273,10 +1273,10 @@ token = 20
     08                   # unsigned(8)
     82                   # array(2)
       81                 # array(1)
-        4F               # bytes(16)
+        4F               # bytes(15)
           0102030405060708090A0B0C0D0D0F
       81                 # array(1)
-        4F               # bytes(16)
+        4F               # bytes(15)
           1102030405060708090A0B0C0D0D0F
 ~~~~
 
