@@ -779,10 +779,9 @@ to determine whether the Agent is in a trustworthy state.
 Based on the results of attestation, and the lists of installed, requested,
 and unneeded Trusted Components reported in the QueryResponse, the TAM
 determines, in any implementation specific manner, which Trusted Components
-need to be installed, updated, and/or deleted, if any.
-
-TODO: fill in more discussion here based on IETF discussion of Install vs
-Delete messages.
+need to be installed, updated, or deleted, if any.
+If any Trusted Components need to be installed, updated, or deleted,
+the TAM sends an Update message.
 
 ## TEEP Agent Behavior {#agent}
 
@@ -791,36 +790,34 @@ requested TA is already installed.  If it is already installed, the
 TEEP Agent passes no data back to the caller.  Otherwise, 
 if the TEEP Agent chooses to initiate the process of requesting the indicated
 TA, it determines (in any implementation specific way) the TAM URI based on 
-any TAM URI provided by the RequestTA caller, and any local configuration,
+any TAM URI provided by the RequestTA caller and any local configuration,
 and passes back the TAM URI to connect to.
 
 When the RequestPolicyCheck API is invoked, the TEEP Agent decides
 whether to initiate communication with any trusted TAMs (e.g., it might
 choose to do so for a given TAM unless it detects that it has already
 communicated with that TAM recently). If so, it passes back a TAM URI
-to connect to. (TODO: how can it talk to multiple TAMs?)
+to connect to.
 
 When the ProcessError API is invoked, the TEEP Agent can handle it in
-any implementation specific way, such using the information in future
-choices of TAM URI.
+any implementation specific way, such as logging the error or
+using the information in future choices of TAM URI.
 
 When the ProcessTeepMessage API is invoked, the Agent first does validation
 as specified in {{validation}}, and drops the message if it is not valid.
-Otherwise, processing continues based on the type of message.
+Otherwise, processing continues as follows based on the type of message.
 
 When a QueryRequest message is received, the Agent responds with a
 QueryResponse message.
 
-When an Install message is received, the Agent attempts to update
+When an Update message is received, the Agent attempts to uninstall any
+Trusted Components listed in the unneeded-tc-list field of the message,
+and responds with an Error message if any error was encountered.
+Otherwise, the Agent attempts to update
 the specified SUIT manifests by following the Update Procedure specified
 in {{I-D.ietf-suit-manifest}}, and responds with a Success message if
 all SUIT manifests were successfully installed, or an Error message
 if any error was encountered.
-
-When a Delete message is received, the Agent attempts to uninstall
-the specified Trusted Components, and responds with a Success message
-if all were successfully uninstalled, or an Error message if any
-error was encountered.
 
 # Ciphersuites {#ciphersuite}
 
