@@ -527,7 +527,7 @@ update = [
   type: TEEP-TYPE-update,
   options: {
     ? token => uint,
-    ? tc-list => [ + bstr ],
+    ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
     ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
     * $$update-extensions,
     * $$teep-option-extensions
@@ -549,9 +549,10 @@ type
 token
 : The value in the token field is used to match responses to requests.
 
-tc-list
-: The tc-list parameter enumerates the Trusted Components to be deleted,
-  in the form of component-id byte strings.
+unneeded-tc-list
+: The unneeded-tc-list parameter enumerates the Trusted Components to be deleted.
+  Each unneeded Trusted Component is identified
+  by its SUIT Component Identifier.
 
 manifest-list
 : The manifest-list field is used to convey one or multiple SUIT manifests
@@ -1110,7 +1111,7 @@ update = [
   type: TEEP-TYPE-update,
   options: {
     ? token => uint,
-    ? tc-list => [ + SUIT_Component_Identifier ],
+    ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
     ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
     * $$update-extensions,
     * $$teep-option-extensions
