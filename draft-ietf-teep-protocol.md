@@ -1275,10 +1275,10 @@ token = 20
     82                   # array(2)
       81                 # array(1)
         4F               # bytes(15)
-          0102030405060708090A0B0C0D0D0F
+          0102030405060708090A0B0C0D0E0F
       81                 # array(1)
         4F               # bytes(15)
-          1102030405060708090A0B0C0D0D0F
+          1102030405060708090A0B0C0D0E0F
 ~~~~
 
 ## Update Message
@@ -1318,7 +1318,7 @@ token = 20
     0F                   # unsigned(15)
     81                   # array(1)
       4F                 # bytes(15)
-        0102030405060708090A0B0C0D0D0F
+        0102030405060708090A0B0C0D0E0F
     0A                   # unsigned(10)
     80                   # array(0)
 ~~~~
