@@ -1312,7 +1312,7 @@ token = 20
 ~~~~
 82                       # array(2)
   03                     # unsigned(3)
-  A2                     # map(2)
+  A3                     # map(3)
     14                   # unsigned(20)
     1A 77777778          # unsigned(2004318072, 0x77777778)
     0F                   # unsigned(15)
