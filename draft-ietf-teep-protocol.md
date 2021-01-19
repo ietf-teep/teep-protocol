@@ -80,6 +80,7 @@ normative:
   RFC3629: 
   RFC5198: 
   RFC7049: 
+  I-D.ietf-rats-architecture: 
   I-D.ietf-rats-eat: 
   I-D.ietf-suit-manifest: 
   I-D.moran-suit-report: 
@@ -251,13 +252,12 @@ To create a TEEP message, the following steps are performed.
 
 
 
-### Validating a TEEP Message
+### Validating a TEEP Message {#validation}
 
-When validating a TEEP message, the following steps are performed. If any
-of
+When TEEP message is received (see the ProcessTeepMessage conceptual API
+defined in {{I-D.ietf-teep-architecture}} section 6.2.1),
+the following validation steps are performed. If any of
 the listed steps fail, then the TEEP message MUST be rejected.
-
-
 
 1. Verify that the received message is a valid CBOR object.
 
@@ -473,6 +473,8 @@ requested-tc-list
   as a dependency, or by a Trusted Application that has another Trusted
   Component as a dependency.  Requested Trusted Components are expressed in
   the form of requested-tc-info objects.
+  A TEEP Agent can get this information from the UnrequestTA conceptual API
+  defined in {{I-D.ietf-teep-architecture}} section 6.2.1.
 
 unneeded-tc-list
 : The unneeded-tc-list parameter enumerates the Trusted Components that are
@@ -480,6 +482,8 @@ unneeded-tc-list
   other application.  The TAM can use this information in determining
   whether a Trusted Component can be deleted.  Each unneeded Trusted Component is identified
   by its SUIT Component Identifier.
+  A TEEP Agent can get this information from the UnrequestTA conceptual API
+  defined in {{I-D.ietf-teep-architecture}} section 6.2.1.
 
 ext-list
 : The ext-list parameter lists the supported extensions. This document does not
@@ -755,6 +759,65 @@ This specification uses the following mapping:
 | have-binary                 |    18 |
 | suit-reports                |    19 |
 | token                       |    20 |
+
+# Behavior Specification
+
+Behavior is specified in terms of the conceptual APIs defined in
+section 6.2.1 of {{I-D.ietf-teep-architecture}}.
+
+## TAM Behavior {#tam}
+
+When the ProcessConnect API is invoked, the TAM sends a QueryRequest message.
+
+When the ProcessTeepMessage API is invoked, the TAM first does validation
+as specified in {{validation}}, and drops the message if it is not valid.
+Otherwise, it proceeds as follows.
+
+If a QueryResponse is received that contains evidence, the evidence
+is passed to an attestation Verifier (see {{I-D.ietf-rats-architecture}})
+to determine whether the Agent is in a trustworthy state.
+Based on the results of attestation, and the lists of installed, requested,
+and unneeded Trusted Components reported in the QueryResponse, the TAM
+determines, in any implementation specific manner, which Trusted Components
+need to be installed, updated, or deleted, if any.
+If any Trusted Components need to be installed, updated, or deleted,
+the TAM sends an Update message.
+
+## TEEP Agent Behavior {#agent}
+
+When the RequestTA API is invoked, the TEEP Agent first checks whether the
+requested TA is already installed.  If it is already installed, the
+TEEP Agent passes no data back to the caller.  Otherwise, 
+if the TEEP Agent chooses to initiate the process of requesting the indicated
+TA, it determines (in any implementation specific way) the TAM URI based on 
+any TAM URI provided by the RequestTA caller and any local configuration,
+and passes back the TAM URI to connect to.
+
+When the RequestPolicyCheck API is invoked, the TEEP Agent decides
+whether to initiate communication with any trusted TAMs (e.g., it might
+choose to do so for a given TAM unless it detects that it has already
+communicated with that TAM recently). If so, it passes back a TAM URI
+to connect to.
+
+When the ProcessError API is invoked, the TEEP Agent can handle it in
+any implementation specific way, such as logging the error or
+using the information in future choices of TAM URI.
+
+When the ProcessTeepMessage API is invoked, the Agent first does validation
+as specified in {{validation}}, and drops the message if it is not valid.
+Otherwise, processing continues as follows based on the type of message.
+
+When a QueryRequest message is received, the Agent responds with a
+QueryResponse message.
+
+When an Update message is received, the Agent attempts to uninstall any
+Trusted Components listed in the unneeded-tc-list field of the message,
+and responds with an Error message if any error was encountered.
+Otherwise, the Agent attempts to update
+the specified SUIT manifests by following the Update Procedure specified
+in {{I-D.ietf-suit-manifest}}, and responds with a Success message if
+all SUIT manifests were successfully installed, or an Error message
+if any error was encountered.
 
 # Ciphersuites {#ciphersuite}
 
