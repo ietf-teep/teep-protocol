@@ -1203,8 +1203,22 @@ teep-error = [
      * $$teep-error-extensions,
      * $$teep-option-extensions
   },
-  err-code: uint
+  err-code: int (0..23)
 ]
+
+; The err-code parameter, int (0..23)
+ERR_ILLEGAL_PARAMETER = 1
+ERR_UNSUPPORTED_EXTENSION = 2
+ERR_REQUEST_SIGNATURE_FAILED = 3
+ERR_UNSUPPORTED_MSG_VERSION = 4
+ERR_UNSUPPORTED_CRYPTO_ALG = 5
+ERR_BAD_CERTIFICATE = 6
+ERR_UNSUPPORTED_CERTIFICATE = 7
+ERR_CERTIFICATE_REVOKED = 8
+ERR_CERTIFICATE_EXPIRED = 9
+ERR_INTERNAL_ERROR = 10
+ERR_TC_NOT_FOUND = 12
+ERR_MANIFEST_PROCESSING_FAILED = 17
 
 supported-cipher-suites = 1
 challenge = 2
@@ -1434,7 +1448,7 @@ token = 20
     12 : "disk-full"  / err-msg = 12 (mapkey) :
                         "disk-full" (UTF-8 string) /
   },
-  17, / err-code : ERR_MANIFEST_PROCESSING_FAILED = 17 (uint) /
+  17, / err-code : ERR_MANIFEST_PROCESSING_FAILED = 17 (int (0..23)) /
 ]
 ~~~~
 
