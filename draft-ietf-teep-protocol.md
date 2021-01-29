@@ -306,7 +306,7 @@ The complete CDDL structure is shown in {{CDDL}}.
 query-request = [
   type: TEEP-TYPE-query-request,
   options: {
-    ? token => uint,
+    ? token => bstr .size (8..64),
     ? supported-cipher-suites => [ + suite ],
     ? challenge => bstr .size (8..64),
     ? versions => [ + version ],
@@ -398,7 +398,7 @@ The complete CDDL structure is shown in {{CDDL}}.
 query-response = [
   type: TEEP-TYPE-query-response,
   options: {
-    ? token => uint,
+    ? token => bstr .size (8..64),
     ? selected-cipher-suite => suite,
     ? selected-version => version,
     ? evidence-format => text,
@@ -414,12 +414,12 @@ query-response = [
 
 tc-info = {
   component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => uint
+  ? tc-manifest-sequence-number => .within uint .size 8
 }
 
 requested-tc-info = {
   component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => uint,
+  ? tc-manifest-sequence-number => .within uint .size 8
   ? have-binary => bool
 }
 ~~~~
@@ -530,7 +530,7 @@ The complete CDDL structure is shown in {{CDDL}}.
 update = [
   type: TEEP-TYPE-update,
   options: {
-    ? token => uint,
+    ? token => bstr .size (8..64),
     ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
     ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
     * $$update-extensions,
@@ -582,8 +582,8 @@ The complete CDDL structure is shown in {{CDDL}}.
 teep-success = [
   type: TEEP-TYPE-teep-success,
   options: {
-    ? token => uint,
-    ? msg => text,
+    ? token => bstr .size (8..64),
+    ? msg => text .size (1..128),
     ? suit-reports => [ + suit-report ],
     * $$teep-success-extensions,
     * $$teep-option-extensions
@@ -626,15 +626,15 @@ The complete CDDL structure is shown in {{CDDL}}.
 teep-error = [
   type: TEEP-TYPE-teep-error,
   options: {
-     ? token => uint,
-     ? err-msg => text,
+     ? token => bstr .size (8..64),
+     ? err-msg => text .size (1..128),
      ? supported-cipher-suites => [ + suite ],
      ? versions => [ + version ],
      ? suit-reports => [ + suit-report ],
      * $$teep-error-extensions,
      * $$teep-option-extensions
   },
-  err-code: uint
+  err-code: uint (0..23)
 ]
 ~~~~
 
