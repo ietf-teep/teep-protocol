@@ -1085,7 +1085,7 @@ teep-message = $teep-message-type .within teep-message-framework
 SUIT_Envelope = any
 
 teep-message-framework = [
-  type: int (0..23) / $teep-type-extension,
+  type: uint (0..23) / $teep-type-extension,
   options: { * teep-option },
   * uint; further integers, e.g., for data-item-requested
 ]
@@ -1099,7 +1099,7 @@ $teep-message-type /= update
 $teep-message-type /= teep-success
 $teep-message-type /= teep-error
 
-; message type numbers, int (0..23)
+; message type numbers, uint (0..23)
 TEEP-TYPE-query-request = 1
 TEEP-TYPE-query-response = 2
 TEEP-TYPE-update = 3
@@ -1204,10 +1204,10 @@ teep-error = [
      * $$teep-error-extensions,
      * $$teep-option-extensions
   },
-  err-code: int (0..23)
+  err-code: uint (0..23)
 ]
 
-; The err-code parameter, int (0..23)
+; The err-code parameter, uint (0..23)
 ERR_ILLEGAL_PARAMETER = 1
 ERR_UNSUPPORTED_EXTENSION = 2
 ERR_REQUEST_SIGNATURE_FAILED = 3
@@ -1221,7 +1221,7 @@ ERR_INTERNAL_ERROR = 10
 ERR_TC_NOT_FOUND = 12
 ERR_MANIFEST_PROCESSING_FAILED = 17
 
-; labels of mapkey for teep message parameters, int (0..23)
+; labels of mapkey for teep message parameters, uint (0..23)
 supported-cipher-suites = 1
 challenge = 2
 versions = 3
@@ -1266,7 +1266,7 @@ token = 20
 ~~~~
 / query-request = /
 [
-  1,  / type : TEEP-TYPE-query-request = 1 (int (0..23)) /
+  1,  / type : TEEP-TYPE-query-request = 1 (uint (0..23)) /
   / options : /
   {
     20 : 0xa0a1a2a3a4a5a6a7,
@@ -1290,18 +1290,18 @@ token = 20
 
 ~~~~
 83                       # array(3)
-  01                     # unsigned(1) int (0..23)
+  01                     # unsigned(1) uint (0..23)
   A4                     # map(4)
-    14                   # unsigned(20) int (0..23)
+    14                   # unsigned(20) uint (0..23)
     48                   # bytes(8) (8..64)
       A0A1A2A3A4A5A6A7
-    01                   # unsigned(1) int (0..23)
+    01                   # unsigned(1) uint (0..23)
     81                   # array(1)
       01                 # unsigned(1) within uint .size 4
-    03                   # unsigned(3) int (0..23)
+    03                   # unsigned(3) uint (0..23)
     81                   # array(1)
       00                 # unsigned(0) within uint .size 4
-    04                   # unsigned(4) int (0..23)
+    04                   # unsigned(4) uint (0..23)
     43                   # bytes(3)
       010203             # "\x01\x02\x03"
   02                     # unsigned(2) .within uint .size 8
@@ -1316,7 +1316,7 @@ token = 20
 ~~~~
 / query-response = /
 [
-  2,  / type : TEEP-TYPE-query-response = 2 (int (0..23)) /
+  2,  / type : TEEP-TYPE-query-response = 2 (uint (0..23)) /
   / options : /
   {
     20 : 0xa0a1a2a3a4a5a6a7,
@@ -1349,16 +1349,16 @@ token = 20
 
 ~~~~
 82                       # array(2)
-  02                     # unsigned(2) int (0..23)
+  02                     # unsigned(2) uint (0..23)
   A4                     # map(4)
-    14                   # unsigned(20) int (0..23)
+    14                   # unsigned(20) uint (0..23)
     48                   # bytes(8) (8..64)
       A0A1A2A3A4A5A6A7
-    05                   # unsigned(5) int (0..23)
+    05                   # unsigned(5) uint (0..23)
     01                   # unsigned(1) .within uint .size 4
-    06                   # unsigned(6) int (0..23)
+    06                   # unsigned(6) uint (0..23)
     00                   # unsigned(0) .within uint .size 4
-    08                   # unsigned(8) int (0..23)
+    08                   # unsigned(8) uint (0..23)
     82                   # array(2)
       81                 # array(1)
         4F               # bytes(15)
@@ -1377,7 +1377,7 @@ token = 20
 ~~~~
 / update = /
 [
-  3,  / type : TEEP-TYPE-update = 3 (int (0..23)) /
+  3,  / type : TEEP-TYPE-update = 3 (uint (0..23)) /
   / options : /
   {
     20 : 0xaba1a2a3a4a5a6a7,
@@ -1400,17 +1400,17 @@ token = 20
 
 ~~~~
 82                       # array(2)
-  03                     # unsigned(3) int (0..23)
+  03                     # unsigned(3) uint (0..23)
   A3                     # map(3)
-    14                   # unsigned(20) int (0..23)
+    14                   # unsigned(20) uint (0..23)
     48                   # bytes(8) (8..64)
       ABA1A2A3A4A5A6A7
-    0F                   # unsigned(15) int (0..23)
+    0F                   # unsigned(15) uint (0..23)
     81                   # array(1)
       81                 # array(1)
         4F               # bytes(15)
           0102030405060708090A0B0C0D0E0F
-    0A                   # unsigned(10) int (0..23)
+    0A                   # unsigned(10) uint (0..23)
     80                   # array(0)
 ~~~~
 
@@ -1423,7 +1423,7 @@ token = 20
 ~~~~
 / teep-success = /
 [
-  5,  / type : TEEP-TYPE-teep-success = 5 (int (0..23)) /
+  5,  / type : TEEP-TYPE-teep-success = 5 (uint (0..23)) /
   / options : /
   {
     20 : 0xaba1a2a3a4a5a6a7,
@@ -1439,9 +1439,9 @@ token = 20
 
 ~~~~
 82                       # array(2)
-  05                     # unsigned(5) int (0..23)
+  05                     # unsigned(5) uint (0..23)
   A1                     # map(1)
-    14                   # unsigned(20) int (0..23)
+    14                   # unsigned(20) uint (0..23)
     48                   # bytes(8) (8..64)
       ABA1A2A3A4A5A6A7
 ~~~~
@@ -1456,7 +1456,7 @@ token = 20
 ~~~~
 / teep-error = /
 [
-  6,  / type : TEEP-TYPE-teep-error = 6 (int (0..23)) /
+  6,  / type : TEEP-TYPE-teep-error = 6 (uint (0..23)) /
   / options : /
   {
     20 : 0xaba1a2a3a4a5a6a7,
@@ -1464,9 +1464,9 @@ token = 20
                   h'aba1a2a3a4a5a6a7' (bstr .size (8..64)),
                   given from TAM's Update message /
     12 : "disk-full"  / err-msg = 12 (mapkey) :
-                        "disk-full" (text (0x00..0x17 bytes)) /
+                        "disk-full" (text .size (1..128)) /
   },
-  17, / err-code : ERR_MANIFEST_PROCESSING_FAILED = 17 (int (0..23)) /
+  17, / err-code : ERR_MANIFEST_PROCESSING_FAILED = 17 (uint (0..23)) /
 ]
 ~~~~
 
@@ -1475,13 +1475,13 @@ token = 20
 
 ~~~~
 83                       # array(3)
-  06                     # unsigned(6) int (0..23)
+  06                     # unsigned(6) uint (0..23)
   A2                     # map(2)
-    14                   # unsigned(20) int (0..23)
+    14                   # unsigned(20) uint (0..23)
     48                   # bytes(8) (8..64)
       ABA1A2A3A4A5A6A7
-    0C                   # unsigned(12) int (0..23)
-    69                   # text(9) (0x00..0x17 bytes)
+    0C                   # unsigned(12) uint (0..23)
+    69                   # text(9) (1..128)
       6469736b2d66756c6c # "disk-full"
-  11                     # unsigned(17) int (0..23)
+  11                     # unsigned(17) uint (0..23)
 ~~~~
