@@ -337,7 +337,7 @@ token
   to distinguish the correct response from multiple requests.
   The token value MUST NOT be used for other purposes, such as a TAM to
   identify the devices and/or a device to identify TAMs or Trusted Components.
-  The TAM should set the expiration term to each token and MUST ignore expired tokens.
+  The TAM SHOULD set the expiration term to each token and MUST ignore any messages with expired tokens.
   The TAM MUST expire the token value after receiving the first response
   from the device and ignore any subsequent messages that have the same token
   value.
