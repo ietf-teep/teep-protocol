@@ -606,7 +606,8 @@ token
 
 msg
 : The msg parameter contains optional diagnostics information encoded in
-  UTF-8 {{RFC3629}} returned by the TEEP Agent.
+  UTF-8 {{RFC3629}} using Net-Unicode form {{RFC5198}} with max 128 bytes
+  returned by the TEEP Agent.
 
 suit-reports
 : If present, the suit-reports parameter contains a set of SUIT Reports
@@ -651,7 +652,7 @@ token
 
 err-msg
 : The err-msg parameter is human-readable diagnostic text that MUST be encoded
-  using UTF-8 {{RFC3629}} using Net-Unicode form {{RFC5198}}.
+  using UTF-8 {{RFC3629}} using Net-Unicode form {{RFC5198}} with max 128 bytes.
 
 supported-cipher-suites
 : The supported-cipher-suites parameter lists the ciphersuite(s) supported by the TEEP Agent.
@@ -1185,7 +1186,7 @@ teep-success = [
   type: TEEP-TYPE-teep-success,
   options: {
     ? token => bstr .size (8..64),
-    ? msg => text (0x00..0x17 bytes),
+    ? msg => text .size (1..128),
     ? suit-reports => [ + suit-report ],
     * $$teep-success-extensions,
     * $$teep-option-extensions
@@ -1196,7 +1197,7 @@ teep-error = [
   type: TEEP-TYPE-teep-error,
   options: {
      ? token => bstr .size (8..64),
-     ? err-msg => text (0x00..0x17 bytes),
+     ? err-msg => text .size (1..128),
      ? supported-cipher-suites => [ + suite ],
      ? versions => [ + version ],
      ? suit-reports => [ + suit-report ],
