@@ -306,7 +306,7 @@ The complete CDDL structure is shown in {{CDDL}}.
 query-request = [
   type: TEEP-TYPE-query-request,
   options: {
-    ? token => uint,
+    ? token => bstr .size (8..64),
     ? supported-cipher-suites => [ + suite ],
     ? challenge => bstr .size (8..64),
     ? versions => [ + version ],
@@ -410,7 +410,7 @@ The complete CDDL structure is shown in {{CDDL}}.
 query-response = [
   type: TEEP-TYPE-query-response,
   options: {
-    ? token => uint,
+    ? token => bstr .size (8..64),
     ? selected-cipher-suite => suite,
     ? selected-version => version,
     ? evidence-format => text,
@@ -426,12 +426,12 @@ query-response = [
 
 tc-info = {
   component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => uint
+  ? tc-manifest-sequence-number => .within uint .size 8
 }
 
 requested-tc-info = {
   component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => uint,
+  ? tc-manifest-sequence-number => .within uint .size 8
   ? have-binary => bool
 }
 ~~~~
@@ -542,7 +542,7 @@ The complete CDDL structure is shown in {{CDDL}}.
 update = [
   type: TEEP-TYPE-update,
   options: {
-    ? token => uint,
+    ? token => bstr .size (8..64),
     ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
     ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
     * $$update-extensions,
@@ -594,8 +594,8 @@ The complete CDDL structure is shown in {{CDDL}}.
 teep-success = [
   type: TEEP-TYPE-teep-success,
   options: {
-    ? token => uint,
-    ? msg => text,
+    ? token => bstr .size (8..64),
+    ? msg => text .size (1..128),
     ? suit-reports => [ + suit-report ],
     * $$teep-success-extensions,
     * $$teep-option-extensions
@@ -618,7 +618,8 @@ token
 
 msg
 : The msg parameter contains optional diagnostics information encoded in
-  UTF-8 {{RFC3629}} returned by the TEEP Agent.
+  UTF-8 {{RFC3629}} using Net-Unicode form {{RFC5198}} with max 128 bytes
+  returned by the TEEP Agent.
 
 suit-reports
 : If present, the suit-reports parameter contains a set of SUIT Reports
@@ -637,15 +638,15 @@ The complete CDDL structure is shown in {{CDDL}}.
 teep-error = [
   type: TEEP-TYPE-teep-error,
   options: {
-     ? token => uint,
-     ? err-msg => text,
+     ? token => bstr .size (8..64),
+     ? err-msg => text .size (1..128),
      ? supported-cipher-suites => [ + suite ],
      ? versions => [ + version ],
      ? suit-reports => [ + suit-report ],
      * $$teep-error-extensions,
      * $$teep-option-extensions
   },
-  err-code: uint
+  err-code: uint (0..23)
 ]
 ~~~~
 
@@ -663,7 +664,7 @@ token
 
 err-msg
 : The err-msg parameter is human-readable diagnostic text that MUST be encoded
-  using UTF-8 {{RFC3629}} using Net-Unicode form {{RFC5198}}.
+  using UTF-8 {{RFC3629}} using Net-Unicode form {{RFC5198}} with max 128 bytes.
 
 supported-cipher-suites
 : The supported-cipher-suites parameter lists the ciphersuite(s) supported by the TEEP Agent.
@@ -1096,7 +1097,7 @@ teep-message = $teep-message-type .within teep-message-framework
 SUIT_Envelope = any
 
 teep-message-framework = [
-  type: 0..23 / $teep-type-extension,
+  type: uint (0..23) / $teep-type-extension,
   options: { * teep-option },
   * uint; further integers, e.g., for data-item-requested
 ]
@@ -1110,15 +1111,15 @@ $teep-message-type /= update
 $teep-message-type /= teep-success
 $teep-message-type /= teep-error
 
-; message type numbers
+; message type numbers, uint (0..23)
 TEEP-TYPE-query-request = 1
 TEEP-TYPE-query-response = 2
 TEEP-TYPE-update = 3
 TEEP-TYPE-teep-success = 5
 TEEP-TYPE-teep-error = 6
 
-version = uint .size 4
-ext-info = uint 
+version = .within uint .size 4
+ext-info = .within uint .size 4
 
 ; data items as bitmaps
 data-item-requested = $data-item-requested .within uint .size 8
@@ -1134,7 +1135,7 @@ $data-item-requested /= suit-commands
 query-request = [
   type: TEEP-TYPE-query-request,
   options: {
-    ? token => uint,
+    ? token => bstr .size (8..64),
     ? supported-cipher-suites => [ + suite ],
     ? challenge => bstr .size (8..64),
     ? versions => [ + version ],
@@ -1157,7 +1158,7 @@ $TEEP-suite /= TEEP-AES-CCM-16-64-128-HMAC256--256-P-256-ES256
 query-response = [
   type: TEEP-TYPE-query-response,
   options: {
-    ? token => uint,
+    ? token => bstr .size (8..64),
     ? selected-cipher-suite => suite,
     ? selected-version => version,
     ? evidence-format => text,
@@ -1173,19 +1174,19 @@ query-response = [
 
 tc-info = {
   component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => uint
+  ? tc-manifest-sequence-number => .within uint .size 8
 }
 
 requested-tc-info = {
   component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => uint,
+  ? tc-manifest-sequence-number => .within uint .size 8
   ? have-binary => bool
 }
 
 update = [
   type: TEEP-TYPE-update,
   options: {
-    ? token => uint,
+    ? token => bstr .size (8..64),
     ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
     ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
     * $$update-extensions,
@@ -1196,8 +1197,8 @@ update = [
 teep-success = [
   type: TEEP-TYPE-teep-success,
   options: {
-    ? token => uint,
-    ? msg => text,
+    ? token => bstr .size (8..64),
+    ? msg => text .size (1..128),
     ? suit-reports => [ + suit-report ],
     * $$teep-success-extensions,
     * $$teep-option-extensions
@@ -1207,18 +1208,18 @@ teep-success = [
 teep-error = [
   type: TEEP-TYPE-teep-error,
   options: {
-     ? token => uint,
-     ? err-msg => text,
+     ? token => bstr .size (8..64),
+     ? err-msg => text .size (1..128),
      ? supported-cipher-suites => [ + suite ],
      ? versions => [ + version ],
      ? suit-reports => [ + suit-report ],
      * $$teep-error-extensions,
      * $$teep-option-extensions
   },
-  err-code: int (0..23)
+  err-code: uint (0..23)
 ]
 
-; The err-code parameter, int (0..23)
+; The err-code parameter, uint (0..23)
 ERR_ILLEGAL_PARAMETER = 1
 ERR_UNSUPPORTED_EXTENSION = 2
 ERR_REQUEST_SIGNATURE_FAILED = 3
@@ -1232,6 +1233,7 @@ ERR_INTERNAL_ERROR = 10
 ERR_TC_NOT_FOUND = 12
 ERR_MANIFEST_PROCESSING_FAILED = 17
 
+; labels of mapkey for teep message parameters, uint (0..23)
 supported-cipher-suites = 1
 challenge = 2
 versions = 3
@@ -1276,19 +1278,22 @@ token = 20
 ~~~~
 / query-request = /
 [
-  1,  / type : TEEP-TYPE-query-request = 1 (fixed int) /
+  1,  / type : TEEP-TYPE-query-request = 1 (uint (0..23)) /
   / options : /
   {
-    20 : 2004318071,  / token = 20 (mapkey) :
-                        0x77777777 (uint), generated by TAM /
+    20 : 0xa0a1a2a3a4a5a6a7,
+                / token = 20 (mapkey) :
+                  h'a0a1a2a3a4a5a6a7' (bstr .size (8..64)),
+                  generated by TAM /
     1 : [ 1 ],  / supported-cipher-suites = 1 (mapkey) :
                   TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA =
-                  [ 1 ] (array of uint .size 4) /
+                  [ 1 ] (array of .within uint .size 4) /
     3 : [ 0 ],  / version = 3 (mapkey) :
-                  [ 0 ] (array of uint .size 4) /
+                  [ 0 ] (array of .within uint .size 4) /
     4 : h'010203' / ocsp-data = 4 (mapkey) : 0x010203 (bstr) /
   },
-  2   / data-item-requested : trusted-components = 2 (uint) /
+  2   / data-item-requested :
+        trusted-components = 2 (.within uint .size 8) /
 ]
 ~~~~
 
@@ -1296,21 +1301,22 @@ token = 20
 {: numbered='no'}
 
 ~~~~
-83                       # array(3),
-  01                     # unsigned(1)
+83                       # array(3)
+  01                     # unsigned(1) uint (0..23)
   A4                     # map(4)
-    14                   # unsigned(20)
-    1A 77777777          # unsigned(2004318071, 0x77777777)
-    01                   # unsigned(1)
+    14                   # unsigned(20) uint (0..23)
+    48                   # bytes(8) (8..64)
+      A0A1A2A3A4A5A6A7
+    01                   # unsigned(1) uint (0..23)
     81                   # array(1)
-      01                 # unsigned(1) within .size 4
-    03                   # unsigned(3)
+      01                 # unsigned(1) within uint .size 4
+    03                   # unsigned(3) uint (0..23)
     81                   # array(1)
-      00                 # unsigned(0) within .size 4
-    04                   # unsigned(4)
+      00                 # unsigned(0) within uint .size 4
+    04                   # unsigned(4) uint (0..23)
     43                   # bytes(3)
       010203             # "\x01\x02\x03"
-  02                     # unsigned(2)
+  02                     # unsigned(2) .within uint .size 8
 ~~~~
 
 ## QueryResponse Message
@@ -1322,25 +1328,28 @@ token = 20
 ~~~~
 / query-response = /
 [
-  2,  / type : TEEP-TYPE-query-response = 2 (fixed int) /
+  2,  / type : TEEP-TYPE-query-response = 2 (uint (0..23)) /
   / options : /
   {
-    20 : 2004318071,  / token = 20 (mapkey) : 0x77777777 (uint),
-                        from TAM's QueryRequest message /
+    20 : 0xa0a1a2a3a4a5a6a7,
+                / token = 20 (mapkey) :
+                  h'a0a1a2a3a4a5a6a7' (bstr .size (8..64)),
+                  given from TAM's QueryRequest message /
     5 : 1,  / selected-cipher-suite = 5 (mapkey) :
               TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA =
-              1 (uint .size 4) /
-    6 : 0,  / selected-version = 6 (mapkey) : 0 (uint .size 4) /
+              1 (.within uint .size 4) /
+    6 : 0,  / selected-version = 6 (mapkey) :
+              0 (.within uint .size 4) /
     8 : [   / tc-list = 8 (mapkey) : (array of tc-info) /
       {
         16 : [ 0x0102030405060708090a0b0c0d0e0f ] / component-id =
                16 (mapkey) : [ h'0102030405060708090a0b0c0d0e0f' ]
-               (SUIT_Component_Identifier, bstr) /
+               (SUIT_Component_Identifier =  [* bstr]) /
       },
       {
         16 : [ 0x1102030405060708090a0b0c0d0e0f ] / component-id =
                16 (mapkey) : [ h'1102030405060708090a0b0c0d0e0f' ]
-               (SUIT_Component_Identifier, bstr) /
+               (SUIT_Component_Identifier =  [* bstr]) /
       }
         ]
     }
@@ -1352,15 +1361,16 @@ token = 20
 
 ~~~~
 82                       # array(2)
-  02                     # unsigned(2)
+  02                     # unsigned(2) uint (0..23)
   A4                     # map(4)
-    14                   # unsigned(20)
-    1A 77777777          # unsigned(2004318071, 0x77777777)
-    05                   # unsigned(5)
-    01                   # unsigned(1) within .size 4
-    06                   # unsigned(6)
-    00                   # unsigned(0) within .size 4
-    08                   # unsigned(8)
+    14                   # unsigned(20) uint (0..23)
+    48                   # bytes(8) (8..64)
+      A0A1A2A3A4A5A6A7
+    05                   # unsigned(5) uint (0..23)
+    01                   # unsigned(1) .within uint .size 4
+    06                   # unsigned(6) uint (0..23)
+    00                   # unsigned(0) .within uint .size 4
+    08                   # unsigned(8) uint (0..23)
     82                   # array(2)
       81                 # array(1)
         4F               # bytes(15)
@@ -1379,11 +1389,13 @@ token = 20
 ~~~~
 / update = /
 [
-  3,  / type : TEEP-TYPE-update = 3 (fixed int) /
+  3,  / type : TEEP-TYPE-update = 3 (uint (0..23)) /
   / options : /
   {
-    20 : 2004318072,  / token = 20 (mapkey) :
-                        0x77777778 (uint), generated by TAM /
+    20 : 0xaba1a2a3a4a5a6a7,
+                / token = 20 (mapkey) :
+                  h'aba1a2a3a4a5a6a7' (bstr .size (8..64)),
+                  generated by TAM /
     15 : [ [ h'0102030405060708090a0b0c0d0e0f' ] ]
              / unneeded-tc-list = 15 (mapkey) :
                [ [ h'0102030405060708090a0b0c0d0e0f' ] ]
@@ -1400,16 +1412,17 @@ token = 20
 
 ~~~~
 82                       # array(2)
-  03                     # unsigned(3)
+  03                     # unsigned(3) uint (0..23)
   A3                     # map(3)
-    14                   # unsigned(20)
-    1A 77777778          # unsigned(2004318072, 0x77777778)
-    0F                   # unsigned(15)
+    14                   # unsigned(20) uint (0..23)
+    48                   # bytes(8) (8..64)
+      ABA1A2A3A4A5A6A7
+    0F                   # unsigned(15) uint (0..23)
     81                   # array(1)
       81                 # array(1)
         4F               # bytes(15)
           0102030405060708090A0B0C0D0E0F
-    0A                   # unsigned(10)
+    0A                   # unsigned(10) uint (0..23)
     80                   # array(0)
 ~~~~
 
@@ -1422,11 +1435,13 @@ token = 20
 ~~~~
 / teep-success = /
 [
-  5,          / type : TEEP-TYPE-teep-success = 5 (fixed int) /
+  5,  / type : TEEP-TYPE-teep-success = 5 (uint (0..23)) /
   / options : /
   {
-    20 : 2004318072,  / token = 20 (mapkey) : 0x77777778 (uint),
-                        from TAM's Update message /
+    20 : 0xaba1a2a3a4a5a6a7,
+                / token = 20 (mapkey) :
+                  h'aba1a2a3a4a5a6a7' (bstr .size (8..64)),
+                  given from TAM's Update message /
   }
 ]
 ~~~~
@@ -1436,10 +1451,11 @@ token = 20
 
 ~~~~
 82                       # array(2)
-  05                     # unsigned(5)
+  05                     # unsigned(5) uint (0..23)
   A1                     # map(1)
-    14                   # unsigned(20)
-    1A 77777778          # unsigned(2004318072, 0x77777778)
+    14                   # unsigned(20) uint (0..23)
+    48                   # bytes(8) (8..64)
+      ABA1A2A3A4A5A6A7
 ~~~~
 
 
@@ -1452,15 +1468,17 @@ token = 20
 ~~~~
 / teep-error = /
 [
-  6,          / type : TEEP-TYPE-teep-error = 6 (fixed int) /
+  6,  / type : TEEP-TYPE-teep-error = 6 (uint (0..23)) /
   / options : /
   {
-    20 : 2004318072,  / token = 20 (mapkey) : 0x77777778 (uint),
-                        from TAM's Update message /
+    20 : 0xaba1a2a3a4a5a6a7,
+                / token = 20 (mapkey) :
+                  h'aba1a2a3a4a5a6a7' (bstr .size (8..64)),
+                  given from TAM's Update message /
     12 : "disk-full"  / err-msg = 12 (mapkey) :
-                        "disk-full" (UTF-8 string) /
+                        "disk-full" (text .size (1..128)) /
   },
-  17, / err-code : ERR_MANIFEST_PROCESSING_FAILED = 17 (int (0..23)) /
+  17, / err-code : ERR_MANIFEST_PROCESSING_FAILED = 17 (uint (0..23)) /
 ]
 ~~~~
 
@@ -1469,12 +1487,13 @@ token = 20
 
 ~~~~
 83                       # array(3)
-  06                     # unsigned(6)
+  06                     # unsigned(6) uint (0..23)
   A2                     # map(2)
-    14                   # unsigned(20)
-    1A 77777778          # unsigned(2004318072, 0x77777778)
-    0C                   # unsigned(12)
-    69                   # text(9)
+    14                   # unsigned(20) uint (0..23)
+    48                   # bytes(8) (8..64)
+      ABA1A2A3A4A5A6A7
+    0C                   # unsigned(12) uint (0..23)
+    69                   # text(9) (1..128)
       6469736b2d66756c6c # "disk-full"
-  11                     # unsigned(17)
+  11                     # unsigned(17) uint (0..23)
 ~~~~
