@@ -87,6 +87,7 @@ normative:
   RFC2560: 
 informative:
   I-D.ietf-teep-architecture: 
+  I-D.birkholz-rats-suit-claims:
   RFC8610: 
   RFC8126: 
   RFC8915: 
@@ -470,7 +471,7 @@ evidence
   with the attestation bit set.  If the evidence-format parameter is absent,
   the attestation evidence contained in this parameter MUST be
   an Entity Attestation Token following the encoding
-  defined in {{I-D.ietf-rats-eat}}.
+  defined in {{I-D.ietf-rats-eat}}.  See {{evidence}} for further discussion.
 
 tc-list
 : The tc-list parameter enumerates the Trusted Components installed on the device
@@ -528,6 +529,23 @@ have-binary
   the Trusted Component binary and only needs an Update message with a SUIT manifest
   that authorizes installing it.  If have-binary is true, the
   tc-manifest-sequence-number field MUST be present.
+
+### Evidence {#evidence}
+
+Section 7.1 of {{I-D.ietf-teep-architecture}} lists information that may be
+required in the evidence depend on the circumstance.  When an Entity
+Attestation Token is used, the following claims can be used to meet those
+requirements:
+
+| Requirement  | Claim | Reference |
+| Device unique identifier | device-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.3 |
+| Vendor of the device | vendor-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.1 |
+| Class of the device | class-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.2 |
+| TEE hardware type | chip-version-scheme | {{I-D.ietf-rats-eat}} section 3.7 |
+| TEE hardware version | chip-version-scheme | {{I-D.ietf-rats-eat}} section 3.7 |
+| TEE firmware type | component-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.4 |
+| TEE firmware version | version | {{I-D.birkholz-rats-suit-claims}} section 3.1.8 |
+| Freshness proof | nonce | {{I-D.ietf-rats-eat}} section 3.3 |
 
 ## Update Message
 
