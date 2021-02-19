@@ -625,7 +625,7 @@ suit-reports
 : If present, the suit-reports parameter contains a set of SUIT Reports
   as defined in Section 4 of {{I-D.moran-suit-report}}.
 
-## Error Message
+## Error Message {#error-message}
 
 The Error message is used by the TEEP Agent to return an error in
 response to an Update message. 
@@ -690,56 +690,70 @@ err-code
 This specification defines the following initial error messages:
 
 {: vspace='0'}
-ERR_ILLEGAL_PARAMETER (1)
-: The TEEP 
+ERR_PERMANENT_ERROR (1)
+: The TEEP
   request contained incorrect fields or fields that are inconsistent with
   other fields.
+  For diagnosis purposes it is RECOMMMENDED to identify the failure reason
+  in the error message.
+  A TAM receiving this error might refuse to communicate further with
+  the TEEP Agent for some period of time until it has reason to believe
+  it is worth trying again, but it should take care not to give up on
+  communication when there is no attestation evidence indicating that
+  the error is genuine.  In contrast, ERR_TEMPORARY_ERROR is an indication
+  that a more agressive retry is warranted.
 
 ERR_UNSUPPORTED_EXTENSION (2)
-: The TEEP Agent does not support the request message or
-  an extension it indicated.
-
-ERR_REQUEST_SIGNATURE_FAILED (3)
-: The TEEP Agent
-  could not verify the signature of the request message.
+: The TEEP Agent does not support an extension included in the request
+  message.
+  For diagnosis purposes it is RECOMMMENDED to identify the unsupported
+  extension in the error message.
+  A TAM receiving this error might retry the request without using extensions.
 
 ERR_UNSUPPORTED_MSG_VERSION (4)
 : The TEEP Agent does not
   support the TEEP protocol version indicated in the request message.
+  A TAM receiving this error might retry the request using a different
+  TEEP protocol version.
 
 ERR_UNSUPPORTED_CRYPTO_ALG (5)
 : The TEEP Agent does not
   support the cryptographic algorithm indicated in the request message.
+  A TAM receiving this error might retry the request using a different
+  cryptographic algorithm.
 
 ERR_BAD_CERTIFICATE (6)
 : Processing of a certificate failed. For diagnosis purposes it is
   RECOMMMENDED to include information about the failing certificate
-  in the error message.
-
-ERR_UNSUPPORTED_CERTIFICATE (7)
-: A certificate was of an unsupported type.
-
-ERR_CERTIFICATE_REVOKED (8)
-: A certificate was revoked by its signer.
+  in the error message.  For example, the certificate was of an
+  unsupported type, or the certificate was revoked by its signer.
+  A TAM receiving this error might attempt to use an alternate certificate.
 
 ERR_CERTIFICATE_EXPIRED (9)
 : A certificate has expired or is not currently
   valid.
+  A TAM receiving this error might attempt to renew its certificate
+  before using it again.
 
-ERR_INTERNAL_ERROR (10)
+ERR_TEMPORARY_ERROR (10)
 : A miscellaneous
-  internal error occurred while processing the request message.
-
-ERR_TC_NOT_FOUND (12)
-: The target Trusted Component does not
-  exist. This error may happen when the TAM has stale information and
-  tries to delete a Trusted Component that has already been deleted.
+  temporary error, such as a memory allocation failure, occurred while processing the request message.
+  A TAM receiving this error might retry the same request at a later point
+  in time.
 
 ERR_MANIFEST_PROCESSING_FAILED (17)
 : The TEEP Agent encountered one or more manifest processing failures.
   If the suit-reports parameter is present, it contains the failure details.
+  A TAM receiving this error might still attempt to install or update
+  other components that do not depend on the failed manifest.
 
-Additional error codes can be registered with IANA.
+New error codes should be added sparingly, not for every implementation
+error.  That is the intent of the err-msg field, which can be used to
+provide details meaningful to humans.  New error codes should only be
+added if the TAM is expected to do something behaviorally different upon
+receipt of the error message, rather than just logging the event.
+Hence, each error code is responsible for saying what the
+behavioral difference is expected to be.
 
 # Mapping of TEEP Message Parameters to CBOR Labels {#tags}
 
@@ -795,6 +809,9 @@ determines, in any implementation specific manner, which Trusted Components
 need to be installed, updated, or deleted, if any.
 If any Trusted Components need to be installed, updated, or deleted,
 the TAM sends an Update message.
+
+If an Error message is received, the TAM can handle it in any implementation
+specific way, but {{error-message}} provides recommendations for such handling.
 
 ## TEEP Agent Behavior {#agent}
 
@@ -1008,36 +1025,6 @@ Change controller:
 : IETF
 
 
-
-## Error Code Registry {#error-code-registry}
-
-IANA is also requested to create a new registry for the error codes defined
-in {{detailmsg}}.
-
-Registration requests are evaluated after a
-three-week review period on the teep-reg-review@ietf.org mailing list,
-on the advice of one or more Designated Experts {{RFC8126}}.  However,
-to allow for the allocation of values prior to publication, the
-Designated Experts may approve registration once they are satisfied
-that such a specification will be published.
-
-Registration requests sent to the mailing list for review should use
-an appropriate subject (e.g., "Request to register an error code: example").
-Registration requests that are undetermined for a period longer than
-21 days can be brought to the IESG's attention (using the
-iesg@ietf.org mailing list) for resolution.
-
-Criteria that should be applied by the Designated Experts includes
-determining whether the proposed registration duplicates existing
-functionality, whether it is likely to be of general applicability or
-whether it is useful only for a single extension, and whether the
-registration description is clear.
-
-IANA must only accept registry updates from the Designated Experts
-and should direct all requests for registration to the review mailing
-list.
-
-
 ## Ciphersuite Registry {#ciphersuite-registry}
 
 IANA is also requested to create a new registry for ciphersuites, as defined
@@ -1220,17 +1207,13 @@ teep-error = [
 ]
 
 ; The err-code parameter, uint (0..23)
-ERR_ILLEGAL_PARAMETER = 1
+ERR_PERMANENT_ERROR = 1
 ERR_UNSUPPORTED_EXTENSION = 2
-ERR_REQUEST_SIGNATURE_FAILED = 3
 ERR_UNSUPPORTED_MSG_VERSION = 4
 ERR_UNSUPPORTED_CRYPTO_ALG = 5
 ERR_BAD_CERTIFICATE = 6
-ERR_UNSUPPORTED_CERTIFICATE = 7
-ERR_CERTIFICATE_REVOKED = 8
 ERR_CERTIFICATE_EXPIRED = 9
-ERR_INTERNAL_ERROR = 10
-ERR_TC_NOT_FOUND = 12
+ERR_TEMPORARY_ERROR = 10
 ERR_MANIFEST_PROCESSING_FAILED = 17
 
 ; labels of mapkey for teep message parameters, uint (0..23)
