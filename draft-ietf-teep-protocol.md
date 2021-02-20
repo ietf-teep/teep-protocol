@@ -804,13 +804,18 @@ TEEP Agent passes no data back to the caller.  Otherwise,
 if the TEEP Agent chooses to initiate the process of requesting the indicated
 TA, it determines (in any implementation specific way) the TAM URI based on 
 any TAM URI provided by the RequestTA caller and any local configuration,
-and passes back the TAM URI to connect to.
+and passes back the TAM URI to connect to.  
 
 When the RequestPolicyCheck API is invoked, the TEEP Agent decides
 whether to initiate communication with any trusted TAMs (e.g., it might
 choose to do so for a given TAM unless it detects that it has already
 communicated with that TAM recently). If so, it passes back a TAM URI
-to connect to.
+to connect to.  If the TEEP Agent has multiple TAMs it needs to connect
+with, it just passes back one, with the expectation that
+RequestPolicyCheck API will be invoked to retrieve each one successively
+until there are no more and it can pass back no data at that time.
+Thus, once a TAM URI is returned, the TEEP Agent can remember that it has
+already initiated communication with that TAM.
 
 When the ProcessError API is invoked, the TEEP Agent can handle it in
 any implementation specific way, such as logging the error or
