@@ -581,6 +581,25 @@ manifest-list
   it is also possible for the TAM to sign and encrypt the personalization data
   and to let the TA Developer sign and/or encrypt the TA binary.
 
+Note that an Update message carrying one or more SUIT manifests will inherently
+involve multiple signatures, one by the TAM in the TEEP message and one from 
+a Trusted Component signer inside each manifest.  This is intentional as they
+are for different purposes.
+
+The TAM is what authorizes
+apps to be installed, updated, and deleted on a given TEE and so the TEEP
+signature is checked by the TEEP Agent at protocol message processing time.
+(This same TEEP security wrapper is also used on messages like QueryRequest
+so that Agents only send potentially sensitive data such as evidence to
+trusted TAMs.)
+
+The Trusted Component signer on the other hand is what authorizes the
+Trusted Component to actually run, so the manifest signature could be
+checked at install time or load (or run) time or both, and this checking is
+done by the TEE independent of whether TEEP is used or some other update
+mechanism.
+See section 5 of {{I-D.ietf-teep-architecture}} for further discussion.
+
 ## Success Message
 
 The Success message is used by the TEEP Agent to return a success in
