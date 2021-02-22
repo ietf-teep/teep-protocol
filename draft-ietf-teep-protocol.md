@@ -1316,8 +1316,8 @@ token = 20
                   [ 0 ] (array of .within uint .size 4) /
     4 : h'010203' / ocsp-data = 4 (mapkey) : 0x010203 (bstr) /
   },
-  2   / data-item-requested :
-        trusted-components = 2 (.within uint .size 8) /
+  3   / data-item-requested :
+        attestation | trusted-components = 3 (.within uint .size 8) /
 ]
 ~~~~
 
@@ -1340,7 +1340,33 @@ token = 20
     04                   # unsigned(4) uint (0..23)
     43                   # bytes(3)
       010203             # "\x01\x02\x03"
-  02                     # unsigned(2) .within uint .size 8
+  03                     # unsigned(3) .within uint .size 8
+~~~~
+
+## Entity Attestation Token
+{: numbered='no'}
+
+This is shown below in CBOR diagnostic form.  Only the payload signed by
+COSE is shown.
+
+### CBOR Diagnostic Notation
+{: numbered='no'}
+
+~~~~
+/ eat-claim-set = /
+{
+    / issuer /                     1: "joe",
+    / timestamp (iat) /            6: 1(1526542894)
+    / nonce /                     10: h'948f8860d13a463e8e',
+    / secure-boot /               15: true,
+    / debug-status /              16: 3, / disabled-permanently /
+    / device-identifier /        XXX: XXX
+    / vendor-identifier /        XXX: XXX
+    / class-identifier /         XXX: XXX
+    / chip-version-scheme /  <TBD35>: "MyTEE v1.0",
+    / component-identifier /     XXX: XXX
+    / version /                  XXX: XXX
+}
 ~~~~
 
 ## QueryResponse Message
