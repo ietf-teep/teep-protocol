@@ -649,7 +649,7 @@ type
 
 token
 : The value in the token parameter is used to match responses to requests.
-  It MUST match the value of the token parameter in the Install or Delete
+  It MUST match the value of the token parameter in the Update
   message the Success is in response to, if one was present.  If none was
   present, the token MUST be absent in the Success message.
 
@@ -660,7 +660,10 @@ msg
 
 suit-reports
 : If present, the suit-reports parameter contains a set of SUIT Reports
-  as defined in Section 4 of {{I-D.moran-suit-report}}.
+  as defined in Section 4 of {{I-D.moran-suit-report}}.  If
+  the suit-report-nonce field is present in the SUIT Report, is value
+  MUST match the value of the token parameter in the Update
+  message the Success message is in response to.
 
 ## Error Message
 
@@ -695,7 +698,7 @@ type
 
 token
 : The value in the token parameter is used to match responses to requests.
-  It MUST match the value of the token parameter in the Install or Delete
+  It MUST match the value of the token parameter in the Update
   message the Success is in response to, if one was present.  If none was
   present, the token MUST be absent in the Error message.
 
@@ -716,7 +719,10 @@ versions
 
 suit-reports
 : If present, the suit-reports parameter contains a set of SUIT Reports
-  as defined in Section 4 of {{I-D.moran-suit-report}}.
+  as defined in Section 4 of {{I-D.moran-suit-report}}.  If
+  the suit-report-nonce field is present in the SUIT Report, is value
+  MUST match the value of the token parameter in the Update
+  message the Error message is in response to.
 
 err-code
 : The err-code parameter contains one of the values listed in the registry
@@ -823,7 +829,7 @@ When the ProcessTeepMessage API is invoked, the TAM first does validation
 as specified in {{validation}}, and drops the message if it is not valid.
 Otherwise, it proceeds as follows.
 
-If a QueryResponse is received that contains evidence, the evidence
+If a QueryResponse message is received that contains evidence, the evidence
 is passed to an attestation Verifier (see {{I-D.ietf-rats-architecture}})
 to determine whether the Agent is in a trustworthy state.
 Based on the results of attestation, and the lists of installed, requested,
@@ -832,6 +838,12 @@ determines, in any implementation specific manner, which Trusted Components
 need to be installed, updated, or deleted, if any.
 If any Trusted Components need to be installed, updated, or deleted,
 the TAM sends an Update message.
+
+If a Success or Error message is received, the TAM also validates that
+the nonce in any SUIT Report matches the token sent in the Update message,
+and drops the message if it does not match.  Otherwise, the TAM handles
+the update in any implementation specific way, such as updating any locally
+cached information about the state of the TEEP Agent, or logging the results.
 
 ## TEEP Agent Behavior {#agent}
 
