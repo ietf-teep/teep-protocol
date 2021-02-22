@@ -561,7 +561,6 @@ update = [
   type: TEEP-TYPE-update,
   options: {
     ? token => bstr .size (8..64),
-    ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
     ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
     * $$update-extensions,
     * $$teep-option-extensions
@@ -582,11 +581,6 @@ type
 
 token
 : The value in the token field is used to match responses to requests.
-
-unneeded-tc-list
-: The unneeded-tc-list parameter enumerates the Trusted Components to be deleted.
-  Each unneeded Trusted Component is identified
-  by its SUIT Component Identifier.
 
 manifest-list
 : The manifest-list field is used to convey one or multiple SUIT manifests
@@ -831,7 +825,8 @@ and unneeded Trusted Components reported in the QueryResponse, the TAM
 determines, in any implementation specific manner, which Trusted Components
 need to be installed, updated, or deleted, if any.
 If any Trusted Components need to be installed, updated, or deleted,
-the TAM sends an Update message.
+the TAM sends an Update message containing SUIT Manifests with command
+sequences to do the relevant installs, updates, or deletes.
 
 ## TEEP Agent Behavior {#agent}
 
@@ -865,11 +860,9 @@ Otherwise, processing continues as follows based on the type of message.
 When a QueryRequest message is received, the Agent responds with a
 QueryResponse message.
 
-When an Update message is received, the Agent attempts to uninstall any
-Trusted Components listed in the unneeded-tc-list field of the message,
-and responds with an Error message if any error was encountered.
-Otherwise, the Agent attempts to update
-the specified SUIT manifests by following the Update Procedure specified
+When an Update message is received, the Agent attempts to update
+the Trusted Components specified in the SUIT manifests
+by following the Update Procedure specified
 in {{I-D.ietf-suit-manifest}}, and responds with a Success message if
 all SUIT manifests were successfully installed, or an Error message
 if any error was encountered.
