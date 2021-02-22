@@ -1291,7 +1291,6 @@ token = 20
   - [ 0x0102030405060708090a0b0c0d0e0f ]
   - [ 0x1102030405060708090a0b0c0d0e0f ]
 - SUIT manifest-list is set empty only for example purposes
-- Not including Entity Attestation Token (EAT) parameters for example purposes
 
 ## QueryRequest Message
 {: numbered='no'}
@@ -1360,12 +1359,13 @@ COSE is shown.
     / nonce /                     10: h'948f8860d13a463e8e',
     / secure-boot /               15: true,
     / debug-status /              16: 3, / disabled-permanently /
-    / device-identifier /        XXX: XXX
-    / vendor-identifier /        XXX: XXX
-    / class-identifier /         XXX: XXX
+    / security-level /         <TBD>: 3, / secure-restricted /
+    / device-identifier /      <TBD>: h'e99600dd921649798b013e9752dcf0c5',
+    / vendor-identifier /      <TBD>: h'2b03879b33434a7ca682b8af84c19fd4', 
+    / class-identifier /       <TBD>: h'9714a5796bd245a3a4ab4f977cb8487f',
     / chip-version-scheme /  <TBD35>: "MyTEE v1.0",
-    / component-identifier /     XXX: XXX
-    / version /                  XXX: XXX
+    / component-identifier /   <TBD>: h'60822887d35e43d5b603d18bcaa3f08d',
+    / version /                <TBD>: "v0.1"
 }
 ~~~~
 
@@ -1390,6 +1390,8 @@ COSE is shown.
               1 (.within uint .size 4) /
     6 : 0,  / selected-version = 6 (mapkey) :
               0 (.within uint .size 4) /
+    7 : ... / evidence = 7 (mapkey) :
+              Entity Attestation Token /
     8 : [   / tc-list = 8 (mapkey) : (array of tc-info) /
       {
         16 : [ 0x0102030405060708090a0b0c0d0e0f ] / component-id =
@@ -1412,7 +1414,7 @@ COSE is shown.
 ~~~~
 82                       # array(2)
   02                     # unsigned(2) uint (0..23)
-  A4                     # map(4)
+  A5                     # map(5)
     14                   # unsigned(20) uint (0..23)
     48                   # bytes(8) (8..64)
       A0A1A2A3A4A5A6A7
@@ -1420,6 +1422,8 @@ COSE is shown.
     01                   # unsigned(1) .within uint .size 4
     06                   # unsigned(6) uint (0..23)
     00                   # unsigned(0) .within uint .size 4
+    07                   # unsigned(7) uint (0..23)
+      ...                # Entity Attestation Token
     08                   # unsigned(8) uint (0..23)
     82                   # array(2)
       81                 # array(1)
