@@ -659,7 +659,7 @@ suit-reports
   MUST match the value of the token parameter in the Update
   message the Success message is in response to.
 
-## Error Message {#error-message}
+## Error Message {#error-message-def}
 
 The Error message is used by the TEEP Agent to return an error in
 response to an Update message. 
@@ -719,9 +719,8 @@ suit-reports
   message the Error message is in response to.
 
 err-code
-: The err-code parameter contains one of the values listed in the registry
-  defined in {{error-code-registry}} (with the
-  initial set of error codes listed below). Only selected values are applicable
+: The err-code parameter contains one of the 
+  error codes listed below). Only selected values are applicable
   to each message.
 
 This specification defines the following initial error messages:
@@ -855,7 +854,7 @@ the update in any implementation specific way, such as updating any locally
 cached information about the state of the TEEP Agent, or logging the results.
 
 If an Error message is received, the TAM can handle it in any implementation
-specific way, but {{error-message}} provides recommendations for such handling.
+specific way, but {{error-message-def}} provides recommendations for such handling.
 
 ## TEEP Agent Behavior {#agent}
 
