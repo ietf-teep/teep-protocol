@@ -100,10 +100,6 @@ Trusted Applications (TAs) in a device with a Trusted Execution
 Environment (TEE).  This specification defines an interoperable
 protocol for managing the lifecycle of TAs.
 
-The protocol name is pronounced teepee. This conjures an image of a
-wedge-shaped protective covering for one's belongings, which sort of
-matches the intent of this protocol.
-
 --- middle
 
 # Introduction {#introduction}
