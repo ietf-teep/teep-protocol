@@ -450,6 +450,7 @@ token
   value MUST correspond to the value received with the QueryRequest message
   if one was present, and MUST be absent if no token was present in the
   QueryRequest.
+  Refer the QueryRequest Message section for other requirements of token handling.
 
 selected-cipher-suite
 : The selected-cipher-suite parameter indicates the selected ciphersuite. Details
@@ -581,6 +582,7 @@ type
 
 token
 : The value in the token field is used to match responses to requests.
+  Refer the QueryRequest Message section for other requirements of token handling.
 
 manifest-list
 : The manifest-list field is used to convey one or multiple SUIT manifests
@@ -646,6 +648,7 @@ token
   It MUST match the value of the token parameter in the Update
   message the Success is in response to, if one was present.  If none was
   present, the token MUST be absent in the Success message.
+  Refer the QueryRequest Message section for other requirements of token handling.
 
 msg
 : The msg parameter contains optional diagnostics information encoded in
@@ -695,6 +698,7 @@ token
   It MUST match the value of the token parameter in the Update
   message the Success is in response to, if one was present.  If none was
   present, the token MUST be absent in the Error message.
+  Refer the QueryRequest Message section for other requirements of token handling.
 
 err-msg
 : The err-msg parameter is human-readable diagnostic text that MUST be encoded
