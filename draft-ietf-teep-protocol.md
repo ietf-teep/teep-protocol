@@ -139,7 +139,7 @@ components that are expressed in SUIT manifests, and a SUIT manifest
 might contain or reference multiple binaries (see {{I-D.ietf-suit-manifest}}
 for more details).
 
-As such, the term Trusted Component in this document refers to a
+As such, the term Trusted Component (TC) in this document refers to a
 set of binaries expressed in a SUIT manifest, to be installed in
 a TEE.  Note that a Trusted Component may include one or more TAs
 and/or configuration data and keys needed by a TA to operate correctly.
@@ -1292,7 +1292,7 @@ token = 20
 {: numbered='no'}
 
 - OCSP stapling data = h'010203'
-- TEEP Device will have 2 TAs with the following SUIT Component Identifiers:
+- TEEP Device will have two TCs with the following SUIT Component Identifiers:
   - [ 0x0102030405060708090a0b0c0d0e0f ]
   - [ 0x1102030405060708090a0b0c0d0e0f ]
 - SUIT manifest-list is set empty only for example purposes
