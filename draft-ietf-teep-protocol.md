@@ -1468,11 +1468,6 @@ COSE is shown.
     14                   # unsigned(20) uint (0..23)
     48                   # bytes(8) (8..64)
       ABA1A2A3A4A5A6A7
-    0F                   # unsigned(15) uint (0..23)
-    81                   # array(1)
-      81                 # array(1)
-        4F               # bytes(15)
-          0102030405060708090A0B0C0D0E0F
     0A                   # unsigned(10) uint (0..23)
     80                   # array(0)
 ~~~~
@@ -1545,6 +1540,6 @@ COSE is shown.
       ABA1A2A3A4A5A6A7
     0C                   # unsigned(12) uint (0..23)
     69                   # text(9) (1..128)
-      6469736b2d66756c6c # "disk-full"
+      6469736B2D66756C6C # "disk-full"
   11                     # unsigned(17) uint (0..23)
 ~~~~
