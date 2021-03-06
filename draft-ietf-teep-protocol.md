@@ -45,13 +45,13 @@ author:
  -
   ins: D. Wheeler
   name: David Wheeler
-  org: Intel
+  org: Amazon
   street: ''
   city: ''
   region: ''
   code: ''
   country: US
-  email: david.m.wheeler@intel.com
+  email: davewhee@amazon.com
 
  -
   ins: D. Thaler
