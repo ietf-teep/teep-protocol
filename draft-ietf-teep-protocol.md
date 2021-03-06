@@ -362,7 +362,7 @@ supported-cipher-suites
   about the ciphersuite encoding can be found in {{ciphersuite}}.
 
 challenge
-: The challenge field is an optional parameter used for ensuring the refreshness of the
+: The challenge field is an optional parameter used for ensuring the freshness of the
   attestation evidence returned with a QueryResponse message. When a challenge is 
   provided in the QueryRequest and an EAT is returned with the QueryResponse message
   then the challenge contained in this request MUST be copied into the nonce claim found 
