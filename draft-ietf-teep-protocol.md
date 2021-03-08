@@ -45,13 +45,13 @@ author:
  -
   ins: D. Wheeler
   name: David Wheeler
-  org: Intel
+  org: Amazon
   street: ''
   city: ''
   region: ''
   code: ''
   country: US
-  email: david.m.wheeler@intel.com
+  email: davewhee@amazon.com
 
  -
   ins: D. Thaler
@@ -362,7 +362,7 @@ supported-cipher-suites
   about the ciphersuite encoding can be found in {{ciphersuite}}.
 
 challenge
-: The challenge field is an optional parameter used for ensuring the refreshness of the
+: The challenge field is an optional parameter used for ensuring the freshness of the
   attestation evidence returned with a QueryResponse message. When a challenge is 
   provided in the QueryRequest and an EAT is returned with the QueryResponse message
   then the challenge contained in this request MUST be copied into the nonce claim found 
@@ -1468,11 +1468,6 @@ COSE is shown.
     14                   # unsigned(20) uint (0..23)
     4F                   # bytes(16) (8..64)
       A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
-    0F                   # unsigned(15) uint (0..23)
-    81                   # array(1)
-      81                 # array(1)
-        4F               # bytes(15)
-          0102030405060708090A0B0C0D0E0F
     0A                   # unsigned(10) uint (0..23)
     80                   # array(0)
 ~~~~
@@ -1545,6 +1540,6 @@ COSE is shown.
       A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
     0C                   # unsigned(12) uint (0..23)
     69                   # text(9) (1..128)
-      6469736b2d66756c6c # "disk-full"
+      6469736B2D66756C6C # "disk-full"
   11                     # unsigned(17) uint (0..23)
 ~~~~
