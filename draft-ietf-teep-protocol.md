@@ -1471,7 +1471,7 @@ COSE is shown.
     0F                   # unsigned(15) uint (0..23)
     81                   # array(1)
       81                 # array(1)
-        4F               # bytes(16)
+        4F               # bytes(15)
           0102030405060708090A0B0C0D0E0F
     0A                   # unsigned(10) uint (0..23)
     80                   # array(0)
