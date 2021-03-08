@@ -1329,7 +1329,7 @@ token = 20
   01                     # unsigned(1) uint (0..23)
   A4                     # map(4)
     14                   # unsigned(20) uint (0..23)
-    4F                   # bytes(8) (8..64)
+    4F                   # bytes(16) (8..64)
       A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
     01                   # unsigned(1) uint (0..23)
     81                   # array(1)
@@ -1417,7 +1417,7 @@ COSE is shown.
   02                     # unsigned(2) uint (0..23)
   A5                     # map(5)
     14                   # unsigned(20) uint (0..23)
-    4F                   # bytes(8) (8..64)
+    4F                   # bytes(16) (8..64)
       A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
     05                   # unsigned(5) uint (0..23)
     01                   # unsigned(1) .within uint .size 4
@@ -1428,10 +1428,10 @@ COSE is shown.
     08                   # unsigned(8) uint (0..23)
     82                   # array(2)
       81                 # array(1)
-        4F               # bytes(15)
+        4F               # bytes(16)
           000102030405060708090A0B0C0D0E0F
       81                 # array(1)
-        4F               # bytes(15)
+        4F               # bytes(16)
           100102030405060708090A0B0C0D0E0F
 ~~~~
 
@@ -1466,12 +1466,12 @@ COSE is shown.
   03                     # unsigned(3) uint (0..23)
   A3                     # map(3)
     14                   # unsigned(20) uint (0..23)
-    4F                   # bytes(8) (8..64)
+    4F                   # bytes(16) (8..64)
       A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
     0F                   # unsigned(15) uint (0..23)
     81                   # array(1)
       81                 # array(1)
-        4F               # bytes(15)
+        4F               # bytes(16)
           0102030405060708090A0B0C0D0E0F
     0A                   # unsigned(10) uint (0..23)
     80                   # array(0)
