@@ -307,7 +307,7 @@ query-request = [
   options: {
     ? token => bstr .size (8..64),
     ? supported-cipher-suites => [ + suite ],
-    ? challenge => bstr .size (8..64),
+    ? challenge => bstr .size (8..512),
     ? versions => [ + version ],
     ? ocsp-data => bstr,
     * $$query-request-extensions
@@ -1167,7 +1167,7 @@ query-request = [
   options: {
     ? token => bstr .size (8..64),
     ? supported-cipher-suites => [ + suite ],
-    ? challenge => bstr .size (8..64),
+    ? challenge => bstr .size (8..512),
     ? versions => [ + version ],
     ? ocsp-data => bstr,
     * $$query-request-extensions
