@@ -79,12 +79,13 @@ normative:
   RFC8152: 
   RFC3629: 
   RFC5198: 
+  RFC5280: 
   RFC7049: 
   I-D.ietf-rats-architecture: 
   I-D.ietf-rats-eat: 
   I-D.ietf-suit-manifest: 
   I-D.moran-suit-report: 
-  RFC2560: 
+  RFC6960: 
 informative:
   I-D.ietf-teep-architecture: 
   I-D.birkholz-rats-suit-claims:
@@ -158,7 +159,8 @@ manifest format {{I-D.ietf-suit-manifest}} is used, and
 for attestation the Entity Attestation Token (EAT) {{I-D.ietf-rats-eat}}
 format is supported although other attestation formats are also permitted.
 
-This specification defines five messages.
+This specification defines five messages: QueryRequest, QueryResponse,
+Update, Success, and Error.
 
 A TAM queries a device's current state with a QueryRequest message.
 A TEEP Agent will, after authenticating and authorizing the request, report
@@ -295,7 +297,7 @@ the following features are supported:
  - Request for attestation information,
  - Listing supported extensions, 
  - Querying installed Trusted Components, and 
- - Listing supporting SUIT commands.
+ - Listing supported SUIT commands.
 
 Like other TEEP messages, the QueryRequest message is
 signed, and the relevant CDDL snippet is shown below. 
@@ -370,7 +372,7 @@ challenge
   format to define the use of the challenge field.
 
 versions
-: The versions parameter enumerates the TEEP protocol version(s) supported by the TAM
+: The versions parameter enumerates the TEEP protocol version(s) supported by the TAM.
   A value of 0 refers to the current version of the TEEP protocol.
   If this field is not present, it is to be treated the same as if
   it contained only version 0.
@@ -378,11 +380,11 @@ versions
 ocsp-data
 : The ocsp-data parameter contains a list of OCSP stapling data
   respectively for the TAM certificate and each of the CA certificates
-  up to the root certificate. The TAM provides OCSP data so that the
+  up to, but not including, the trust anchor. The TAM provides OCSP data so that the
   TEEP Agent can validate the status of the TAM certificate chain
   without making its own external OCSP service call. OCSP data MUST be
   conveyed as a DER-encoded OCSP response (using the ASN.1 type
-  OCSPResponse defined in {{RFC2560}}). The use of OCSP is OPTIONAL to
+  OCSPResponse defined in {{RFC6960}}). The use of OCSP is OPTIONAL to
   implement for both the TAM and the TEEP Agent. A TAM can query the
   TEEP Agent for the support of this functionality via the capability
   discovery exchange, as described above.
@@ -512,7 +514,7 @@ component-id
 
 tc-manifest-sequence-number
 : The minimum suit-manifest-sequence-number value from a SUIT manifest for
-  the Trusted Component.  If not present, indicates that any version will do.
+  the Trusted Component.  If not present, indicates that any sequence number will do.
 
 have-binary
 : If present with a value of true, indicates that the TEEP agent already has
@@ -829,7 +831,7 @@ Otherwise, it proceeds as follows.
 If the message includes a token, it can be used to 
 match the response to a request previously sent by the TAM.
 The TAM MUST expire the token value after receiving the first response
-from the device and ignore any subsequent messages that have the same token
+from the device that has a valid signature and ignore any subsequent messages that have the same token
 value.  The token value MUST NOT be used for other purposes, such as a TAM to
 identify the devices and/or a device to identify TAMs or Trusted Components.
 
@@ -894,7 +896,7 @@ if any error was encountered.
 
 # Ciphersuites {#ciphersuite}
 
-A ciphersuite consists of an AEAD algorithm, an HMAC algorithm, and a signature
+A ciphersuite consists of an AEAD algorithm, a MAC algorithm, and a signature
 algorithm.
 Each ciphersuite is identified with an integer value, which corresponds to
 an IANA registered
@@ -925,7 +927,7 @@ Attestation
 : A TAM can rely on the attestation evidence provided by the TEEP
   Agent.  To sign the attestation evidence, it is necessary
   for the device to possess a public key (usually in the form of a
-  certificate) along with the corresponding private key. Depending on
+  certificate {{RFC5280}}) along with the corresponding private key. Depending on
   the properties of the attestation mechanism, it is possible to
   uniquely identify a device based on information in the attestation
   evidence or in the certificate used to sign the attestation
@@ -968,7 +970,7 @@ TEEP Broker
 Trusted Component Signer Compromise
 : The QueryRequest message from a TAM to the TEEP Agent can include
   OCSP stapling data for the TAM's certificate and for
-  intermediate CA certificates up to the root certificate so that the
+  intermediate CA certificates up to, but not including, the trust anchor so that the
   TEEP Agent can verify the certificate's revocation status.  A
   certificate revocation status check on a Trusted Component Signer certificate is
   OPTIONAL by a TEEP Agent. A TAM is responsible for vetting a Trusted Component and
