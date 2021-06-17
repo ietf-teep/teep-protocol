@@ -96,9 +96,9 @@ informative:
 
 
 This document specifies a protocol that installs, updates, and deletes
-Trusted Applications (TAs) in a device with a Trusted Execution
+Trusted Components in a device with a Trusted Execution
 Environment (TEE).  This specification defines an interoperable
-protocol for managing the lifecycle of TAs.
+protocol for managing the lifecycle of Trusted Components.
 
 --- middle
 
@@ -108,9 +108,9 @@ The Trusted Execution Environment (TEE) concept has been designed to
 separate a regular operating system, also referred as a Rich Execution
 Environment (REE), from security-sensitive applications. In a TEE
 ecosystem, device vendors may use different operating systems in the
-REE and may use different types of TEEs. When TA Developers or
+REE and may use different types of TEEs. When Trusted Component Developers or
 Device Administrators use Trusted Application Managers (TAMs) to
-install, update, and delete Trusted Applications (TAs) on a wide range
+install, update, and delete Trusted Applications and their dependencies on a wide range
 of devices with potentially different TEEs then an interoperability
 need arises.
 
@@ -130,7 +130,7 @@ necessary terminology.
 This specification re-uses the terminology defined in {{I-D.ietf-teep-architecture}}.
 
 As explained in Section 4.4 of that document, the TEEP protocol treats
-each TA, any dependencies the TA has, and personalization data as separate
+each Trusted Application (TA), any dependencies the TA has, and personalization data as separate
 components that are expressed in SUIT manifests, and a SUIT manifest
 might contain or reference multiple binaries (see {{I-D.ietf-suit-manifest}}
 for more details).
@@ -150,7 +150,7 @@ and a TEEP Agent.
 The messages are encoded in CBOR and designed to provide end-to-end security.
 TEEP protocol messages are signed by the endpoints, i.e., the TAM and the
 TEEP Agent, but Trusted
-Applications may also be encrypted and signed by a TA Developer or
+Applications may also be encrypted and signed by a Trusted Component Developer or
 Device Administrator.
 The TEEP protocol not only uses
 CBOR but also the respective security wrapper, namely COSE {{RFC8152}}. Furthermore, for software updates the SUIT
@@ -189,7 +189,7 @@ With the Update message a TAM can instruct a TEEP Agent to install and/or
 delete one or more Trusted Components.
 The TEEP Agent will process the message, determine whether the TAM is authorized
 and whether the
-Trusted Component has been signed by an authorized TA Signer.
+Trusted Component has been signed by an authorized Trusted Component Signer.
 A Success message is returned when the operation has been completed successfully,
 or an Error message
 otherwise.
@@ -575,13 +575,13 @@ token
 manifest-list
 : The manifest-list field is used to convey one or multiple SUIT manifests
   to install.  A manifest is
-  a bundle of metadata about a TA, such as where to
+  a bundle of metadata about a Trusted Component, such as where to
   find the code, the devices to which it applies, and cryptographic
   information protecting the manifest. The manifest may also convey personalization
-  data. TA binaries and personalization data can be signed and encrypted
-  by the same TA Signer. Other combinations are, however, possible as well. For example,
+  data. Trusted Component binaries and personalization data can be signed and encrypted
+  by the same Trusted Component Signer. Other combinations are, however, possible as well. For example,
   it is also possible for the TAM to sign and encrypt the personalization data
-  and to let the TA Developer sign and/or encrypt the TA binary.
+  and to let the Trusted Component Developer sign and/or encrypt the Trusted Component binary.
 
 Note that an Update message carrying one or more SUIT manifests will inherently
 involve multiple signatures, one by the TAM in the TEEP message and one from 
@@ -938,19 +938,19 @@ Attestation
   outside of any TEE. If any mechanism other than EATs is used, it is
   up to that mechanism to specify how privacy is provided.
 
-TA Binaries
-: Each TA binary is signed by a TA Signer. It is the responsibility of the
-  TAM to relay only verified TAs from authorized TA Signers.  Delivery of
-  a TA to the TEEP Agent is then the responsibility of the TAM,
+Trusted Component Binaries
+: Each Trusted Component binary is signed by a Trusted Component Signer. It is the responsibility of the
+  TAM to relay only verified Trusted Components from authorized Trusted Component Signers.  Delivery of
+  a Trusted Component to the TEEP Agent is then the responsibility of the TAM,
   using the security mechanisms provided by the TEEP
-  protocol.  To protect the TA binary, the SUIT manifest format is used and
+  protocol.  To protect the Trusted Component binary, the SUIT manifest format is used and
   it offers a variety of security features, including digitial
   signatures and symmetric encryption.
 
 Personalization Data
-: A TA Signer or TAM can supply personalization data along with a TA.
+: A Trusted Component Signer or TAM can supply personalization data along with a Trusted Component.
   This data is also protected by a SUIT manifest.
-  Personalization data signed and encrypted by a TA Signer other than
+  Personalization data signed and encrypted by a Trusted Component Signer other than
   the TAM is opaque to the TAM.
 
 TEEP Broker
@@ -961,22 +961,22 @@ TEEP Broker
   and replay messages but it cannot modify those messages. (A replay
   would be, however, detected by the TEEP Agent.) A compromised TEEP
   Broker could reorder messages in an attempt to install an old
-  version of a TA. Information in the manifest ensures that TEEP
+  version of a Trusted Component. Information in the manifest ensures that TEEP
   Agents are protected against such downgrade attacks based on
   features offered by the manifest itself.
 
-TA Signer Compromise
+Trusted Component Signer Compromise
 : The QueryRequest message from a TAM to the TEEP Agent can include
   OCSP stapling data for the TAM's certificate and for
   intermediate CA certificates up to the root certificate so that the
   TEEP Agent can verify the certificate's revocation status.  A
-  certificate revocation status check on a TA Signer certificate is
-  OPTIONAL by a TEEP Agent. A TAM is responsible for vetting a TA and
+  certificate revocation status check on a Trusted Component Signer certificate is
+  OPTIONAL by a TEEP Agent. A TAM is responsible for vetting a Trusted Component and
   before distributing them to TEEP Agents, so TEEP Agents can instead
-  simply trust that a TA Signer certificate's status was done by the TAM.
+  simply trust that a Trusted Component Signer certificate's status was done by the TAM.
 
 CA Compromise
-: The CA issuing certificates to a TAM or a TA Signer might get compromised.
+: The CA issuing certificates to a TAM or a Trusted Component Signer might get compromised.
   A compromised intermediate CA certificate can be detected by a TEEP
   Agent by using OCSP information, assuming the revocation information
   is available.  Additionally, it is RECOMMENDED to provide a way to
