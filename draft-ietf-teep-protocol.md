@@ -329,7 +329,7 @@ type
 token
 : The value in the token parameter is used to match responses to requests.
   This is particularly useful when a TAM issues multiple concurrent requests
-  to a TEEP Agent. The token is not needed when the attestation bit is set in
+  to a TEEP Agent. The token MUST be present if and only if the attestation bit is clear in
   the data-item-requested value. The size of the token is at least 8 bytes
   (64 bits) and maximum of 64 bytes, which is the same as in an EAT Nonce
   Claim (see {{I-D.ietf-rats-eat}} Section 3.3). 
@@ -365,7 +365,9 @@ supported-cipher-suites
 
 challenge
 : The challenge field is an optional parameter used for ensuring the freshness of the
-  attestation evidence returned with a QueryResponse message. When a challenge is 
+  attestation evidence returned with a QueryResponse message. It MUST be absent if
+  the attestation bit is clear (since the token is used instead in that case).
+  When a challenge is 
   provided in the QueryRequest and an EAT is returned with the QueryResponse message
   then the challenge contained in this request MUST be copied into the nonce claim found 
   in the EAT. If any format other than EAT is used, it is up to that
