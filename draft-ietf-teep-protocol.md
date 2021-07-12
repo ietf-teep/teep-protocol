@@ -846,13 +846,13 @@ If any Trusted Components need to be installed, updated, or deleted,
 the TAM sends an Update message containing SUIT Manifests with command
 sequences to do the relevant installs, updates, or deletes.
 
-If a Success or Error message is received, the TAM also validates that
+If a Success or Error message is received containing one or more SUIT Reports, the TAM also validates that
 the nonce in any SUIT Report matches the token sent in the Update message,
 and drops the message if it does not match.  Otherwise, the TAM handles
 the update in any implementation specific way, such as updating any locally
 cached information about the state of the TEEP Agent, or logging the results.
 
-If an Error message is received, the TAM can handle it in any implementation
+If any other Error message is received, the TAM can handle it in any implementation
 specific way, but {{error-message-def}} provides recommendations for such handling.
 
 ## TEEP Agent Behavior {#agent}
@@ -885,7 +885,8 @@ as specified in {{validation}}, and drops the message if it is not valid.
 Otherwise, processing continues as follows based on the type of message.
 
 When a QueryRequest message is received, the Agent responds with a
-QueryResponse message.
+QueryResponse message if all fields were understood, or an Error message
+if any error was encountered.
 
 When an Update message is received, the Agent attempts to update
 the Trusted Components specified in the SUIT manifests
