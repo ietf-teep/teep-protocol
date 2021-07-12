@@ -309,6 +309,7 @@ query-request = [
   options: {
     ? token => bstr .size (8..64),
     ? supported-cipher-suites => [ + suite ],
+    ? supported-freshness-mechanisms => [ + freshness-mechanism ],
     ? challenge => bstr .size (8..512),
     ? versions => [ + version ],
     ? ocsp-data => bstr,
@@ -362,6 +363,11 @@ supported-cipher-suites
 : The supported-cipher-suites parameter lists the ciphersuite(s) supported by the TAM. If this parameter is not present, it is to be treated the same as if
   it contained both ciphersuites defined in this document. Details
   about the ciphersuite encoding can be found in {{ciphersuite}}.
+
+supported-freshness-mechanisms
+: The supported-freshness-mechanisms parameter lists the freshness mechanism(s) supported by the TAM.
+  Details about the encoding can be found in {{freshness-mechanisms}}.
+  If this parameter is absent, it means only the nonce mechanism is supported.
 
 challenge
 : The challenge field is an optional parameter used for ensuring the freshness of the
@@ -669,6 +675,7 @@ teep-error = [
      ? token => bstr .size (8..64),
      ? err-msg => text .size (1..128),
      ? supported-cipher-suites => [ + suite ],
+     ? supported-freshness-mechanisms => [ + freshness-mechanism ],
      ? versions => [ + version ],
      ? suit-reports => [ + suit-report ],
      * $$teep-error-extensions,
@@ -699,6 +706,11 @@ supported-cipher-suites
   Details about the ciphersuite encoding can be found in {{ciphersuite}}.
   This field is optional but MUST be returned with the ERR_UNSUPPORTED_CRYPTO_ALG
   error message.
+
+supported-freshness-mechanisms
+: The supported-freshness-mechanisms parameter lists the freshness mechanism(s) supported by the TEEP Agent.
+  Details about the encoding can be found in {{freshness-mechanisms}}.
+  If this parameter is absent, it means only the nonce mechanism is supported.
 
 versions
 : The versions parameter enumerates the TEEP protocol version(s) supported by the TEEP
@@ -795,27 +807,28 @@ as a map key.
 
 This specification uses the following mapping:
 
-| Name                        | Label |
-| supported-cipher-suites     |     1 |
-| challenge                   |     2 |
-| version                     |     3 |
-| ocsp-data                   |     4 |
-| selected-cipher-suite       |     5 |
-| selected-version            |     6 |
-| evidence                    |     7 |
-| tc-list                     |     8 |
-| ext-list                    |     9 |
-| manifest-list               |    10 |
-| msg                         |    11 |
-| err-msg                     |    12 |
-| evidence-format             |    13 |
-| requested-tc-list           |    14 |
-| unneeded-tc-list            |    15 |
-| component-id                |    16 |
-| tc-manifest-sequence-number |    17 |
-| have-binary                 |    18 |
-| suit-reports                |    19 |
-| token                       |    20 |
+| Name                           | Label |
+| supported-cipher-suites        |     1 |
+| challenge                      |     2 |
+| version                        |     3 |
+| ocsp-data                      |     4 |
+| selected-cipher-suite          |     5 |
+| selected-version               |     6 |
+| evidence                       |     7 |
+| tc-list                        |     8 |
+| ext-list                       |     9 |
+| manifest-list                  |    10 |
+| msg                            |    11 |
+| err-msg                        |    12 |
+| evidence-format                |    13 |
+| requested-tc-list              |    14 |
+| unneeded-tc-list               |    15 |
+| component-id                   |    16 |
+| tc-manifest-sequence-number    |    17 |
+| have-binary                    |    18 |
+| suit-reports                   |    19 |
+| token                          |    20 |
+| supported-freshness-mechanisms |    21 |
 
 # Behavior Specification
 
@@ -932,6 +945,28 @@ confidentiality then additional encryption might not be needed in the manifest
 for some use cases. For most use cases, however, manifest confidentiality will
 be needed to protect sensitive fields from the TAM as discussed in Section 9.8
 of {{I-D.ietf-teep-architecture}}.
+
+# Freshness Mechanisms {#freshness-mechanisms}
+
+A freshness mechanism determines how a TAM can tell whether evidence provided
+in a Query Response is fresh.  There are multiple ways this can be done
+as discussed in Section 10 of {{I-D.ietf-rats-architecture}}.
+
+Each freshness mechanism is identified with an integer value, which corresponds to
+an IANA registered freshness mechanism (see {{freshness-mechanism-registry}}.
+This document defines the following freshness mechanisms:
+
+| Value | Freshness mechanism                            |
+|     1 | Nonce                                          |
+|     2 | Timestamp                                      |
+|     3 | Epoch ID                                       |
+
+In the Nonce mechanism, the evidence MUST include a nonce provided
+in the QueryRequest challenge.  In other mechanisms, a timestamp
+or epoch ID determined via mechanisms outside the TEEP protocol is
+used, and the challenge is only needed in the QueryRequest message
+if a challenge is needed in generating evidence for reasons other
+than freshness.
 
 # Security Considerations {#security}
 
@@ -1099,6 +1134,12 @@ IANA is also requested to create a new registry for ciphersuites, as defined
 in {{ciphersuite}}.
 
 
+## Freshness Mechanism Registry {#freshness-mechanism-registry}
+
+IANA is also requested to create a new registry for freshness mechanisms, as defined
+in {{freshness-mechanisms}}.
+
+
 ## CBOR Tag Registry
 
 IANA is requested to register a CBOR tag in the "CBOR Tags" registry
@@ -1192,6 +1233,7 @@ query-request = [
   options: {
     ? token => bstr .size (8..64),
     ? supported-cipher-suites => [ + suite ],
+    ? supported-freshness-mechanisms => [ + freshness-mechanism ],
     ? challenge => bstr .size (8..512),
     ? versions => [ + version ],
     ? ocsp-data => bstr,
@@ -1209,6 +1251,18 @@ TEEP-AES-CCM-16-64-128-HMAC256--256-P-256-ES256  = 2
 
 $TEEP-suite /= TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA
 $TEEP-suite /= TEEP-AES-CCM-16-64-128-HMAC256--256-P-256-ES256
+
+; freshness-mechanisms
+
+freshness-mechanism = $TEEP-freshness-mechanism .within uint .size 4
+
+FRESHNESS_NONCE = 0
+FRESHNESS_TIMESTAMP = 1
+FRESHNESS_EPOCH_ID = 2
+
+$TEEP-freshness-mechanism /= FRESHNESS_NONCE
+$TEEP-freshness-mechanism /= FRESHNESS_TIMESTAMP
+$TEEP-freshness-mechanism /= FRESHNESS_EPOCH_ID
 
 query-response = [
   type: TEEP-TYPE-query-response,
@@ -1265,6 +1319,7 @@ teep-error = [
      ? token => bstr .size (8..64),
      ? err-msg => text .size (1..128),
      ? supported-cipher-suites => [ + suite ],
+     ? supported-freshness-mechanisms => [ + freshness-mechanism ],
      ? versions => [ + version ],
      ? suit-reports => [ + suit-report ],
      * $$teep-error-extensions,
