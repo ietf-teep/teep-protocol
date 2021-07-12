@@ -1375,7 +1375,8 @@ token = 20
 - TEEP Device will have two TCs with the following SUIT Component Identifiers:
   - \[ 0x000102030405060708090a0b0c0d0e0f \]
   - \[ 0x100102030405060708090a0b0c0d0e0f \]
-- SUIT manifest-list is set empty only for example purposes
+- SUIT manifest-list is set empty only for example purposes (see Appendix E
+  for actual manifest examples)
 
 ## QueryRequest Message
 
@@ -1610,3 +1611,185 @@ COSE is shown.
       6469736B2D66756C6C # "disk-full"
   11                     # unsigned(17) uint (0..23)
 ~~~~
+
+# E. Examples of SUIT Manifests {#suit-examples}
+{: numbered='no'}
+
+## Install a Trusted Component
+
+This sample manifest installs a Trusted Component that depends on
+personalization data resolved separately.
+
+~~~
+107({
+        / authentication-wrapper / 2:<<[
+            digest: <<[
+                / algorithm-id / -16 / "sha256" /,
+                / digest-bytes /
+h'a6c4590ac53043a98e8c4106e1e31b305516d7cf0a655eddfac6d45c810e036a'
+            ]>>,
+            signature: <<18([
+                    / protected / <<{
+                        / alg / 1:-7 / "ES256" /,
+                    }>>,
+                    / unprotected / {
+                    },
+                    / payload / F6 / nil /,
+                    / signature / h'd11a2dd9610fb62a707335f58407922570
+9f96e8117e7eeed98a2f207d05c8ecfba1755208f6abea977b8a6efe3bc2ca3215e119
+3be201467d052b42db6b7287'
+                ])>>
+            ]
+        ]>>,
+        / manifest / 3:<<{
+            / manifest-version / 1:1,
+            / manifest-sequence-number / 2:0,
+            / common / 3:<<{
+                / components / 2:[
+                    [h'00']
+                ],
+                / common-sequence / 4:<<[
+                    / directive-override-parameters / 20,{
+                        / vendor-id /
+1:h'fa6b4a53d5ad5fdfbe9de663e4d41ffe' / fa6b4a53-d5ad-5fdf-
+be9d-e663e4d41ffe /,
+                        / class-id /
+2:h'1492af1425695e48bf429b2d51f2ab45' /
+1492af14-2569-5e48-bf42-9b2d51f2ab45 /,
+                        / image-digest / 3:<<[
+                            / algorithm-id / -16 / "sha256" /,
+                            / digest-bytes /
+h'00112233445566778899aabbccddeeff0123456789abcdeffedcba9876543210'
+                        ]>>,
+                        / image-size / 14:34768,
+                    } ,
+                    / condition-vendor-identifier / 1,15 ,
+                    / condition-class-identifier / 2,15
+                ]>>,
+            }>>,
+            / validate / 10:<<[
+                / condition-image-match / 3,15
+            ]>>,
+            / run / 12:<<[
+                / directive-run / 23,2
+            ]>>,
+        }>>,
+    })
+~~~
+
+Total size of Envelope without COSE authentication object:  161
+
+Envelope:
+
+~~~
+d86ba2025827815824822f5820a6c4590ac53043a98e8c4106e1e31b3055
+16d7cf0a655eddfac6d45c810e036a035871a50101020003585fa2028181
+41000458568614a40150fa6b4a53d5ad5fdfbe9de663e4d41ffe02501492
+af1425695e48bf429b2d51f2ab45035824822f5820001122334455667788
+99aabbccddeeff0123456789abcdeffedcba98765432100e1987d0010f02
+0f0a4382030f0c43821702
+~~~
+
+Total size of Envelope with COSE authentication object:  237
+
+Envelope with COSE authentication object:
+
+~~~
+d86ba2025873825824822f5820a6c4590ac53043a98e8c4106e1e31b3055
+16d7cf0a655eddfac6d45c810e036a584ad28443a10126a0f65840d11a2d
+d9610fb62a707335f584079225709f96e8117e7eeed98a2f207d05c8ecfb
+a1755208f6abea977b8a6efe3bc2ca3215e1193be201467d052b42db6b72
+87035871a50101020003585fa202818141000458568614a40150fa6b4a53
+d5ad5fdfbe9de663e4d41ffe02501492af1425695e48bf429b2d51f2ab45
+035824822f582000112233445566778899aabbccddeeff0123456789abcd
+effedcba98765432100e1987d0010f020f0a4382030f0c43821702
+~~~
+
+## Delete a Trusted Component
+
+This sample manifest removes a Trusted Component and its dependency.
+
+~~~
+107({
+        / authentication-wrapper / 2:<<[
+            digest: <<[
+                / algorithm-id / -16 / "sha256" /,
+                / digest-bytes /
+h'a6c4590ac53043a98e8c4106e1e31b305516d7cf0a655eddfac6d45c810e036a'
+            ]>>,
+            signature: <<18([
+                    / protected / <<{
+                        / alg / 1:-7 / "ES256" /,
+                    }>>,
+                    / unprotected / {
+                    },
+                    / payload / F6 / nil /,
+                    / signature / h'd11a2dd9610fb62a707335f58407922570
+9f96e8117e7eeed98a2f207d05c8ecfba1755208f6abea977b8a6efe3bc2ca3215e119
+3be201467d052b42db6b7287'
+                ])>>
+            ]
+        ]>>,
+        / manifest / 3:<<{
+            / manifest-version / 1:1,
+            / manifest-sequence-number / 2:0,
+            / common / 3:<<{
+                / components / 2:[
+                    [h'00']
+                ],
+                / common-sequence / 4:<<[
+                    / directive-override-parameters / 20,{
+                        / vendor-id /
+1:h'fa6b4a53d5ad5fdfbe9de663e4d41ffe' / fa6b4a53-d5ad-5fdf-
+be9d-e663e4d41ffe /,
+                        / class-id /
+2:h'1492af1425695e48bf429b2d51f2ab45' /
+1492af14-2569-5e48-bf42-9b2d51f2ab45 /,
+                        / image-digest / 3:<<[
+                            / algorithm-id / -16 / "sha256" /,
+                            / digest-bytes /
+h'00112233445566778899aabbccddeeff0123456789abcdeffedcba9876543210'
+                        ]>>,
+                        / image-size / 14:34768,
+                    } ,
+                    / condition-vendor-identifier / 1,15 ,
+                    / condition-class-identifier / 2,15
+                ]>>,
+            }>>,
+            / validate / 10:<<[
+                / condition-image-match / 3,15
+            ]>>,
+            / run / 12:<<[
+                / directive-run / 23,2
+            ]>>,
+        }>>,
+    })
+~~~
+
+Total size of Envelope without COSE authentication object:  161
+
+Envelope:
+
+~~~
+d86ba2025827815824822f5820a6c4590ac53043a98e8c4106e1e31b3055
+16d7cf0a655eddfac6d45c810e036a035871a50101020003585fa2028181
+41000458568614a40150fa6b4a53d5ad5fdfbe9de663e4d41ffe02501492
+af1425695e48bf429b2d51f2ab45035824822f5820001122334455667788
+99aabbccddeeff0123456789abcdeffedcba98765432100e1987d0010f02
+0f0a4382030f0c43821702
+~~~
+
+Total size of Envelope with COSE authentication object:  237
+
+Envelope with COSE authentication object:
+
+~~~
+d86ba2025873825824822f5820a6c4590ac53043a98e8c4106e1e31b3055
+16d7cf0a655eddfac6d45c810e036a584ad28443a10126a0f65840d11a2d
+d9610fb62a707335f584079225709f96e8117e7eeed98a2f207d05c8ecfb
+a1755208f6abea977b8a6efe3bc2ca3215e1193be201467d052b42db6b72
+87035871a50101020003585fa202818141000458568614a40150fa6b4a53
+d5ad5fdfbe9de663e4d41ffe02501492af1425695e48bf429b2d51f2ab45
+035824822f582000112233445566778899aabbccddeeff0123456789abcd
+effedcba98765432100e1987d0010f020f0a4382030f0c43821702
+~~~
