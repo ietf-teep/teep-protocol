@@ -910,6 +910,16 @@ A TAM MUST support both ciphersuites.  A TEEP Agent MUST support at least
 one of the two but can choose which one.  For example, a TEEP Agent might
 choose ciphersuite 2 if it has hardware support for it.
 
+Any ciphersuites without confidentiality protection can only be added if the
+associated specification includes a discussion of security considerations and
+applicability, since manifests may carry sensitive information. For example,
+Section 6 of {{I-D.ietf-teep-architecture}} permits implementations that terminate
+transport security inside the TEE and if the transport security provides
+confidentiality then additional encryption might not be needed in the manifest
+for some use cases. For most use cases, however, manifest confidentiality will
+be needed to protect sensitive fields from the TAM as discussed in Section 9.8
+of {{I-D.ietf-teep-architecture}}.
+
 # Security Considerations {#security}
 
 This section summarizes the security considerations discussed in this
