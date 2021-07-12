@@ -845,6 +845,12 @@ need to be installed, updated, or deleted, if any.
 If any Trusted Components need to be installed, updated, or deleted,
 the TAM sends an Update message containing SUIT Manifests with command
 sequences to do the relevant installs, updates, or deletes.
+It is important to note that the TEEP Agent's
+Update Procedure requires resolving and installing any dependencies
+indicated in the manifest, which may take some time, and the resulting Success
+or Error message is generated only after completing the Update Procedure.
+Hence, depending on the freshness mechanism in use, the TAM may need to
+store data (e.g., a nonce) for some time.
 
 If a Success or Error message is received, the TAM also validates that
 the nonce in any SUIT Report matches the token sent in the Update message,
@@ -893,6 +899,10 @@ by following the Update Procedure specified
 in {{I-D.ietf-suit-manifest}}, and responds with a Success message if
 all SUIT manifests were successfully installed, or an Error message
 if any error was encountered.
+It is important to note that the
+Update Procedure requires resolving and installing any dependencies
+indicated in the manifest, which may take some time, and the Success
+or Error message is generated only after completing the Update Procedure.
 
 # Ciphersuites {#ciphersuite}
 
