@@ -704,18 +704,16 @@ err-msg
 supported-cipher-suites
 : The supported-cipher-suites parameter lists the ciphersuite(s) supported by the TEEP Agent.
   Details about the ciphersuite encoding can be found in {{ciphersuite}}.
-  This field is optional but MUST be returned with the ERR_UNSUPPORTED_CRYPTO_ALG
-  error message.
+  This otherwise optional parameter MUST be returned if err-code is ERR_UNSUPPORTED_CIPHER_SUITES.
 
 supported-freshness-mechanisms
 : The supported-freshness-mechanisms parameter lists the freshness mechanism(s) supported by the TEEP Agent.
   Details about the encoding can be found in {{freshness-mechanisms}}.
-  If this parameter is absent, it means only the nonce mechanism is supported.
+  This otherwise optional parameter MUST be returned if err-code is ERR_UNSUPPORTED_FRESHNESS_MECHANISMS.
 
 versions
 : The versions parameter enumerates the TEEP protocol version(s) supported by the TEEP
-  Agent. This otherwise optional parameter MUST be returned with the ERR_UNSUPPORTED_MSG_VERSION
-  error message.
+  Agent. This otherwise optional parameter MUST be returned if err-code is ERR_UNSUPPORTED_MSG_VERSION.
 
 suit-reports
 : If present, the suit-reports parameter contains a set of SUIT Reports
@@ -752,17 +750,23 @@ ERR_UNSUPPORTED_EXTENSION (2)
   extension in the error message.
   A TAM receiving this error might retry the request without using extensions.
 
+ERR_UNSUPPORTED_FRESHNESS_MECHANISMS (3)
+: The TEEP Agent does not
+  support any freshness algorithm mechanisms in the request message.
+  A TAM receiving this error might retry the request using a different
+  set of supported freshness mechanisms in the request message.
+
 ERR_UNSUPPORTED_MSG_VERSION (4)
 : The TEEP Agent does not
   support the TEEP protocol version indicated in the request message.
   A TAM receiving this error might retry the request using a different
   TEEP protocol version.
 
-ERR_UNSUPPORTED_CRYPTO_ALG (5)
+ERR_UNSUPPORTED_CIPHER_SUITES (5)
 : The TEEP Agent does not
-  support the cryptographic algorithm indicated in the request message.
+  support any ciphersuites indicated in the request message.
   A TAM receiving this error might retry the request using a different
-  cryptographic algorithm.
+  set of supported ciphersuites in the request message.
 
 ERR_BAD_CERTIFICATE (6)
 : Processing of a certificate failed. For diagnosis purposes it is
@@ -1331,8 +1335,9 @@ teep-error = [
 ; The err-code parameter, uint (0..23)
 ERR_PERMANENT_ERROR = 1
 ERR_UNSUPPORTED_EXTENSION = 2
+ERR_UNSUPPORTED_FRESHNESS_MECHANISMS = 3
 ERR_UNSUPPORTED_MSG_VERSION = 4
-ERR_UNSUPPORTED_CRYPTO_ALG = 5
+ERR_UNSUPPORTED_CIPHER_SUITES = 5
 ERR_BAD_CERTIFICATE = 6
 ERR_CERTIFICATE_EXPIRED = 9
 ERR_TEMPORARY_ERROR = 10
