@@ -1364,6 +1364,7 @@ tc-manifest-sequence-number = 17
 have-binary = 18
 suit-reports = 19
 token = 20
+supported-freshness-mechanisms = 21
 ~~~~
 
 # D. Examples of Diagnostic Notation and Binary Representation
