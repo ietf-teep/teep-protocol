@@ -249,10 +249,6 @@ To create a TEEP message, the following steps are performed.
   steps specified in {{RFC8152}} for creating a
   COSE_Sign1 object MUST be followed.
 
-1. Prepend the COSE object with the
-  TEEP CBOR tag to indicate that the CBOR-encoded message is indeed a
-  TEEP message.
-
 ### Validating a TEEP Message {#validation}
 
 When TEEP message is received (see the ProcessTeepMessage conceptual API
@@ -261,9 +257,6 @@ the following validation steps are performed. If any of
 the listed steps fail, then the TEEP message MUST be rejected.
 
 1. Verify that the received message is a valid CBOR object.
-
-1. Remove the TEEP message CBOR tag and verify
-  that one of the COSE CBOR tags follows it.
 
 1. Verify that the message contains a COSE_Sign1 structure.
 
@@ -1142,27 +1135,6 @@ in {{ciphersuite}}.
 
 IANA is also requested to create a new registry for freshness mechanisms, as defined
 in {{freshness-mechanisms}}.
-
-
-## CBOR Tag Registry
-
-IANA is requested to register a CBOR tag in the "CBOR Tags" registry
-for use with TEEP messages.
-
-The registry contents is:
-
-* CBOR Tag: TBD1
-
-* Data Item: TEEP Message
-
-* Semantics: TEEP Message, as defined in draft-ietf-teep-protocol (TODO: replace with RFC once published)
-
-* Reference: draft-ietf-teep-protocol (TODO: replace with RFC once published)
-
-* Point of Contact: TEEP working group (teep@ietf.org)
-
-
-
 
 --- back
 
