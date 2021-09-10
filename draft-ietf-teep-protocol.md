@@ -367,9 +367,12 @@ challenge
   attestation evidence returned with a QueryResponse message. It MUST be absent if
   the attestation bit is clear (since the token is used instead in that case).
   When a challenge is 
-  provided in the QueryRequest and an EAT is returned with the QueryResponse message
-  then the challenge contained in this request MUST be copied into the nonce claim found 
-  in the EAT. If any format other than EAT is used, it is up to that
+  provided in the QueryRequest and an EAT is returned with a QueryResponse message
+  then the challenge contained in this request MUST be used to generate the EAT,
+  such as by copying the challengt into the nonce claim found in the EAT if
+  using the Nonce freshness mechanism.  For more details see {{freshness-mechanisms}}.
+
+  If any format other than EAT is used, it is up to that
   format to define the use of the challenge field.
 
 versions
@@ -964,6 +967,14 @@ or epoch ID determined via mechanisms outside the TEEP protocol is
 used, and the challenge is only needed in the QueryRequest message
 if a challenge is needed in generating evidence for reasons other
 than freshness.
+
+If a TAM supports multiple freshness mechanisms that require different challenge
+formats, the QueryRequest message can currently only send one such challenge.
+This situation is expected to be rare, but should it occur, the TAM can
+choose to prioritize one of them and exclude the other from the
+supported-freshness-mechanisms in the QueryRequest, and resend the QueryRequest
+with the other mechanism if an ERR_UNSUPPORTED_FRESHNESS_MECHANISMS Error
+is received that indicates the TEEP Agent supports the other mechanism.
 
 # Security Considerations {#security}
 
