@@ -346,10 +346,6 @@ data-item-requested
      and extensions, which allows a TAM to discover the capabilities of a TEEP
      Agent implementation.
 
-   suit-commands (8)
-   : With this value the TAM queries the TEEP Agent for supported commands offered
-     by the SUIT manifest implementation.
-  
    Further values may be added in the future via IANA registration.
 
 supported-cipher-suites
@@ -1212,8 +1208,6 @@ trusted-components = 2
 $data-item-requested /= trusted-components
 extensions = 4
 $data-item-requested /= extensions
-suit-commands = 8
-$data-item-requested /= suit-commands
 
 query-request = [
   type: TEEP-TYPE-query-request,
