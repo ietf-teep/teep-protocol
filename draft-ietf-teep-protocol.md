@@ -85,7 +85,6 @@ normative:
   I-D.ietf-rats-eat: 
   I-D.ietf-suit-manifest: 
   I-D.moran-suit-report: 
-  RFC6960: 
 informative:
   I-D.ietf-teep-architecture: 
   I-D.birkholz-rats-suit-claims:
@@ -305,7 +304,6 @@ query-request = [
     ? supported-freshness-mechanisms => [ + freshness-mechanism ],
     ? challenge => bstr .size (8..512),
     ? versions => [ + version ],
-    ? ocsp-data => bstr,
     * $$query-request-extensions
     * $$teep-option-extensions
   },
@@ -376,19 +374,6 @@ versions
   A value of 0 refers to the current version of the TEEP protocol.
   If this field is not present, it is to be treated the same as if
   it contained only version 0.
-
-ocsp-data
-: The ocsp-data parameter contains a list of OCSP stapling data
-  respectively for the TAM certificate and each of the CA certificates
-  up to, but not including, the trust anchor. The TAM provides OCSP data so that the
-  TEEP Agent can validate the status of the TAM certificate chain
-  without making its own external OCSP service call. OCSP data MUST be
-  conveyed as a DER-encoded OCSP response (using the ASN.1 type
-  OCSPResponse defined in {{RFC6960}}). The use of OCSP is OPTIONAL to
-  implement for both the TAM and the TEEP Agent. A TAM can query the
-  TEEP Agent for the support of this functionality via the capability
-  discovery exchange, as described above.
-
 
 ## QueryResponse Message
 
@@ -807,7 +792,6 @@ This specification uses the following mapping:
 | supported-cipher-suites        |     1 |
 | challenge                      |     2 |
 | version                        |     3 |
-| ocsp-data                      |     4 |
 | selected-cipher-suite          |     5 |
 | selected-version               |     6 |
 | evidence                       |     7 |
@@ -1030,33 +1014,26 @@ TEEP Broker
   features offered by the manifest itself.
 
 Trusted Component Signer Compromise
-: The QueryRequest message from a TAM to the TEEP Agent can include
-  OCSP stapling data for the TAM's certificate and for
-  intermediate CA certificates up to, but not including, the trust anchor so that the
-  TEEP Agent can verify the certificate's revocation status.  A
-  certificate revocation status check on a Trusted Component Signer certificate is
-  OPTIONAL by a TEEP Agent. A TAM is responsible for vetting a Trusted Component and
-  before distributing them to TEEP Agents, so TEEP Agents can instead
-  simply trust that a Trusted Component Signer certificate's status was done by the TAM.
+: A TAM is responsible for vetting a Trusted Component and
+  before distributing them to TEEP Agents.  
+  It is RECOMMENDED to provide a way to
+  update the trust anchor store used by the TEE, for example using
+  a firmware update mechanism.  Thus, if a Trusted Component
+  Signer is later compromised, the TAM can update the trust anchor
+  store used by the TEE, for example using a firmware update mechanism.
 
 CA Compromise
-: The CA issuing certificates to a TAM or a Trusted Component Signer might get compromised.
-  A compromised intermediate CA certificate can be detected by a TEEP
-  Agent by using OCSP information, assuming the revocation information
-  is available.  Additionally, it is RECOMMENDED to provide a way to
+: The CA issuing certificates to a TEE or a Trusted Component Signer might get compromised.
+  It is RECOMMENDED to provide a way to
   update the trust anchor store used by the TEE, for example using
   a firmware update mechanism. If the CA issuing certificates to
   devices gets compromised then these devices might be rejected by a
   TAM, if revocation is available to the TAM.
 
-Compromised TAM
-: The TEEP Agent SHOULD use OCSP information to verify the validity of
-  the TAM's certificate (as well as the validity of
-  intermediate CA certificates). The integrity and the accuracy of the
+TAM Certificate Expiry
+: The integrity and the accuracy of the
   clock within the TEE determines the ability to determine an expired
-  or revoked certificate. OCSP stapling data includes signature
-  generation time, allowing certificate validity dates to be compared to the
-  current time.
+  TAM certificate, if certificates are used.
 
 Compromised Time Source
 : As discussed above, certificate validity checks rely on comparing
@@ -1217,7 +1194,6 @@ query-request = [
     ? supported-freshness-mechanisms => [ + freshness-mechanism ],
     ? challenge => bstr .size (8..512),
     ? versions => [ + version ],
-    ? ocsp-data => bstr,
     * $$query-request-extensions
     * $$teep-option-extensions
   },
@@ -1324,7 +1300,6 @@ ERR_MANIFEST_PROCESSING_FAILED = 17
 supported-cipher-suites = 1
 challenge = 2
 versions = 3
-ocsp-data = 4
 selected-cipher-suite = 5
 selected-version = 6
 evidence = 7
@@ -1349,7 +1324,6 @@ supported-freshness-mechanisms = 21
 
 ### Some assumptions in examples
 
-- OCSP stapling data = h'010203'
 - TEEP Device will have two TCs with the following SUIT Component Identifiers:
   - \[ 0x000102030405060708090a0b0c0d0e0f \]
   - \[ 0x100102030405060708090a0b0c0d0e0f \]
@@ -1373,9 +1347,8 @@ supported-freshness-mechanisms = 21
     1 : [ 1 ], / supported-cipher-suites = 1 (mapkey) :
                  TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA =
                  [ 1 ] (array of .within uint .size 4) /
-    3 : [ 0 ], / version = 3 (mapkey) :
+    3 : [ 0 ] / version = 3 (mapkey) :
                  [ 0 ] (array of .within uint .size 4) /
-    4 : h'010203' / ocsp-data = 4 (mapkey) : 0x010203 (bstr) /
   },
   3   / data-item-requested :
         attestation | trusted-components = 3 (.within uint .size 8) /
