@@ -532,7 +532,7 @@ requirements:
 | TEE firmware version | version | {{I-D.birkholz-rats-suit-claims}} section 3.1.8 |
 | Freshness proof | nonce | {{I-D.ietf-rats-eat}} section 3.3 |
 
-## Update Message
+## Update Message {#update-msg-def}
 
 The Update message is used by the TAM to install and/or delete one or more Trusted
 Components via the TEEP Agent. 
@@ -596,6 +596,200 @@ checked at install time or load (or run) time or both, and this checking is
 done by the TEE independent of whether TEEP is used or some other update
 mechanism.
 See section 5 of {{I-D.ietf-teep-architecture}} for further discussion.
+
+
+
+The Update Message has SUIT_Envelope containing SUIT manifests. Following are some SUIT manifest examples in the messages.
+
+### Example 1: Having one SUIT Manifest pointing to URI of the Trusted Component Binary
+
+This subsection shows a SUIT Manifest example that has a URI pointer to a Trusted Component Binary.
+
+A Trusted Component Developer creates a new Trusted Component Binary and generates an associated SUIT manifest as the filename "tc-uuid.suit". The filename "tc-uuid.suit" is used in Example 3 later. Then the Trusted Component Developer is hosting Trusted Component Binary at a Trusted Component Developers' URI. The TAM always receives the latest SUIT manifest from the Trusted Component Developer.
+
+Trusted Component Developers SHOULD provide the delivery point of the Trusted Component Binary associated with the URI in the SUIT manifest and the URI will not be changeable by the TAM since the SUIT manifest is signed by Trusted Component Developers.
+
+
+Pros:
+
+ - Trusted Component Developer can ensure that the intact Trusted Component Binary is downloaded by TEEP Devices
+ - TAM does not have to deliver Update message containing Trusted Component Binary which may have large size
+
+Cons:
+
+ - Trusted Component Developer MUST host the Trusted Component Binary server
+ - TEEP Device MUST fetch the Trusted Component Binary in another connection after receiving Update message
+
+~~~~
+    +------------+           +-------------+
+    | TAM        |           | TEEP Agent  |
+    +------------+           +-------------+
+
+             Update  ---->
+
+    +=================== teep-protocol(TAM) ==================+
+    | TEEP_Message([                                          |
+    |   TEEP-TYPE-update,                                     |
+    |   options: {                                            |
+    |     manifest-list: [                                    |
+    |       += suit-manifest "tc-uuid.suit" (TC Developer) =+ |
+    |       | SUIT_Envelope({                               | |
+    |       |   manifest: {                                 | |
+    |       |     install: {                                | |
+    |       |       set-parameter: {                        | |
+    |       |         uri: "https://tc.org/tc-uuid.ta"      | |
+    |       |       },                                      | |
+    |       |       payload-fetch                           | |
+    |       |     }                                         | |
+    |       |   }                                           | |
+    |       | })                                            | |
+    |       +===============================================+ |
+    |     ]                                                   |
+    |   }                                                     |
+    | ])                                                      |
+    +=========================================================+
+
+    and then,
+
+    +-------------+          +--------------+
+    | TEEP Agent  |          | TC Developer |
+    +-------------+          +--------------+
+
+                     <----
+
+      fetch "https://tc.org/tc-uuid.ta"
+
+          +======= tc-uuid.ta =======+
+          | 48 65 6C 6C 6F 2C 20 ... |
+          +==========================+
+
+    Figure 1: URI of the Trusted Component Binary
+~~~~
+
+For the full SUIT Manifest example binary, see {{suit-uri}}.
+
+### Example 2: Having one SUIT Manifest including the Trusted Component Binary
+
+This subsection shows a SUIT manifest example containing the entire Trusted Component Binary using the integrated-payload (see {{I-D.ietf-suit-manifest}} Section-7.6).
+
+A Trusted Component Developer is delegating a TAM to deliver the Trusted Component Binary in the SUIT manifest. The Trusted Component Developer creates SUIT manifest and embedding the Trusted Component Binary. And the Binary is referred in the URI parameter with identifier "#tc". The Trusted Component Developer provides the SUIT manifest to the TAM. The TAM always receives the latest SUIT manifest from the Trusted Component Developer.
+
+The TAM serves the SUIT manifest containing Trusted Component Binary to the Device in Update Message.
+
+Pros:
+
+ - TEEP Device can obtain the Trusted Component Binary and its SUIT manifest at once in Update message
+ - Trusted Component Developer do not have to host the server to deliver the Trusted Component Binary directly to TEEP Device
+
+Cons:
+
+ - Trusted Component Developer MUST delegate TAM to delivery the Trusted Component Binary to the TEEP Device
+ - TAM MUST deliver Trusted Component Binaries with integrated SUIT manifest in Update messages
+
+~~~~
+    +------------+           +-------------+
+    | TAM        |           | TEEP Agent  |
+    +------------+           +-------------+
+
+             Update  ---->
+
+      +=========== teep-protocol(TAM) ============+
+      | TEEP_Message([                            |
+      |   TEEP-TYPE-update,                       |
+      |   options: {                              |
+      |     manifest-list: [                      |
+      |       +== suit-manifest(TC Developer) ==+ |
+      |       | SUIT_Envelope({                 | |
+      |       |   "#tc": h'48 65 6C 6C ...',    | |
+      |       |   manifest: {                   | |
+      |       |     install: {                  | |
+      |       |       set-parameter: {          | |
+      |       |         uri: "#tc"              | |
+      |       |       },                        | |
+      |       |       payload-fetch             | |
+      |       |     }                           | |
+      |       |   }                             | |
+      |       | })                              | |
+      |       +=================================+ |
+      |     ]                                     |
+      |   }                                       |
+      | ])                                        |
+      +===========================================+
+
+    Figure 2: Integrated Payload with Trusted Component Binary
+~~~~
+
+For the full SUIT Manifest example binary, see {{suit-integrated}}.
+
+
+### Example 3: Supplying Personalization Data for the Trusted Component Binary
+
+This subsection shows an example delivering Personalization Data associated with the Trusted Component Binary to the TEEP Device.
+
+The Trusted Component Developer places Personalization Data in a file named "config.json" and creates SUIT manifest specifying which Trusted Component Binary correlates to in the parameter 'dependency-resolution' from the Example 1 as "tc-uuid.suit". The Trusted Component Developer hosts the  "config.json" on an HTTPS server and puts the URI in the SUIT manifest which is signed by the Trusted Component Developer.
+
+The TAM is delivering the SUIT manifest of the Personalization Data which depends on the Trusted Component Binary for the Example 1.
+
+~~~~
+    +------------+           +-------------+
+    | TAM        |           | TEEP Agent  |
+    +------------+           +-------------+
+
+             Update  ---->
+
+      +================= teep-protocol(TAM) ==================+
+      | TEEP_Message([                                        |
+      |   TEEP-TYPE-update,                                   |
+      |   options: {                                          |
+      |     manifest-list: [                                  |
+      |       +======== suit-manifest(TC Developer) ========+ |
+      |       | SUIT_Envelope({                             | |
+      |       |   manifest: {                               | |
+      |       |     common: {                               | |
+      |       |       dependencies: [                       | |
+      |       |         {{digest-of-tc.suit}}               | |
+      |       |       ]                                     | |
+      |       |     }                                       | |
+      |       |     dependency-resolution: {                | |
+      |       |       set-parameter: {                      | |
+      |       |         uri: "https://tc.org/tc-uuid.suit"  | |
+      |       |       }                                     | |
+      |       |       payload-fetch                         | |
+      |       |     }                                       | |
+      |       |     install: {                              | |
+      |       |       set-parameter: {                      | |
+      |       |         uri: "https://tc.org/config.json"   | |
+      |       |       },                                    | |
+      |       |       payload-fetch                         | |
+      |       |       set-dependency-index                  | |
+      |       |       process-dependency                    | |
+      |       |     }                                       | |
+      |       |   }                                         | |
+      |       | })                                          | |
+      |       +=============================================+ |
+      |     ]                                                 |
+      |   }                                                   |
+      | ])                                                    |
+      +=======================================================+
+
+    and then,
+
+    +-------------+          +--------------+
+    | TEEP Agent  |          | TC Developer |
+    +-------------+          +--------------+
+
+                     <----
+      fetch "https://tc.org/config.json"
+
+          +=======config.json========+
+          | 7B 22 75 73 65 72 22 ... |
+          +==========================+
+
+    Figure 3: Personalization Data
+~~~~
+
+For the full SUIT Manifest example binary, see {{suit-personalization}}.
+
 
 ## Success Message
 
