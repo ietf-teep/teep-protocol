@@ -1362,7 +1362,7 @@ to the Open Trust Protocol (OTrP), which influenced the design of this specifica
 
 We would like to thank Eve Schooler for the suggestion of the protocol name.
 
-We would like to thank Kohei Isobe (TRASIO/SECOM),
+We would like to thank Kohei Isobe (TRASIO/SECOM), Ken Takayama (SECOM)
 Kuniyasu Suzaki (TRASIO/AIST), Tsukasa Oi (TRASIO), and Yuichi Takita (SECOM)
 for their valuable implementation feedback.
 
