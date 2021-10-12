@@ -477,7 +477,9 @@ unneeded-tc-list
 
 ext-list
 : The ext-list parameter lists the supported extensions. This document does not
-  define any extensions.
+  define any extensions.  This parameter MUST be present if the
+  QueryResponse is sent in response to a QueryRequest with the
+  extensions bit set.
 
 The tc-info object has the following fields:
 
