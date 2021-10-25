@@ -209,8 +209,6 @@ otherwise.
                             Error
 ~~~~
 
-
-
 # Detailed Messages Specification {#detailmsg}
 
 TEEP messages are protected by the COSE_Sign1 structure.
@@ -225,7 +223,6 @@ The TEEP protocol messages are described in CDDL format {{RFC8610}} below.
                                     teep-error ),
 }
 ~~~~
-
 
 ## Creating and Validating TEEP Messages
 
@@ -1324,7 +1321,7 @@ supported-freshness-mechanisms = 21
 # D. Examples of Diagnostic Notation and Binary Representation
 {: numbered='no'}
 
-### Some assumptions in examples
+This section includes some examples with the following assumptions:
 
 - TEEP Device will have two TCs with the following SUIT Component Identifiers:
   - \[ 0x000102030405060708090a0b0c0d0e0f \]
@@ -1332,9 +1329,11 @@ supported-freshness-mechanisms = 21
 - SUIT manifest-list is set empty only for example purposes (see Appendix E
   for actual manifest examples)
 
-## QueryRequest Message
+## D.1. QueryRequest Message
+{: numbered='no'}
 
-### CBOR Diagnostic Notation
+### D.1.1. CBOR Diagnostic Notation
+{: numbered='no'}
 
 ~~~~
 / query-request = /
@@ -1357,7 +1356,8 @@ supported-freshness-mechanisms = 21
 ]
 ~~~~
 
-### CBOR Binary Representation
+### D.1.2. CBOR Binary Representation
+{: numbered='no'}
 
 ~~~~
 83                       # array(3)
@@ -1378,12 +1378,14 @@ supported-freshness-mechanisms = 21
   03                     # unsigned(3) .within uint .size 8
 ~~~~
 
-## Entity Attestation Token
+## D.2. Entity Attestation Token
+{: numbered='no'}
 
 This is shown below in CBOR diagnostic form.  Only the payload signed by
 COSE is shown.
 
-### CBOR Diagnostic Notation
+### D.2.1. CBOR Diagnostic Notation
+{: numbered='no'}
 
 ~~~~
 / eat-claim-set = /
@@ -1403,9 +1405,11 @@ COSE is shown.
 }
 ~~~~
 
-## QueryResponse Message
+## D.3. QueryResponse Message
+{: numbered='no'}
 
-### CBOR Diagnostic Notation
+### D.3.1. CBOR Diagnostic Notation
+{: numbered='no'}
 
 ~~~~
 / query-response = /
@@ -1440,7 +1444,8 @@ COSE is shown.
 ]
 ~~~~
 
-### CBOR Binary Representation
+### D.3.2. CBOR Binary Representation
+{: numbered='no'}
 
 ~~~~
 82                       # array(2)
@@ -1465,9 +1470,11 @@ COSE is shown.
           100102030405060708090A0B0C0D0E0F
 ~~~~
 
-## Update Message
+## D.4. Update Message
+{: numbered='no'}
 
-### CBOR Diagnostic Notation
+### D.4.1. CBOR Diagnostic Notation
+{: numbered='no'}
 
 ~~~~
 / update = /
@@ -1486,7 +1493,8 @@ COSE is shown.
 ]
 ~~~~
 
-### CBOR Binary Representation
+### D.4.2. CBOR Binary Representation
+{: numbered='no'}
 
 ~~~~
 82                       # array(2)
@@ -1499,9 +1507,11 @@ COSE is shown.
     80                   # array(0)
 ~~~~
 
-## Success Message
+## D.5. Success Message
+{: numbered='no'}
 
-### CBOR Diagnostic Notation
+### D.5.1. CBOR Diagnostic Notation
+{: numbered='no'}
 
 ~~~~
 / teep-success = /
@@ -1517,7 +1527,8 @@ COSE is shown.
 ]
 ~~~~
 
-### CBOR Binary Representation
+### D.5.2. CBOR Binary Representation
+{: numbered='no'}
 
 ~~~~
 82                       # array(2)
@@ -1528,10 +1539,11 @@ COSE is shown.
       A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
 ~~~~
 
+## D.6. Error Message
+{: numbered='no'}
 
-## Error Message
-
-### CBOR Diagnostic Notation
+### D.6.1. CBOR Diagnostic Notation
+{: numbered='no'}
 
 ~~~~
 / teep-error = /
@@ -1550,7 +1562,8 @@ COSE is shown.
 ]
 ~~~~
 
-### CBOR binary Representation
+### D.6.2. CBOR binary Representation
+{: numbered='no'}
 
 ~~~~
 83                       # array(3)
@@ -1577,12 +1590,14 @@ The TA developer places personalization data for the device on an
 HTTPS server and puts the URI in the TA manifest.  The personalization
 data will also be stored in RPMB secure storage in a file named "config.json".
 
-## Install a Trusted Component
+## E.1. Install a Trusted Component
+{: numbered='no'}
 
 This sample manifest installs a Trusted Component that depends on
 personalization data resolved separately.
 
 TA Manifest:
+
 ~~~
 107({
   / authentication-wrapper / 2:<<[
@@ -1655,6 +1670,7 @@ TA Manifest:
 ~~~
 
 Personalization Data Manifest:
+
 ~~~
 107({
   2:<<[
@@ -1747,7 +1763,8 @@ Personalization Data Manifest:
 })
 ~~~
 
-## Delete a Trusted Component
+## E.2. Delete a Trusted Component
+{: numbered='no'}
 
 This sample manifest removes a Trusted Component and its dependency.
 
