@@ -45,13 +45,13 @@ author:
  -
   ins: D. Wheeler
   name: David Wheeler
-  org: Intel
+  org: Amazon
   street: ''
   city: ''
   region: ''
   code: ''
   country: US
-  email: david.m.wheeler@intel.com
+  email: davewhee@amazon.com
 
  -
   ins: D. Thaler
@@ -79,14 +79,15 @@ normative:
   RFC8152: 
   RFC3629: 
   RFC5198: 
+  RFC5280: 
   RFC7049: 
   I-D.ietf-rats-architecture: 
   I-D.ietf-rats-eat: 
   I-D.ietf-suit-manifest: 
   I-D.moran-suit-report: 
-  RFC2560: 
 informative:
   I-D.ietf-teep-architecture: 
+  I-D.birkholz-rats-suit-claims:
   RFC8610: 
   RFC8126: 
   RFC8915: 
@@ -95,13 +96,9 @@ informative:
 
 
 This document specifies a protocol that installs, updates, and deletes
-Trusted Applications (TAs) in a device with a Trusted Execution
+Trusted Components in a device with a Trusted Execution
 Environment (TEE).  This specification defines an interoperable
-protocol for managing the lifecycle of TAs.
-
-The protocol name is pronounced teepee. This conjures an image of a
-wedge-shaped protective covering for one's belongings, which sort of
-matches the intent of this protocol.
+protocol for managing the lifecycle of Trusted Components.
 
 --- middle
 
@@ -111,9 +108,9 @@ The Trusted Execution Environment (TEE) concept has been designed to
 separate a regular operating system, also referred as a Rich Execution
 Environment (REE), from security-sensitive applications. In a TEE
 ecosystem, device vendors may use different operating systems in the
-REE and may use different types of TEEs. When TA Developers or
+REE and may use different types of TEEs. When Trusted Component Developers or
 Device Administrators use Trusted Application Managers (TAMs) to
-install, update, and delete Trusted Applications (TAs) on a wide range
+install, update, and delete Trusted Applications and their dependencies on a wide range
 of devices with potentially different TEEs then an interoperability
 need arises.
 
@@ -133,12 +130,12 @@ necessary terminology.
 This specification re-uses the terminology defined in {{I-D.ietf-teep-architecture}}.
 
 As explained in Section 4.4 of that document, the TEEP protocol treats
-each TA, any dependencies the TA has, and personalization data as separate
+each Trusted Application (TA), any dependencies the TA has, and personalization data as separate
 components that are expressed in SUIT manifests, and a SUIT manifest
 might contain or reference multiple binaries (see {{I-D.ietf-suit-manifest}}
 for more details).
 
-As such, the term Trusted Component in this document refers to a
+As such, the term Trusted Component (TC) in this document refers to a
 set of binaries expressed in a SUIT manifest, to be installed in
 a TEE.  Note that a Trusted Component may include one or more TAs
 and/or configuration data and keys needed by a TA to operate correctly.
@@ -153,7 +150,7 @@ and a TEEP Agent.
 The messages are encoded in CBOR and designed to provide end-to-end security.
 TEEP protocol messages are signed by the endpoints, i.e., the TAM and the
 TEEP Agent, but Trusted
-Applications may also be encrypted and signed by a TA Developer or
+Applications may also be encrypted and signed by a Trusted Component Developer or
 Device Administrator.
 The TEEP protocol not only uses
 CBOR but also the respective security wrapper, namely COSE {{RFC8152}}. Furthermore, for software updates the SUIT
@@ -161,7 +158,8 @@ manifest format {{I-D.ietf-suit-manifest}} is used, and
 for attestation the Entity Attestation Token (EAT) {{I-D.ietf-rats-eat}}
 format is supported although other attestation formats are also permitted.
 
-This specification defines five messages.
+This specification defines five messages: QueryRequest, QueryResponse,
+Update, Success, and Error.
 
 A TAM queries a device's current state with a QueryRequest message.
 A TEEP Agent will, after authenticating and authorizing the request, report
@@ -192,7 +190,7 @@ With the Update message a TAM can instruct a TEEP Agent to install and/or
 delete one or more Trusted Components.
 The TEEP Agent will process the message, determine whether the TAM is authorized
 and whether the
-Trusted Component has been signed by an authorized TA Signer.
+Trusted Component has been signed by an authorized Trusted Component Signer.
 A Success message is returned when the operation has been completed successfully,
 or an Error message
 otherwise.
@@ -211,8 +209,6 @@ otherwise.
                             Error
 ~~~~
 
-
-
 # Detailed Messages Specification {#detailmsg}
 
 TEEP messages are protected by the COSE_Sign1 structure.
@@ -228,7 +224,6 @@ The TEEP protocol messages are described in CDDL format {{RFC8610}} below.
 }
 ~~~~
 
-
 ## Creating and Validating TEEP Messages
 
 ### Creating a TEEP message
@@ -236,7 +231,11 @@ The TEEP protocol messages are described in CDDL format {{RFC8610}} below.
 To create a TEEP message, the following steps are performed.
 
 1. Create a TEEP message according to the description below and populate
-  it with the respective content.
+  it with the respective content.  TEEP messages sent by TAMs (QueryRequest
+  and Update) can include a "token".  The first usage of a token
+  generated by a TAM MUST be randomly created.
+  Subsequent token values MUST be different for each subsequent message
+  created by a TAM.
 
 1. Create a COSE Header containing the desired set of Header
   Parameters.  The COSE Header MUST be valid per the {{RFC8152}} specification.
@@ -246,12 +245,6 @@ To create a TEEP message, the following steps are performed.
   steps specified in {{RFC8152}} for creating a
   COSE_Sign1 object MUST be followed.
 
-1. Prepend the COSE object with the
-  TEEP CBOR tag to indicate that the CBOR-encoded message is indeed a
-  TEEP message.
-
-
-
 ### Validating a TEEP Message {#validation}
 
 When TEEP message is received (see the ProcessTeepMessage conceptual API
@@ -260,9 +253,6 @@ the following validation steps are performed. If any of
 the listed steps fail, then the TEEP message MUST be rejected.
 
 1. Verify that the received message is a valid CBOR object.
-
-1. Remove the TEEP message CBOR tag and verify
-  that one of the COSE CBOR tags follows it.
 
 1. Verify that the message contains a COSE_Sign1 structure.
 
@@ -296,21 +286,21 @@ the following features are supported:
  - Request for attestation information,
  - Listing supported extensions, 
  - Querying installed Trusted Components, and 
- - Listing supporting SUIT commands.
+ - Listing supported SUIT commands.
 
 Like other TEEP messages, the QueryRequest message is
 signed, and the relevant CDDL snippet is shown below. 
-The complete CDDL structure is shown in {{CDDL}}.
+The complete CDDL structure is shown in Appendix C.
 
 ~~~~
 query-request = [
   type: TEEP-TYPE-query-request,
   options: {
-    ? token => uint,
+    ? token => bstr .size (8..64),
     ? supported-cipher-suites => [ + suite ],
-    ? challenge => bstr .size (8..64),
+    ? supported-freshness-mechanisms => [ + freshness-mechanism ],
+    ? challenge => bstr .size (8..512),
     ? versions => [ + version ],
-    ? ocsp-data => bstr,
     * $$query-request-extensions
     * $$teep-option-extensions
   },
@@ -328,7 +318,7 @@ type
 token
 : The value in the token parameter is used to match responses to requests.
   This is particularly useful when a TAM issues multiple concurrent requests
-  to a TEEP Agent. The token is not needed when the attestation bit is set in
+  to a TEEP Agent. The token MUST be present if and only if the attestation bit is clear in
   the data-item-requested value. The size of the token is at least 8 bytes
   (64 bits) and maximum of 64 bytes, which is the same as in an EAT Nonce
   Claim (see {{I-D.ietf-rats-eat}} Section 3.3). The first usage of a token
@@ -360,10 +350,6 @@ data-item-requested
      and extensions, which allows a TAM to discover the capabilities of a TEEP
      Agent implementation.
 
-   suit-commands (8)
-   : With this value the TAM queries the TEEP Agent for supported commands offered
-     by the SUIT manifest implementation.
-  
    Further values may be added in the future via IANA registration.
 
 supported-cipher-suites
@@ -371,32 +357,29 @@ supported-cipher-suites
   it contained both ciphersuites defined in this document. Details
   about the ciphersuite encoding can be found in {{ciphersuite}}.
 
+supported-freshness-mechanisms
+: The supported-freshness-mechanisms parameter lists the freshness mechanism(s) supported by the TAM.
+  Details about the encoding can be found in {{freshness-mechanisms}}.
+  If this parameter is absent, it means only the nonce mechanism is supported.
+
 challenge
-: The challenge field is an optional parameter used for ensuring the refreshness of the
-  attestation evidence returned with a QueryResponse message. When a challenge is 
-  provided in the QueryRequest and an EAT is returned with the QueryResponse message
-  then the challenge contained in this request MUST be copied into the nonce claim found 
-  in the EAT. If any format other than EAT is used, it is up to that
+: The challenge field is an optional parameter used for ensuring the freshness of the
+  attestation evidence returned with a QueryResponse message. It MUST be absent if
+  the attestation bit is clear (since the token is used instead in that case).
+  When a challenge is 
+  provided in the QueryRequest and an EAT is returned with a QueryResponse message
+  then the challenge contained in this request MUST be used to generate the EAT,
+  such as by copying the challengt into the nonce claim found in the EAT if
+  using the Nonce freshness mechanism.  For more details see {{freshness-mechanisms}}.
+
+  If any format other than EAT is used, it is up to that
   format to define the use of the challenge field.
 
 versions
-: The versions parameter enumerates the TEEP protocol version(s) supported by the TAM
+: The versions parameter enumerates the TEEP protocol version(s) supported by the TAM.
   A value of 0 refers to the current version of the TEEP protocol.
   If this field is not present, it is to be treated the same as if
   it contained only version 0.
-
-ocsp-data
-: The ocsp-data parameter contains a list of OCSP stapling data
-  respectively for the TAM certificate and each of the CA certificates
-  up to the root certificate. The TAM provides OCSP data so that the
-  TEEP Agent can validate the status of the TAM certificate chain
-  without making its own external OCSP service call. OCSP data MUST be
-  conveyed as a DER-encoded OCSP response (using the ASN.1 type
-  OCSPResponse defined in {{RFC2560}}). The use of OCSP is OPTIONAL to
-  implement for both the TAM and the TEEP Agent. A TAM can query the
-  TEEP Agent for the support of this functionality via the capability
-  discovery exchange, as described above.
-
 
 ## QueryResponse Message
 
@@ -405,13 +388,13 @@ receiving a QueryRequest message.
 
 Like other TEEP messages, the QueryResponse message is
 signed, and the relevant CDDL snippet is shown below. 
-The complete CDDL structure is shown in {{CDDL}}.
+The complete CDDL structure is shown in Appendix C.
 
 ~~~~
 query-response = [
   type: TEEP-TYPE-query-response,
   options: {
-    ? token => uint,
+    ? token => bstr .size (8..64),
     ? selected-cipher-suite => suite,
     ? selected-version => version,
     ? evidence-format => text,
@@ -427,12 +410,12 @@ query-response = [
 
 tc-info = {
   component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => uint
+  ? tc-manifest-sequence-number => .within uint .size 8
 }
 
 requested-tc-info = {
   component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => uint,
+  ? tc-manifest-sequence-number => .within uint .size 8
   ? have-binary => bool
 }
 ~~~~
@@ -471,7 +454,7 @@ evidence
   with the attestation bit set.  If the evidence-format parameter is absent,
   the attestation evidence contained in this parameter MUST be
   an Entity Attestation Token following the encoding
-  defined in {{I-D.ietf-rats-eat}}.
+  defined in {{I-D.ietf-rats-eat}}.  See {{evidence}} for further discussion.
 
 tc-list
 : The tc-list parameter enumerates the Trusted Components installed on the device
@@ -500,7 +483,9 @@ unneeded-tc-list
 
 ext-list
 : The ext-list parameter lists the supported extensions. This document does not
-  define any extensions.
+  define any extensions.  This parameter MUST be present if the
+  QueryResponse is sent in response to a QueryRequest with the
+  extensions bit set.
 
 The tc-info object has the following fields:
 
@@ -522,13 +507,30 @@ component-id
 
 tc-manifest-sequence-number
 : The minimum suit-manifest-sequence-number value from a SUIT manifest for
-  the Trusted Component.  If not present, indicates that any version will do.
+  the Trusted Component.  If not present, indicates that any sequence number will do.
 
 have-binary
 : If present with a value of true, indicates that the TEEP agent already has
   the Trusted Component binary and only needs an Update message with a SUIT manifest
   that authorizes installing it.  If have-binary is true, the
   tc-manifest-sequence-number field MUST be present.
+
+### Evidence {#evidence}
+
+Section 7.1 of {{I-D.ietf-teep-architecture}} lists information that may be
+required in the evidence depend on the circumstance.  When an Entity
+Attestation Token is used, the following claims can be used to meet those
+requirements:
+
+| Requirement  | Claim | Reference |
+| Device unique identifier | device-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.3 |
+| Vendor of the device | vendor-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.1 |
+| Class of the device | class-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.2 |
+| TEE hardware type | chip-version | {{I-D.ietf-rats-eat}} section 3.7 |
+| TEE hardware version | chip-version | {{I-D.ietf-rats-eat}} section 3.7 |
+| TEE firmware type | component-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.4 |
+| TEE firmware version | version | {{I-D.birkholz-rats-suit-claims}} section 3.1.8 |
+| Freshness proof | nonce | {{I-D.ietf-rats-eat}} section 3.3 |
 
 ## Update Message
 
@@ -537,14 +539,13 @@ Components via the TEEP Agent.
 
 Like other TEEP messages, the Update message is
 signed, and the relevant CDDL snippet is shown below. 
-The complete CDDL structure is shown in {{CDDL}}.
+The complete CDDL structure is shown in Appendix C.
 
 ~~~~
 update = [
   type: TEEP-TYPE-update,
   options: {
-    ? token => uint,
-    ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
+    ? token => bstr .size (8..64),
     ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
     * $$update-extensions,
     * $$teep-option-extensions
@@ -566,21 +567,35 @@ type
 token
 : The value in the token field is used to match responses to requests.
 
-unneeded-tc-list
-: The unneeded-tc-list parameter enumerates the Trusted Components to be deleted.
-  Each unneeded Trusted Component is identified
-  by its SUIT Component Identifier.
-
 manifest-list
 : The manifest-list field is used to convey one or multiple SUIT manifests
   to install.  A manifest is
-  a bundle of metadata about a TA, such as where to
+  a bundle of metadata about a Trusted Component, such as where to
   find the code, the devices to which it applies, and cryptographic
   information protecting the manifest. The manifest may also convey personalization
-  data. TA binaries and personalization data can be signed and encrypted
-  by the same TA Signer. Other combinations are, however, possible as well. For example,
+  data. Trusted Component binaries and personalization data can be signed and encrypted
+  by the same Trusted Component Signer. Other combinations are, however, possible as well. For example,
   it is also possible for the TAM to sign and encrypt the personalization data
-  and to let the TA Developer sign and/or encrypt the TA binary.
+  and to let the Trusted Component Developer sign and/or encrypt the Trusted Component binary.
+
+Note that an Update message carrying one or more SUIT manifests will inherently
+involve multiple signatures, one by the TAM in the TEEP message and one from 
+a Trusted Component signer inside each manifest.  This is intentional as they
+are for different purposes.
+
+The TAM is what authorizes
+apps to be installed, updated, and deleted on a given TEE and so the TEEP
+signature is checked by the TEEP Agent at protocol message processing time.
+(This same TEEP security wrapper is also used on messages like QueryRequest
+so that Agents only send potentially sensitive data such as evidence to
+trusted TAMs.)
+
+The Trusted Component signer on the other hand is what authorizes the
+Trusted Component to actually run, so the manifest signature could be
+checked at install time or load (or run) time or both, and this checking is
+done by the TEE independent of whether TEEP is used or some other update
+mechanism.
+See section 5 of {{I-D.ietf-teep-architecture}} for further discussion.
 
 ## Success Message
 
@@ -589,14 +604,14 @@ response to an Update message.
 
 Like other TEEP messages, the Success message is
 signed, and the relevant CDDL snippet is shown below. 
-The complete CDDL structure is shown in {{CDDL}}.
+The complete CDDL structure is shown in Appendix C.
 
 ~~~~
 teep-success = [
   type: TEEP-TYPE-teep-success,
   options: {
-    ? token => uint,
-    ? msg => text,
+    ? token => bstr .size (8..64),
+    ? msg => text .size (1..128),
     ? suit-reports => [ + suit-report ],
     * $$teep-success-extensions,
     * $$teep-option-extensions
@@ -613,40 +628,45 @@ type
 
 token
 : The value in the token parameter is used to match responses to requests.
-  It MUST match the value of the token parameter in the Install or Delete
+  It MUST match the value of the token parameter in the Update
   message the Success is in response to, if one was present.  If none was
   present, the token MUST be absent in the Success message.
 
 msg
 : The msg parameter contains optional diagnostics information encoded in
-  UTF-8 {{RFC3629}} returned by the TEEP Agent.
+  UTF-8 {{RFC3629}} using Net-Unicode form {{RFC5198}} with max 128 bytes
+  returned by the TEEP Agent.
 
 suit-reports
 : If present, the suit-reports parameter contains a set of SUIT Reports
-  as defined in Section 4 of {{I-D.moran-suit-report}}.
+  as defined in Section 4 of {{I-D.moran-suit-report}}.  If
+  the suit-report-nonce field is present in the SUIT Report, is value
+  MUST match the value of the token parameter in the Update
+  message the Success message is in response to.
 
-## Error Message
+## Error Message {#error-message-def}
 
 The Error message is used by the TEEP Agent to return an error in
 response to an Update message. 
 
 Like other TEEP messages, the Error message is
 signed, and the relevant CDDL snippet is shown below. 
-The complete CDDL structure is shown in {{CDDL}}.
+The complete CDDL structure is shown in Appendix C.
 
 ~~~~
 teep-error = [
   type: TEEP-TYPE-teep-error,
   options: {
-     ? token => uint,
-     ? err-msg => text,
+     ? token => bstr .size (8..64),
+     ? err-msg => text .size (1..128),
      ? supported-cipher-suites => [ + suite ],
+     ? supported-freshness-mechanisms => [ + freshness-mechanism ],
      ? versions => [ + version ],
      ? suit-reports => [ + suit-report ],
      * $$teep-error-extensions,
      * $$teep-option-extensions
   },
-  err-code: uint
+  err-code: uint (0..23)
 ]
 ~~~~
 
@@ -658,88 +678,113 @@ type
 
 token
 : The value in the token parameter is used to match responses to requests.
-  It MUST match the value of the token parameter in the Install or Delete
+  It MUST match the value of the token parameter in the Update
   message the Success is in response to, if one was present.  If none was
   present, the token MUST be absent in the Error message.
 
 err-msg
 : The err-msg parameter is human-readable diagnostic text that MUST be encoded
-  using UTF-8 {{RFC3629}} using Net-Unicode form {{RFC5198}}.
+  using UTF-8 {{RFC3629}} using Net-Unicode form {{RFC5198}} with max 128 bytes.
 
 supported-cipher-suites
 : The supported-cipher-suites parameter lists the ciphersuite(s) supported by the TEEP Agent.
   Details about the ciphersuite encoding can be found in {{ciphersuite}}.
-  This field is optional but MUST be returned with the ERR_UNSUPPORTED_CRYPTO_ALG
-  error message.
+  This otherwise optional parameter MUST be returned if err-code is ERR_UNSUPPORTED_CIPHER_SUITES.
+
+supported-freshness-mechanisms
+: The supported-freshness-mechanisms parameter lists the freshness mechanism(s) supported by the TEEP Agent.
+  Details about the encoding can be found in {{freshness-mechanisms}}.
+  This otherwise optional parameter MUST be returned if err-code is ERR_UNSUPPORTED_FRESHNESS_MECHANISMS.
 
 versions
 : The versions parameter enumerates the TEEP protocol version(s) supported by the TEEP
-  Agent. This otherwise optional parameter MUST be returned with the ERR_UNSUPPORTED_MSG_VERSION
-  error message.
+  Agent. This otherwise optional parameter MUST be returned if err-code is ERR_UNSUPPORTED_MSG_VERSION.
 
 suit-reports
 : If present, the suit-reports parameter contains a set of SUIT Reports
-  as defined in Section 4 of {{I-D.moran-suit-report}}.
+  as defined in Section 4 of {{I-D.moran-suit-report}}.  If
+  the suit-report-nonce field is present in the SUIT Report, is value
+  MUST match the value of the token parameter in the Update
+  message the Error message is in response to.
 
 err-code
-: The err-code parameter contains one of the values listed in the registry
-  defined in {{error-code-registry}} (with the
-  initial set of error codes listed below). Only selected values are applicable
+: The err-code parameter contains one of the 
+  error codes listed below). Only selected values are applicable
   to each message.
 
 This specification defines the following initial error messages:
 
 {: vspace='0'}
-ERR_ILLEGAL_PARAMETER (1)
-: The TEEP 
+ERR_PERMANENT_ERROR (1)
+: The TEEP
   request contained incorrect fields or fields that are inconsistent with
   other fields.
+  For diagnosis purposes it is RECOMMMENDED to identify the failure reason
+  in the error message.
+  A TAM receiving this error might refuse to communicate further with
+  the TEEP Agent for some period of time until it has reason to believe
+  it is worth trying again, but it should take care not to give up on
+  communication when there is no attestation evidence indicating that
+  the error is genuine.  In contrast, ERR_TEMPORARY_ERROR is an indication
+  that a more agressive retry is warranted.
 
 ERR_UNSUPPORTED_EXTENSION (2)
-: The TEEP Agent does not support the request message or
-  an extension it indicated.
+: The TEEP Agent does not support an extension included in the request
+  message.
+  For diagnosis purposes it is RECOMMMENDED to identify the unsupported
+  extension in the error message.
+  A TAM receiving this error might retry the request without using extensions.
 
-ERR_REQUEST_SIGNATURE_FAILED (3)
-: The TEEP Agent
-  could not verify the signature of the request message.
+ERR_UNSUPPORTED_FRESHNESS_MECHANISMS (3)
+: The TEEP Agent does not
+  support any freshness algorithm mechanisms in the request message.
+  A TAM receiving this error might retry the request using a different
+  set of supported freshness mechanisms in the request message.
 
 ERR_UNSUPPORTED_MSG_VERSION (4)
 : The TEEP Agent does not
   support the TEEP protocol version indicated in the request message.
+  A TAM receiving this error might retry the request using a different
+  TEEP protocol version.
 
-ERR_UNSUPPORTED_CRYPTO_ALG (5)
+ERR_UNSUPPORTED_CIPHER_SUITES (5)
 : The TEEP Agent does not
-  support the cryptographic algorithm indicated in the request message.
+  support any ciphersuites indicated in the request message.
+  A TAM receiving this error might retry the request using a different
+  set of supported ciphersuites in the request message.
 
 ERR_BAD_CERTIFICATE (6)
 : Processing of a certificate failed. For diagnosis purposes it is
   RECOMMMENDED to include information about the failing certificate
-  in the error message.
-
-ERR_UNSUPPORTED_CERTIFICATE (7)
-: A certificate was of an unsupported type.
-
-ERR_CERTIFICATE_REVOKED (8)
-: A certificate was revoked by its signer.
+  in the error message.  For example, the certificate was of an
+  unsupported type, or the certificate was revoked by its signer.
+  A TAM receiving this error might attempt to use an alternate certificate.
 
 ERR_CERTIFICATE_EXPIRED (9)
 : A certificate has expired or is not currently
   valid.
+  A TAM receiving this error might attempt to renew its certificate
+  before using it again.
 
-ERR_INTERNAL_ERROR (10)
+ERR_TEMPORARY_ERROR (10)
 : A miscellaneous
-  internal error occurred while processing the request message.
-
-ERR_TC_NOT_FOUND (12)
-: The target Trusted Component does not
-  exist. This error may happen when the TAM has stale information and
-  tries to delete a Trusted Component that has already been deleted.
+  temporary error, such as a memory allocation failure, occurred while processing the request message.
+  A TAM receiving this error might retry the same request at a later point
+  in time.
 
 ERR_MANIFEST_PROCESSING_FAILED (17)
 : The TEEP Agent encountered one or more manifest processing failures.
   If the suit-reports parameter is present, it contains the failure details.
+  A TAM receiving this error might still attempt to install or update
+  other components that do not depend on the failed manifest.
 
-Additional error codes can be registered with IANA.
+New error codes should be added sparingly, not for every implementation
+error.  That is the intent of the err-msg field, which can be used to
+provide details meaningful to humans.  New error codes should only be
+added if the TAM is expected to do something behaviorally different upon
+receipt of the error message, rather than just logging the event.
+Hence, each error code is responsible for saying what the
+behavioral difference is expected to be.
 
 # Mapping of TEEP Message Parameters to CBOR Labels {#tags}
 
@@ -751,27 +796,27 @@ as a map key.
 
 This specification uses the following mapping:
 
-| Name                        | Label |
-| supported-cipher-suites     |     1 |
-| challenge                   |     2 |
-| version                     |     3 |
-| ocsp-data                   |     4 |
-| selected-cipher-suite       |     5 |
-| selected-version            |     6 |
-| evidence                    |     7 |
-| tc-list                     |     8 |
-| ext-list                    |     9 |
-| manifest-list               |    10 |
-| msg                         |    11 |
-| err-msg                     |    12 |
-| evidence-format             |    13 |
-| requested-tc-list           |    14 |
-| unneeded-tc-list            |    15 |
-| component-id                |    16 |
-| tc-manifest-sequence-number |    17 |
-| have-binary                 |    18 |
-| suit-reports                |    19 |
-| token                       |    20 |
+| Name                           | Label |
+| supported-cipher-suites        |     1 |
+| challenge                      |     2 |
+| version                        |     3 |
+| selected-cipher-suite          |     5 |
+| selected-version               |     6 |
+| evidence                       |     7 |
+| tc-list                        |     8 |
+| ext-list                       |     9 |
+| manifest-list                  |    10 |
+| msg                            |    11 |
+| err-msg                        |    12 |
+| evidence-format                |    13 |
+| requested-tc-list              |    14 |
+| unneeded-tc-list               |    15 |
+| component-id                   |    16 |
+| tc-manifest-sequence-number    |    17 |
+| have-binary                    |    18 |
+| suit-reports                   |    19 |
+| token                          |    20 |
+| supported-freshness-mechanisms |    21 |
 
 # Behavior Specification
 
@@ -786,7 +831,14 @@ When the ProcessTeepMessage API is invoked, the TAM first does validation
 as specified in {{validation}}, and drops the message if it is not valid.
 Otherwise, it proceeds as follows.
 
-If a QueryResponse is received that contains evidence, the evidence
+If the message includes a token, it can be used to 
+match the response to a request previously sent by the TAM.
+The TAM MUST expire the token value after receiving the first response
+from the device that has a valid signature and ignore any subsequent messages that have the same token
+value.  The token value MUST NOT be used for other purposes, such as a TAM to
+identify the devices and/or a device to identify TAMs or Trusted Components.
+
+If a QueryResponse message is received that contains evidence, the evidence
 is passed to an attestation Verifier (see {{I-D.ietf-rats-architecture}})
 to determine whether the Agent is in a trustworthy state.
 Based on the results of attestation, and the lists of installed, requested,
@@ -794,7 +846,23 @@ and unneeded Trusted Components reported in the QueryResponse, the TAM
 determines, in any implementation specific manner, which Trusted Components
 need to be installed, updated, or deleted, if any.
 If any Trusted Components need to be installed, updated, or deleted,
-the TAM sends an Update message.
+the TAM sends an Update message containing SUIT Manifests with command
+sequences to do the relevant installs, updates, or deletes.
+It is important to note that the TEEP Agent's
+Update Procedure requires resolving and installing any dependencies
+indicated in the manifest, which may take some time, and the resulting Success
+or Error message is generated only after completing the Update Procedure.
+Hence, depending on the freshness mechanism in use, the TAM may need to
+store data (e.g., a nonce) for some time.
+
+If a Success or Error message is received containing one or more SUIT Reports, the TAM also validates that
+the nonce in any SUIT Report matches the token sent in the Update message,
+and drops the message if it does not match.  Otherwise, the TAM handles
+the update in any implementation specific way, such as updating any locally
+cached information about the state of the TEEP Agent, or logging the results.
+
+If any other Error message is received, the TAM can handle it in any implementation
+specific way, but {{error-message-def}} provides recommendations for such handling.
 
 ## TEEP Agent Behavior {#agent}
 
@@ -804,13 +872,18 @@ TEEP Agent passes no data back to the caller.  Otherwise,
 if the TEEP Agent chooses to initiate the process of requesting the indicated
 TA, it determines (in any implementation specific way) the TAM URI based on 
 any TAM URI provided by the RequestTA caller and any local configuration,
-and passes back the TAM URI to connect to.
+and passes back the TAM URI to connect to.  
 
 When the RequestPolicyCheck API is invoked, the TEEP Agent decides
 whether to initiate communication with any trusted TAMs (e.g., it might
 choose to do so for a given TAM unless it detects that it has already
 communicated with that TAM recently). If so, it passes back a TAM URI
-to connect to.
+to connect to.  If the TEEP Agent has multiple TAMs it needs to connect
+with, it just passes back one, with the expectation that
+RequestPolicyCheck API will be invoked to retrieve each one successively
+until there are no more and it can pass back no data at that time.
+Thus, once a TAM URI is returned, the TEEP Agent can remember that it has
+already initiated communication with that TAM.
 
 When the ProcessError API is invoked, the TEEP Agent can handle it in
 any implementation specific way, such as logging the error or
@@ -821,20 +894,23 @@ as specified in {{validation}}, and drops the message if it is not valid.
 Otherwise, processing continues as follows based on the type of message.
 
 When a QueryRequest message is received, the Agent responds with a
-QueryResponse message.
+QueryResponse message if all fields were understood, or an Error message
+if any error was encountered.
 
-When an Update message is received, the Agent attempts to uninstall any
-Trusted Components listed in the unneeded-tc-list field of the message,
-and responds with an Error message if any error was encountered.
-Otherwise, the Agent attempts to update
-the specified SUIT manifests by following the Update Procedure specified
+When an Update message is received, the Agent attempts to update
+the Trusted Components specified in the SUIT manifests
+by following the Update Procedure specified
 in {{I-D.ietf-suit-manifest}}, and responds with a Success message if
 all SUIT manifests were successfully installed, or an Error message
 if any error was encountered.
+It is important to note that the
+Update Procedure requires resolving and installing any dependencies
+indicated in the manifest, which may take some time, and the Success
+or Error message is generated only after completing the Update Procedure.
 
 # Ciphersuites {#ciphersuite}
 
-A ciphersuite consists of an AEAD algorithm, an HMAC algorithm, and a signature
+A ciphersuite consists of an AEAD algorithm, a MAC algorithm, and a signature
 algorithm.
 Each ciphersuite is identified with an integer value, which corresponds to
 an IANA registered
@@ -847,6 +923,46 @@ ciphersuite (see {{ciphersuite-registry}}. This document specifies two ciphersui
 A TAM MUST support both ciphersuites.  A TEEP Agent MUST support at least
 one of the two but can choose which one.  For example, a TEEP Agent might
 choose ciphersuite 2 if it has hardware support for it.
+
+Any ciphersuites without confidentiality protection can only be added if the
+associated specification includes a discussion of security considerations and
+applicability, since manifests may carry sensitive information. For example,
+Section 6 of {{I-D.ietf-teep-architecture}} permits implementations that terminate
+transport security inside the TEE and if the transport security provides
+confidentiality then additional encryption might not be needed in the manifest
+for some use cases. For most use cases, however, manifest confidentiality will
+be needed to protect sensitive fields from the TAM as discussed in Section 9.8
+of {{I-D.ietf-teep-architecture}}.
+
+# Freshness Mechanisms {#freshness-mechanisms}
+
+A freshness mechanism determines how a TAM can tell whether evidence provided
+in a Query Response is fresh.  There are multiple ways this can be done
+as discussed in Section 10 of {{I-D.ietf-rats-architecture}}.
+
+Each freshness mechanism is identified with an integer value, which corresponds to
+an IANA registered freshness mechanism (see {{freshness-mechanism-registry}}.
+This document defines the following freshness mechanisms:
+
+| Value | Freshness mechanism                            |
+|     1 | Nonce                                          |
+|     2 | Timestamp                                      |
+|     3 | Epoch ID                                       |
+
+In the Nonce mechanism, the evidence MUST include a nonce provided
+in the QueryRequest challenge.  In other mechanisms, a timestamp
+or epoch ID determined via mechanisms outside the TEEP protocol is
+used, and the challenge is only needed in the QueryRequest message
+if a challenge is needed in generating evidence for reasons other
+than freshness.
+
+If a TAM supports multiple freshness mechanisms that require different challenge
+formats, the QueryRequest message can currently only send one such challenge.
+This situation is expected to be rare, but should it occur, the TAM can
+choose to prioritize one of them and exclude the other from the
+supported-freshness-mechanisms in the QueryRequest, and resend the QueryRequest
+with the other mechanism if an ERR_UNSUPPORTED_FRESHNESS_MECHANISMS Error
+is received that indicates the TEEP Agent supports the other mechanism.
 
 # Security Considerations {#security}
 
@@ -865,7 +981,7 @@ Attestation
 : A TAM can rely on the attestation evidence provided by the TEEP
   Agent.  To sign the attestation evidence, it is necessary
   for the device to possess a public key (usually in the form of a
-  certificate) along with the corresponding private key. Depending on
+  certificate {{RFC5280}}) along with the corresponding private key. Depending on
   the properties of the attestation mechanism, it is possible to
   uniquely identify a device based on information in the attestation
   evidence or in the certificate used to sign the attestation
@@ -878,19 +994,19 @@ Attestation
   outside of any TEE. If any mechanism other than EATs is used, it is
   up to that mechanism to specify how privacy is provided.
 
-TA Binaries
-: Each TA binary is signed by a TA Signer. It is the responsibility of the
-  TAM to relay only verified TAs from authorized TA Signers.  Delivery of
-  a TA to the TEEP Agent is then the responsibility of the TAM,
+Trusted Component Binaries
+: Each Trusted Component binary is signed by a Trusted Component Signer. It is the responsibility of the
+  TAM to relay only verified Trusted Components from authorized Trusted Component Signers.  Delivery of
+  a Trusted Component to the TEEP Agent is then the responsibility of the TAM,
   using the security mechanisms provided by the TEEP
-  protocol.  To protect the TA binary, the SUIT manifest format is used and
+  protocol.  To protect the Trusted Component binary, the SUIT manifest format is used and
   it offers a variety of security features, including digitial
   signatures and symmetric encryption.
 
 Personalization Data
-: A TA Signer or TAM can supply personalization data along with a TA.
+: A Trusted Component Signer or TAM can supply personalization data along with a Trusted Component.
   This data is also protected by a SUIT manifest.
-  Personalization data signed and encrypted by a TA Signer other than
+  Personalization data signed and encrypted by a Trusted Component Signer other than
   the TAM is opaque to the TAM.
 
 TEEP Broker
@@ -901,38 +1017,31 @@ TEEP Broker
   and replay messages but it cannot modify those messages. (A replay
   would be, however, detected by the TEEP Agent.) A compromised TEEP
   Broker could reorder messages in an attempt to install an old
-  version of a TA. Information in the manifest ensures that TEEP
+  version of a Trusted Component. Information in the manifest ensures that TEEP
   Agents are protected against such downgrade attacks based on
   features offered by the manifest itself.
 
-TA Signer Compromise
-: The QueryRequest message from a TAM to the TEEP Agent can include
-  OCSP stapling data for the TAM's certificate and for
-  intermediate CA certificates up to the root certificate so that the
-  TEEP Agent can verify the certificate's revocation status.  A
-  certificate revocation status check on a TA Signer certificate is
-  OPTIONAL by a TEEP Agent. A TAM is responsible for vetting a TA and
-  before distributing them to TEEP Agents, so TEEP Agents can instead
-  simply trust that a TA Signer certificate's status was done by the TAM.
+Trusted Component Signer Compromise
+: A TAM is responsible for vetting a Trusted Component and
+  before distributing them to TEEP Agents.  
+  It is RECOMMENDED to provide a way to
+  update the trust anchor store used by the TEE, for example using
+  a firmware update mechanism.  Thus, if a Trusted Component
+  Signer is later compromised, the TAM can update the trust anchor
+  store used by the TEE, for example using a firmware update mechanism.
 
 CA Compromise
-: The CA issuing certificates to a TAM or a TA Signer might get compromised.
-  A compromised intermediate CA certificate can be detected by a TEEP
-  Agent by using OCSP information, assuming the revocation information
-  is available.  Additionally, it is RECOMMENDED to provide a way to
+: The CA issuing certificates to a TEE or a Trusted Component Signer might get compromised.
+  It is RECOMMENDED to provide a way to
   update the trust anchor store used by the TEE, for example using
   a firmware update mechanism. If the CA issuing certificates to
   devices gets compromised then these devices might be rejected by a
   TAM, if revocation is available to the TAM.
 
-Compromised TAM
-: The TEEP Agent SHOULD use OCSP information to verify the validity of
-  the TAM's certificate (as well as the validity of
-  intermediate CA certificates). The integrity and the accuracy of the
+TAM Certificate Expiry
+: The integrity and the accuracy of the
   clock within the TEE determines the ability to determine an expired
-  or revoked certificate. OCSP stapling data includes signature
-  generation time, allowing certificate validity dates to be compared to the
-  current time.
+  TAM certificate, if certificates are used.
 
 Compromised Time Source
 : As discussed above, certificate validity checks rely on comparing
@@ -1008,72 +1117,53 @@ Change controller:
 : IETF
 
 
-
-## Error Code Registry {#error-code-registry}
-
-IANA is also requested to create a new registry for the error codes defined
-in {{detailmsg}}.
-
-Registration requests are evaluated after a
-three-week review period on the teep-reg-review@ietf.org mailing list,
-on the advice of one or more Designated Experts {{RFC8126}}.  However,
-to allow for the allocation of values prior to publication, the
-Designated Experts may approve registration once they are satisfied
-that such a specification will be published.
-
-Registration requests sent to the mailing list for review should use
-an appropriate subject (e.g., "Request to register an error code: example").
-Registration requests that are undetermined for a period longer than
-21 days can be brought to the IESG's attention (using the
-iesg@ietf.org mailing list) for resolution.
-
-Criteria that should be applied by the Designated Experts includes
-determining whether the proposed registration duplicates existing
-functionality, whether it is likely to be of general applicability or
-whether it is useful only for a single extension, and whether the
-registration description is clear.
-
-IANA must only accept registry updates from the Designated Experts
-and should direct all requests for registration to the review mailing
-list.
-
-
 ## Ciphersuite Registry {#ciphersuite-registry}
 
-IANA is also requested to create a new registry for ciphersuites, as defined
-in {{ciphersuite}}.
+IANA is also requested to create a new registry for ciphersuites.
 
+Name of registry: TEEP Ciphersuites
 
-## CBOR Tag Registry
+Policy: Specification Required
 
-IANA is requested to register a CBOR tag in the "CBOR Tags" registry
-for use with TEEP messages.
+Additional requirements: The specification must document relevant security considerations.
 
-The registry contents is:
+Initial values:
 
-* CBOR Tag: TBD1
+| Value | Ciphersuite                                    | Specification
+|     1 | AES-CCM-16-64-128, HMAC 256/256, X25519, EdDSA | RFC TBD {{ciphersuite}}
+|     2 | AES-CCM-16-64-128, HMAC 256/256, P-256, ES256  | RFC TBD {{ciphersuite}}
 
-* Data Item: TEEP Message
+[RFC Editor: please replace TBD above with the number assigned to this document]
 
-* Semantics: TEEP Message, as defined in [[TBD: This RFC]]
+## Freshness Mechanism Registry {#freshness-mechanism-registry}
 
-* Reference: [[TBD: This RFC]]
+IANA is also requested to create a new registry for freshness mechanisms.
 
-* Point of Contact: TEEP working group (teep@ietf.org)
+Name of registry: TEEP Freshness Mechanisms
 
+Policy: Specification Required
 
+Additional requirements: The specification must document relevant security considerations.
 
+Initial values: 
+
+| Value | Freshness mechanism                            | Specification
+|     1 | Nonce                                          | RFC TBD {{freshness-mechanisms}}
+|     2 | Timestamp                                      | RFC TBD {{freshness-mechanisms}}
+|     3 | Epoch ID                                       | RFC TBD {{freshness-mechanisms}}
+
+[RFC Editor: please replace TBD above with the number assigned to this document]
 
 --- back
 
 
-# A. Contributors {#Contributors}
+# A. Contributors
 {: numbered='no'}
 
 We would like to thank Brian Witten (Symantec), Tyler Kim (Solacia), Nick Cook (Arm), and  Minho Yoo (IoTrust) for their contributions
 to the Open Trust Protocol (OTrP), which influenced the design of this specification.
 
-# B. Acknowledgements {#Acknowledgements}
+# B. Acknowledgements
 {: numbered='no'}
 
 We would like to thank Eve Schooler for the suggestion of the protocol name.
@@ -1084,7 +1174,7 @@ for their valuable implementation feedback.
 
 We would also like to thank Carsten Bormann and Henk Birkholz for their help with the CDDL. 
 
-# C. Complete CDDL {#CDDL}
+# C. Complete CDDL
 {: numbered='no'}
 
 Valid TEEP messages MUST adhere to the following CDDL data definitions,
@@ -1097,7 +1187,7 @@ teep-message = $teep-message-type .within teep-message-framework
 SUIT_Envelope = any
 
 teep-message-framework = [
-  type: 0..23 / $teep-type-extension,
+  type: uint (0..23) / $teep-type-extension,
   options: { * teep-option },
   * uint; further integers, e.g., for data-item-requested
 ]
@@ -1111,15 +1201,15 @@ $teep-message-type /= update
 $teep-message-type /= teep-success
 $teep-message-type /= teep-error
 
-; message type numbers
+; message type numbers, uint (0..23)
 TEEP-TYPE-query-request = 1
 TEEP-TYPE-query-response = 2
 TEEP-TYPE-update = 3
 TEEP-TYPE-teep-success = 5
 TEEP-TYPE-teep-error = 6
 
-version = uint .size 4
-ext-info = uint 
+version = .within uint .size 4
+ext-info = .within uint .size 4
 
 ; data items as bitmaps
 data-item-requested = $data-item-requested .within uint .size 8
@@ -1129,17 +1219,15 @@ trusted-components = 2
 $data-item-requested /= trusted-components
 extensions = 4
 $data-item-requested /= extensions
-suit-commands = 8
-$data-item-requested /= suit-commands
 
 query-request = [
   type: TEEP-TYPE-query-request,
   options: {
-    ? token => uint,
+    ? token => bstr .size (8..64),
     ? supported-cipher-suites => [ + suite ],
-    ? challenge => bstr .size (8..64),
+    ? supported-freshness-mechanisms => [ + freshness-mechanism ],
+    ? challenge => bstr .size (8..512),
     ? versions => [ + version ],
-    ? ocsp-data => bstr,
     * $$query-request-extensions
     * $$teep-option-extensions
   },
@@ -1155,10 +1243,22 @@ TEEP-AES-CCM-16-64-128-HMAC256--256-P-256-ES256  = 2
 $TEEP-suite /= TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA
 $TEEP-suite /= TEEP-AES-CCM-16-64-128-HMAC256--256-P-256-ES256
 
+; freshness-mechanisms
+
+freshness-mechanism = $TEEP-freshness-mechanism .within uint .size 4
+
+FRESHNESS_NONCE = 0
+FRESHNESS_TIMESTAMP = 1
+FRESHNESS_EPOCH_ID = 2
+
+$TEEP-freshness-mechanism /= FRESHNESS_NONCE
+$TEEP-freshness-mechanism /= FRESHNESS_TIMESTAMP
+$TEEP-freshness-mechanism /= FRESHNESS_EPOCH_ID
+
 query-response = [
   type: TEEP-TYPE-query-response,
   options: {
-    ? token => uint,
+    ? token => bstr .size (8..64),
     ? selected-cipher-suite => suite,
     ? selected-version => version,
     ? evidence-format => text,
@@ -1174,20 +1274,19 @@ query-response = [
 
 tc-info = {
   component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => uint
+  ? tc-manifest-sequence-number => .within uint .size 8
 }
 
 requested-tc-info = {
   component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => uint,
+  ? tc-manifest-sequence-number => .within uint .size 8
   ? have-binary => bool
 }
 
 update = [
   type: TEEP-TYPE-update,
   options: {
-    ? token => uint,
-    ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
+    ? token => bstr .size (8..64),
     ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
     * $$update-extensions,
     * $$teep-option-extensions
@@ -1197,8 +1296,8 @@ update = [
 teep-success = [
   type: TEEP-TYPE-teep-success,
   options: {
-    ? token => uint,
-    ? msg => text,
+    ? token => bstr .size (8..64),
+    ? msg => text .size (1..128),
     ? suit-reports => [ + suit-report ],
     * $$teep-success-extensions,
     * $$teep-option-extensions
@@ -1208,35 +1307,33 @@ teep-success = [
 teep-error = [
   type: TEEP-TYPE-teep-error,
   options: {
-     ? token => uint,
-     ? err-msg => text,
+     ? token => bstr .size (8..64),
+     ? err-msg => text .size (1..128),
      ? supported-cipher-suites => [ + suite ],
+     ? supported-freshness-mechanisms => [ + freshness-mechanism ],
      ? versions => [ + version ],
      ? suit-reports => [ + suit-report ],
      * $$teep-error-extensions,
      * $$teep-option-extensions
   },
-  err-code: int (0..23)
+  err-code: uint (0..23)
 ]
 
-; The err-code parameter, int (0..23)
-ERR_ILLEGAL_PARAMETER = 1
+; The err-code parameter, uint (0..23)
+ERR_PERMANENT_ERROR = 1
 ERR_UNSUPPORTED_EXTENSION = 2
-ERR_REQUEST_SIGNATURE_FAILED = 3
+ERR_UNSUPPORTED_FRESHNESS_MECHANISMS = 3
 ERR_UNSUPPORTED_MSG_VERSION = 4
-ERR_UNSUPPORTED_CRYPTO_ALG = 5
+ERR_UNSUPPORTED_CIPHER_SUITES = 5
 ERR_BAD_CERTIFICATE = 6
-ERR_UNSUPPORTED_CERTIFICATE = 7
-ERR_CERTIFICATE_REVOKED = 8
 ERR_CERTIFICATE_EXPIRED = 9
-ERR_INTERNAL_ERROR = 10
-ERR_TC_NOT_FOUND = 12
+ERR_TEMPORARY_ERROR = 10
 ERR_MANIFEST_PROCESSING_FAILED = 17
 
+; labels of mapkey for teep message parameters, uint (0..23)
 supported-cipher-suites = 1
 challenge = 2
 versions = 3
-ocsp-data = 4
 selected-cipher-suite = 5
 selected-version = 6
 evidence = 7
@@ -1253,142 +1350,177 @@ tc-manifest-sequence-number = 17
 have-binary = 18
 suit-reports = 19
 token = 20
+supported-freshness-mechanisms = 21
 ~~~~
 
-# D. Examples of Diagnostic Notation and Binary Representation {#examples}
+# D. Examples of Diagnostic Notation and Binary Representation
 {: numbered='no'}
 
-### Some assumptions in examples
+This section includes some examples with the following assumptions:
+
+- TEEP Device will have two TCs with the following SUIT Component Identifiers:
+  - \[ 0x000102030405060708090a0b0c0d0e0f \]
+  - \[ 0x100102030405060708090a0b0c0d0e0f \]
+- SUIT manifest-list is set empty only for example purposes (see Appendix E
+  for actual manifest examples)
+
+## D.1. QueryRequest Message
 {: numbered='no'}
 
-- OCSP stapling data = h'010203'
-- TEEP Device will have 2 TAs with the following SUIT Component Identifiers:
-  - [ 0x0102030405060708090a0b0c0d0e0f ]
-  - [ 0x1102030405060708090a0b0c0d0e0f ]
-- SUIT manifest-list is set empty only for example purposes
-- Not including Entity Attestation Token (EAT) parameters for example purposes
-
-## QueryRequest Message
-{: numbered='no'}
-
-### CBOR Diagnostic Notation
+### D.1.1. CBOR Diagnostic Notation
 {: numbered='no'}
 
 ~~~~
 / query-request = /
 [
-  1,  / type : TEEP-TYPE-query-request = 1 (fixed int) /
+  1,  / type : TEEP-TYPE-query-request = 1 (uint (0..23)) /
   / options : /
   {
-    20 : 2004318071,  / token = 20 (mapkey) :
-                        0x77777777 (uint), generated by TAM /
-    1 : [ 1 ],  / supported-cipher-suites = 1 (mapkey) :
-                  TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA =
-                  [ 1 ] (array of uint .size 4) /
-    3 : [ 0 ],  / version = 3 (mapkey) :
-                  [ 0 ] (array of uint .size 4) /
-    4 : h'010203' / ocsp-data = 4 (mapkey) : 0x010203 (bstr) /
+    20 : 0xa0a1a2a3a4a5a6a7a8a9aaabacadaeaf,
+            / token = 20 (mapkey) :
+              h'a0a1a2a3a4a5a6a7a8a9aaabacadaeaf' (bstr .size (8..64)),
+              generated by TAM /
+    1 : [ 1 ], / supported-cipher-suites = 1 (mapkey) :
+                 TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA =
+                 [ 1 ] (array of .within uint .size 4) /
+    3 : [ 0 ] / version = 3 (mapkey) :
+                 [ 0 ] (array of .within uint .size 4) /
   },
-  2   / data-item-requested : trusted-components = 2 (uint) /
+  3   / data-item-requested :
+        attestation | trusted-components = 3 (.within uint .size 8) /
 ]
 ~~~~
 
-### CBOR Binary Representation
+### D.1.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
-83                       # array(3),
-  01                     # unsigned(1)
+83                       # array(3)
+  01                     # unsigned(1) uint (0..23)
   A4                     # map(4)
-    14                   # unsigned(20)
-    1A 77777777          # unsigned(2004318071, 0x77777777)
-    01                   # unsigned(1)
+    14                   # unsigned(20) uint (0..23)
+    4F                   # bytes(16) (8..64)
+      A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
+    01                   # unsigned(1) uint (0..23)
     81                   # array(1)
-      01                 # unsigned(1) within .size 4
-    03                   # unsigned(3)
+      01                 # unsigned(1) within uint .size 4
+    03                   # unsigned(3) uint (0..23)
     81                   # array(1)
-      00                 # unsigned(0) within .size 4
-    04                   # unsigned(4)
+      00                 # unsigned(0) within uint .size 4
+    04                   # unsigned(4) uint (0..23)
     43                   # bytes(3)
       010203             # "\x01\x02\x03"
-  02                     # unsigned(2)
+  03                     # unsigned(3) .within uint .size 8
 ~~~~
 
-## QueryResponse Message
+## D.2. Entity Attestation Token
 {: numbered='no'}
 
-### CBOR Diagnostic Notation
+This is shown below in CBOR diagnostic form.  Only the payload signed by
+COSE is shown.
+
+### D.2.1. CBOR Diagnostic Notation
+{: numbered='no'}
+
+~~~~
+/ eat-claim-set = /
+{
+    / issuer /                   1: "joe",
+    / timestamp (iat) /          6: 1(1526542894)
+    / nonce /                   10: h'948f8860d13a463e8e',
+    / secure-boot /             15: true,
+    / debug-status /            16: 3, / disabled-permanently /
+    / security-level /          14: 3, / secure-restricted /
+    / device-identifier /    <TBD>: h'e99600dd921649798b013e9752dcf0c5',
+    / vendor-identifier /    <TBD>: h'2b03879b33434a7ca682b8af84c19fd4', 
+    / class-identifier /     <TBD>: h'9714a5796bd245a3a4ab4f977cb8487f',
+    / chip-version /            26: [ "MyTEE", 1 ],
+    / component-identifier / <TBD>: h'60822887d35e43d5b603d18bcaa3f08d',
+    / version /              <TBD>: "v0.1"
+}
+~~~~
+
+## D.3. QueryResponse Message
+{: numbered='no'}
+
+### D.3.1. CBOR Diagnostic Notation
 {: numbered='no'}
 
 ~~~~
 / query-response = /
 [
-  2,  / type : TEEP-TYPE-query-response = 2 (fixed int) /
+  2,  / type : TEEP-TYPE-query-response = 2 (uint (0..23)) /
   / options : /
   {
-    20 : 2004318071,  / token = 20 (mapkey) : 0x77777777 (uint),
-                        from TAM's QueryRequest message /
+    20 : 0xa0a1a2a3a4a5a6a7a8a9aaabacadaeaf,
+            / token = 20 (mapkey) :
+              h'a0a1a2a3a4a5a6a7a8a9aaabacadaeaf' (bstr .size (8..64)),
+              given from TAM's QueryRequest message /
     5 : 1,  / selected-cipher-suite = 5 (mapkey) :
               TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA =
-              1 (uint .size 4) /
-    6 : 0,  / selected-version = 6 (mapkey) : 0 (uint .size 4) /
+              1 (.within uint .size 4) /
+    6 : 0,  / selected-version = 6 (mapkey) :
+              0 (.within uint .size 4) /
+    7 : ... / evidence = 7 (mapkey) :
+              Entity Attestation Token /
     8 : [   / tc-list = 8 (mapkey) : (array of tc-info) /
       {
-        16 : [ 0x0102030405060708090a0b0c0d0e0f ] / component-id =
-               16 (mapkey) : [ h'0102030405060708090a0b0c0d0e0f' ]
-               (SUIT_Component_Identifier, bstr) /
+        16 : [ 0x000102030405060708090a0b0c0d0e0f ] / component-id =
+               16 (mapkey) : [ h'000102030405060708090a0b0c0d0e0f' ]
+               (SUIT_Component_Identifier =  [* bstr]) /
       },
       {
-        16 : [ 0x1102030405060708090a0b0c0d0e0f ] / component-id =
-               16 (mapkey) : [ h'1102030405060708090a0b0c0d0e0f' ]
-               (SUIT_Component_Identifier, bstr) /
+        16 : [ 0x100102030405060708090a0b0c0d0e0f ] / component-id =
+               16 (mapkey) : [ h'100102030405060708090a0b0c0d0e0f' ]
+               (SUIT_Component_Identifier =  [* bstr]) /
       }
         ]
     }
 ]
 ~~~~
 
-### CBOR Binary Representation
+### D.3.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
 82                       # array(2)
-  02                     # unsigned(2)
-  A4                     # map(4)
-    14                   # unsigned(20)
-    1A 77777777          # unsigned(2004318071, 0x77777777)
-    05                   # unsigned(5)
-    01                   # unsigned(1) within .size 4
-    06                   # unsigned(6)
-    00                   # unsigned(0) within .size 4
-    08                   # unsigned(8)
+  02                     # unsigned(2) uint (0..23)
+  A5                     # map(5)
+    14                   # unsigned(20) uint (0..23)
+    4F                   # bytes(16) (8..64)
+      A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
+    05                   # unsigned(5) uint (0..23)
+    01                   # unsigned(1) .within uint .size 4
+    06                   # unsigned(6) uint (0..23)
+    00                   # unsigned(0) .within uint .size 4
+    07                   # unsigned(7) uint (0..23)
+      ...                # Entity Attestation Token
+    08                   # unsigned(8) uint (0..23)
     82                   # array(2)
       81                 # array(1)
-        4F               # bytes(15)
-          0102030405060708090A0B0C0D0E0F
+        4F               # bytes(16)
+          000102030405060708090A0B0C0D0E0F
       81                 # array(1)
-        4F               # bytes(15)
-          1102030405060708090A0B0C0D0E0F
+        4F               # bytes(16)
+          100102030405060708090A0B0C0D0E0F
 ~~~~
 
-## Update Message
+## D.4. Update Message
 {: numbered='no'}
 
-### CBOR Diagnostic Notation
+### D.4.1. CBOR Diagnostic Notation
 {: numbered='no'}
 
 ~~~~
 / update = /
 [
-  3,  / type : TEEP-TYPE-update = 3 (fixed int) /
+  3,  / type : TEEP-TYPE-update = 3 (uint (0..23)) /
   / options : /
   {
-    20 : 2004318072,  / token = 20 (mapkey) :
-                        0x77777778 (uint), generated by TAM /
-    15 : [ [ h'0102030405060708090a0b0c0d0e0f' ] ]
-             / unneeded-tc-list = 15 (mapkey) :
-               [ [ h'0102030405060708090a0b0c0d0e0f' ] ]
-               (array of SUIT_Component_Identifier =  [* bstr]) /
+    20 : 0xa0a1a2a3a4a5a6a7a8a9aaabacadaeaf,
+             / token = 20 (mapkey) :
+               h'a0a1a2a3a4a5a6a7a8a9aaabacadaeaf' (bstr .size (8..64)),
+               generated by TAM /
     10 : [ ] / manifest-list = 10 (mapkey) :
                [ ] (array of bstr wrapped SUIT_Envelope(any)) /
              / empty, example purpose only /
@@ -1396,86 +1528,362 @@ token = 20
 ]
 ~~~~
 
-### CBOR Binary Representation
+### D.4.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
 82                       # array(2)
-  03                     # unsigned(3)
+  03                     # unsigned(3) uint (0..23)
   A3                     # map(3)
-    14                   # unsigned(20)
-    1A 77777778          # unsigned(2004318072, 0x77777778)
-    0F                   # unsigned(15)
-    81                   # array(1)
-      81                 # array(1)
-        4F               # bytes(15)
-          0102030405060708090A0B0C0D0E0F
-    0A                   # unsigned(10)
+    14                   # unsigned(20) uint (0..23)
+    4F                   # bytes(16) (8..64)
+      A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
+    0A                   # unsigned(10) uint (0..23)
     80                   # array(0)
 ~~~~
 
-## Success Message
+## D.5. Success Message
 {: numbered='no'}
 
-### CBOR Diagnostic Notation
+### D.5.1. CBOR Diagnostic Notation
 {: numbered='no'}
 
 ~~~~
 / teep-success = /
 [
-  5,          / type : TEEP-TYPE-teep-success = 5 (fixed int) /
+  5,  / type : TEEP-TYPE-teep-success = 5 (uint (0..23)) /
   / options : /
   {
-    20 : 2004318072,  / token = 20 (mapkey) : 0x77777778 (uint),
-                        from TAM's Update message /
+    20 : 0xa0a1a2a3a4a5a6a7a8a9aaabacadaeaf,
+             / token = 20 (mapkey) :
+               h'a0a1a2a3a4a5a6a7a8a9aaabacadaeaf' (bstr .size (8..64)),
+               given from TAM's Update message /
   }
 ]
 ~~~~
 
-### CBOR Binary Representation
+### D.5.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
 82                       # array(2)
-  05                     # unsigned(5)
+  05                     # unsigned(5) uint (0..23)
   A1                     # map(1)
-    14                   # unsigned(20)
-    1A 77777778          # unsigned(2004318072, 0x77777778)
+    14                   # unsigned(20) uint (0..23)
+    4F                   # bytes(16) (8..64)
+      A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
 ~~~~
 
-
-## Error Message
+## D.6. Error Message
 {: numbered='no'}
 
-### CBOR Diagnostic Notation
+### D.6.1. CBOR Diagnostic Notation
 {: numbered='no'}
 
 ~~~~
 / teep-error = /
 [
-  6,          / type : TEEP-TYPE-teep-error = 6 (fixed int) /
+  6,  / type : TEEP-TYPE-teep-error = 6 (uint (0..23)) /
   / options : /
   {
-    20 : 2004318072,  / token = 20 (mapkey) : 0x77777778 (uint),
-                        from TAM's Update message /
+    20 : 0xa0a1a2a3a4a5a6a7a8a9aaabacadaeaf,
+           / token = 20 (mapkey) :
+             h'a0a1a2a3a4a5a6a7a8a9aaabacadaeaf' (bstr .size (8..64)),
+             given from TAM's Update message /
     12 : "disk-full"  / err-msg = 12 (mapkey) :
-                        "disk-full" (UTF-8 string) /
+                        "disk-full" (text .size (1..128)) /
   },
-  17, / err-code : ERR_MANIFEST_PROCESSING_FAILED = 17 (int (0..23)) /
+  17, / err-code : ERR_MANIFEST_PROCESSING_FAILED = 17 (uint (0..23)) /
 ]
 ~~~~
 
-### CBOR binary Representation
+### D.6.2. CBOR binary Representation
 {: numbered='no'}
 
 ~~~~
 83                       # array(3)
-  06                     # unsigned(6)
+  06                     # unsigned(6) uint (0..23)
   A2                     # map(2)
-    14                   # unsigned(20)
-    1A 77777778          # unsigned(2004318072, 0x77777778)
-    0C                   # unsigned(12)
-    69                   # text(9)
-      6469736b2d66756c6c # "disk-full"
-  11                     # unsigned(17)
+    14                   # unsigned(20) uint (0..23)
+    4F                   # bytes(16) (8..64)
+      A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
+    0C                   # unsigned(12) uint (0..23)
+    69                   # text(9) (1..128)
+      6469736B2D66756C6C # "disk-full"
+  11                     # unsigned(17) uint (0..23)
 ~~~~
+
+# E. Examples of SUIT Manifests {#suit-examples}
+{: numbered='no'}
+
+This section shows some examples of SUIT manifests for a case where
+the TEE will use a Trusted Application (TA) for OP-TEE on Arm TrustZone,
+storing the TA in Replay Protected Memory Block (RPMB) secure storage
+in a file named "edd94cd8-9d9c-4cc8-9216- b3ad5a2d5b8a.ta".
+
+The TA developer places personalization data for the device on an
+HTTPS server and puts the URI in the TA manifest.  The personalization
+data will also be stored in RPMB secure storage in a file named "config.json".
+
+## E.1. Install a Trusted Component
+{: numbered='no'}
+
+This sample manifest installs a Trusted Component that depends on
+personalization data resolved separately.
+
+TA Manifest:
+
+~~~
+107({
+  / authentication-wrapper / 2:<<[
+    digest: <<[
+      / algorithm-id / -16 / "sha256" /,
+      / digest-bytes / h'd6c1fc7200483092e2db59d4907f9b15'
+                       h'05cb3af2795cf78f7ae3d88166fdf743'
+    ]>>,
+    signature: <<18([
+      / protected / <<{
+        / alg / 1:-7 / "ES256" /,
+      }>>,
+      / unprotected / {},
+      / payload / F6 / nil /,
+      / signature / h'd11a2dd9610fb62a707335f584079225'
+                    h'709f96e8117e7eeed98a2f207d05c8ec'
+                    h'fba1755208f6abea977b8a6efe3bc2ca'
+                    h'3215e1193be201467d052b42db6b7287'
+    ])>>
+  ]>>,
+  / manifest / 3:<<{
+    / manifest-version / 1:1,
+    / manifest-sequence-number / 2:3,
+    / common / 3:<<{
+      / components / 2:[
+        ["OP-TEE","RPMB","edd94cd8-9d9c-4cc8-9216- b3ad5a2d5b8a","ta"]
+      ],
+      / common-sequence / 4:<<[
+        / directive-override-parameters / 20,{
+          / vendor-id / 1:h'c0ddd5f15243566087db4f5b0aa26c2f',
+          / class-id / 2:h'db42f7093d8c55baa8c5265fc5820f4e',
+          / image-digest / 3:<<[
+            / algorithm-id / -16 / "sha256" /,
+            / digest-bytes / h'00112233445566778899aabbccddeeff'
+                             h'0123456789abcdeffedcba9876543210'
+          ]>>,
+          / image-size / 14:76778,
+        },
+        / condition-vendor-identifier / 1,15,
+        / condition-class-identifier / 2,15
+      ]>>,
+    }>>,
+    / install / 9:<<[
+      / directive-set-parameters / 19,{
+        / uri / 21: 
+        'https://teep.example/edd94cd8-9d9c-4cc8-9216-b3ad5a2d5b8a.ta',
+      } ,
+      / directive-fetch / 21,2,
+      / condition-image-match / 3,15
+    ]>>,
+    / validate / 10:<<[
+      / condition-image-match / 3,15
+    ]>>,
+    / run / 12:<<[
+      / directive-run / 23,2
+    ]>>,
+    / text / 13:<<{
+      [
+        h'4f502d544545',
+        h'44f301',
+        h'edd94cd89d9c4cc89216b3ad5a2d5b8a',
+        h'7461'
+      ]:{
+        / model-name / 2: 'OP-TEE on TF-A on TrustZone',
+        / vendor-domain / 3:'teep.example'
+      }
+    }>>
+  }>>
+})
+~~~
+
+Personalization Data Manifest:
+
+~~~
+107({
+  2:<<[
+    digest: <<[
+      / algorithm-id / -16 / "sha256" /,
+      / digest-bytes / h'a7fd6593eac32eb4be578278e6540c5c'
+                       h'09cfd7d4d234973054833b2b93030609'
+    ]>>
+  ]>>,
+  / manifest / 3:<<{
+    / manifest-version / 1:1,
+    / manifest-sequence-number / 2:3,
+    / dependencies / 1:[
+      {
+        / dependency-digest / 1:[
+        / algorithm-id / -16 / "sha256" /,
+        / digest-bytes / h'd6c1fc7200483092e2db59d4907f9b15'
+                         h'05cb3af2795cf78f7ae3d88166fdf743'
+        ]
+      }
+    ],
+    / components / 2:[
+      ["OP-TEE","RPMB","config.json"]
+    ],
+    / common-sequence / 4:<<[
+      / directive-set-component-index / 12,0,
+      / directive-override-parameters / 20,{
+        / vendor-id / 1:h'ec41787224345ae580003de697ff8d43'
+                     / ec417872-2434-5ae5-8000-3de697ff8d43 /,
+        / class-id / 2:h'eb1701b48be85709aca0adf89f056a64'
+                     / eb1701b4-8be8-5709-aca0-adf89f056a64 /,
+        / image-digest / 3:<<[
+          / algorithm-id / -16 / "sha256" /,
+          / digest-bytes / h'aaabcccdeeef00012223444566678889'
+                           h'abbbcdddefff01112333455567778999'
+        ]>>
+      },
+      / condition-vendor-identifier / 1,15,
+      / condition-class-identifier / 2,15
+    ]>>,
+    / dependency-resolution / 7:<<[
+      / directive-set-dependency-index / 13,0,
+      / directive-set-parameters / 19,{
+        / uri / 21:'tam.teep.example/'
+                   'edd94cd8-9d9c-4cc8-'
+                   '9216-b3ad5a2d5b8a.suit',
+      },
+      / directive-fetch / 21,2,
+      / condition-image-match / 3,15
+    ]>>,
+    / install / 9:<<[
+      / directive-set-component-index / 12,0,
+      / directive-set-parameters / 19,{
+      / uri / 21:
+        'http://tam.teep.example/config.json',
+      },
+      / directive-set-dependency-index / 13,0,
+      / directive-process-dependency / 18,0,
+      / directive-set-component-index / 12,0,
+      / directive-fetch / 21,2,
+      / condition-image-match / 3,15
+    ]>>,
+    / validate / 10:<<[
+      / directive-set-component-index / 12,0,
+      / condition-image-match / 3,15,
+      / directive-set-dependency-index / 13,0,
+      / directive-process-dependency / 18,0
+    ]>>,
+    / run / 12:<<[
+      / directive-set-dependency-index / 13,0,
+      / directive-process-dependency / 18,0
+    ]>>,
+    / text / 13:<<{
+      [h'4f502d544545', h'44f301', 
+       h'636f6e6669672e6a736f6e']:{
+        / model-name / 2: 'Personalised OP-TEE on TF-A on TrustZone',
+        / vendor-domain / 3:'tam.teep.example',
+      },
+      [
+        h'4f502d544545',
+        h'44f301',
+        h'edd94cd89d9c4cc89216b3ad5a2d5b8a',
+        h'7461'
+      ]:{
+        / model-name / 2:'OP-TEE on TF-A on TrustZone',
+        / vendor-domain / 3:'teep.example'
+      }
+    }>>
+  }>>
+})
+~~~
+
+## E.2. Delete a Trusted Component
+{: numbered='no'}
+
+This sample manifest removes a Trusted Component and its dependency.
+
+~~~
+107({
+        / authentication-wrapper / 2:<<[
+            digest: <<[
+                / algorithm-id / -16 / "sha256" /,
+                / digest-bytes /
+h'a6c4590ac53043a98e8c4106e1e31b305516d7cf0a655eddfac6d45c810e036a'
+            ]>>,
+            signature: <<18([
+                    / protected / <<{
+                        / alg / 1:-7 / "ES256" /,
+                    }>>,
+                    / unprotected / {
+                    },
+                    / payload / F6 / nil /,
+                    / signature / h'd11a2dd9610fb62a707335f58407922570
+9f96e8117e7eeed98a2f207d05c8ecfba1755208f6abea977b8a6efe3bc2ca3215e119
+3be201467d052b42db6b7287'
+                ])>>
+            ]
+        ]>>,
+        / manifest / 3:<<{
+            / manifest-version / 1:1,
+            / manifest-sequence-number / 2:0,
+            / common / 3:<<{
+                / components / 2:[
+                    [h'00']
+                ],
+                / common-sequence / 4:<<[
+                    / directive-override-parameters / 20,{
+                        / vendor-id /
+1:h'fa6b4a53d5ad5fdfbe9de663e4d41ffe' / fa6b4a53-d5ad-5fdf-
+be9d-e663e4d41ffe /,
+                        / class-id /
+2:h'1492af1425695e48bf429b2d51f2ab45' /
+1492af14-2569-5e48-bf42-9b2d51f2ab45 /,
+                        / image-digest / 3:<<[
+                            / algorithm-id / -16 / "sha256" /,
+                            / digest-bytes /
+h'00112233445566778899aabbccddeeff0123456789abcdeffedcba9876543210'
+                        ]>>,
+                        / image-size / 14:34768,
+                    } ,
+                    / condition-vendor-identifier / 1,15 ,
+                    / condition-class-identifier / 2,15
+                ]>>,
+            }>>,
+            / validate / 10:<<[
+                / condition-image-match / 3,15
+            ]>>,
+            / run / 12:<<[
+                / directive-run / 23,2
+            ]>>,
+        }>>,
+    })
+~~~
+
+Total size of Envelope without COSE authentication object:  161
+
+Envelope:
+
+~~~
+d86ba2025827815824822f5820a6c4590ac53043a98e8c4106e1e31b3055
+16d7cf0a655eddfac6d45c810e036a035871a50101020003585fa2028181
+41000458568614a40150fa6b4a53d5ad5fdfbe9de663e4d41ffe02501492
+af1425695e48bf429b2d51f2ab45035824822f5820001122334455667788
+99aabbccddeeff0123456789abcdeffedcba98765432100e1987d0010f02
+0f0a4382030f0c43821702
+~~~
+
+Total size of Envelope with COSE authentication object:  237
+
+Envelope with COSE authentication object:
+
+~~~
+d86ba2025873825824822f5820a6c4590ac53043a98e8c4106e1e31b3055
+16d7cf0a655eddfac6d45c810e036a584ad28443a10126a0f65840d11a2d
+d9610fb62a707335f584079225709f96e8117e7eeed98a2f207d05c8ecfb
+a1755208f6abea977b8a6efe3bc2ca3215e1193be201467d052b42db6b72
+87035871a50101020003585fa202818141000458568614a40150fa6b4a53
+d5ad5fdfbe9de663e4d41ffe02501492af1425695e48bf429b2d51f2ab45
+035824822f582000112233445566778899aabbccddeeff0123456789abcd
+effedcba98765432100e1987d0010f020f0a4382030f0c43821702
+~~~
