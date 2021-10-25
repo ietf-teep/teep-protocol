@@ -1110,14 +1110,40 @@ Change controller:
 
 ## Ciphersuite Registry {#ciphersuite-registry}
 
-IANA is also requested to create a new registry for ciphersuites, as defined
-in {{ciphersuite}}.
+IANA is also requested to create a new registry for ciphersuites.
 
+Name of registry: TEEP Ciphersuites
+
+Policy: Specification Required
+
+Additional requirements: The specification must document relevant security considerations.
+
+Initial values:
+
+| Value | Ciphersuite                                    | Specification
+|     1 | AES-CCM-16-64-128, HMAC 256/256, X25519, EdDSA | RFC TBD {{ciphersuite}}
+|     2 | AES-CCM-16-64-128, HMAC 256/256, P-256, ES256  | RFC TBD {{ciphersuite}}
+
+[RFC Editor: please replace TBD above with the number assigned to this document]
 
 ## Freshness Mechanism Registry {#freshness-mechanism-registry}
 
-IANA is also requested to create a new registry for freshness mechanisms, as defined
-in {{freshness-mechanisms}}.
+IANA is also requested to create a new registry for freshness mechanisms.
+
+Name of registry: TEEP Freshness Mechanisms
+
+Policy: Specification Required
+
+Additional requirements: The specification must document relevant security considerations.
+
+Initial values: 
+
+| Value | Freshness mechanism                            | Specification
+|     1 | Nonce                                          | RFC TBD {{freshness-mechanisms}}
+|     2 | Timestamp                                      | RFC TBD {{freshness-mechanisms}}
+|     3 | Epoch ID                                       | RFC TBD {{freshness-mechanisms}}
+
+[RFC Editor: please replace TBD above with the number assigned to this document]
 
 --- back
 
