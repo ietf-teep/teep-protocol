@@ -329,7 +329,7 @@ token
   identify the devices and/or a device to identify TAMs or Trusted Components.
   The TAM SHOULD set an expiration time for each token and MUST ignore any messages with expired tokens.
   The TAM MUST expire the token value after receiving the first response
-  from the device and ignore any subsequent messages that have the same token
+  containing the token value and ignore any subsequent messages that have the same token
   value.
 
 data-item-requested
