@@ -517,8 +517,8 @@ requirements:
 | Device unique identifier | device-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.3 |
 | Vendor of the device | vendor-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.1 |
 | Class of the device | class-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.2 |
-| TEE hardware type | chip-version-scheme | {{I-D.ietf-rats-eat}} section 3.7 |
-| TEE hardware version | chip-version-scheme | {{I-D.ietf-rats-eat}} section 3.7 |
+| TEE hardware type | chip-version | {{I-D.ietf-rats-eat}} section 3.7 |
+| TEE hardware version | chip-version | {{I-D.ietf-rats-eat}} section 3.7 |
 | TEE firmware type | component-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.4 |
 | TEE firmware version | version | {{I-D.birkholz-rats-suit-claims}} section 3.1.8 |
 | Freshness proof | nonce | {{I-D.ietf-rats-eat}} section 3.3 |
@@ -1421,11 +1421,11 @@ COSE is shown.
     / nonce /                   10: h'948f8860d13a463e8e',
     / secure-boot /             15: true,
     / debug-status /            16: 3, / disabled-permanently /
-    / security-level /       <TBD>: 3, / secure-restricted /
+    / security-level /          14: 3, / secure-restricted /
     / device-identifier /    <TBD>: h'e99600dd921649798b013e9752dcf0c5',
     / vendor-identifier /    <TBD>: h'2b03879b33434a7ca682b8af84c19fd4', 
     / class-identifier /     <TBD>: h'9714a5796bd245a3a4ab4f977cb8487f',
-    / chip-version-scheme /  <TBD>: "MyTEE v1.0",
+    / chip-version /            26: [ "MyTEE", 1 ],
     / component-identifier / <TBD>: h'60822887d35e43d5b603d18bcaa3f08d',
     / version /              <TBD>: "v0.1"
 }
