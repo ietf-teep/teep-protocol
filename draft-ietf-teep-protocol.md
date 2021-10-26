@@ -612,13 +612,13 @@ Trusted Component Developers provide the delivery point of the Trusted Component
 
 Pros:
 
- - Trusted Component Developer can ensure that the intact Trusted Component Binary is downloaded by TEEP Devices
- - TAM does not have to deliver Update message containing Trusted Component Binary which may have large size
+ - The Trusted Component Developer can ensure that the intact Trusted Component Binary is downloaded by TEEP Devices
+ - The TAM does not have to deliver Update message containing Trusted Component Binary which may have a large size
 
 Cons:
 
- - Trusted Component Developer MUST host the Trusted Component Binary server
- - TEEP Device MUST fetch the Trusted Component Binary in another connection after receiving Update message
+ - The Trusted Component Developer must host the Trusted Component Binary server
+ - The TEEP Device must fetch the Trusted Component Binary in another connection after receiving an Update message
 
 ~~~~
     +------------+           +-------------+
@@ -668,7 +668,7 @@ Cons:
 
 For the full SUIT Manifest example binary, see {{suit-uri}}.
 
-### Example 2: Having one SUIT Manifest including the Trusted Component Binary
+### Example 2: Having a SUIT Manifest include the Trusted Component Binary
 
 This subsection shows a SUIT manifest example containing the entire Trusted Component Binary using the integrated-payload (see {{I-D.ietf-suit-manifest}} Section-7.6).
 
