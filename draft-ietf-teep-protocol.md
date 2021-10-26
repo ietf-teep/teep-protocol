@@ -672,7 +672,7 @@ For the full SUIT Manifest example binary, see {{suit-uri}}.
 
 This subsection shows a SUIT manifest example containing the entire Trusted Component Binary using the integrated-payload (see {{I-D.ietf-suit-manifest}} Section-7.6).
 
-A Trusted Component Developer delegates to the TAM the task of delivering the Trusted Component Binary in the SUIT manifest. The Trusted Component Developer creates a SUIT manifest and embeds the Trusted Component Binary, which is referenced in the URI parameter with identifier "#tc". The Trusted Component Developer provides the SUIT manifest to the TAM. The TAM always receives the latest SUIT manifest from the Trusted Component Developer.
+A Trusted Component Developer delegates to the TAM the task of delivering the Trusted Component Binary in the SUIT manifest. The Trusted Component Developer creates a SUIT manifest and embeds the Trusted Component Binary, which is referenced in the URI parameter with identifier "#tc". The Trusted Component Developer provides the SUIT manifest to the TAM.
 
 The TAM serves the SUIT manifest containing the Trusted Component Binary to the Device in an Update message.
 
