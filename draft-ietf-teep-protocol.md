@@ -668,7 +668,7 @@ Cons:
 
 For the full SUIT Manifest example binary, see {{suit-uri}}.
 
-### Example 2: Having one SUIT Manifest including the Trusted Component Binary
+### Example 2: Having a SUIT Manifest include the Trusted Component Binary
 
 This subsection shows a SUIT manifest example containing the entire Trusted Component Binary using the integrated-payload (see {{I-D.ietf-suit-manifest}} Section-7.6).
 
