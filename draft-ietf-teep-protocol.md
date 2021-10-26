@@ -1819,14 +1819,12 @@ The TA developer places personalization data for the device on an
 HTTPS server and puts the URI in the TA manifest.  The personalization
 data will also be stored in RPMB secure storage in a file named "config.json".
 
-## E.1. Install a Trusted Component
-{: numbered='no'}
+## Install a Trusted Component
 
 This sample manifest installs a Trusted Component that depends on
 personalization data resolved separately.
 
 TA Manifest:
-
 ~~~
 107({
   / authentication-wrapper / 2:<<[
@@ -1899,7 +1897,6 @@ TA Manifest:
 ~~~
 
 Personalization Data Manifest:
-
 ~~~
 107({
   2:<<[
@@ -1992,8 +1989,7 @@ Personalization Data Manifest:
 })
 ~~~
 
-## E.2. Delete a Trusted Component
-{: numbered='no'}
+## Delete a Trusted Component
 
 This sample manifest removes a Trusted Component and its dependency.
 
