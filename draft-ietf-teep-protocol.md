@@ -639,7 +639,7 @@ Cons:
     |       |       set-parameter: {                        | |
     |       |         uri: "https://tc.org/tc-uuid.ta"      | |
     |       |       },                                      | |
-    |       |       payload-fetch                           | |
+    |       |       fetch                                   | |
     |       |     }                                         | |
     |       |   }                                           | |
     |       | })                                            | |
@@ -706,7 +706,7 @@ Cons:
       |       |       set-parameter: {          | |
       |       |         uri: "#tc"              | |
       |       |       },                        | |
-      |       |       payload-fetch             | |
+      |       |       fetch                     | |
       |       |     }                           | |
       |       |   }                             | |
       |       | })                              | |
@@ -754,13 +754,13 @@ The TAM is delivering the SUIT manifest of the Personalization Data which depend
       |       |       set-parameter: {                      | |
       |       |         uri: "https://tc.org/tc-uuid.suit"  | |
       |       |       }                                     | |
-      |       |       payload-fetch                         | |
+      |       |       fetch                                 | |
       |       |     }                                       | |
       |       |     install: {                              | |
       |       |       set-parameter: {                      | |
       |       |         uri: "https://tc.org/config.json"   | |
       |       |       },                                    | |
-      |       |       payload-fetch                         | |
+      |       |       fetch                                 | |
       |       |       set-dependency-index                  | |
       |       |       process-dependency                    | |
       |       |     }                                       | |
