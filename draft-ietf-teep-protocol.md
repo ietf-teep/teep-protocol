@@ -617,8 +617,8 @@ Pros:
 
 Cons:
 
- - Trusted Component Developer MUST host the Trusted Component Binary server
- - TEEP Device MUST fetch the Trusted Component Binary in another connection after receiving Update message
+ - The Trusted Component Developer must host the Trusted Component Binary server
+ - The TEEP Device must fetch the Trusted Component Binary in another connection after receiving an Update message
 
 ~~~~
     +------------+           +-------------+
