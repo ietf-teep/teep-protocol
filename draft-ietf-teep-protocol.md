@@ -612,8 +612,8 @@ Trusted Component Developers provide the delivery point of the Trusted Component
 
 Pros:
 
- - Trusted Component Developer can ensure that the intact Trusted Component Binary is downloaded by TEEP Devices
- - TAM does not have to deliver Update message containing Trusted Component Binary which may have large size
+ - The Trusted Component Developer can ensure that the intact Trusted Component Binary is downloaded by TEEP Devices
+ - The TAM does not have to deliver Update message containing Trusted Component Binary which may have a large size
 
 Cons:
 
