@@ -599,15 +599,15 @@ See section 5 of {{I-D.ietf-teep-architecture}} for further discussion.
 
 
 
-The Update Message has SUIT_Envelope containing SUIT manifests. Following are some SUIT manifest examples in the messages.
+The Update Message has a SUIT_Envelope containing SUIT manifests. Following are some SUIT manifest examples in the messages.
 
-### Example 1: Having one SUIT Manifest pointing to URI of the Trusted Component Binary
+### Example 1: Having one SUIT Manifest pointing to a URI of a Trusted Component Binary
 
-This subsection shows a SUIT Manifest example that has a URI pointer to a Trusted Component Binary.
+This subsection shows a SUIT Manifest example that has a URI pointing to a Trusted Component Binary.
 
-A Trusted Component Developer creates a new Trusted Component Binary and generates an associated SUIT manifest as the filename "tc-uuid.suit". The filename "tc-uuid.suit" is used in Example 3 later. Then the Trusted Component Developer is hosting Trusted Component Binary at a Trusted Component Developers' URI. The TAM always receives the latest SUIT manifest from the Trusted Component Developer.
+A Trusted Component Developer creates a new Trusted Component Binary and generates an associated SUIT manifest with the filename "tc-uuid.suit". The filename "tc-uuid.suit" is used in Example 3 later. Then the Trusted Component Developer hosts the Trusted Component Binary at a Trusted Component Developers' URI. The TAM always receives the latest SUIT manifest from the Trusted Component Developer.
 
-Trusted Component Developers SHOULD provide the delivery point of the Trusted Component Binary associated with the URI in the SUIT manifest and the URI will not be changeable by the TAM since the SUIT manifest is signed by Trusted Component Developers.
+Trusted Component Developers provide the delivery point of the Trusted Component Binary associated with the URI in the SUIT manifest and the URI will not be changeable by the TAM since the SUIT manifest is signed by Trusted Component Developers.
 
 
 Pros:
@@ -672,19 +672,19 @@ For the full SUIT Manifest example binary, see {{suit-uri}}.
 
 This subsection shows a SUIT manifest example containing the entire Trusted Component Binary using the integrated-payload (see {{I-D.ietf-suit-manifest}} Section-7.6).
 
-A Trusted Component Developer is delegating a TAM to deliver the Trusted Component Binary in the SUIT manifest. The Trusted Component Developer creates SUIT manifest and embedding the Trusted Component Binary. And the Binary is referred in the URI parameter with identifier "#tc". The Trusted Component Developer provides the SUIT manifest to the TAM. The TAM always receives the latest SUIT manifest from the Trusted Component Developer.
+A Trusted Component Developer delegates to the TAM the task of delivering the Trusted Component Binary in the SUIT manifest. The Trusted Component Developer creates a SUIT manifest and embeds the Trusted Component Binary, which is referenced in the URI parameter with identifier "#tc". The Trusted Component Developer provides the SUIT manifest to the TAM. The TAM always receives the latest SUIT manifest from the Trusted Component Developer.
 
-The TAM serves the SUIT manifest containing Trusted Component Binary to the Device in Update Message.
+The TAM serves the SUIT manifest containing the Trusted Component Binary to the Device in an Update message.
 
 Pros:
 
- - TEEP Device can obtain the Trusted Component Binary and its SUIT manifest at once in Update message
- - Trusted Component Developer do not have to host the server to deliver the Trusted Component Binary directly to TEEP Device
+ - The TEEP Device can obtain the Trusted Component Binary and its SUIT manifest together in one Update message
+ - The Trusted Component Developer does not have to host a server to deliver the Trusted Component Binary directly to TEEP Devices
 
 Cons:
 
- - Trusted Component Developer MUST delegate TAM to delivery the Trusted Component Binary to the TEEP Device
- - TAM MUST deliver Trusted Component Binaries with integrated SUIT manifest in Update messages
+ - The TAM must host the Trusted Component Binary itself, rather than delegating such storage to the Trusted Component Developer
+ - The TAM must deliver Trusted Component Binaries with integrated SUIT manifest in Update messages, which may result increasing the Update message size
 
 ~~~~
     +------------+           +-------------+
