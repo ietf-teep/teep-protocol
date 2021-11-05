@@ -632,7 +632,7 @@ The directive-unlink (see {{I-D.ietf-suit-manifest}} Section-8.7.8) is located i
     Figure 4: Delete Trusted Component example (summary)
 ```
 
-For the full SUIT Manifest example binary, see [Appendix E. SUIT Example 4](#suit-delete)
+For the full SUIT Manifest example binary, see [Appendix E. SUIT Example 4](#suit-unlink)
 
 ## Success Message
 
@@ -1835,7 +1835,7 @@ Personalization Data Manifest:
 })
 ~~~
 
-## Example 4: Delete a Trusted Component {#suit-delete}
+## Example 4: Unlink a Trusted Component {#suit-unlink}
 ### CBOR Diagnostic Notation of SUIT Manifest
 
 ~~~~
