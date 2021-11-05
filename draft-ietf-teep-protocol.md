@@ -84,6 +84,7 @@ normative:
   I-D.ietf-rats-architecture: 
   I-D.ietf-rats-eat: 
   I-D.ietf-suit-manifest: 
+  I-D.moran-suit-trust-domains: 
   I-D.moran-suit-report: 
 informative:
   I-D.ietf-teep-architecture: 
@@ -597,13 +598,15 @@ done by the TEE independent of whether TEEP is used or some other update
 mechanism.
 See section 5 of {{I-D.ietf-teep-architecture}} for further discussion.
 
-### Example 4: Deleting Trusted Component
+### Example 4: Unlinking Trusted Component
 
 This subsection shows an example deleting the Trusted Component Binary in the TEEP Device.
 
-The directive-unlink (see {{I-D.ietf-suit-manifest}} Section-8.7.8) is located in the manifest to delete the Trusted Component. Note that in case other Trusted Components depend on it, i.e. the reference count is not zero, the TEEP Device SHOULD NOT delete it immediately.
+A Trusted Component Developer can also generate SUIT Manifest which unlinks the installed Trusted Component. The TAM deliver it when the TAM want to uninstall the component.
 
-```
+The directive-unlink (see {{I-D.moran-suit-trust-domains}} Section-6.5.4) is located in the manifest to delete the Trusted Component. Note that in case other Trusted Components depend on it, i.e. the reference count is not zero, the TEEP Device SHOULD NOT delete it immediately.
+
+~~~~
     +------------+           +-------------+
     | TAM        |           | TEEP Agent  |
     +------------+           +-------------+
@@ -629,8 +632,8 @@ The directive-unlink (see {{I-D.ietf-suit-manifest}} Section-8.7.8) is located i
       | ])                                        |
       +===========================================+
 
-    Figure 4: Delete Trusted Component example (summary)
-```
+    Figure 4: Unlink Trusted Component example (summary)
+~~~~
 
 For the full SUIT Manifest example binary, see [Appendix E. SUIT Example 4](#suit-unlink)
 
@@ -1835,8 +1838,11 @@ Personalization Data Manifest:
 })
 ~~~
 
-## Example 4: Unlink a Trusted Component {#suit-unlink}
+## E.4. Example 4: Unlink a Trusted Component {#suit-unlink}
+{: numbered='no'}
+
 ### CBOR Diagnostic Notation of SUIT Manifest
+{: numbered='no'}
 
 ~~~~
 / SUIT_Envelope_Tagged / 107( {
@@ -1897,6 +1903,7 @@ Personalization Data Manifest:
 
 
 ### CBOR Binary Respresentation
+{: numbered='no'}
 
 ~~~~
 D8 6B                                               # tag(107) / SUIT_Envelope_Tagged /
@@ -1986,6 +1993,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
 
 
 ### CBOR Binary in Hex
+{: numbered='no'}
 
 ~~~~
 D86BA2025873825824822F58200F2AA1B386F11E5DDD3D6796C89C775F2D
