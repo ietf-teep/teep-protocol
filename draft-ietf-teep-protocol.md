@@ -369,7 +369,7 @@ challenge
   When a challenge is 
   provided in the QueryRequest and an EAT is returned with a QueryResponse message
   then the challenge contained in this request MUST be used to generate the EAT,
-  such as by copying the challengt into the nonce claim found in the EAT if
+  such as by copying the challenge into the nonce claim found in the EAT if
   using the Nonce freshness mechanism.  For more details see {{freshness-mechanisms}}.
 
   If any format other than EAT is used, it is up to that
