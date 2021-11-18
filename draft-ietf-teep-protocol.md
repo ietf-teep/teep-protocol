@@ -469,7 +469,7 @@ requested-tc-list
   as a dependency, or by a Trusted Application that has another Trusted
   Component as a dependency.  Requested Trusted Components are expressed in
   the form of requested-tc-info objects.
-  A TEEP Agent can get this information from the UnrequestTA conceptual API
+  A TEEP Agent can get this information from the RequestTA conceptual API
   defined in {{I-D.ietf-teep-architecture}} section 6.2.1.
 
 unneeded-tc-list
