@@ -386,7 +386,9 @@ versions
 ## QueryResponse Message
 
 The QueryResponse message is the successful response by the TEEP Agent after 
-receiving a QueryRequest message. 
+receiving a QueryRequest message.  As discussed in {{agent}}, it can also be sent
+unsolicited if the contents of the QueryRequest are already known and do not vary
+per message.
 
 Like other TEEP messages, the QueryResponse message is
 signed, and the relevant CDDL snippet is shown below. 
@@ -877,7 +879,13 @@ TEEP Agent passes no data back to the caller.  Otherwise,
 if the TEEP Agent chooses to initiate the process of requesting the indicated
 TA, it determines (in any implementation specific way) the TAM URI based on 
 any TAM URI provided by the RequestTA caller and any local configuration,
-and passes back the TAM URI to connect to.  
+and passes back the TAM URI to connect to.  It MAY also pass back a
+QueryResponse message if all of the following conditions are true:
+
+* The last QueryRequest message received from that TAM contained no token or challenge,
+* The ProcessError API was not invoked for that TAM since the last QueryResponse
+  message was received from it, and
+* The public key or certificate of the TAM is cached and not expired.
 
 When the RequestPolicyCheck API is invoked, the TEEP Agent decides
 whether to initiate communication with any trusted TAMs (e.g., it might
