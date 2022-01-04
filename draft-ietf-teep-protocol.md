@@ -17,7 +17,7 @@ abbrev: TEEP Protocol
 area: Security
 wg: TEEP
 kw: Trusted Execution Environment
-date: 2021
+date: 2022
 author:
 
  -
@@ -1847,7 +1847,10 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
 ~~~~
 
 ## Example 1: SUIT Manifest pointing to URI of the Trusted Component Binary {#suit-uri}
+{: numbered='no'}
+
 ### CBOR Diagnostic Notation of SUIT Manifest
+{: numbered='no'}
 
 ~~~~
 / SUIT_Envelope_Tagged / 107 ( {
@@ -1915,6 +1918,7 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
 
 
 ### CBOR Binary Representation
+{: numbered='no'}
 
 ~~~~
 D8 6B                                               # tag(107) / SUIT_Envelope_Tagged /
@@ -2017,6 +2021,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
 
 
 ### CBOR Binary in Hex
+{: numbered='no'}
 
 ~~~~
 D86BA2025873825824822F58208ADC995573631639C3C6D5FC4026160C8A
@@ -2037,7 +2042,10 @@ A115783668747470733A2F2F74632E6F72672F38643832353733612D3932
 
 
 ## Example 2: SUIT Manifest including the Trusted Component Binary {#suit-integrated}
+{: numbered='no'}
+
 ### CBOR Diagnostic Notation of SUIT Manifest
+{: numbered='no'}
 
 ~~~~
 / SUIT_Envelope_Tagged / 107 ( {
@@ -2106,6 +2114,7 @@ A115783668747470733A2F2F74632E6F72672F38643832353733612D3932
 
 
 ### CBOR Binary Representation
+{: numbered='no'}
 
 ~~~~
 D8 6B                                               # tag(107) / SUIT_Envelope_Tagged /
@@ -2212,6 +2221,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
 
 
 ### CBOR Binary in Hex
+{: numbered='no'}
 
 ~~~~
 D86BA3025873825824822F5820C8363BDF3DCF68F0234A9DD320C2FEA72D
@@ -2231,8 +2241,10 @@ B77A30D046397481469468ECE80E14010F020F094C8613A1156323746315
 
 
 ## Example 3: Supplying Personalization Data for Trusted Component Binary {#suit-personalization}
+{: numbered='no'}
 
 ### CBOR Diagnostic Notation of SUIT Manifest
+{: numbered='no'}
 
 ~~~~
 / SUIT_Envelope_Tagged / 107 ( {
@@ -2322,6 +2334,7 @@ B77A30D046397481469468ECE80E14010F020F094C8613A1156323746315
 
 
 ### CBOR Binary Represenation
+{: numbered='no'}
 
 ~~~~
 D8 6B                                               # tag(107) / SUIT_Envelope_Tagged /
@@ -2457,6 +2470,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
 
 
 ### CBOR Binary in Hex
+{: numbered='no'}
 
 ~~~~
 D86BA2025873825824822F5820A810FBAFCAC8C7E107AD974DDC6FDB4D51
@@ -2480,6 +2494,7 @@ F7093D8C55BAA8C5265FC5820F4E035824822F5820AAABCCCDEEEF000122
 
 
 ## Delete a Trusted Component
+{: numbered='no'}
 
 This sample manifest removes a Trusted Component and its dependency.
 
