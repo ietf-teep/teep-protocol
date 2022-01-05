@@ -1127,69 +1127,49 @@ After QueryResponse, the selected cryptographic algorithm is used in the TEEP me
 To negotiate the chosing cryptographic mechanisms and algorithms, TEEP protocol defines the ciphersuite structure.
 
 ~~~~
-supported-cipher-suites = [
-    [ *teep-cose-sign-alg ] ,
-    [ *teep-cose-encrypt-alg ] ,
-    [ *teep-cose-mac-alg ] 
-]
-~~~~
-
-supported-cipher-suites is used to present supported mechanisms and algorithms in QueryRequest and Error.
-Each keys correspond with COSE message Objects.
-If the TAM and TEEP agents indicate that it supports a certain mechanisms, it sets supporting algorithm's array as a value of mechanisms' key.
-Empty array in the value of mechanisms' key are treated as unable handling mechanism in the entity.
-
-~~~~
-selected-cipher-suites = [
+suites = [
     teep-cose-sign-alg / nil,
-    teep-cose-encrypt-alg / nil,
-    teep-cose-mac-alg / nil
+    teep-cose-encrypt-alg / nil ,
+    teep-cose-mac-alg / nil 
 ]
 ~~~~
 
-selected-cipher-suites is used to present selected mechanisms and algorithm sets chosen from supported-cipher-suites.
-Each keys correspond with COSE message Objects.
-Null in the value of mechanism indicates that the entity doesn't support the mechanism.
+suites is used to present the combination of mechanisms and cryptographic algorithms.
+Each keys correspond with COSE-type defined in the Section 2 of {{RFC8152}}.
+If a TAM and TEEP agent indicate that it supports a certain mechanisms, it sets supporting algorithm's identifier as a value of mechanisms' key.
+Null in the value of mechanisms' key are treated as unable handling mechanism in the entity.
 
-After QueryResponse, the selected cryptographic algorithm is used in the TEEP messages: Install, Success and Error.
+~~~~
+supported-cipher-suites = [ + suite ]
+~~~~
 
-In algorithm array, each algorithm value depends on COSE Algorithm registry defined by {{COSE.Algorithm}}.
+To show supported ciphersuites in QueryRequest or Error messages, make an array of ciphersuite structures. If an entity supports multiple mechanisms and algorithms, it can choose the specific combinations or all combinations by picking values in the array.
+
+Each cryptographic algorithm value depends on COSE Algorithm registry defined by {{COSE.Algorithm}}.
 And TEEP protocol defines highly recommended algorithms lists to implement TAM and TEEP Agents as following list.
 TAM and TEEP Agents SHOULD implement these algorithms. TEEP Agents MAY support either-or algorithms in signature mechanism.
 
 ~~~~
-teep-cose-sign-algs = [
-    cose-alg-es256,
-    cose-alg-eddsa
-]
+teep-cose-sign-algs = cose-alg-es256 / cose-alg-eddsa
 
-teep-cose-encrypt-algs = [
-    cose-alg-accm-16-64-128
-]
+teep-cose-encrypt-algs = cose-alg-accm-16-64-128
 
-teep-cose-mac-algs = [
-    cose-alg-hmac-256
-]
+teep-cose-mac-algs = cose-alg-hmac-256
 ~~~~
 
 TAM and TEEP Agents MAY use these algorithms:
 
 ~~~~
-teep-cose-sign-algs = [
-    cose-alg-ps256,
-    cose-alg-ps384,
-    cose-alg-ps512,
-    cose-alg-rsa-oaep-256
+teep-cose-sign-algs = 
+    cose-alg-ps256/
+    cose-alg-ps384/
+    cose-alg-ps512/
+    cose-alg-rsa-oaep-256/
     cose-alg-rsa-oaep-512
-]
 
-teep-cose-encrypt-algs = [
-    //TBD
-]
+teep-cose-encrypt-algs = TBD
 
-teep-cose-mac-algs = [
-    //TBD
-]
+teep-cose-mac-algs = TBD
 ~~~~
 
 Any ciphersuites without confidentiality protection can only be added if the associated specification includes a discussion of security considerations and applicability, since manifests may carry sensitive information. For example, Section 6 of {{I-D.ietf-teep-architecture}} permits implementations that terminate transport security inside the TEE and if the transport security provides confidentiality then additional encryption might not be needed in the manifest for some use cases. For most use cases, however, manifest confidentiality will be needed to protect sensitive fields from the TAM as discussed in Section 9.8 of {{I-D.ietf-teep-architecture}}.
@@ -1476,13 +1456,7 @@ query-request = [
 ]
 
 ; ciphersuites
-supported-cipher-suites = [
-    [ *teep-cose-sign-alg ],
-    [ *teep-cose-encrypt-alg ] ,
-    [ *teep-cose-mac-alg ] 
-]
-
-selected-cipher-suites = [
+suite = [
     teep-cose-sign-alg / nil,
     teep-cose-encrypt-alg / nil,
     teep-cose-mac-alg / nil
