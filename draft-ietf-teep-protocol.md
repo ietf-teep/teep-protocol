@@ -1128,7 +1128,7 @@ After QueryResponse, the selected cryptographic algorithm is used in the TEEP me
 To negotiate the chosing cryptographic mechanisms and algorithms, TEEP protocol defines the ciphersuite structure.
 
 ~~~~
-suites = [
+suite = [
     teep-cose-sign-alg / nil,
     teep-cose-encrypt-alg / nil ,
     teep-cose-mac-alg / nil 
