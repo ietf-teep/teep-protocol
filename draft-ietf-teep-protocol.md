@@ -608,26 +608,27 @@ See section 5 of {{I-D.ietf-teep-architecture}} for further discussion.
 
 
 
-The Update Message has a SUIT_Envelope containing SUIT manifests. Following are some SUIT manifest examples in the messages.
+The Update Message has a SUIT_Envelope containing SUIT manifests. Following are some examples of using SUIT manifests in the Update Message.
 
 ### Example 1: Having one SUIT Manifest pointing to a URI of a Trusted Component Binary
 
-This subsection shows a SUIT Manifest example that has a URI pointing to a Trusted Component Binary.
+In this example, a SUIT Manifest has a URI pointing to a Trusted Component Binary.
 
-A Trusted Component Developer creates a new Trusted Component Binary and generates an associated SUIT manifest with the filename "tc-uuid.suit". The filename "tc-uuid.suit" is used in Example 3 later. Then the Trusted Component Developer hosts the Trusted Component Binary at a Trusted Component Developers' URI. The TAM always receives the latest SUIT manifest from the Trusted Component Developer.
+A Trusted Component Developer creates a new Trusted Component Binary and hosts it at a Trusted Component Developer's URI.  Then the Trusted Component Developer generates an associated SUIT manifest with the filename "tc-uuid.suit" that contains the URI. The filename "tc-uuid.suit" is used in Example 3 later.
 
-Trusted Component Developers provide the delivery point of the Trusted Component Binary associated with the URI in the SUIT manifest and the URI will not be changeable by the TAM since the SUIT manifest is signed by Trusted Component Developers.
+The TAM receives the latest SUIT manifest from the Trusted Component Developer, and
+the URI it contains will not be changeable by the TAM since the SUIT manifest is signed by the Trusted Component Developer.
 
 
 Pros:
 
- - The Trusted Component Developer can ensure that the intact Trusted Component Binary is downloaded by TEEP Devices
- - The TAM does not have to deliver Update message containing Trusted Component Binary which may have a large size
+ - The Trusted Component Developer can ensure that the intact Trusted Component Binary is downloaded by devices
+ - The TAM does not have to send large Update messages containing the Trusted Component Binary
 
 Cons:
 
  - The Trusted Component Developer must host the Trusted Component Binary server
- - The TEEP Device must fetch the Trusted Component Binary in another connection after receiving an Update message
+ - The device must fetch the Trusted Component Binary in another connection after receiving an Update message
 
 ~~~~
     +------------+           +-------------+
@@ -646,7 +647,7 @@ Cons:
     |       |   manifest: {                                 | |
     |       |     install: {                                | |
     |       |       set-parameter: {                        | |
-    |       |         uri: "https://tc.org/tc-uuid.ta"      | |
+    |       |         uri: "https://example.org/tc-uuid.ta" | |
     |       |       },                                      | |
     |       |       fetch                                   | |
     |       |     }                                         | |
@@ -666,7 +667,7 @@ Cons:
 
                      <----
 
-      fetch "https://tc.org/tc-uuid.ta"
+      fetch "https://example.org/tc-uuid.ta"
 
           +======= tc-uuid.ta =======+
           | 48 65 6C 6C 6F 2C 20 ... |
@@ -679,21 +680,21 @@ For the full SUIT Manifest example binary, see {{suit-uri}}.
 
 ### Example 2: Having a SUIT Manifest include the Trusted Component Binary
 
-This subsection shows a SUIT manifest example containing the entire Trusted Component Binary using the integrated-payload (see {{I-D.ietf-suit-manifest}} Section-7.6).
+In this example, the SUIT manifest contains the entire Trusted Component Binary using the integrated-payload (see {{I-D.ietf-suit-manifest}} Section 7.6).
 
 A Trusted Component Developer delegates to the TAM the task of delivering the Trusted Component Binary in the SUIT manifest. The Trusted Component Developer creates a SUIT manifest and embeds the Trusted Component Binary, which is referenced in the URI parameter with identifier "#tc". The Trusted Component Developer provides the SUIT manifest to the TAM.
 
-The TAM serves the SUIT manifest containing the Trusted Component Binary to the Device in an Update message.
+The TAM serves the SUIT manifest containing the Trusted Component Binary to the device in an Update message.
 
 Pros:
 
- - The TEEP Device can obtain the Trusted Component Binary and its SUIT manifest together in one Update message
- - The Trusted Component Developer does not have to host a server to deliver the Trusted Component Binary directly to TEEP Devices
+ - The device can obtain the Trusted Component Binary and its SUIT manifest together in one Update message
+ - The Trusted Component Developer does not have to host a server to deliver the Trusted Component Binary directly to devices
 
 Cons:
 
  - The TAM must host the Trusted Component Binary itself, rather than delegating such storage to the Trusted Component Developer
- - The TAM must deliver Trusted Component Binaries with integrated SUIT manifest in Update messages, which may result increasing the Update message size
+ - The TAM must deliver Trusted Component Binaries in Update messages, which result in increased Update message size
 
 ~~~~
     +------------+           +-------------+
@@ -733,11 +734,11 @@ For the full SUIT Manifest example binary, see {{suit-integrated}}.
 
 ### Example 3: Supplying Personalization Data for the Trusted Component Binary
 
-This subsection shows an example delivering Personalization Data associated with the Trusted Component Binary to the TEEP Device.
+In this example, Personalization Data is associated with the Trusted Component Binary "tc-uuid.suit" from Example 1.
 
-The Trusted Component Developer places Personalization Data in a file named "config.json" and creates SUIT manifest specifying which Trusted Component Binary correlates to in the parameter 'dependency-resolution' from the Example 1 as "tc-uuid.suit". The Trusted Component Developer hosts the  "config.json" on an HTTPS server and puts the URI in the SUIT manifest which is signed by the Trusted Component Developer.
+The Trusted Component Developer places Personalization Data in a file named "config.json" and hosts it on an HTTPS server.  The Trusted Component Developer then creates a SUIT manifest with the URI, specifying which Trusted Component Binary it correlates to in the parameter 'dependency-resolution', and signs the SUI manifest.
 
-The TAM is delivering the SUIT manifest of the Personalization Data which depends on the Trusted Component Binary for the Example 1.
+The TAM delivers the SUIT manifest of the Personalization Data which depends on the Trusted Component Binary from Example 1.
 
 ~~~~
     +------------+           +-------------+
@@ -746,40 +747,40 @@ The TAM is delivering the SUIT manifest of the Personalization Data which depend
 
              Update  ---->
 
-      +================= teep-protocol(TAM) ==================+
-      | TEEP_Message([                                        |
-      |   TEEP-TYPE-update,                                   |
-      |   options: {                                          |
-      |     manifest-list: [                                  |
-      |       +======== suit-manifest(TC Developer) ========+ |
-      |       | SUIT_Envelope({                             | |
-      |       |   manifest: {                               | |
-      |       |     common: {                               | |
-      |       |       dependencies: [                       | |
-      |       |         {{digest-of-tc.suit}}               | |
-      |       |       ]                                     | |
-      |       |     }                                       | |
-      |       |     dependency-resolution: {                | |
-      |       |       set-parameter: {                      | |
-      |       |         uri: "https://tc.org/tc-uuid.suit"  | |
-      |       |       }                                     | |
-      |       |       fetch                                 | |
-      |       |     }                                       | |
-      |       |     install: {                              | |
-      |       |       set-parameter: {                      | |
-      |       |         uri: "https://tc.org/config.json"   | |
-      |       |       },                                    | |
-      |       |       fetch                                 | |
-      |       |       set-dependency-index                  | |
-      |       |       process-dependency                    | |
-      |       |     }                                       | |
-      |       |   }                                         | |
-      |       | })                                          | |
-      |       +=============================================+ |
-      |     ]                                                 |
-      |   }                                                   |
-      | ])                                                    |
-      +=======================================================+
+      +================= teep-protocol(TAM) ======================+
+      | TEEP_Message([                                            |
+      |   TEEP-TYPE-update,                                       |
+      |   options: {                                              |
+      |     manifest-list: [                                      |
+      |       +======== suit-manifest(TC Developer) ============+ |
+      |       | SUIT_Envelope({                                 | |
+      |       |   manifest: {                                   | |
+      |       |     common: {                                   | |
+      |       |       dependencies: [                           | |
+      |       |         {{digest-of-tc.suit}}                   | |
+      |       |       ]                                         | |
+      |       |     }                                           | |
+      |       |     dependency-resolution: {                    | |
+      |       |       set-parameter: {                          | |
+      |       |         uri: "https://example.org/tc-uuid.suit" | |
+      |       |       }                                         | |
+      |       |       fetch                                     | |
+      |       |     }                                           | |
+      |       |     install: {                                  | |
+      |       |       set-parameter: {                          | |
+      |       |         uri: "https://example.org/config.json"  | |
+      |       |       },                                        | |
+      |       |       fetch                                     | |
+      |       |       set-dependency-index                      | |
+      |       |       process-dependency                        | |
+      |       |     }                                           | |
+      |       |   }                                             | |
+      |       | })                                              | |
+      |       +=================================================+ |
+      |     ]                                                     |
+      |   }                                                       |
+      | ])                                                        |
+      +===========================================================+
 
     and then,
 
@@ -788,7 +789,7 @@ The TAM is delivering the SUIT manifest of the Personalization Data which depend
     +-------------+          +--------------+
 
                      <----
-      fetch "https://tc.org/config.json"
+      fetch "https://example.org/config.json"
 
           +=======config.json========+
           | 7B 22 75 73 65 72 22 ... |
@@ -1600,7 +1601,7 @@ supported-freshness-mechanisms = 21
 
 This section includes some examples with the following assumptions:
 
-- TEEP Device will have two TCs with the following SUIT Component Identifiers:
+- The device will have two TCs with the following SUIT Component Identifiers:
   - \[ 0x000102030405060708090a0b0c0d0e0f \]
   - \[ 0x100102030405060708090a0b0c0d0e0f \]
 - SUIT manifest-list is set empty only for example purposes (see Appendix E
@@ -1858,7 +1859,7 @@ COSE is shown.
 # E. Examples of SUIT Manifests {#suit-examples}
 {: numbered='no'}
 
-This section shows some examples of SUIT manifests described in Update Message {{update-msg-def}}.
+This section shows some examples of SUIT manifests described in {{update-msg-def}}.
 
 The examples are signed using the following ECDSA secp256r1 key with SHA256 as the digest function.
 
@@ -1931,7 +1932,7 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
     } >>,
     / suit-install / 9: << [
       / suit-directive-set-parameters / 19, {
-        / suit-parameter-uri / 21: "https://tc.org/8d82573a-926d-4754-9353-32dc29997f74.ta"
+        / suit-parameter-uri / 21: "https://example.org/8d82573a-926d-4754-9353-32dc29997f74.ta"
       },
       / suit-directive-fetch / 21, 15,
       / suit-condition-image-match / 3, 15
@@ -1944,7 +1945,7 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
         h'7461'                              / "ta" /
       ]: {
         / suit-text-model-name / 2: "Reference TEEP-Device",
-        / suit-text-vendor-domain / 3: "tc.org"
+        / suit-text-vendor-domain / 3: "example.org"
       }
     } >>
   } >>
@@ -2028,7 +2029,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                   A1                                # map(1)
                      15                             # unsigned(21) / suit-parameter-uri: /
                      78 36                          # text(54)
-                        68747470733A2F2F74632E6F72672F38643832353733612D393236642D343735342D393335332D3332646332393939376637342E7461 # "https://tc.org/8d82573a-926d-4754-9353-32dc29997f74.ta"
+                        68747470733A2F2F6578616D706C652E6F72672F38643832353733612D393236642D343735342D393335332D3332646332393939376637342E7461 # "https://example.org/8d82573a-926d-4754-9353-32dc29997f74.ta"
                   15                                # unsigned(21) / suit-directive-fetch: /
                   0F                                # unsigned(15)
                   03                                # unsigned(3) / suit-condition-image-match: /
@@ -2050,8 +2051,8 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                      75                             # text(21)
                         5265666572656E636520544545502D446576696365 # "Reference TEEP-Device"
                      03                             # unsigned(3) / suit-text-vendor-domain: /
-                     66                             # text(6)
-                        74632E6F7267                # "tc.org"
+                     6B                             # text(11)
+                        6578616D706C652E6F7267      # "example.org"
 ~~~~
 
 
@@ -2140,7 +2141,7 @@ A115783668747470733A2F2F74632E6F72672F38643832353733612D3932
         h'7461'                              / "ta" /
       ]: {
         / suit-text-model-name / 2: "Reference TEEP-Device",
-        / suit-text-vendor-domain / 3: "tc.org"
+        / suit-text-vendor-domain / 3: "example.org"
       }
     } >>
   } >>
@@ -2250,8 +2251,8 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                      75                             # text(21)
                         5265666572656E636520544545502D446576696365 # "Reference TEEP-Device"
                      03                             # unsigned(3) / suit-vendor-domain: /
-                     66                             # text(6)
-                        74632E6F7267                # "tc.org"
+                     6B                             # text(11)
+                        6578616D706C652E6F7267      # "example.org"
 ~~~~
 
 
@@ -2334,7 +2335,7 @@ B77A30D046397481469468ECE80E14010F020F094C8613A1156323746315
     / suit-dependency-resolution / 7: << [
       / suit-directive-set-dependency-index / 13, 0,
       / suit-directive-set-parameters / 19, {
-        / suit-parameter-uri / 21: "https://tc.org/8d82573a-926d-4754-9353-32dc29997f74.suit"
+        / suit-parameter-uri / 21: "https://example.org/8d82573a-926d-4754-9353-32dc29997f74.suit"
       },
       / suit-directive-fetch / 21, 2,
       / suit-condition-image-match / 3, 15
@@ -2344,7 +2345,7 @@ B77A30D046397481469468ECE80E14010F020F094C8613A1156323746315
       / suit-directive-process-dependency / 18, 0,
       / suit-directive-set-component-index / 12, 0,
       / suit-directive-set-parameters / 19, {
-        / suit-parameter-uri / 21: "https://tc.org/config.json"
+        / suit-parameter-uri / 21: "https://example.org/config.json"
       },
       / suit-directive-fetch / 21, 2,
       / suit-condition-image-match / 3, 15
@@ -2360,7 +2361,7 @@ B77A30D046397481469468ECE80E14010F020F094C8613A1156323746315
         h'636F6E6669672E6A736F6E'  / "config.json" /
       ]: {
         / suit-text-model-name / 2: "Reference TEEP-Device",
-        / suit-text-vendor-domain / 3: "tc.org"
+        / suit-text-vendor-domain / 3: "example.org"
       }
     } >>
   } >>
@@ -2394,7 +2395,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                      58 40                          # bytes(64)
                         E0F4D43B9CF2E837F58E925AD8041BC64F48C8934537F0CC5E19A8044790B7001FA481C5A7C9DEE8E87633CA2677A2896B15E72086A7CFBC6B4A453C312226F2
       03                                            # unsigned(3) / suit-manifest: /
-      59 0170                                       # bytes(368)
+      59 017F                                       # bytes(383)
          A7                                         # map(7)
             01                                      # unsigned(1) / suit-manifest-version: /
             01                                      # unsigned(1)
@@ -2446,21 +2447,21 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                         02                          # unsigned(2) / suit-condition-class-identifier: /
                         0F                          # unsigned(15)
             07                                      # unsigned(7) / suit-dependency-resolution: /
-            58 44                                   # bytes(68)
+            58 49                                   # bytes(73)
                88                                   # array(8)
                   0D                                # unsigned(13) / suit-directive-set-dependency-index: /
                   00                                # unsigned(0)
                   13                                # unsigned(19) / suit-directive-set-parameters: /
                   A1                                # map(1)
                      15                             # unsigned(21) / suit-parameter-uri: /
-                     78 38                          # text(56)
-                        68747470733A2F2F74632E6F72672F38643832353733612D393236642D343735342D393335332D3332646332393939376637342E73756974 # "https://tc.org/8d82573a-926d-4754-9353-32dc29997f74.suit"
+                     78 3D                          # text(61)
+                        68747470733A2F2F6578616D706C652E6F72672F38643832353733612D393236642D343735342D393335332D3332646332393939376637342E73756974 # "https://example.org/8d82573a-926d-4754-9353-32dc29997f74.suit"
                   15                                # unsigned(21) / suit-directive-fetch: /
                   02                                # unsigned(2)
                   03                                # unsigned(3) / suit-condition-image-match: /
                   0F                                # unsigned(15)
             09                                      # unsigned(9) / suit-install: /
-            58 2A                                   # bytes(42)
+            58 2F                                   # bytes(47)
                8C                                   # array(12)
                   0D                                # unsigned(13) / suit-directive-set-dependency-index: /
                   00                                # unsigned(0)
@@ -2471,8 +2472,8 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                   13                                # unsigned(19) / suit-directive-set-parameters: /
                   A1                                # map(1)
                      15                             # unsigned(21) / suit-parameter-uri: /
-                     78 1A                          # text(26)
-                        68747470733A2F2F74632E6F72672F636F6E6669672E6A736F6E # "https://tc.org/config.json"
+                     78 1F                          # text(31)
+                        68747470733A2F2F6578616D706C652E6F72672F636F6E6669672E6A736F6E # "https://example.org/config.json"
                   15                                # unsigned(21) / suit-directive-fetch: /
                   02                                # unsigned(2)
                   03                                # unsigned(3) / suit-condition-image-match: /
@@ -2485,7 +2486,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                   03                                # unsigned(3) / suit-condition-image-match: /
                   0F                                # unsigned(15)
             0D                                      # unsigned(13) / suit-text: /
-            58 43                                   # bytes(67)
+            58 48                                   # bytes(72)
                A1                                   # map(1)
                   83                                # array(3)
                      4B                             # bytes(11)
@@ -2499,8 +2500,8 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                      75                             # text(21)
                         5265666572656E636520544545502D446576696365 # "Reference TEEP-Device"
                      03                             # unsigned(3) / suit-text-vendor-domain: /
-                     66                             # text(6)
-                        74632E6F7267                # "tc.org"
+                     6B                             # text(11)
+                        6578616D706C652E6F7267      # "example.org"
 ~~~~
 
 
@@ -2512,19 +2513,19 @@ D86BA2025873825824822F5820A810FBAFCAC8C7E107AD974DDC6FDB4D51
 6B810569A47A7E47B4B6E9BCA98CA1584AD28443A10126A0F65840E0F4D4
 3B9CF2E837F58E925AD8041BC64F48C8934537F0CC5E19A8044790B7001F
 A481C5A7C9DEE8E87633CA2677A2896B15E72086A7CFBC6B4A453C312226
-F203590170A7010102030358A7A30181A101822F58208ADC995573631639
+F20359017FA7010102030358A7A30181A101822F58208ADC995573631639
 C3C6D5FC4026160C8A32C5AADFBEEC9FA49E026FDD74CAB30281834B5445
 45502D4465766963654853656375726546534B636F6E6669672E6A736F6E
 045857880C0014A40150C0DDD5F15243566087DB4F5B0AA26C2F0250DB42
 F7093D8C55BAA8C5265FC5820F4E035824822F5820AAABCCCDEEEF000122
 23444566678889ABBBCDDDEFFF011123334555677789990E1840010F020F
-075844880D0013A115783868747470733A2F2F74632E6F72672F38643832
-353733612D393236642D343735342D393335332D33326463323939393766
-37342E737569741502030F09582A8C0D0012000C0013A115781A68747470
-733A2F2F74632E6F72672F636F6E6669672E6A736F6E1502030F0A45840C
-00030F0D5843A1834B544545502D4465766963654853656375726546534B
-636F6E6669672E6A736F6EA202755265666572656E636520544545502D44
-6576696365036674632E6F7267
+075849880D0013A115783D68747470733A2F2F6578616D706C652E6F7267
+2F38643832353733612D393236642D343735342D393335332D3332646332
+393939376637342E737569741502030F09582F8C0D0012000C0013A11578
+1F68747470733A2F2F6578616D706C652E6F72672F636F6E6669672E6A73
+6F6E1502030F0A45840C00030F0D5848A1834B544545502D446576696365
+4853656375726546534B636F6E6669672E6A736F6EA20275526566657265
+6E636520544545502D446576696365036B6578616D706C6522E6F7267
 ~~~~
 
 
