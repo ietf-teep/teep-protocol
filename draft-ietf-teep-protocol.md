@@ -84,6 +84,7 @@ normative:
   I-D.ietf-rats-architecture: 
   I-D.ietf-rats-eat: 
   I-D.ietf-suit-manifest: 
+  I-D.moran-suit-trust-domains: 
   I-D.moran-suit-report: 
   COSE.Algorithm:
     title: "CBOR Object Signing and Encryption (COSE)"
@@ -607,7 +608,6 @@ mechanism.
 See section 5 of {{I-D.ietf-teep-architecture}} for further discussion.
 
 
-
 The Update Message has a SUIT_Envelope containing SUIT manifests. Following are some examples of using SUIT manifests in the Update Message.
 
 ### Example 1: Having one SUIT Manifest pointing to a URI of a Trusted Component Binary
@@ -736,7 +736,7 @@ For the full SUIT Manifest example binary, see {{suit-integrated}}.
 
 In this example, Personalization Data is associated with the Trusted Component Binary "tc-uuid.suit" from Example 1.
 
-The Trusted Component Developer places Personalization Data in a file named "config.json" and hosts it on an HTTPS server.  The Trusted Component Developer then creates a SUIT manifest with the URI, specifying which Trusted Component Binary it correlates to in the parameter 'dependency-resolution', and signs the SUI manifest.
+The Trusted Component Developer places Personalization Data in a file named "config.json" and hosts it on an HTTPS server.  The Trusted Component Developer then creates a SUIT manifest with the URI, specifying which Trusted Component Binary it correlates to in the parameter 'dependency-resolution', and signs the SUIT manifest.
 
 The TAM delivers the SUIT manifest of the Personalization Data which depends on the Trusted Component Binary from Example 1.
 
@@ -800,6 +800,44 @@ The TAM delivers the SUIT manifest of the Personalization Data which depends on 
 
 For the full SUIT Manifest example binary, see {{suit-personalization}}.
 
+### Example 4: Unlinking Trusted Component
+
+This subsection shows an example deleting the Trusted Component Binary in the TEEP Device.
+
+A Trusted Component Developer can also generate SUIT Manifest which unlinks the installed Trusted Component. The TAM deliver it when the TAM want to uninstall the component.
+
+The directive-unlink (see {{I-D.moran-suit-trust-domains}} Section-6.5.4) is located in the manifest to delete the Trusted Component. Note that in case other Trusted Components depend on it, i.e. the reference count is not zero, the TEEP Device SHOULD NOT delete it immediately.
+
+~~~~
+    +------------+           +-------------+
+    | TAM        |           | TEEP Agent  |
+    +------------+           +-------------+
+
+             Update  ---->
+
+      +=========== teep-protocol(TAM) ============+
+      | TEEP_Message([                            |
+      |   TEEP-TYPE-update,                       |
+      |   options: {                              |
+      |     manifest-list: [                      |
+      |       +== suit-manifest(TC Developer) ==+ |
+      |       | SUIT_Envelope({                 | |
+      |       |   manifest: {                   | |
+      |       |     install: [                  | |
+      |       |       unlink                    | |
+      |       |     ]                           | |
+      |       |   }                             | |
+      |       | })                              | |
+      |       +=================================+ |
+      |     ]                                     |
+      |   }                                       |
+      | ])                                        |
+      +===========================================+
+
+    Figure 4: Unlink Trusted Component example (summary)
+~~~~
+
+For the full SUIT Manifest example binary, see [Appendix E. SUIT Example 4](#suit-unlink)
 
 ## Success Message
 
@@ -1889,19 +1927,19 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
 {: numbered='no'}
 
 ~~~~
-/ SUIT_Envelope_Tagged / 107 ( {
+/ SUIT_Envelope_Tagged / 107( {
   / suit-authentication-wrapper / 2: << [
     << [
-      / suit-digest-algorithm-id: / -16 / cose-alg-sha256 /,
-      / suit-digest-bytes: / h'8ADC995573631639C3C6D5FC4026160C8A32C5AADFBEEC9FA49E026FDD74CAB3'
+      / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
+      / suit-digest-bytes: / h'DB601ADE73092B58532CA03FBB663DE49532435336F1558B49BB622726A2FEDD'
     ] >>,
-    << / COSE_Sign1_Tagged / 18 ( [
+    << / COSE_Sign1_Tagged / 18( [
       / protected: / << {
         / algorithm-id / 1: -7 / ES256 /
       } >>,
       / unprotected: / {},
       / payload: / null,
-      / signature: / h'6AC8F0FA591D11E92C28D68689384B6317C665AC3636B2A16A9A8244E750EA55C41492FAE1DF7008584CFB19CF0AD9D56B9562A044F9254DADC698D718FC4003'
+      / signature: / h'5B2D535A2B6D5E3C585C1074F414DA9E10BD285C99A33916DADE3ED38812504817AC48B62B8E984EC622785BD1C411888BE531B1B594507816B201F6F28579A4'
     ] ) >>
   ] >>,
   / suit-manifest / 3: << {
@@ -1917,11 +1955,11 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
         ]
       ],
       / suit-common-sequence / 4: << [
-        / suit-directive-set-parameters / 19, {
+        / suit-directive-override-parameters / 20, {
           / suit-parameter-vendor-identifier / 1: h'C0DDD5F15243566087DB4F5B0AA26C2F',
           / suit-parameter-class-identifier / 2: h'DB42F7093D8C55BAA8C5265FC5820F4E',
           / suit-parameter-image-digest / 3: << [
-            / suit-digest-algorithm-id: / -16 / cose-alg-sha256 /,
+            / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
             / suit-digest-bytes: / h'8CF71AC86AF31BE184EC7A05A411A8C3A14FD9B77A30D046397481469468ECE8'
           ] >>,
           / suit-parameter-image-size / 14: 20
@@ -1931,23 +1969,12 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
       ] >>
     } >>,
     / suit-install / 9: << [
-      / suit-directive-set-parameters / 19, {
+      / suit-directive-override-parameters / 20, {
         / suit-parameter-uri / 21: "https://example.org/8d82573a-926d-4754-9353-32dc29997f74.ta"
       },
       / suit-directive-fetch / 21, 15,
       / suit-condition-image-match / 3, 15
-    ] >>,
-    / suit-text / 13: << {
-      [
-        h'544545502D446576696365',           / "TEEP-Device" /
-        h'5365637572654653',                 / "SecureFS" /
-        h'8D82573A926D4754935332DC29997F74', / tc-uuid /
-        h'7461'                              / "ta" /
-      ]: {
-        / suit-text-model-name / 2: "Reference TEEP-Device",
-        / suit-text-vendor-domain / 3: "example.org"
-      }
-    } >>
+    ] >>
   } >>
 } )
 ~~~~
@@ -1964,9 +1991,9 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
          82                                         # array(2)
             58 24                                   # bytes(36)
                82                                   # array(2)
-                  2F                                # negative(15) / -16 = cose-alg-sha256 /
+                  2F                                # negative(15) / -16 = suit-cose-alg-sha256 /
                   58 20                             # bytes(32)
-                     8ADC995573631639C3C6D5FC4026160C8A32C5AADFBEEC9FA49E026FDD74CAB3
+                     DB601ADE73092B58532CA03FBB663DE49532435336F1558B49BB622726A2FEDD
             58 4A                                   # bytes(74)
                D2                                   # tag(18) / COSE_Sign1_Tagged /
                   84                                # array(4)
@@ -1977,10 +2004,10 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                      A0                             # map(0)
                      F6                             # primitive(22) / null /
                      58 40                          # bytes(64)
-                        6AC8F0FA591D11E92C28D68689384B6317C665AC3636B2A16A9A8244E750EA55C41492FAE1DF7008584CFB19CF0AD9D56B9562A044F9254DADC698D718FC4003
+                        5B2D535A2B6D5E3C585C1074F414DA9E10BD285C99A33916DADE3ED38812504817AC48B62B8E984EC622785BD1C411888BE531B1B594507816B201F6F28579A4
       03                                            # unsigned(3) / suit-manifest: /
-      59 011D                                       # bytes(285)
-         A5                                         # map(5)
+      58 D4                                         # bytes(212)
+         A4                                         # map(4)
             01                                      # unsigned(1) / suit-manifest-version: /
             01                                      # unsigned(1)
             02                                      # unsigned(2) / suit-manifest-sequence-number: /
@@ -2002,7 +2029,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                   04                                # unsigned(4) / suit-common-sequence: /
                   58 54                             # bytes(84)
                      86                             # array(6)
-                        13                          # unsigned(19) / suit-directive-set-parameters: /
+                        14                          # unsigned(20) / suit-directive-override-parameters: /
                         A4                          # map(4)
                            01                       # unsigned(1) / suit-parameter-vendor-identifier: /
                            50                       # bytes(16)
@@ -2013,7 +2040,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                            03                       # unsigned(3) / suit-parameter-image-digest: /
                            58 24                    # bytes(36)
                               82                    # array(2)
-                                 2F                 # negative(15) / -16 = cose-alg-sha256 /
+                                 2F                 # negative(15) / -16 = suit-cose-alg-sha256 /
                                  58 20              # bytes(32)
                                     8CF71AC86AF31BE184EC7A05A411A8C3A14FD9B77A30D046397481469468ECE8
                            0E                       # unsigned(14) / suit-parameter-image-size: /
@@ -2023,36 +2050,17 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                         02                          # unsigned(2) / suit-condition-class-identifier: /
                         0F                          # unsigned(15)
             09                                      # unsigned(9) / suit-install: /
-            58 40                                   # bytes(64)
+            58 45                                   # bytes(69)
                86                                   # array(6)
-                  13                                # unsigned(19) / suit-directive-set-parameters: /
+                  14                                # unsigned(20) / suit-directive-override-parameters: /
                   A1                                # map(1)
                      15                             # unsigned(21) / suit-parameter-uri: /
-                     78 36                          # text(54)
+                     78 3B                          # text(59)
                         68747470733A2F2F6578616D706C652E6F72672F38643832353733612D393236642D343735342D393335332D3332646332393939376637342E7461 # "https://example.org/8d82573a-926d-4754-9353-32dc29997f74.ta"
                   15                                # unsigned(21) / suit-directive-fetch: /
                   0F                                # unsigned(15)
                   03                                # unsigned(3) / suit-condition-image-match: /
                   0F                                # unsigned(15)
-            0D                                      # unsigned(13) / suit-text: /
-            58 4B                                   # bytes(75)
-               A1                                   # map(1)
-                  84                                # array(4)
-                     4B                             # bytes(11)
-                        544545502D446576696365      # "TEEP-Device"
-                     48                             # bytes(8)
-                        5365637572654653            # "SecureFS"
-                     50                             # bytes(16)
-                        8D82573A926D4754935332DC29997F74 # tc-uuid
-                     42                             # bytes(2)
-                        7461                        # "ta"
-                  A2                                # map(2)
-                     02                             # unsigned(2) / suit-text-model-name: /
-                     75                             # text(21)
-                        5265666572656E636520544545502D446576696365 # "Reference TEEP-Device"
-                     03                             # unsigned(3) / suit-text-vendor-domain: /
-                     6B                             # text(11)
-                        6578616D706C652E6F7267      # "example.org"
 ~~~~
 
 
@@ -2060,20 +2068,18 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
 {: numbered='no'}
 
 ~~~~
-D86BA2025873825824822F58208ADC995573631639C3C6D5FC4026160C8A
-32C5AADFBEEC9FA49E026FDD74CAB3584AD28443A10126A0F658406AC8F0
-FA591D11E92C28D68689384B6317C665AC3636B2A16A9A8244E750EA55C4
-1492FAE1DF7008584CFB19CF0AD9D56B9562A044F9254DADC698D718FC40
-030359011DA501010203035884A20281844B544545502D44657669636548
-5365637572654653508D82573A926D4754935332DC29997F744274610458
-548613A40150C0DDD5F15243566087DB4F5B0AA26C2F0250DB42F7093D8C
-55BAA8C5265FC5820F4E035824822F58208CF71AC86AF31BE184EC7A05A4
-11A8C3A14FD9B77A30D046397481469468ECE80E14010F020F0958408613
-A115783668747470733A2F2F74632E6F72672F38643832353733612D3932
-36642D343735342D393335332D3332646332393939376637342E7461150F
-030F0D584BA1844B544545502D446576696365485365637572654653508D
-82573A926D4754935332DC29997F74427461A202755265666572656E6365
-20544545502D446576696365036674632E6F7267
+D86BA2025873825824822F5820DB601ADE73092B58532CA03FBB663DE495
+32435336F1558B49BB622726A2FEDD584AD28443A10126A0F658405B2D53
+5A2B6D5E3C585C1074F414DA9E10BD285C99A33916DADE3ED38812504817
+AC48B62B8E984EC622785BD1C411888BE531B1B594507816B201F6F28579
+A40358D4A401010203035884A20281844B544545502D4465766963654853
+65637572654653508D82573A926D4754935332DC29997F74427461045854
+8614A40150C0DDD5F15243566087DB4F5B0AA26C2F0250DB42F7093D8C55
+BAA8C5265FC5820F4E035824822F58208CF71AC86AF31BE184EC7A05A411
+A8C3A14FD9B77A30D046397481469468ECE80E14010F020F0958458614A1
+15783B68747470733A2F2F6578616D706C652E6F72672F38643832353733
+612D393236642D343735342D393335332D3332646332393939376637342E
+7461150F030F
 ~~~~
 
 
@@ -2084,19 +2090,19 @@ A115783668747470733A2F2F74632E6F72672F38643832353733612D3932
 {: numbered='no'}
 
 ~~~~
-/ SUIT_Envelope_Tagged / 107 ( {
+/ SUIT_Envelope_Tagged / 107( {
   / suit-authentication-wrapper / 2: << [
     << [
-      / suit-digest-algorithm-id: / -16 / cose-alg-sha256 /,
-      / suit-digest-bytes: / h'C8363BDF3DCF68F0234A9DD320C2FEA72DE68F46AAE7CE700AFF87085516A335'
+      / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
+      / suit-digest-bytes: / h'14A98BE957DE38FAE37376EA491FD6CAD9BFBD3C90051C8F5B017D7A496C3B05'
     ] >>,
-    << / COSE_Sign1_Tagged / 18 ( [
+    << / COSE_Sign1_Tagged / 18( [
       / protected: / << {
         / algorithm-id / 1: -7 / ES256 /
       } >>,
       / unprotected: / {},
       / payload: / null,
-      / signature: / h'E0D2973A7B7185BBDA108458FB68EFAF65CD031F2283E784129A95D4229F0EB11F8947D3E589A26CE53CDE0807D58BC976B0FC4AB0E7C0CDE64B13CA41D1D986'
+      / signature: / h'4093B323953785981EB607C8BA61B21E5C4F85726A2AF48C1CB05BD4401B1B1565070728FDA38E6496D631E1D23F966CFF7805EDE721D48507D9192993DA8722'
     ] ) >>
   ] >>,
   / suit-integrated-payload / "#tc": h'48656C6C6F2C2053656375726520576F726C6421', / "Hello, Secure World!" /
@@ -2113,11 +2119,11 @@ A115783668747470733A2F2F74632E6F72672F38643832353733612D3932
         ]
       ],
       / suit-common-sequence / 4: << [
-        / suit-directive-set-parameters / 19, {
+        / suit-directive-override-parameters / 20, {
           / suit-parameter-vendor-identifier / 1: h'C0DDD5F15243566087DB4F5B0AA26C2F',
           / suit-parameter-class-identifier / 2: h'DB42F7093D8C55BAA8C5265FC5820F4E',
           / suit-parameter-image-digest / 3: << [
-            / suit-digest-algorithm-id: / -16 / cose-alg-sha256 /,
+            / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
             / suit-digest-bytes: / h'8CF71AC86AF31BE184EC7A05A411A8C3A14FD9B77A30D046397481469468ECE8'
           ] >>,
           / suit-parameter-image-size / 14: 20
@@ -2127,23 +2133,12 @@ A115783668747470733A2F2F74632E6F72672F38643832353733612D3932
       ] >>
     } >>,
     / suit-install / 9: << [
-      / suit-directive-set-parameters / 19, {
+      / suit-directive-override-parameters / 20, {
         / suit-parameter-uri / 21: "#tc"
       },
       / suit-directive-fetch / 21, 15,
       / suit-condition-image-match / 3, 15
-    ] >>,
-    / suit-text / 13: << {
-      [
-        h'544545502D446576696365',           / "TEEP-Device" /
-        h'5365637572654653',                 / "SecureFS" /
-        h'8D82573A926D4754935332DC29997F74', / tc-uuid /
-        h'7461'                              / "ta" /
-      ]: {
-        / suit-text-model-name / 2: "Reference TEEP-Device",
-        / suit-text-vendor-domain / 3: "example.org"
-      }
-    } >>
+    ] >>
   } >>
 } )
 ~~~~
@@ -2160,9 +2155,9 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
          82                                         # array(2)
             58 24                                   # bytes(36)
                82                                   # array(2)
-                  2F                                # negative(15) / -16 = cose-alg-sha256 /
+                  2F                                # negative(15) / -16 = suit-cose-alg-sha256 /
                   58 20                             # bytes(32)
-                     C8363BDF3DCF68F0234A9DD320C2FEA72DE68F46AAE7CE700AFF87085516A335
+                     14A98BE957DE38FAE37376EA491FD6CAD9BFBD3C90051C8F5B017D7A496C3B05
             58 4A                                   # bytes(74)
                D2                                   # tag(18) / COSE_Sign1_Tagged /
                   84                                # array(4)
@@ -2173,14 +2168,14 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                      A0                             # map(0)
                      F6                             # primitive(22) / null /
                      58 40                          # bytes(64)
-                        E0D2973A7B7185BBDA108458FB68EFAF65CD031F2283E784129A95D4229F0EB11F8947D3E589A26CE53CDE0807D58BC976B0FC4AB0E7C0CDE64B13CA41D1D986
+                        4093B323953785981EB607C8BA61B21E5C4F85726A2AF48C1CB05BD4401B1B1565070728FDA38E6496D631E1D23F966CFF7805EDE721D48507D9192993DA8722
       63                                            # text(3) / suit-integrated-payload /
          237463                                     # "#tc"
       54                                            # bytes(20)
          48656C6C6F2C2053656375726520576F726C6421   # "Hello, Secure World!"
       03                                            # unsigned(3) / suit-manifest: /
-      58 E8                                         # bytes(232)
-         A5                                         # map(5)
+      58 9A                                         # bytes(154)
+         A4                                         # map(4)
             01                                      # unsigned(1) / suit-manifest-version: /
             01                                      # unsigned(1)
             02                                      # unsigned(2) / suit-manifest-sequence-number: /
@@ -2202,7 +2197,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                   04                                # unsigned(4) / suit-common-sequence: /
                   58 54                             # bytes(84)
                      86                             # array(6)
-                        13                          # unsigned(19) / suit-directive-set-parameters: /
+                        14                          # unsigned(20) / suit-directive-override-parameters: /
                         A4                          # map(4)
                            01                       # unsigned(1) / suit-parameter-vendor-identifier: /
                            50                       # bytes(16)
@@ -2213,7 +2208,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                            03                       # unsigned(3) / suit-parameter-image-digest: /
                            58 24                    # bytes(36)
                               82                    # array(2)
-                                 2F                 # negative(15) / -16 = cose-alg-sha256 /
+                                 2F                 # negative(15) / -16 = suit-cose-alg-sha256 /
                                  58 20              # bytes(32)
                                     8CF71AC86AF31BE184EC7A05A411A8C3A14FD9B77A30D046397481469468ECE8
                            0E                       # unsigned(14) / suit-parameter-image-size: /
@@ -2225,7 +2220,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
             09                                      # unsigned(9) / suit-install: /
             4C                                      # bytes(12)
                86                                   # array(6)
-                  13                                # unsigned(19) / suit-directive-set-parameters: /
+                  14                                # unsigned(20) / suit-directive-override-parameters: /
                   A1                                # map(1)
                      15                             # unsigned(21) / suit-parameter-uri: /
                      63                             # text(3)
@@ -2234,25 +2229,6 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                   0F                                # unsigned(15)
                   03                                # unsigned(3) / suit-condition-image-match: /
                   0F                                # unsigned(15)
-            0D                                      # unsigned(13) / suit-text: /
-            58 4B                                   # bytes(75)
-               A1                                   # map(1)
-                  84                                # array(4)
-                     4B                             # bytes(11)
-                        544545502D446576696365      # "TEEP-Device"
-                     48                             # bytes(8)
-                        5365637572654653            # "SecureFS"
-                     50                             # bytes(16)
-                        8D82573A926D4754935332DC29997F74 # tc-uuid
-                     42                             # bytes(2)
-                        7461                        # "ta"
-                  A2                                # map(2)
-                     02                             # unsigned(2) / suit-model-name: /
-                     75                             # text(21)
-                        5265666572656E636520544545502D446576696365 # "Reference TEEP-Device"
-                     03                             # unsigned(3) / suit-vendor-domain: /
-                     6B                             # text(11)
-                        6578616D706C652E6F7267      # "example.org"
 ~~~~
 
 
@@ -2260,19 +2236,17 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
 {: numbered='no'}
 
 ~~~~
-D86BA3025873825824822F5820C8363BDF3DCF68F0234A9DD320C2FEA72D
-E68F46AAE7CE700AFF87085516A335584AD28443A10126A0F65840E0D297
-3A7B7185BBDA108458FB68EFAF65CD031F2283E784129A95D4229F0EB11F
-8947D3E589A26CE53CDE0807D58BC976B0FC4AB0E7C0CDE64B13CA41D1D9
-86632374635448656C6C6F2C2053656375726520576F726C64210358E8A5
+D86BA3025873825824822F582014A98BE957DE38FAE37376EA491FD6CAD9
+BFBD3C90051C8F5B017D7A496C3B05584AD28443A10126A0F658404093B3
+23953785981EB607C8BA61B21E5C4F85726A2AF48C1CB05BD4401B1B1565
+070728FDA38E6496D631E1D23F966CFF7805EDE721D48507D9192993DA87
+22632374635448656C6C6F2C2053656375726520576F726C642103589AA4
 01010203035884A20281844B544545502D44657669636548536563757265
-4653508D82573A926D4754935332DC29997F744274610458548613A40150
+4653508D82573A926D4754935332DC29997F744274610458548614A40150
 C0DDD5F15243566087DB4F5B0AA26C2F0250DB42F7093D8C55BAA8C5265F
 C5820F4E035824822F58208CF71AC86AF31BE184EC7A05A411A8C3A14FD9
-B77A30D046397481469468ECE80E14010F020F094C8613A1156323746315
-0F030F0D584BA1844B544545502D44657669636548536563757265465350
-8D82573A926D4754935332DC29997F74427461A202755265666572656E63
-6520544545502D446576696365036674632E6F7267
+B77A30D046397481469468ECE80E14010F020F094C8614A1156323746315
+0F030F
 ~~~~
 
 
@@ -2283,19 +2257,19 @@ B77A30D046397481469468ECE80E14010F020F094C8613A1156323746315
 {: numbered='no'}
 
 ~~~~
-/ SUIT_Envelope_Tagged / 107 ( {
+/ SUIT_Envelope_Tagged / 107( {
   / suit-authentication-wrapper / 2: << [
     << [
-      / suit-digest-algorithm-id: / -16 / cose-alg-sha256 /,
-      / suit-digest-bytes: / h'A810FBAFCAC8C7E107AD974DDC6FDB4D516B810569A47A7E47B4B6E9BCA98CA1'
+      / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
+      / suit-digest-bytes: / h'CE596D785169B72712560B3A246AA98F814498EA3625EEBB72CED9AF273E7FFD'
     ] >>,
-    << / COSE_Sign1_Tagged / 18 ( [
+    << / COSE_Sign1_Tagged / 18( [
       / protected: / << {
         / algorithm-id / 1: -7 / ES256 /
       } >>,
       / unprotected: / {},
       / payload: / null,
-      / signature: / h'E0F4D43B9CF2E837F58E925AD8041BC64F48C8934537F0CC5E19A8044790B7001FA481C5A7C9DEE8E87633CA2677A2896B15E72086A7CFBC6B4A453C312226F2'
+      / signature: / h'E9083AA71D2BFCE48253037B9C3116A5EDF23BE0F4B4357A8A835F724660DA7482C64345B4C73DE95F05513BD09FC2E58BD2CC865CC851AD797513A9A951A3CA'
     ] ) >>
   ] >>,
   / suit-manifest / 3: << {
@@ -2305,8 +2279,8 @@ B77A30D046397481469468ECE80E14010F020F094C8613A1156323746315
       / suit-dependencies / 1: [
         {
           / suit-dependency-digest / 1: [
-            / suit-digest-algorithm-id: / -16 / cose-alg-sha256 /,
-            / suit-digest-bytes: / h'8ADC995573631639C3C6D5FC4026160C8A32C5AADFBEEC9FA49E026FDD74CAB3'
+            / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
+            / suit-digest-bytes: / h'F8690E5A86D010BF2B5348ABB99F2254DB7B608D0D626B98DB51AB3ECFC51907'
           ]
         }
       ],
@@ -2323,7 +2297,7 @@ B77A30D046397481469468ECE80E14010F020F094C8613A1156323746315
           / suit-parameter-vendor-identifier / 1: h'C0DDD5F15243566087DB4F5B0AA26C2F',
           / suit-parameter-class-identifier / 2: h'DB42F7093D8C55BAA8C5265FC5820F4E',
           / suit-parameter-image-digest / 3: << [
-            / suit-digest-algorithm-id: / -16 / cose-alg-sha256 /,
+            / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
             / suit-digest-bytes: / h'AAABCCCDEEEF00012223444566678889ABBBCDDDEFFF01112333455567778999'
           ] >>,
           / suit-parameter-image-size / 14: 64
@@ -2334,7 +2308,7 @@ B77A30D046397481469468ECE80E14010F020F094C8613A1156323746315
     } >>,
     / suit-dependency-resolution / 7: << [
       / suit-directive-set-dependency-index / 13, 0,
-      / suit-directive-set-parameters / 19, {
+      / suit-directive-override-parameters / 20, {
         / suit-parameter-uri / 21: "https://example.org/8d82573a-926d-4754-9353-32dc29997f74.suit"
       },
       / suit-directive-fetch / 21, 2,
@@ -2344,7 +2318,7 @@ B77A30D046397481469468ECE80E14010F020F094C8613A1156323746315
       / suit-directive-set-dependency-index / 13, 0,
       / suit-directive-process-dependency / 18, 0,
       / suit-directive-set-component-index / 12, 0,
-      / suit-directive-set-parameters / 19, {
+      / suit-directive-override-parameters / 20, {
         / suit-parameter-uri / 21: "https://example.org/config.json"
       },
       / suit-directive-fetch / 21, 2,
@@ -2353,17 +2327,7 @@ B77A30D046397481469468ECE80E14010F020F094C8613A1156323746315
     / suit-validate / 10: << [
       / suit-directive-set-component-index / 12, 0,
       / suit-condition-image-match/ 3, 15
-    ] >>,
-    / suit-text / 13: << {
-      [
-        h'544545502D446576696365', / "TEEP-Device" /
-        h'5365637572654653',       / "SecureFS" /
-        h'636F6E6669672E6A736F6E'  / "config.json" /
-      ]: {
-        / suit-text-model-name / 2: "Reference TEEP-Device",
-        / suit-text-vendor-domain / 3: "example.org"
-      }
-    } >>
+    ] >>
   } >>
 } )
 ~~~~
@@ -2380,9 +2344,9 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
          82                                         # array(2)
             58 24                                   # bytes(36)
                82                                   # array(2)
-                  2F                                # negative(15) / -16 = cose-alg-sha256 /
+                  2F                                # negative(15) / -16 = suit-cose-alg-sha256 /
                   58 20                             # bytes(32)
-                     A810FBAFCAC8C7E107AD974DDC6FDB4D516B810569A47A7E47B4B6E9BCA98CA1
+                     CE596D785169B72712560B3A246AA98F814498EA3625EEBB72CED9AF273E7FFD
             58 4A                                   # bytes(74)
                D2                                   # tag(18) / COSE_Sign1_Tagged /
                   84                                # array(4)
@@ -2393,10 +2357,10 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                      A0                             # map(0)
                      F6                             # primitive(22) / null /
                      58 40                          # bytes(64)
-                        E0F4D43B9CF2E837F58E925AD8041BC64F48C8934537F0CC5E19A8044790B7001FA481C5A7C9DEE8E87633CA2677A2896B15E72086A7CFBC6B4A453C312226F2
+                        E9083AA71D2BFCE48253037B9C3116A5EDF23BE0F4B4357A8A835F724660DA7482C64345B4C73DE95F05513BD09FC2E58BD2CC865CC851AD797513A9A951A3CA
       03                                            # unsigned(3) / suit-manifest: /
-      59 017F                                       # bytes(383)
-         A7                                         # map(7)
+      59 0134                                       # bytes(308)
+         A6                                         # map(6)
             01                                      # unsigned(1) / suit-manifest-version: /
             01                                      # unsigned(1)
             02                                      # unsigned(2) / suit-manifest-sequence-number: /
@@ -2409,9 +2373,9 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                      A1                             # map(1)
                         01                          # unsigned(1) suit-dependency-digest: /
                         82                          # array(2)
-                           2F                       # negative(15) / -16 = cose-alg-sha256 /
+                           2F                       # negative(15) / -16 = suit-cose-alg-sha256 /
                            58 20                    # bytes(32)
-                              8ADC995573631639C3C6D5FC4026160C8A32C5AADFBEEC9FA49E026FDD74CAB3
+                              F8690E5A86D010BF2B5348ABB99F2254DB7B608D0D626B98DB51AB3ECFC51907
                   02                                # unsigned(2) / suit-components: /
                   81                                # array(1)
                      83                             # array(3)
@@ -2437,7 +2401,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                            03                       # unsigned(3) / suit-parameter-image-digest: /
                            58 24                    # bytes(36)
                               82                    # array(2)
-                                 2F                 # negative(15) / -16 = cose-alg-sha256 /
+                                 2F                 # negative(15) / -16 = suit-cose-alg-sha256 /
                                  58 20              # bytes(32)
                                     AAABCCCDEEEF00012223444566678889ABBBCDDDEFFF01112333455567778999
                            0E                       # unsigned(14) / suit-parameter-image-size: /
@@ -2451,7 +2415,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                88                                   # array(8)
                   0D                                # unsigned(13) / suit-directive-set-dependency-index: /
                   00                                # unsigned(0)
-                  13                                # unsigned(19) / suit-directive-set-parameters: /
+                  14                                # unsigned(20) / suit-directive-override-parameters: /
                   A1                                # map(1)
                      15                             # unsigned(21) / suit-parameter-uri: /
                      78 3D                          # text(61)
@@ -2469,7 +2433,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                   00                                # unsigned(0)
                   0C                                # unsigned(12) / suit-directive-set-component-index: /
                   00                                # unsigned(0)
-                  13                                # unsigned(19) / suit-directive-set-parameters: /
+                  14                                # unsigned(20) / suit-directive-override-parameters: /
                   A1                                # map(1)
                      15                             # unsigned(21) / suit-parameter-uri: /
                      78 1F                          # text(31)
@@ -2485,23 +2449,6 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                   00
                   03                                # unsigned(3) / suit-condition-image-match: /
                   0F                                # unsigned(15)
-            0D                                      # unsigned(13) / suit-text: /
-            58 48                                   # bytes(72)
-               A1                                   # map(1)
-                  83                                # array(3)
-                     4B                             # bytes(11)
-                        544545502D446576696365      # "TEEP-Device"
-                     48                             # bytes(8)
-                        5365637572654653            # "SecureFS"
-                     4B                             # bytes(11)
-                        636F6E6669672E6A736F6E      # "config.json"
-                  A2                                # map(2)
-                     02                             # unsigned(2) / suit-text-model-name: /
-                     75                             # text(21)
-                        5265666572656E636520544545502D446576696365 # "Reference TEEP-Device"
-                     03                             # unsigned(3) / suit-text-vendor-domain: /
-                     6B                             # text(11)
-                        6578616D706C652E6F7267      # "example.org"
 ~~~~
 
 
@@ -2509,112 +2456,157 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
 {: numbered='no'}
 
 ~~~~
-D86BA2025873825824822F5820A810FBAFCAC8C7E107AD974DDC6FDB4D51
-6B810569A47A7E47B4B6E9BCA98CA1584AD28443A10126A0F65840E0F4D4
-3B9CF2E837F58E925AD8041BC64F48C8934537F0CC5E19A8044790B7001F
-A481C5A7C9DEE8E87633CA2677A2896B15E72086A7CFBC6B4A453C312226
-F20359017FA7010102030358A7A30181A101822F58208ADC995573631639
-C3C6D5FC4026160C8A32C5AADFBEEC9FA49E026FDD74CAB30281834B5445
+D86BA2025873825824822F5820CE596D785169B72712560B3A246AA98F81
+4498EA3625EEBB72CED9AF273E7FFD584AD28443A10126A0F65840E9083A
+A71D2BFCE48253037B9C3116A5EDF23BE0F4B4357A8A835F724660DA7482
+C64345B4C73DE95F05513BD09FC2E58BD2CC865CC851AD797513A9A951A3
+CA03590134A6010102030358A7A30181A101822F5820DB601ADE73092B58
+532CA03FBB663DE49532435336F1558B49BB622726A2FEDD0281834B5445
 45502D4465766963654853656375726546534B636F6E6669672E6A736F6E
 045857880C0014A40150C0DDD5F15243566087DB4F5B0AA26C2F0250DB42
 F7093D8C55BAA8C5265FC5820F4E035824822F5820AAABCCCDEEEF000122
 23444566678889ABBBCDDDEFFF011123334555677789990E1840010F020F
-075849880D0013A115783D68747470733A2F2F6578616D706C652E6F7267
+075849880D0014A115783D68747470733A2F2F6578616D706C652E6F7267
 2F38643832353733612D393236642D343735342D393335332D3332646332
-393939376637342E737569741502030F09582F8C0D0012000C0013A11578
+393939376637342E737569741502030F09582F8C0D0012000C0014A11578
 1F68747470733A2F2F6578616D706C652E6F72672F636F6E6669672E6A73
-6F6E1502030F0A45840C00030F0D5848A1834B544545502D446576696365
-4853656375726546534B636F6E6669672E6A736F6EA20275526566657265
-6E636520544545502D446576696365036B6578616D706C6522E6F7267
+6F6E1502030F0A45840C00030F
 ~~~~
 
 
-## Delete a Trusted Component
+## E.4. Example 4: Unlink a Trusted Component {#suit-unlink}
 {: numbered='no'}
 
-This sample manifest removes a Trusted Component and its dependency.
+### CBOR Diagnostic Notation of SUIT Manifest
+{: numbered='no'}
 
-~~~
-107({
-        / authentication-wrapper / 2:<<[
-            digest: <<[
-                / algorithm-id / -16 / "sha256" /,
-                / digest-bytes /
-h'a6c4590ac53043a98e8c4106e1e31b305516d7cf0a655eddfac6d45c810e036a'
-            ]>>,
-            signature: <<18([
-                    / protected / <<{
-                        / alg / 1:-7 / "ES256" /,
-                    }>>,
-                    / unprotected / {
-                    },
-                    / payload / F6 / nil /,
-                    / signature / h'd11a2dd9610fb62a707335f58407922570
-9f96e8117e7eeed98a2f207d05c8ecfba1755208f6abea977b8a6efe3bc2ca3215e119
-3be201467d052b42db6b7287'
-                ])>>
-            ]
-        ]>>,
-        / manifest / 3:<<{
-            / manifest-version / 1:1,
-            / manifest-sequence-number / 2:0,
-            / common / 3:<<{
-                / components / 2:[
-                    [h'00']
-                ],
-                / common-sequence / 4:<<[
-                    / directive-override-parameters / 20,{
-                        / vendor-id /
-1:h'fa6b4a53d5ad5fdfbe9de663e4d41ffe' / fa6b4a53-d5ad-5fdf-
-be9d-e663e4d41ffe /,
-                        / class-id /
-2:h'1492af1425695e48bf429b2d51f2ab45' /
-1492af14-2569-5e48-bf42-9b2d51f2ab45 /,
-                        / image-digest / 3:<<[
-                            / algorithm-id / -16 / "sha256" /,
-                            / digest-bytes /
-h'00112233445566778899aabbccddeeff0123456789abcdeffedcba9876543210'
-                        ]>>,
-                        / image-size / 14:34768,
-                    } ,
-                    / condition-vendor-identifier / 1,15 ,
-                    / condition-class-identifier / 2,15
-                ]>>,
-            }>>,
-            / validate / 10:<<[
-                / condition-image-match / 3,15
-            ]>>,
-            / run / 12:<<[
-                / directive-run / 23,2
-            ]>>,
-        }>>,
-    })
-~~~
+~~~~
+/ SUIT_Envelope_Tagged / 107( {
+  / suit-authentication-wrapper / 2: << [
+    << [
+      / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
+      / suit-digest-bytes: / h'632454F19A9440A5B83493628A7EF8704C8A0205A62C34E425BAA34C71341F42'
+    ] >>,
+    << / COSE_Sign1_Tagged / 18( [
+      / protected / << {
+        / algorithm-id / 1: -7 / ES256 /
+      } >>,
+      / unprotected: / {},
+      / payload: / null,
+      / signature: / h'A32CDB7C1D089C27408CED3C79087220EB0D77F105BB5330912875F4D94AD108D7658C650463AEB7E1CCA5084F22B2F3993176E8B3529A3202ED735E4D39BBBF'
+    ] ) >>
+  ] >>,
+  / suit-manifest / 3: << {
+    / suit-manifest-version / 1: 1,
+    / suit-manifest-sequence-number / 2: 18446744073709551615 / UINT64_MAX /,
+    / suit-common / 3: << {
+      / suit-components / 2: [
+        [
+          h'544545502D446576696365',           / "TEEP-Device" /
+          h'5365637572654653',                 / "SecureFS" /
+          h'8D82573A926D4754935332DC29997F74', / tc-uuid /
+          h'7461'                              / "ta" /
+        ]
+      ],
+      / suit-common-sequence / 4: << [
+        / suit-directive-override-parameters / 20, {
+          / suit-parameter-vendor-identifier / 1: h'C0DDD5F15243566087DB4F5B0AA26C2F',
+          / suit-parameter-class-identifier / 2: h'DB42F7093D8C55BAA8C5265FC5820F4E'
+        },
+        / suit-condition-vendor-identifier / 1, 15,
+        / suit-condition-class-identifier / 2, 15
+      ] >>
+    } >>,
+    / suit-install / 9: << [
+      / suit-directive-set-component-index: / 12, 0,
+      / suit-directive-unlink: / 33, 0
+    ] >>
+  } >>
+} )
+~~~~
 
-Total size of Envelope without COSE authentication object:  161
 
-Envelope:
+### CBOR Binary Representation
+{: numbered='no'}
 
-~~~
-d86ba2025827815824822f5820a6c4590ac53043a98e8c4106e1e31b3055
-16d7cf0a655eddfac6d45c810e036a035871a50101020003585fa2028181
-41000458568614a40150fa6b4a53d5ad5fdfbe9de663e4d41ffe02501492
-af1425695e48bf429b2d51f2ab45035824822f5820001122334455667788
-99aabbccddeeff0123456789abcdeffedcba98765432100e1987d0010f02
-0f0a4382030f0c43821702
-~~~
+~~~~
+D8 6B                                               # tag(107) / SUIT_Envelope_Tagged /
+   A2                                               # map(2)
+      02                                            # unsigned(2) / suit-authentication-wrapper /
+      58 73                                         # bytes(115)
+         82                                         # array(2)
+            58 24                                   # bytes(36)
+               82                                   # array(2)
+                  2F                                # negative(15) / -16 = suit-cose-alg-sha256 /
+                  58 20                             # bytes(32)
+                     632454F19A9440A5B83493628A7EF8704C8A0205A62C34E425BAA34C71341F42
+            58 4A                                   # bytes(74)
+               D2                                   # tag(18) / COSE_Sign1_Tagged /
+                  84                                # array(4)
+                     43                             # bytes(3)
+                        A1                          # map(1)
+                           01                       # unsigned(1) / algorithm-id /
+                           26                       # negative(6) / -7 = ES256 /
+                     A0                             # map(0)
+                     F6                             # primitive(22) / null /
+                     58 40                          # bytes(64)
+                        A32CDB7C1D089C27408CED3C79087220EB0D77F105BB5330912875F4D94AD108D7658C650463AEB7E1CCA5084F22B2F3993176E8B3529A3202ED735E4D39BBBF
+      03                                            # unsigned(3) / suit-manifest: /
+      58 73                                         # bytes(115)
+         A4                                         # map(4)
+            01                                      # unsigned(1) / suit-manifest-version: /
+            01                                      # unsigned(1)
+            02                                      # unsigned(2) / suit-manifest-sequence-number: /
+            1B FFFFFFFFFFFFFFFF                     # unsigned(18446744073709551615)
+            03                                      # unsigned(3) / suit-common: /
+            58 5B                                   # bytes(91)
+               A2                                   # map(2)
+                  02                                # unsigned(2) / suit-components: /
+                  81                                # array(1)
+                     84                             # array(4)
+                        4B                          # bytes(11)
+                           544545502D446576696365   # "TEEP-Device"
+                        48                          # bytes(8)
+                           5365637572654653         # "SecureFS"
+                        50                          # bytes(16)
+                           8D82573A926D4754935332DC29997F74 # tc-uuid
+                        42                          # bytes(2)
+                           7461                     # "ta"
+                  04                                # unsigned(4) / suit-common-sequence: /
+                  58 2B                             # bytes(84)
+                     86                             # array(6)
+                        14                          # unsigned(20) / suit-directive-override-parameters: /
+                        A2                          # map(2)
+                           01                       # unsigned(1) / suit-parameter-vendor-identifier: /
+                           50                       # bytes(16)
+                              C0DDD5F15243566087DB4F5B0AA26C2F
+                           02                       # unsigned(2) / suit-parameter-class-identifier: /
+                           50                       # bytes(16)
+                              DB42F7093D8C55BAA8C5265FC5820F4E
+                        01                          # unsigned(1) / suit-condition-vendor-identifier: /
+                        0F                          # unsigned(15)
+                        02                          # unsigned(2) / suit-condition-class-identifier: /
+                        0F                          # unsigned(15)
+            09                                      # unsigned(9) / suit-install: /
+            46                                      # bytes(6)
+               84                                   # array(4)
+                  0C                                # unsigned(12) / suit-directive-set-component-index: /
+                  00                                # unsigned(0)
+                  18 21                             # unsigned(33) / suit-directive-unlink: /
+                  00                                # unsigned(0)
+~~~~
 
-Total size of Envelope with COSE authentication object:  237
 
-Envelope with COSE authentication object:
+### CBOR Binary in Hex
+{: numbered='no'}
 
-~~~
-d86ba2025873825824822f5820a6c4590ac53043a98e8c4106e1e31b3055
-16d7cf0a655eddfac6d45c810e036a584ad28443a10126a0f65840d11a2d
-d9610fb62a707335f584079225709f96e8117e7eeed98a2f207d05c8ecfb
-a1755208f6abea977b8a6efe3bc2ca3215e1193be201467d052b42db6b72
-87035871a50101020003585fa202818141000458568614a40150fa6b4a53
-d5ad5fdfbe9de663e4d41ffe02501492af1425695e48bf429b2d51f2ab45
-035824822f582000112233445566778899aabbccddeeff0123456789abcd
-effedcba98765432100e1987d0010f020f0a4382030f0c43821702
-~~~
+~~~~
+D86BA2025873825824822F5820632454F19A9440A5B83493628A7EF8704C
+8A0205A62C34E425BAA34C71341F42584AD28443A10126A0F65840A32CDB
+7C1D089C27408CED3C79087220EB0D77F105BB5330912875F4D94AD108D7
+658C650463AEB7E1CCA5084F22B2F3993176E8B3529A3202ED735E4D39BB
+BF035873A40101021BFFFFFFFFFFFFFFFF03585BA20281844B544545502D
+446576696365485365637572654653508D82573A926D4754935332DC2999
+7F7442746104582B8614A20150C0DDD5F15243566087DB4F5B0AA26C2F02
+50DB42F7093D8C55BAA8C5265FC5820F4E010F020F0946840C00182100
+~~~~
