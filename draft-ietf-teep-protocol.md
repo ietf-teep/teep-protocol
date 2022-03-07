@@ -1511,7 +1511,7 @@ teep-cose-sign-algs /= cose-alg-eddsa
 teep-cose-sign-algs /= cose-alg-ps256,
 teep-cose-sign-algs /= cose-alg-ps384,
 teep-cose-sign-algs /= cose-alg-ps512,
-teep-cose-sign-algs /= cose-alg-rsa-oaep-256
+teep-cose-sign-algs /= cose-alg-rsa-oaep-256,
 teep-cose-sign-algs /= cose-alg-rsa-oaep-512
 
 teep-cose-encrypt-algs /= cose-alg-accm-16-64-128
