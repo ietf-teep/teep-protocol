@@ -1204,7 +1204,7 @@ A TAM or TEEP Agent MAY also support one or more of the following algorithms:
 teep-cose-sign-algs /= cose-alg-ps256,
 teep-cose-sign-algs /= cose-alg-ps384,
 teep-cose-sign-algs /= cose-alg-ps512,
-teep-cose-sign-algs /= cose-alg-rsa-oaep-256
+teep-cose-sign-algs /= cose-alg-rsa-oaep-256,
 teep-cose-sign-algs /= cose-alg-rsa-oaep-512
 ~~~~
 
