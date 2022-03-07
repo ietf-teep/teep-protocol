@@ -1048,7 +1048,7 @@ evidence in a QueryResponse.
 
 As discussed in {{evidence}}, the content of attestation evidence is opaque to the TEEP
 architecture, but the content of Attestation Results is not, where Attestation
-Results flow between a Verifier and a TAM (as the Relying Party).  
+Results flow between a Verifier and a TAM (as the Relying Party).
 Although Attestation Results required by a TAM are separable from the TEEP protocol
 per se, this section is included as part of the requirements for building
 a compliant TAM that uses EATs for Attestation Results.
@@ -1459,7 +1459,7 @@ IANA is also requested to create a new registry for freshness mechanisms.
 
 Name of registry: TEEP Freshness Mechanisms
 
-Policy: Specification Required
+Policy: Specification Required {{RFC8126}}
 
 Additional requirements: The specification must document relevant security considerations.
 
@@ -1470,7 +1470,7 @@ Initial values:
 |     2 | Timestamp                                      | RFC TBD {{freshness-mechanisms}}
 |     3 | Epoch ID                                       | RFC TBD {{freshness-mechanisms}}
 
-[RFC Editor: please replace TBD above with the number assigned to this document]
+(RFC Editor: please replace TBD above with the number assigned to this document.)
 
 --- back
 
