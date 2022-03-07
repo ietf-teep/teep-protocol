@@ -1163,7 +1163,7 @@ or Error message is generated only after completing the Update Procedure.
 
 The TEEP protocol uses COSE for protection of TEEP messages.
 After a QueryResponse is received, the selected cryptographic algorithm is used in subsequent TEEP messages (Install, Success, and Error).
-To negotiate the chosing cryptographic mechanisms and algorithms, TEEP protocol defines the ciphersuite structure.
+To negotiate cryptographic mechanisms and algorithms, the TEEP protocol defines the following ciphersuite structure.
 
 ~~~~
 suite = [
