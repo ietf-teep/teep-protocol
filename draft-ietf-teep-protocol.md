@@ -1182,8 +1182,6 @@ Null in the value of mechanisms' key are treated as unable handling mechanism in
 supported-cipher-suites = [ + suite ]
 ~~~~
 
-To show supported ciphersuites in QueryRequest or Error messages, make an array of ciphersuite structures. If an entity supports multiple mechanisms and algorithms, it can choose the specific combinations or all combinations by picking values in the array.
-
 Cryptographic algorithm values are defined in the COSE Algorithms registry {{COSE.Algorithm}}.
 A TAM MUST support both of the following ciphersuites.  A TEEP Agent MUST support at least
 one of the two but can choose which one.  For example, a TEEP Agent might
