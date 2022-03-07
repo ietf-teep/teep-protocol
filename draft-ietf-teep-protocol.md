@@ -527,19 +527,19 @@ have-binary
 
 ### Evidence {#evidence}
 
-Section 7.1 of {{I-D.ietf-teep-architecture}} lists information that may be
-required in the evidence depend on the circumstance.  When an Entity
+Section 7 of {{I-D.ietf-teep-architecture}} lists information that may be
+required in Attestation Results to be used by TAMs depending on the circumstance.  When an Entity
 Attestation Token is used, the following claims can be used to meet those
 requirements:
 
 | Requirement  | Claim | Reference |
-| Device unique identifier | device-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.3 |
-| Vendor of the device | vendor-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.1 |
+| Device unique identifier | ueid | {{I-D.ietf-rats-eat}} section 3.4 |
+| Vendor of the device | oemid | {{I-D.ietf-rats-eat}} section 3.6 |
 | Class of the device | class-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.2 |
 | TEE hardware type | chip-version | {{I-D.ietf-rats-eat}} section 3.7 |
 | TEE hardware version | chip-version | {{I-D.ietf-rats-eat}} section 3.7 |
-| TEE firmware type | component-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.4 |
-| TEE firmware version | version | {{I-D.birkholz-rats-suit-claims}} section 3.1.8 |
+| TEE firmware type | sw-name | {{I-D.ietf-rats-eat}} section 3.9 |
+| TEE firmware version | sw-version | {{I-D.ietf-rats-eat}} section 3.10 |
 | Freshness proof | nonce | {{I-D.ietf-rats-eat}} section 3.3 |
 
 ## Update Message {#update-msg-def}
