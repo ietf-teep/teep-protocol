@@ -1513,7 +1513,7 @@ teep-cose-encrypt-alg /= cose-alg-accm-16-64-128
 
 teep-cose-mac-alg /= cose-alg-hmac-256
 
-; algorithm identifier defined by IANA COSE Algorithm Registry
+; algorithm identifiers defined in the IANA COSE Algorithms Registry
 cose-alg-es256 = -7
 cose-alg-eddsa = -8
 cose-alg-ps256 = -37
