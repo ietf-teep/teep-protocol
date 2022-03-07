@@ -2668,3 +2668,80 @@ BF035873A40101021BFFFFFFFFFFFFFFFF03585BA20281844B544545502D
 7F7442746104582B8614A20150C0DDD5F15243566087DB4F5B0AA26C2F02
 50DB42F7093D8C55BAA8C5265FC5820F4E010F020F0946840C00182100
 ~~~~
+
+# F. Examples of SUIT Reports {#suit-reports}
+{: numbered='no'}
+
+This section shows some examples of SUIT reports.
+
+## F.1. Example 1: Success
+{: numbered='no'}
+
+SUIT Reports have no records if no conditions have failed.
+The URI in this example is the reference URI provided in the SUIT manifest.
+
+~~~~
+{
+  / suit-report-manifest-digest / 1:<<[
+    / algorithm-id / -16 / "sha256" /,
+    / digest-bytes / h'a7fd6593eac32eb4be578278e6540c5c'
+                     h'09cfd7d4d234973054833b2b93030609'
+  ]>>,
+  / suit-report-manifest-uri / 2: "tam.teep.example/personalisation.suit",
+  / suit-report-records / 4: []
+}
+~~~~
+
+## F.2. Example 2: Faiure
+{: numbered='no'}
+
+~~~~
+{
+  / suit-report-manifest-digest / 1:<<[
+    / algorithm-id / -16 / "sha256" /,
+    / digest-bytes / h'a7fd6593eac32eb4be578278e6540c5c09cfd7d4d234973054833b2b93030609'
+  ]>>,
+  / suit-report-manifest-uri / 2: "tam.teep.example/personalisation.suit",
+  / suit-report-records / 4: [
+    {
+      / suit-record-manifest-id / 1:[],
+      / suit-record-manifest-section / 2: 7 / dependency-resolution /,
+      / suit-record-section-offset / 3: 66,
+      / suit-record-dependency-index / 5: 0,
+      / suit-record-failure-reason / 6: 404
+    }
+  ]
+}
+~~~~
+
+where the dependency-resolution refers to:
+
+~~~~
+107({
+  authentication-wrapper,
+  / manifest / 3:<<{
+    / manifest-version / 1:1,
+    / manifest-sequence-number / 2:3,
+    common,
+    dependency-resolution,
+    install,
+    validate,
+    run,
+    text
+  }>>,
+})
+~~~~
+
+and the suit-record-section-offset refers to:
+
+~~~~
+<<[
+  / directive-set-dependency-index / 13,0 ,
+  / directive-set-parameters / 19,{
+    / uri / 21:'tam.teep.example/'
+               'edd94cd8-9d9c-4cc8-9216-b3ad5a2d5b8a.suit',
+    } ,
+  / directive-fetch / 21,2 ,
+  / condition-image-match / 3,15
+]>>,
+~~~~
