@@ -389,7 +389,7 @@ versions
   If this field is not present, it is to be treated the same as if
   it contained only version 0.
 
-## QueryResponse Message
+## QueryResponse Message {#query-response}
 
 The QueryResponse message is the successful response by the TEEP Agent after 
 receiving a QueryRequest message.  As discussed in {{agent}}, it can also be sent
@@ -525,21 +525,29 @@ have-binary
   that authorizes installing it.  If have-binary is true, the
   tc-manifest-sequence-number field MUST be present.
 
-### Evidence {#evidence}
+### Evidence and Attestation Results {#evidence}
 
-Section 7.1 of {{I-D.ietf-teep-architecture}} lists information that may be
-required in the evidence depend on the circumstance.  When an Entity
+Section 7 of {{I-D.ietf-teep-architecture}} lists information that may appear
+in evidence depending on the circumstance.  However, the evidence is
+opaque to the TEEP protocol and there are no formal requirements on the contents
+of evidence.
+
+TAMs however consume Attestation Results and do need enough information therein to
+make decisions on how to remediate a TEE that is out of compliance, or update a TEE
+that is requesting an authorized change.  To do so, the information in
+Section 7 of {{I-D.ietf-teep-architecture}} is often required depending on the policy.
+When an Entity
 Attestation Token is used, the following claims can be used to meet those
 requirements:
 
 | Requirement  | Claim | Reference |
-| Device unique identifier | device-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.3 |
-| Vendor of the device | vendor-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.1 |
+| Device unique identifier | ueid | {{I-D.ietf-rats-eat}} section 3.4 |
+| Vendor of the device | oemid | {{I-D.ietf-rats-eat}} section 3.6 |
 | Class of the device | class-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.2 |
 | TEE hardware type | chip-version | {{I-D.ietf-rats-eat}} section 3.7 |
 | TEE hardware version | chip-version | {{I-D.ietf-rats-eat}} section 3.7 |
-| TEE firmware type | component-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.4 |
-| TEE firmware version | version | {{I-D.birkholz-rats-suit-claims}} section 3.1.8 |
+| TEE firmware type | sw-name | {{I-D.ietf-rats-eat}} section 3.9 |
+| TEE firmware version | sw-version | {{I-D.ietf-rats-eat}} section 3.10 |
 | Freshness proof | nonce | {{I-D.ietf-rats-eat}} section 3.3 |
 
 ## Update Message {#update-msg-def}
@@ -1031,6 +1039,51 @@ receipt of the error message, rather than just logging the event.
 Hence, each error code is responsible for saying what the
 behavioral difference is expected to be.
 
+# EAT Profile {#eat}
+
+The TEEP protocol operates between a TEEP Agent and a TAM.  While
+the TEEP protocol does not require use of EAT, use of EAT is encouraged and
+{{query-response}} explicitly defines a way to carry an Entity Attestation Token
+evidence in a QueryResponse.  
+
+As discussed in {{evidence}}, the content of attestation evidence is opaque to the TEEP
+architecture, but the content of Attestation Results is not, where Attestation
+Results flow between a Verifier and a TAM (as the Relying Party).
+Although Attestation Results required by a TAM are separable from the TEEP protocol
+per se, this section is included as part of the requirements for building
+a compliant TAM that uses EATs for Attestation Results.
+
+Section 7 of {{I-D.ietf-rats-eat}} defines the requirement for
+Entity Attestation Token profiles.  This section defines an EAT profile
+for use with TEEP.
+
+* profile-label: The profile-label for this specification is the URI
+<https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-08>.
+(RFC-editor: upon RFC publication, replace string with
+"https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
+of this document.)
+
+* Use of JSON, CBOR, or both: CBOR only.
+* CBOR Map and Array Encoding: Only definite length arrays and maps.
+* CBOR String Encoding: Only definite-length strings are allowed.
+* CBOR Preferred Serialization: Encoders must use preferred serialization,
+  and decoders need not accept non-preferred serialization.
+* COSE/JOSE Protection: See {{ciphersuite}}.
+* Detached EAT Bundle Support: DEB use is permitted.
+* Verification Key Identification: COSE Key ID (kid) is used, where
+  the key ID is the hash of a public key (where the public key may be
+  used as a raw public key, or in a certificate).
+* Endorsement Identification: Optional, but semantics are the same
+  as in Verification Key Identification.
+* Freshness: See {{freshness-mechanisms}}.
+* Required Claims: None.
+* Prohibited Claims: None.
+* Additional Claims: Optional claims are those listed in {{evidence}}.
+* Refined Claim Definition: None.
+* CBOR Tags: CBOT Tags are not used.
+* Manifests and Software Evidence Claims: The sw-name claim for a Trusted
+  Component holds the URI of the SUIT manifest for that component.
+
 # Mapping of TEEP Message Parameters to CBOR Labels {#tags}
 
 In COSE, arrays and maps use strings, negative integers, and unsigned
@@ -1406,7 +1459,7 @@ IANA is also requested to create a new registry for freshness mechanisms.
 
 Name of registry: TEEP Freshness Mechanisms
 
-Policy: Specification Required
+Policy: Specification Required {{RFC8126}}
 
 Additional requirements: The specification must document relevant security considerations.
 
@@ -1417,7 +1470,7 @@ Initial values:
 |     2 | Timestamp                                      | RFC TBD {{freshness-mechanisms}}
 |     3 | Epoch ID                                       | RFC TBD {{freshness-mechanisms}}
 
-[RFC Editor: please replace TBD above with the number assigned to this document]
+(RFC Editor: please replace TBD above with the number assigned to this document.)
 
 --- back
 
