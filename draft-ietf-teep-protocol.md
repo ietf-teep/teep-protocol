@@ -87,10 +87,10 @@ normative:
   I-D.moran-suit-trust-domains: 
   I-D.moran-suit-report: 
   COSE.Algorithm:
-    title: "CBOR Object Signing and Encryption (COSE)"
+    title: "COSE Algorithms"
     author:
       org: IANA
-    target: https://www.iana.org/assignments/cose/cose.xhtml
+    target: https://www.iana.org/assignments/cose/cose.xhtml#algorithms
 informative:
   I-D.ietf-teep-architecture: 
   I-D.birkholz-rats-suit-claims:
@@ -1166,14 +1166,14 @@ After a QueryResponse is received, the selected cryptographic algorithm is used 
 To negotiate cryptographic mechanisms and algorithms, the TEEP protocol defines the following ciphersuite structure.
 
 ~~~~
-suite = [
+ciphersuite = [
     teep-cose-sign-alg / nil,
     teep-cose-encrypt-alg / nil ,
     teep-cose-mac-alg / nil 
 ]
 ~~~~
 
-suites is used to present the combination of mechanisms and cryptographic algorithms.
+ciphersuite is used to present the combination of mechanisms and cryptographic algorithms.
 Each suite value corresponds with a COSE-type defined in Section 2 of {{RFC8152}}.
 
 ~~~~
