@@ -1200,10 +1200,10 @@ TAM and TEEP Agents MAY use these algorithms:
 
 ~~~~
 teep-cose-sign-algs = 
-    cose-alg-ps256/
-    cose-alg-ps384/
-    cose-alg-ps512/
-    cose-alg-rsa-oaep-256/
+    cose-alg-ps256 /
+    cose-alg-ps384 /
+    cose-alg-ps512 /
+    cose-alg-rsa-oaep-256 /
     cose-alg-rsa-oaep-512
 
 teep-cose-encrypt-algs = TBD
