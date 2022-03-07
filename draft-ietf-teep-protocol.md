@@ -525,10 +525,18 @@ have-binary
   that authorizes installing it.  If have-binary is true, the
   tc-manifest-sequence-number field MUST be present.
 
-### Evidence {#evidence}
+### Evidence and Attestation Results {#evidence}
 
-Section 7 of {{I-D.ietf-teep-architecture}} lists information that may be
-required in Attestation Results to be used by TAMs depending on the circumstance.  When an Entity
+Section 7 of {{I-D.ietf-teep-architecture}} lists information that may appear
+in evidence depending on the circumstance.  However, the evidence is
+opaque to the TEEP protocol and there are no formal requirements on the contents
+of evidence.
+
+TAMs however consume Attestation Results and do need enough information therein to
+make decisions on how to remediate a TEE that is out of compliance, or update a TEE
+that is requesting an authorized change.  To do so, the information in
+Section 7 of {{I-D.ietf-teep-architecture}} is often required depending on the policy.
+When an Entity
 Attestation Token is used, the following claims can be used to meet those
 requirements:
 
