@@ -1185,8 +1185,9 @@ supported-cipher-suites = [ + suite ]
 To show supported ciphersuites in QueryRequest or Error messages, make an array of ciphersuite structures. If an entity supports multiple mechanisms and algorithms, it can choose the specific combinations or all combinations by picking values in the array.
 
 Cryptographic algorithm values are defined in the COSE Algorithms registry {{COSE.Algorithm}}.
-And TEEP protocol defines highly recommended algorithms lists to implement TAM and TEEP Agents as following list.
-TAM and TEEP Agents SHOULD implement these algorithms. TEEP Agents MAY support either-or algorithms in signature mechanism.
+A TAM MUST support both of the following ciphersuites.  A TEEP Agent MUST support at least
+one of the two but can choose which one.  For example, a TEEP Agent might
+choose a given ciphersuite if it has hardware support for it.
 
 ~~~~
 teep-cose-sign-algs = cose-alg-es256 / cose-alg-eddsa
