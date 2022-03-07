@@ -1174,7 +1174,7 @@ suite = [
 ~~~~
 
 suites is used to present the combination of mechanisms and cryptographic algorithms.
-Each keys correspond with COSE-type defined in the Section 2 of {{RFC8152}}.
+Each suite value corresponds with a COSE-type defined in Section 2 of {{RFC8152}}.
 If a TAM and TEEP agent indicate that it supports a certain mechanisms, it sets supporting algorithm's identifier as a value of mechanisms' key.
 Null in the value of mechanisms' key are treated as unable handling mechanism in the entity.
 
