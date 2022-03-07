@@ -1196,7 +1196,7 @@ teep-cose-encrypt-algs = cose-alg-accm-16-64-128
 teep-cose-mac-algs = cose-alg-hmac-256
 ~~~~
 
-TAM and TEEP Agents MAY use these algorithms:
+A TAM or TEEP Agent MAY also support one or more of the following algorithms:
 
 ~~~~
 teep-cose-sign-algs = 
