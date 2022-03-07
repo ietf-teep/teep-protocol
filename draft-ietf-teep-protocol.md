@@ -17,7 +17,7 @@ abbrev: TEEP Protocol
 area: Security
 wg: TEEP
 kw: Trusted Execution Environment
-date: 2021
+date: 2022
 author:
 
  -
@@ -86,6 +86,11 @@ normative:
   I-D.ietf-suit-manifest: 
   I-D.moran-suit-trust-domains: 
   I-D.moran-suit-report: 
+  COSE.Algorithm:
+    title: "COSE Algorithms"
+    author:
+      org: IANA
+    target: https://www.iana.org/assignments/cose/cose.xhtml#algorithms
 informative:
   I-D.ietf-teep-architecture: 
   I-D.birkholz-rats-suit-claims:
@@ -357,7 +362,7 @@ data-item-requested
 
 supported-cipher-suites
 : The supported-cipher-suites parameter lists the ciphersuite(s) supported by the TAM. If this parameter is not present, it is to be treated the same as if
-  it contained both ciphersuites defined in this document. Details
+  it contained all ciphersuites defined in this document that are listed as "MUST". Details
   about the ciphersuite encoding can be found in {{ciphersuite}}.
 
 supported-freshness-mechanisms
@@ -1156,29 +1161,54 @@ or Error message is generated only after completing the Update Procedure.
 
 # Ciphersuites {#ciphersuite}
 
-A ciphersuite consists of an AEAD algorithm, a MAC algorithm, and a signature
-algorithm.
-Each ciphersuite is identified with an integer value, which corresponds to
-an IANA registered
-ciphersuite (see {{ciphersuite-registry}}. This document specifies two ciphersuites.
+The TEEP protocol uses COSE for protection of TEEP messages.
+After a QueryResponse is received, the selected cryptographic algorithm is used in subsequent TEEP messages (Install, Success, and Error).
+To negotiate cryptographic mechanisms and algorithms, the TEEP protocol defines the following ciphersuite structure.
 
-| Value | Ciphersuite                                    |
-|     1 | AES-CCM-16-64-128, HMAC 256/256, X25519, EdDSA |
-|     2 | AES-CCM-16-64-128, HMAC 256/256, P-256, ES256  |
+~~~~
+ciphersuite = [
+    teep-cose-sign-alg / nil,
+    teep-cose-encrypt-alg / nil ,
+    teep-cose-mac-alg / nil 
+]
+~~~~
 
-A TAM MUST support both ciphersuites.  A TEEP Agent MUST support at least
+ciphersuite is used to present the combination of mechanisms and cryptographic algorithms.
+Each suite value corresponds with a COSE-type defined in Section 2 of {{RFC8152}}.
+
+~~~~
+supported-cipher-suites = [ + suite ]
+~~~~
+
+Cryptographic algorithm values are defined in the COSE Algorithms registry {{COSE.Algorithm}}.
+A TAM MUST support both of the following ciphersuites.  A TEEP Agent MUST support at least
 one of the two but can choose which one.  For example, a TEEP Agent might
-choose ciphersuite 2 if it has hardware support for it.
+choose a given ciphersuite if it has hardware support for it.
 
-Any ciphersuites without confidentiality protection can only be added if the
-associated specification includes a discussion of security considerations and
-applicability, since manifests may carry sensitive information. For example,
-Section 6 of {{I-D.ietf-teep-architecture}} permits implementations that terminate
-transport security inside the TEE and if the transport security provides
-confidentiality then additional encryption might not be needed in the manifest
-for some use cases. For most use cases, however, manifest confidentiality will
-be needed to protect sensitive fields from the TAM as discussed in Section 9.8
-of {{I-D.ietf-teep-architecture}}.
+~~~~
+teep-cose-sign-algs = cose-alg-es256 / cose-alg-eddsa
+
+teep-cose-encrypt-algs = cose-alg-accm-16-64-128
+
+teep-cose-mac-algs = cose-alg-hmac-256
+~~~~
+
+A TAM or TEEP Agent MAY also support one or more of the following algorithms:
+
+~~~~
+teep-cose-sign-algs = 
+    cose-alg-ps256 /
+    cose-alg-ps384 /
+    cose-alg-ps512 /
+    cose-alg-rsa-oaep-256 /
+    cose-alg-rsa-oaep-512
+
+teep-cose-encrypt-algs = TBD
+
+teep-cose-mac-algs = TBD
+~~~~
+
+Any ciphersuites without confidentiality protection can only be added if the associated specification includes a discussion of security considerations and applicability, since manifests may carry sensitive information. For example, Section 6 of {{I-D.ietf-teep-architecture}} permits implementations that terminate transport security inside the TEE and if the transport security provides confidentiality then additional encryption might not be needed in the manifest for some use cases. For most use cases, however, manifest confidentiality will be needed to protect sensitive fields from the TAM as discussed in Section 9.8 of {{I-D.ietf-teep-architecture}}.
 
 # Freshness Mechanisms {#freshness-mechanisms}
 
@@ -1362,25 +1392,6 @@ Author:
 Change controller:
 : IETF
 
-
-## Ciphersuite Registry {#ciphersuite-registry}
-
-IANA is also requested to create a new registry for ciphersuites.
-
-Name of registry: TEEP Ciphersuites
-
-Policy: Specification Required
-
-Additional requirements: The specification must document relevant security considerations.
-
-Initial values:
-
-| Value | Ciphersuite                                    | Specification
-|     1 | AES-CCM-16-64-128, HMAC 256/256, X25519, EdDSA | RFC TBD {{ciphersuite}}
-|     2 | AES-CCM-16-64-128, HMAC 256/256, P-256, ES256  | RFC TBD {{ciphersuite}}
-
-[RFC Editor: please replace TBD above with the number assigned to this document]
-
 ## Freshness Mechanism Registry {#freshness-mechanism-registry}
 
 IANA is also requested to create a new registry for freshness mechanisms.
@@ -1481,13 +1492,34 @@ query-request = [
 ]
 
 ; ciphersuites
-suite = $TEEP-suite .within uint .size 4
+suite = [
+    teep-cose-sign-alg / nil,
+    teep-cose-encrypt-alg / nil,
+    teep-cose-mac-alg / nil
+]
 
-TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA = 1
-TEEP-AES-CCM-16-64-128-HMAC256--256-P-256-ES256  = 2
+teep-cose-sign-alg /= cose-alg-es256,
+teep-cose-sign-alg /= cose-alg-eddsa
+teep-cose-sign-alg /= cose-alg-ps256,
+teep-cose-sign-alg /= cose-alg-ps384,
+teep-cose-sign-alg /= cose-alg-ps512,
+teep-cose-sign-alg /= cose-alg-rsa-oaep-256
+teep-cose-sign-alg /= cose-alg-rsa-oaep-512
 
-$TEEP-suite /= TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA
-$TEEP-suite /= TEEP-AES-CCM-16-64-128-HMAC256--256-P-256-ES256
+teep-cose-encrypt-alg /= cose-alg-accm-16-64-128
+
+teep-cose-mac-alg /= cose-alg-hmac-256
+
+; algorithm identifiers defined in the IANA COSE Algorithms Registry
+cose-alg-es256 = -7
+cose-alg-eddsa = -8
+cose-alg-ps256 = -37
+cose-alg-ps384 = -38
+cose-alg-ps512 = -39
+cose-alg-rsa-oaep-256 = -41
+cose-alg-rsa-oaep-512 = -42
+cose-alg-accm-16-64-128 = 10
+cose-alg-hmac-256 = 5
 
 ; freshness-mechanisms
 
