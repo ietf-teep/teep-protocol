@@ -362,7 +362,7 @@ data-item-requested
 
 supported-cipher-suites
 : The supported-cipher-suites parameter lists the ciphersuite(s) supported by the TAM. If this parameter is not present, it is to be treated the same as if
-  it contained all SHOULD ciphersuites defined in this document. Details
+  it contained all ciphersuites defined in this document that are listed as "MUST". Details
   about the ciphersuite encoding can be found in {{ciphersuite}}.
 
 supported-freshness-mechanisms
