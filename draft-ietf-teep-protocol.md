@@ -305,7 +305,7 @@ query-request = [
   type: TEEP-TYPE-query-request,
   options: {
     ? token => bstr .size (8..64),
-    ? supported-cipher-suites => [ + suite ],
+    ? supported-cipher-suites => [ + ciphersuite ],
     ? supported-freshness-mechanisms => [ + freshness-mechanism ],
     ? challenge => bstr .size (8..512),
     ? versions => [ + version ],
@@ -405,7 +405,7 @@ query-response = [
   type: TEEP-TYPE-query-response,
   options: {
     ? token => bstr .size (8..64),
-    ? selected-cipher-suite => suite,
+    ? selected-cipher-suite => ciphersuite,
     ? selected-version => version,
     ? evidence-format => text,
     ? evidence => bstr,
@@ -911,7 +911,7 @@ teep-error = [
   options: {
      ? token => bstr .size (8..64),
      ? err-msg => text .size (1..128),
-     ? supported-cipher-suites => [ + suite ],
+     ? supported-cipher-suites => [ + ciphersuite ],
      ? supported-freshness-mechanisms => [ + freshness-mechanism ],
      ? versions => [ + version ],
      ? suit-reports => [ + suit-report ],
@@ -1221,16 +1221,16 @@ To negotiate cryptographic mechanisms and algorithms, the TEEP protocol defines 
 ~~~~
 ciphersuite = [
     teep-cose-sign-algs / nil,
-    teep-cose-encrypt-algs / nil ,
-    teep-cose-mac-algs / nil 
+    teep-cose-encrypt-algs / nil,
+    teep-cose-mac-algs / nil
 ]
 ~~~~
 
 The ciphersuite structure is used to present the combination of mechanisms and cryptographic algorithms.
-Each suite value corresponds with a COSE-type defined in Section 2 of {{RFC8152}}.
+Each ciphersuite value corresponds with a COSE-type defined in Section 2 of {{RFC8152}}.
 
 ~~~~
-supported-cipher-suites = [ + suite ]
+supported-cipher-suites = [ + ciphersuite ]
 ~~~~
 
 Cryptographic algorithm values are defined in the COSE Algorithms registry {{COSE.Algorithm}}.
@@ -1542,7 +1542,7 @@ query-request = [
   type: TEEP-TYPE-query-request,
   options: {
     ? token => bstr .size (8..64),
-    ? supported-cipher-suites => [ + suite ],
+    ? supported-cipher-suites => [ + ciphersuite ],
     ? supported-freshness-mechanisms => [ + freshness-mechanism ],
     ? challenge => bstr .size (8..512),
     ? versions => [ + version ],
@@ -1553,7 +1553,7 @@ query-request = [
 ]
 
 ; ciphersuites
-suite = [
+ciphersuite = [
     teep-cose-sign-algs / nil,
     teep-cose-encrypt-algs / nil,
     teep-cose-mac-algs / nil
@@ -1598,7 +1598,7 @@ query-response = [
   type: TEEP-TYPE-query-response,
   options: {
     ? token => bstr .size (8..64),
-    ? selected-cipher-suite => suite,
+    ? selected-cipher-suite => ciphersuite,
     ? selected-version => version,
     ? evidence-format => text,
     ? evidence => bstr,
@@ -1648,7 +1648,7 @@ teep-error = [
   options: {
      ? token => bstr .size (8..64),
      ? err-msg => text .size (1..128),
-     ? supported-cipher-suites => [ + suite ],
+     ? supported-cipher-suites => [ + ciphersuite ],
      ? supported-freshness-mechanisms => [ + freshness-mechanism ],
      ? versions => [ + version ],
      ? suit-reports => [ + suit-report ],
