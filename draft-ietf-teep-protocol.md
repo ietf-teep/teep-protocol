@@ -1239,7 +1239,7 @@ one of the two but can choose which one.  For example, a TEEP Agent might
 choose a given ciphersuite if it has hardware support for it.
 
 ~~~~
-teep-cose-sign-algs /= cose-alg-es256,
+teep-cose-sign-algs /= cose-alg-es256
 teep-cose-sign-algs /= cose-alg-eddsa
 ~~~~
 
@@ -1254,10 +1254,10 @@ teep-cose-mac-algs /= cose-alg-hmac-256
 A TAM or TEEP Agent MAY also support one or more of the following algorithms:
 
 ~~~~
-teep-cose-sign-algs /= cose-alg-ps256,
-teep-cose-sign-algs /= cose-alg-ps384,
-teep-cose-sign-algs /= cose-alg-ps512,
-teep-cose-sign-algs /= cose-alg-rsa-oaep-256,
+teep-cose-sign-algs /= cose-alg-ps256
+teep-cose-sign-algs /= cose-alg-ps384
+teep-cose-sign-algs /= cose-alg-ps512
+teep-cose-sign-algs /= cose-alg-rsa-oaep-256
 teep-cose-sign-algs /= cose-alg-rsa-oaep-512
 ~~~~
 
@@ -1559,12 +1559,12 @@ ciphersuite = [
     teep-cose-mac-algs / nil
 ]
 
-teep-cose-sign-algs /= cose-alg-es256,
+teep-cose-sign-algs /= cose-alg-es256
 teep-cose-sign-algs /= cose-alg-eddsa
-teep-cose-sign-algs /= cose-alg-ps256,
-teep-cose-sign-algs /= cose-alg-ps384,
-teep-cose-sign-algs /= cose-alg-ps512,
-teep-cose-sign-algs /= cose-alg-rsa-oaep-256,
+teep-cose-sign-algs /= cose-alg-ps256
+teep-cose-sign-algs /= cose-alg-ps384
+teep-cose-sign-algs /= cose-alg-ps512
+teep-cose-sign-algs /= cose-alg-rsa-oaep-256
 teep-cose-sign-algs /= cose-alg-rsa-oaep-512
 
 teep-cose-encrypt-algs /= cose-alg-accm-16-64-128
