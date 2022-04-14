@@ -1080,7 +1080,7 @@ of this document.)
 * Prohibited Claims: None.
 * Additional Claims: Optional claims are those listed in {{evidence}}.
 * Refined Claim Definition: None.
-* CBOR Tags: CBOT Tags are not used.
+* CBOR Tags: CBOR Tags are not used.
 * Manifests and Software Evidence Claims: The sw-name claim for a Trusted
   Component holds the URI of the SUIT manifest for that component.
 
