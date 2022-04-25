@@ -1747,7 +1747,7 @@ This section includes some examples with the following assumptions:
       00                 # unsigned(0) within uint .size 4
     04                   # unsigned(4) uint (0..23)
     43                   # bytes(3)
-      010203             # "\x01\x02\x03"
+      010203             # 0x010203
   03                     # unsigned(3) .within uint .size 8
 ~~~~
 
