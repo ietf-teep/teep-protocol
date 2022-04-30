@@ -1551,35 +1551,30 @@ query-request = [
   data-item-requested: data-item-requested
 ]
 
-; ciphersuites
-ciphersuite = [
-    teep-cose-sign-algs / nil,
-    teep-cose-encrypt-algs / nil,
-    teep-cose-mac-algs / nil
-]
+; For ciphersuites from this line
+COSE_Sign = 98
+COSE_Sign1 = 18
+COSE_Encrypt = 96
+COSE_Encrypt0 = 16
+COSE_Mac = 97
+COSE_Mac0 = 17
 
-teep-cose-sign-algs /= cose-alg-es256
-teep-cose-sign-algs /= cose-alg-eddsa
-teep-cose-sign-algs /= cose-alg-ps256
-teep-cose-sign-algs /= cose-alg-ps384
-teep-cose-sign-algs /= cose-alg-ps512
-teep-cose-sign-algs /= cose-alg-rsa-oaep-256
-teep-cose-sign-algs /= cose-alg-rsa-oaep-512
+;RECOMMENDED to implement:
+teep-cose-algs /= cose-alg-hss-lms = -46
 
-teep-cose-encrypt-algs /= cose-alg-accm-16-64-128
-
-teep-cose-mac-algs /= cose-alg-hmac-256
-
-; algorithm identifiers defined in the IANA COSE Algorithms Registry
+;OPTIONAL to implement any from IANA cose registry. Listing only partially:
 cose-alg-es256 = -7
 cose-alg-eddsa = -8
-cose-alg-ps256 = -37
-cose-alg-ps384 = -38
-cose-alg-ps512 = -39
-cose-alg-rsa-oaep-256 = -41
-cose-alg-rsa-oaep-512 = -42
-cose-alg-accm-16-64-128 = 10
-cose-alg-hmac-256 = 5
+cose-alg-a256gcm = 3
+cose-alg-hmac-256-256 = 5
+cose-alg-hmac-384-385 = 6
+cose-alg-hmac-512-512 = 7
+
+teep-cose-sign = [ COSE_Sign / COSE_Sign1, teep-cose-algs ]
+teep-cose-encrypt = [ COSE_Encrypt / COSE_Encrypt0, teep-cose-algs ]
+teep-cose-mac = [ COSE_Mac / COSE_Mac0, teep-cose-algs ]
+
+ciphersuite = [ * ( teep-cose-sign / teep-cose-encrypt / teep-cose-mac ) ]
 
 ; freshness-mechanisms
 
