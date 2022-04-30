@@ -84,8 +84,8 @@ normative:
   I-D.ietf-rats-architecture: 
   I-D.ietf-rats-eat: 
   I-D.ietf-suit-manifest: 
-  I-D.moran-suit-trust-domains: 
-  I-D.moran-suit-report: 
+  I-D.ietf-suit-trust-domains:
+  I-D.ietf-suit-report:
   COSE.Algorithm:
     title: "COSE Algorithms"
     author:
@@ -357,6 +357,10 @@ data-item-requested
      and extensions, which allows a TAM to discover the capabilities of a TEEP
      Agent implementation.
 
+   suit-reports (8)
+   : With this value the TAM requests the TEEP Agent to return SUIT Reports
+     in the response.
+
    Further values may be added in the future via IANA registration.
 
 supported-cipher-suites
@@ -408,6 +412,7 @@ query-response = [
     ? selected-version => version,
     ? evidence-format => text,
     ? evidence => bstr,
+    ? suit-reports => [ + suit-report ],
     ? tc-list => [ + tc-info ],
     ? requested-tc-list => [ + requested-tc-info ],
     ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
@@ -464,6 +469,18 @@ evidence
   the attestation evidence contained in this parameter MUST be
   an Entity Attestation Token following the encoding
   defined in {{I-D.ietf-rats-eat}}.  See {{evidence}} for further discussion.
+
+suit-reports
+: If present, the suit-reports parameter contains a set of "boot" (including
+  starting an executable in an OS context) time SUIT Reports
+  as defined in Section 4 of {{I-D.moran-suit-report}}.
+  If a token parameter was present in the QueryRequest
+  message the QueryResponse message is in response to,
+  the suit-report-nonce field MUST be present in the SUIT Report with a
+  value matching the token parameter in the QueryRequest
+  message.  SUIT Reports can be useful in QueryResponse messages to
+  pass information to the TAM without depending on a Verifier including
+  the relevant information in Attestation Results.
 
 tc-list
 : The tc-list parameter enumerates the Trusted Components installed on the device
@@ -1135,10 +1152,22 @@ from the device that has a valid signature and ignore any subsequent messages th
 value.  The token value MUST NOT be used for other purposes, such as a TAM to
 identify the devices and/or a device to identify TAMs or Trusted Components.
 
-If a QueryResponse message is received that contains evidence, the evidence
+### Handling a QueryResponse Message
+
+If a QueryResponse message is received, the TAM verifies the presence of any parameters
+required based on the data-items-requested in the QueryRequest, and also validates that
+the nonce in any SUIT Report matches the token send in the QueryRequest message if a token
+was present.  If these requirements are not met, the TAM drops the message.  It may also do
+additional implementation specific actions such as logging the results.  If the requirements
+are met, processing continues as follows.
+
+If a QueryResponse message is received that contains that contains evidence, the evidence
 is passed to an attestation Verifier (see {{I-D.ietf-rats-architecture}})
-to determine whether the Agent is in a trustworthy state.
-Based on the results of attestation, and the lists of installed, requested,
+to determine whether the Agent is in a trustworthy state.  Once the TAM receives Attestation Results
+from the Verifier, processing continues as follows.
+
+Based on the results of attestation (if any), any SUIT Reports,
+and the lists of installed, requested,
 and unneeded Trusted Components reported in the QueryResponse, the TAM
 determines, in any implementation specific manner, which Trusted Components
 need to be installed, updated, or deleted, if any.
@@ -1151,6 +1180,8 @@ indicated in the manifest, which may take some time, and the resulting Success
 or Error message is generated only after completing the Update Procedure.
 Hence, depending on the freshness mechanism in use, the TAM may need to
 store data (e.g., a nonce) for some time.
+
+### Handling a Success or Error Message
 
 If a Success or Error message is received containing one or more SUIT Reports, the TAM also validates that
 the nonce in any SUIT Report matches the token sent in the Update message,
