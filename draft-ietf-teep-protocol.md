@@ -473,7 +473,7 @@ evidence
 suit-reports
 : If present, the suit-reports parameter contains a set of "boot" (including
   starting an executable in an OS context) time SUIT Reports
-  as defined in Section 4 of {{I-D.moran-suit-report}}.
+  as defined in Section 4 of {{I-D.ietf-suit-report}}.
   If a token parameter was present in the QueryRequest
   message the QueryResponse message is in response to,
   the suit-report-nonce field MUST be present in the SUIT Report with a
@@ -830,7 +830,7 @@ This subsection shows an example deleting the Trusted Component Binary in the TE
 
 A Trusted Component Developer can also generate SUIT Manifest which unlinks the installed Trusted Component. The TAM deliver it when the TAM want to uninstall the component.
 
-The directive-unlink (see {{I-D.moran-suit-trust-domains}} Section-6.5.4) is located in the manifest to delete the Trusted Component. Note that in case other Trusted Components depend on it, i.e. the reference count is not zero, the TEEP Device SHOULD NOT delete it immediately.
+The directive-unlink (see {{I-D.ietf-suit-trust-domains}} Section-6.5.4) is located in the manifest to delete the Trusted Component. Note that in case other Trusted Components depend on it, i.e. the reference count is not zero, the TEEP Device SHOULD NOT delete it immediately.
 
 ~~~~
     +------------+           +-------------+
@@ -905,7 +905,7 @@ msg
 
 suit-reports
 : If present, the suit-reports parameter contains a set of SUIT Reports
-  as defined in Section 4 of {{I-D.moran-suit-report}}.
+  as defined in Section 4 of {{I-D.ietf-suit-report}}.
   If a token parameter was present in the Update
   message the Success message is in response to,
   the suit-report-nonce field MUST be present in the SUIT Report with a
@@ -970,7 +970,7 @@ versions
 
 suit-reports
 : If present, the suit-reports parameter contains a set of SUIT Reports
-  as defined in Section 4 of {{I-D.moran-suit-report}}.  If
+  as defined in Section 4 of {{I-D.ietf-suit-report}}.  If
   a token parameter was present in the Update message the Error message is in response to,
   the suit-report-nonce field MUST be present in the SUIT Report with a
   value matching the token parameter in the Update
