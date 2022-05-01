@@ -454,7 +454,7 @@ selected-cipher-suite
 
 selected-version
 : The selected-version parameter indicates the TEEP protocol version selected by the
-  TEEP Agent. The absense of this parameter indicates the same as if it
+  TEEP Agent. The absence of this parameter indicates the same as if it
   was present with a value of 0.
 
 evidence-format
