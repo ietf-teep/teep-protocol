@@ -15,9 +15,10 @@ xml2rfc by Python
 
 Installing required packages on Fedora
 ```
-dnf update
-dnf install python3-pip git make gem
+dnf makecache
+dnf -y install python3-pip git make gem
 gem install kramdown-rfc2629
+pip3 install xml2rfc
 ```
 
 Installing required packages on Ubuntu
@@ -25,12 +26,15 @@ Installing required packages on Ubuntu
 apt-get update
 apt-get -y install ruby-kramdown-rfc2629 python3-pip git
 pip3 install xml2rfc
-git clone https://github.com/ietf-teep/teep-protocol.git
-cd teep-protocol/
 ```
 
 ### Generating draft from a markdown file
 
 ```
+git clone https://github.com/ietf-teep/teep-protocol.git
+cd teep-protocol/
 make
 ```
+
+It will create `draft-ietf-teep-protocol-latest.txt` and
+`draft-ietf-teep-protocol-latest.xml`.
