@@ -1532,8 +1532,6 @@ specified in {{I-D.ietf-suit-manifest}}.
 ~~~~
 teep-message = $teep-message-type .within teep-message-framework
 
-SUIT_Envelope = any
-
 teep-message-framework = [
   type: uint (0..23) / $teep-type-extension,
   options: { * teep-option },
