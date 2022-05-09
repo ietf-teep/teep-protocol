@@ -1552,12 +1552,12 @@ query-request = [
 ]
 
 ; For ciphersuites from this line
-COSE_Sign = 98
-COSE_Sign1 = 18
-COSE_Encrypt = 96
-COSE_Encrypt0 = 16
-COSE_Mac = 97
-COSE_Mac0 = 17
+COSE_Sign_Tagged     = 98
+COSE_Sign1_Tagged    = 18
+COSE_Encrypt_Tagged  = 96
+COSE_Encrypt0_Tagged = 16
+COSE_Mac_Tagged      = 97
+COSE_Mac0_Tagged     = 17
 
 ;RECOMMENDED to implement:
 teep-cose-algs /= cose-alg-hss-lms = -46
@@ -1570,9 +1570,9 @@ cose-alg-hmac-256-256 = 5
 cose-alg-hmac-384-385 = 6
 cose-alg-hmac-512-512 = 7
 
-teep-cose-sign = [ COSE_Sign / COSE_Sign1, teep-cose-algs ]
-teep-cose-encrypt = [ COSE_Encrypt / COSE_Encrypt0, teep-cose-algs ]
-teep-cose-mac = [ COSE_Mac / COSE_Mac0, teep-cose-algs ]
+teep-cose-sign = [ COSE_Sign_Tagged / COSE_Sign1_Tagged, teep-cose-algs ]
+teep-cose-encrypt = [ COSE_Encrypt_Tagged / COSE_Encrypt0_Tagged, teep-cose-algs ]
+teep-cose-mac = [ COSE_Mac_Tagged / COSE_Mac0_Tagged, teep-cose-algs ]
 
 ciphersuite = [ * ( teep-cose-sign / teep-cose-encrypt / teep-cose-mac ) ]
 
