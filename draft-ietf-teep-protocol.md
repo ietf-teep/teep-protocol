@@ -302,7 +302,7 @@ query-request = [
     ? token => bstr .size (8..64),
     ? supported-cipher-suites => [ + suite ],
     ? supported-freshness-mechanisms => [ + freshness-mechanism ],
-    ? challenge => bstr .size (8..512),
+    ? challenge => bstr .size (8..64),
     ? versions => [ + version ],
     * $$query-request-extensions
     * $$teep-option-extensions
@@ -1472,7 +1472,7 @@ query-request = [
     ? token => bstr .size (8..64),
     ? supported-cipher-suites => [ + suite ],
     ? supported-freshness-mechanisms => [ + freshness-mechanism ],
-    ? challenge => bstr .size (8..512),
+    ? challenge => bstr .size (8..64),
     ? versions => [ + version ],
     * $$query-request-extensions
     * $$teep-option-extensions
