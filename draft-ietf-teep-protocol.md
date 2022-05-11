@@ -17,7 +17,7 @@ abbrev: TEEP Protocol
 area: Security
 wg: TEEP
 kw: Trusted Execution Environment
-date: 2021
+date: 2022
 author:
 
  -
@@ -84,11 +84,15 @@ normative:
   I-D.ietf-rats-architecture: 
   I-D.ietf-rats-eat: 
   I-D.ietf-suit-manifest: 
-  I-D.moran-suit-trust-domains: 
-  I-D.moran-suit-report: 
+  I-D.ietf-suit-trust-domains:
+  I-D.ietf-suit-report:
+  COSE.Algorithm:
+    title: "COSE Algorithms"
+    author:
+      org: IANA
+    target: https://www.iana.org/assignments/cose/cose.xhtml#algorithms
 informative:
   I-D.ietf-teep-architecture: 
-  I-D.birkholz-rats-suit-claims:
   RFC8610: 
   RFC8126: 
   RFC8915: 
@@ -281,7 +285,7 @@ the listed steps fail, then the TEEP message MUST be rejected.
 A QueryRequest message is used by the TAM to learn 
 information from the TEEP Agent, such as
 the features supported by the TEEP Agent, including 
-ciphersuites, and protocol versions. Additionally, 
+ciphersuites and protocol versions. Additionally, 
 the TAM can selectively request data items from the 
 TEEP Agent via the request parameter. Currently, 
 the following features are supported: 
@@ -300,7 +304,7 @@ query-request = [
   type: TEEP-TYPE-query-request,
   options: {
     ? token => bstr .size (8..64),
-    ? supported-cipher-suites => [ + suite ],
+    ? supported-cipher-suites => [ + ciphersuite ],
     ? supported-freshness-mechanisms => [ + freshness-mechanism ],
     ? challenge => bstr .size (8..64),
     ? versions => [ + version ],
@@ -353,11 +357,15 @@ data-item-requested
      and extensions, which allows a TAM to discover the capabilities of a TEEP
      Agent implementation.
 
+   suit-reports (8)
+   : With this value the TAM requests the TEEP Agent to return SUIT Reports
+     in the response.
+
    Further values may be added in the future via IANA registration.
 
 supported-cipher-suites
-: The supported-cipher-suites parameter lists the ciphersuite(s) supported by the TAM. If this parameter is not present, it is to be treated the same as if
-  it contained both ciphersuites defined in this document. Details
+: The supported-cipher-suites parameter lists the ciphersuites supported by the TAM. If this parameter is not present, it is to be treated the same as if
+  it contained all ciphersuites defined in this document that are listed as "MUST". Details
   about the ciphersuite encoding can be found in {{ciphersuite}}.
 
 supported-freshness-mechanisms
@@ -384,7 +392,7 @@ versions
   If this field is not present, it is to be treated the same as if
   it contained only version 0.
 
-## QueryResponse Message
+## QueryResponse Message {#query-response}
 
 The QueryResponse message is the successful response by the TEEP Agent after 
 receiving a QueryRequest message.  As discussed in {{agent}}, it can also be sent
@@ -400,10 +408,11 @@ query-response = [
   type: TEEP-TYPE-query-response,
   options: {
     ? token => bstr .size (8..64),
-    ? selected-cipher-suite => suite,
+    ? selected-cipher-suite => ciphersuite,
     ? selected-version => version,
     ? evidence-format => text,
     ? evidence => bstr,
+    ? suit-reports => [ + suit-report ],
     ? tc-list => [ + tc-info ],
     ? requested-tc-list => [ + requested-tc-info ],
     ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
@@ -445,7 +454,7 @@ selected-cipher-suite
 
 selected-version
 : The selected-version parameter indicates the TEEP protocol version selected by the
-  TEEP Agent. The absense of this parameter indicates the same as if it
+  TEEP Agent. The absence of this parameter indicates the same as if it
   was present with a value of 0.
 
 evidence-format
@@ -460,6 +469,18 @@ evidence
   the attestation evidence contained in this parameter MUST be
   an Entity Attestation Token following the encoding
   defined in {{I-D.ietf-rats-eat}}.  See {{evidence}} for further discussion.
+
+suit-reports
+: If present, the suit-reports parameter contains a set of "boot" (including
+  starting an executable in an OS context) time SUIT Reports
+  as defined in Section 4 of {{I-D.ietf-suit-report}}.
+  If a token parameter was present in the QueryRequest
+  message the QueryResponse message is in response to,
+  the suit-report-nonce field MUST be present in the SUIT Report with a
+  value matching the token parameter in the QueryRequest
+  message.  SUIT Reports can be useful in QueryResponse messages to
+  pass information to the TAM without depending on a Verifier including
+  the relevant information in Attestation Results.
 
 tc-list
 : The tc-list parameter enumerates the Trusted Components installed on the device
@@ -520,21 +541,29 @@ have-binary
   that authorizes installing it.  If have-binary is true, the
   tc-manifest-sequence-number field MUST be present.
 
-### Evidence {#evidence}
+### Evidence and Attestation Results {#evidence}
 
-Section 7.1 of {{I-D.ietf-teep-architecture}} lists information that may be
-required in the evidence depend on the circumstance.  When an Entity
+Section 7 of {{I-D.ietf-teep-architecture}} lists information that may appear
+in evidence depending on the circumstance.  However, the evidence is
+opaque to the TEEP protocol and there are no formal requirements on the contents
+of evidence.
+
+TAMs however consume Attestation Results and do need enough information therein to
+make decisions on how to remediate a TEE that is out of compliance, or update a TEE
+that is requesting an authorized change.  To do so, the information in
+Section 7 of {{I-D.ietf-teep-architecture}} is often required depending on the policy.
+When an Entity
 Attestation Token is used, the following claims can be used to meet those
 requirements:
 
 | Requirement  | Claim | Reference |
-| Device unique identifier | device-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.3 |
-| Vendor of the device | vendor-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.1 |
-| Class of the device | class-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.2 |
-| TEE hardware type | chip-version | {{I-D.ietf-rats-eat}} section 3.7 |
-| TEE hardware version | chip-version | {{I-D.ietf-rats-eat}} section 3.7 |
-| TEE firmware type | component-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.4 |
-| TEE firmware version | version | {{I-D.birkholz-rats-suit-claims}} section 3.1.8 |
+| Device unique identifier | ueid | {{I-D.ietf-rats-eat}} section 3.4 |
+| Vendor of the device | oemid | {{I-D.ietf-rats-eat}} section 3.6 |
+| Class of the device | hwmodel | {{I-D.ietf-rats-eat}} section 3.7 |
+| TEE hardware type | chip-version | {{I-D.ietf-rats-eat}} section 3.8 |
+| TEE hardware version | chip-version | {{I-D.ietf-rats-eat}} section 3.8 |
+| TEE firmware type | sw-name | {{I-D.ietf-rats-eat}} section 3.9 |
+| TEE firmware version | sw-version | {{I-D.ietf-rats-eat}} section 3.10 |
 | Freshness proof | nonce | {{I-D.ietf-rats-eat}} section 3.3 |
 
 ## Update Message {#update-msg-def}
@@ -801,7 +830,7 @@ This subsection shows an example deleting the Trusted Component Binary in the TE
 
 A Trusted Component Developer can also generate SUIT Manifest which unlinks the installed Trusted Component. The TAM deliver it when the TAM want to uninstall the component.
 
-The directive-unlink (see {{I-D.moran-suit-trust-domains}} Section-6.5.4) is located in the manifest to delete the Trusted Component. Note that in case other Trusted Components depend on it, i.e. the reference count is not zero, the TEEP Device SHOULD NOT delete it immediately.
+The directive-unlink (see {{I-D.ietf-suit-trust-domains}} Section-6.5.4) is located in the manifest to delete the Trusted Component. Note that in case other Trusted Components depend on it, i.e. the reference count is not zero, the TEEP Device SHOULD NOT delete it immediately.
 
 ~~~~
     +------------+           +-------------+
@@ -876,7 +905,7 @@ msg
 
 suit-reports
 : If present, the suit-reports parameter contains a set of SUIT Reports
-  as defined in Section 4 of {{I-D.moran-suit-report}}.
+  as defined in Section 4 of {{I-D.ietf-suit-report}}.
   If a token parameter was present in the Update
   message the Success message is in response to,
   the suit-report-nonce field MUST be present in the SUIT Report with a
@@ -898,7 +927,7 @@ teep-error = [
   options: {
      ? token => bstr .size (8..64),
      ? err-msg => text .size (1..128),
-     ? supported-cipher-suites => [ + suite ],
+     ? supported-cipher-suites => [ + ciphersuite ],
      ? supported-freshness-mechanisms => [ + freshness-mechanism ],
      ? versions => [ + version ],
      ? suit-reports => [ + suit-report ],
@@ -941,7 +970,7 @@ versions
 
 suit-reports
 : If present, the suit-reports parameter contains a set of SUIT Reports
-  as defined in Section 4 of {{I-D.moran-suit-report}}.  If
+  as defined in Section 4 of {{I-D.ietf-suit-report}}.  If
   a token parameter was present in the Update message the Error message is in response to,
   the suit-report-nonce field MUST be present in the SUIT Report with a
   value matching the token parameter in the Update
@@ -1026,6 +1055,51 @@ receipt of the error message, rather than just logging the event.
 Hence, each error code is responsible for saying what the
 behavioral difference is expected to be.
 
+# EAT Profile {#eat}
+
+The TEEP protocol operates between a TEEP Agent and a TAM.  While
+the TEEP protocol does not require use of EAT, use of EAT is encouraged and
+{{query-response}} explicitly defines a way to carry an Entity Attestation Token
+evidence in a QueryResponse.  
+
+As discussed in {{evidence}}, the content of attestation evidence is opaque to the TEEP
+architecture, but the content of Attestation Results is not, where Attestation
+Results flow between a Verifier and a TAM (as the Relying Party).
+Although Attestation Results required by a TAM are separable from the TEEP protocol
+per se, this section is included as part of the requirements for building
+a compliant TAM that uses EATs for Attestation Results.
+
+Section 7 of {{I-D.ietf-rats-eat}} defines the requirement for
+Entity Attestation Token profiles.  This section defines an EAT profile
+for use with TEEP.
+
+* profile-label: The profile-label for this specification is the URI
+<https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-08>.
+(RFC-editor: upon RFC publication, replace string with
+"https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
+of this document.)
+
+* Use of JSON, CBOR, or both: CBOR only.
+* CBOR Map and Array Encoding: Only definite length arrays and maps.
+* CBOR String Encoding: Only definite-length strings are allowed.
+* CBOR Preferred Serialization: Encoders must use preferred serialization,
+  and decoders need not accept non-preferred serialization.
+* COSE/JOSE Protection: See {{ciphersuite}}.
+* Detached EAT Bundle Support: DEB use is permitted.
+* Verification Key Identification: COSE Key ID (kid) is used, where
+  the key ID is the hash of a public key (where the public key may be
+  used as a raw public key, or in a certificate).
+* Endorsement Identification: Optional, but semantics are the same
+  as in Verification Key Identification.
+* Freshness: See {{freshness-mechanisms}}.
+* Required Claims: None.
+* Prohibited Claims: None.
+* Additional Claims: Optional claims are those listed in {{evidence}}.
+* Refined Claim Definition: None.
+* CBOR Tags: CBOR Tags are not used.
+* Manifests and Software Evidence Claims: The sw-name claim for a Trusted
+  Component holds the URI of the SUIT manifest for that component.
+
 # Mapping of TEEP Message Parameters to CBOR Labels {#tags}
 
 In COSE, arrays and maps use strings, negative integers, and unsigned
@@ -1078,10 +1152,22 @@ from the device that has a valid signature and ignore any subsequent messages th
 value.  The token value MUST NOT be used for other purposes, such as a TAM to
 identify the devices and/or a device to identify TAMs or Trusted Components.
 
-If a QueryResponse message is received that contains evidence, the evidence
+### Handling a QueryResponse Message
+
+If a QueryResponse message is received, the TAM verifies the presence of any parameters
+required based on the data-items-requested in the QueryRequest, and also validates that
+the nonce in any SUIT Report matches the token send in the QueryRequest message if a token
+was present.  If these requirements are not met, the TAM drops the message.  It may also do
+additional implementation specific actions such as logging the results.  If the requirements
+are met, processing continues as follows.
+
+If a QueryResponse message is received that contains that contains evidence, the evidence
 is passed to an attestation Verifier (see {{I-D.ietf-rats-architecture}})
-to determine whether the Agent is in a trustworthy state.
-Based on the results of attestation, and the lists of installed, requested,
+to determine whether the Agent is in a trustworthy state.  Once the TAM receives Attestation Results
+from the Verifier, processing continues as follows.
+
+Based on the results of attestation (if any), any SUIT Reports,
+and the lists of installed, requested,
 and unneeded Trusted Components reported in the QueryResponse, the TAM
 determines, in any implementation specific manner, which Trusted Components
 need to be installed, updated, or deleted, if any.
@@ -1094,6 +1180,8 @@ indicated in the manifest, which may take some time, and the resulting Success
 or Error message is generated only after completing the Update Procedure.
 Hence, depending on the freshness mechanism in use, the TAM may need to
 store data (e.g., a nonce) for some time.
+
+### Handling a Success or Error Message
 
 If a Success or Error message is received containing one or more SUIT Reports, the TAM also validates that
 the nonce in any SUIT Report matches the token sent in the Update message,
@@ -1156,29 +1244,62 @@ or Error message is generated only after completing the Update Procedure.
 
 # Ciphersuites {#ciphersuite}
 
-A ciphersuite consists of an AEAD algorithm, a MAC algorithm, and a signature
-algorithm.
-Each ciphersuite is identified with an integer value, which corresponds to
-an IANA registered
-ciphersuite (see {{ciphersuite-registry}}. This document specifies two ciphersuites.
+The TEEP protocol uses COSE for protection of TEEP messages.
+After a QueryResponse is received, the selected cryptographic algorithm is used in subsequent TEEP messages (Install, Success, and Error).
+To negotiate cryptographic mechanisms and algorithms, the TEEP protocol defines the following ciphersuite structure.
 
-| Value | Ciphersuite                                    |
-|     1 | AES-CCM-16-64-128, HMAC 256/256, X25519, EdDSA |
-|     2 | AES-CCM-16-64-128, HMAC 256/256, P-256, ES256  |
+~~~~
+ciphersuite = [
+    teep-cose-sign-algs / nil,
+    teep-cose-encrypt-algs / nil,
+    teep-cose-mac-algs / nil
+]
+~~~~
 
-A TAM MUST support both ciphersuites.  A TEEP Agent MUST support at least
+The ciphersuite structure is used to present the combination of mechanisms and cryptographic algorithms.
+Each ciphersuite value corresponds with a COSE-type defined in Section 2 of {{RFC8152}}.
+
+~~~~
+supported-cipher-suites = [ + ciphersuite ]
+~~~~
+
+Cryptographic algorithm values are defined in the COSE Algorithms registry {{COSE.Algorithm}}.
+A TAM MUST support both of the following ciphersuites.  A TEEP Agent MUST support at least
 one of the two but can choose which one.  For example, a TEEP Agent might
-choose ciphersuite 2 if it has hardware support for it.
+choose a given ciphersuite if it has hardware support for it.
+
+~~~~
+teep-cose-sign-algs /= cose-alg-es256
+teep-cose-sign-algs /= cose-alg-eddsa
+~~~~
+
+A TAM or TEEP Agent MUST also support the following algorithms:
+
+~~~~
+teep-cose-encrypt-algs /= cose-alg-accm-16-64-128
+
+teep-cose-mac-algs /= cose-alg-hmac-256
+~~~~
+
+A TAM or TEEP Agent MAY also support one or more of the following algorithms:
+
+~~~~
+teep-cose-sign-algs /= cose-alg-ps256
+teep-cose-sign-algs /= cose-alg-ps384
+teep-cose-sign-algs /= cose-alg-ps512
+teep-cose-sign-algs /= cose-alg-rsa-oaep-256
+teep-cose-sign-algs /= cose-alg-rsa-oaep-512
+~~~~
 
 Any ciphersuites without confidentiality protection can only be added if the
 associated specification includes a discussion of security considerations and
 applicability, since manifests may carry sensitive information. For example,
-Section 6 of {{I-D.ietf-teep-architecture}} permits implementations that terminate
-transport security inside the TEE and if the transport security provides
-confidentiality then additional encryption might not be needed in the manifest
-for some use cases. For most use cases, however, manifest confidentiality will
-be needed to protect sensitive fields from the TAM as discussed in Section 9.8
-of {{I-D.ietf-teep-architecture}}.
+Section 6 of {{I-D.ietf-teep-architecture}} permits implementations that
+terminate transport security inside the TEE and if the transport security
+provides confidentiality then additional encryption might not be needed in
+the manifest for some use cases. For most use cases, however, manifest
+confidentiality will be needed to protect sensitive fields from the TAM as
+discussed in Section 9.8 of {{I-D.ietf-teep-architecture}}.
 
 # Freshness Mechanisms {#freshness-mechanisms}
 
@@ -1362,32 +1483,13 @@ Author:
 Change controller:
 : IETF
 
-
-## Ciphersuite Registry {#ciphersuite-registry}
-
-IANA is also requested to create a new registry for ciphersuites.
-
-Name of registry: TEEP Ciphersuites
-
-Policy: Specification Required
-
-Additional requirements: The specification must document relevant security considerations.
-
-Initial values:
-
-| Value | Ciphersuite                                    | Specification
-|     1 | AES-CCM-16-64-128, HMAC 256/256, X25519, EdDSA | RFC TBD {{ciphersuite}}
-|     2 | AES-CCM-16-64-128, HMAC 256/256, P-256, ES256  | RFC TBD {{ciphersuite}}
-
-[RFC Editor: please replace TBD above with the number assigned to this document]
-
 ## Freshness Mechanism Registry {#freshness-mechanism-registry}
 
 IANA is also requested to create a new registry for freshness mechanisms.
 
 Name of registry: TEEP Freshness Mechanisms
 
-Policy: Specification Required
+Policy: Specification Required {{RFC8126}}
 
 Additional requirements: The specification must document relevant security considerations.
 
@@ -1398,7 +1500,7 @@ Initial values:
 |     2 | Timestamp                                      | RFC TBD {{freshness-mechanisms}}
 |     3 | Epoch ID                                       | RFC TBD {{freshness-mechanisms}}
 
-[RFC Editor: please replace TBD above with the number assigned to this document]
+(RFC Editor: please replace TBD above with the number assigned to this document.)
 
 --- back
 
@@ -1427,176 +1529,8 @@ Valid TEEP messages MUST adhere to the following CDDL data definitions,
 except that `SUIT_Envelope` and `SUIT_Component_Identifier` are
 specified in {{I-D.ietf-suit-manifest}}.
 
-~~~~
-teep-message = $teep-message-type .within teep-message-framework
-
-SUIT_Envelope = any
-
-teep-message-framework = [
-  type: uint (0..23) / $teep-type-extension,
-  options: { * teep-option },
-  * uint; further integers, e.g., for data-item-requested
-]
-
-teep-option = (uint => any)
-
-; messages defined below:
-$teep-message-type /= query-request
-$teep-message-type /= query-response
-$teep-message-type /= update
-$teep-message-type /= teep-success
-$teep-message-type /= teep-error
-
-; message type numbers, uint (0..23)
-TEEP-TYPE-query-request = 1
-TEEP-TYPE-query-response = 2
-TEEP-TYPE-update = 3
-TEEP-TYPE-teep-success = 5
-TEEP-TYPE-teep-error = 6
-
-version = .within uint .size 4
-ext-info = .within uint .size 4
-
-; data items as bitmaps
-data-item-requested = $data-item-requested .within uint .size 8
-attestation = 1
-$data-item-requested /= attestation
-trusted-components = 2
-$data-item-requested /= trusted-components
-extensions = 4
-$data-item-requested /= extensions
-
-query-request = [
-  type: TEEP-TYPE-query-request,
-  options: {
-    ? token => bstr .size (8..64),
-    ? supported-cipher-suites => [ + suite ],
-    ? supported-freshness-mechanisms => [ + freshness-mechanism ],
-    ? challenge => bstr .size (8..64),
-    ? versions => [ + version ],
-    * $$query-request-extensions
-    * $$teep-option-extensions
-  },
-  data-item-requested: data-item-requested
-]
-
-; ciphersuites
-suite = $TEEP-suite .within uint .size 4
-
-TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA = 1
-TEEP-AES-CCM-16-64-128-HMAC256--256-P-256-ES256  = 2
-
-$TEEP-suite /= TEEP-AES-CCM-16-64-128-HMAC256--256-X25519-EdDSA
-$TEEP-suite /= TEEP-AES-CCM-16-64-128-HMAC256--256-P-256-ES256
-
-; freshness-mechanisms
-
-freshness-mechanism = $TEEP-freshness-mechanism .within uint .size 4
-
-FRESHNESS_NONCE = 0
-FRESHNESS_TIMESTAMP = 1
-FRESHNESS_EPOCH_ID = 2
-
-$TEEP-freshness-mechanism /= FRESHNESS_NONCE
-$TEEP-freshness-mechanism /= FRESHNESS_TIMESTAMP
-$TEEP-freshness-mechanism /= FRESHNESS_EPOCH_ID
-
-query-response = [
-  type: TEEP-TYPE-query-response,
-  options: {
-    ? token => bstr .size (8..64),
-    ? selected-cipher-suite => suite,
-    ? selected-version => version,
-    ? evidence-format => text,
-    ? evidence => bstr,
-    ? tc-list => [ + tc-info ],
-    ? requested-tc-list => [ + requested-tc-info ],
-    ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
-    ? ext-list => [ + ext-info ],
-    * $$query-response-extensions,
-    * $$teep-option-extensions
-  }
-]
-
-tc-info = {
-  component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => .within uint .size 8
-}
-
-requested-tc-info = {
-  component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => .within uint .size 8
-  ? have-binary => bool
-}
-
-update = [
-  type: TEEP-TYPE-update,
-  options: {
-    ? token => bstr .size (8..64),
-    ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
-    * $$update-extensions,
-    * $$teep-option-extensions
-  }
-]
-
-teep-success = [
-  type: TEEP-TYPE-teep-success,
-  options: {
-    ? token => bstr .size (8..64),
-    ? msg => text .size (1..128),
-    ? suit-reports => [ + suit-report ],
-    * $$teep-success-extensions,
-    * $$teep-option-extensions
-  }
-]
-
-teep-error = [
-  type: TEEP-TYPE-teep-error,
-  options: {
-     ? token => bstr .size (8..64),
-     ? err-msg => text .size (1..128),
-     ? supported-cipher-suites => [ + suite ],
-     ? supported-freshness-mechanisms => [ + freshness-mechanism ],
-     ? versions => [ + version ],
-     ? suit-reports => [ + suit-report ],
-     * $$teep-error-extensions,
-     * $$teep-option-extensions
-  },
-  err-code: uint (0..23)
-]
-
-; The err-code parameter, uint (0..23)
-ERR_PERMANENT_ERROR = 1
-ERR_UNSUPPORTED_EXTENSION = 2
-ERR_UNSUPPORTED_FRESHNESS_MECHANISMS = 3
-ERR_UNSUPPORTED_MSG_VERSION = 4
-ERR_UNSUPPORTED_CIPHER_SUITES = 5
-ERR_BAD_CERTIFICATE = 6
-ERR_CERTIFICATE_EXPIRED = 9
-ERR_TEMPORARY_ERROR = 10
-ERR_MANIFEST_PROCESSING_FAILED = 17
-
-; labels of mapkey for teep message parameters, uint (0..23)
-supported-cipher-suites = 1
-challenge = 2
-versions = 3
-selected-cipher-suite = 5
-selected-version = 6
-evidence = 7
-tc-list = 8
-ext-list = 9
-manifest-list = 10
-msg = 11
-err-msg = 12
-evidence-format = 13
-requested-tc-list = 14
-unneeded-tc-list = 15
-component-id = 16
-tc-manifest-sequence-number = 17
-have-binary = 18
-suit-reports = 19
-token = 20
-supported-freshness-mechanisms = 21
+~~~~ CDDL
+{::include draft-ietf-teep-protocol.cddl}
 ~~~~
 
 # D. Examples of Diagnostic Notation and Binary Representation
@@ -1655,7 +1589,7 @@ This section includes some examples with the following assumptions:
       00                 # unsigned(0) within uint .size 4
     04                   # unsigned(4) uint (0..23)
     43                   # bytes(3)
-      010203             # "\x01\x02\x03"
+      010203             # 0x010203
   03                     # unsigned(3) .within uint .size 8
 ~~~~
 
@@ -1886,22 +1820,25 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
 ~~~~
 
 ## Example 1: SUIT Manifest pointing to URI of the Trusted Component Binary {#suit-uri}
+{: numbered='no'}
+
 ### CBOR Diagnostic Notation of SUIT Manifest
+{: numbered='no'}
 
 ~~~~
-/ SUIT_Envelope_Tagged / 107 ( {
+/ SUIT_Envelope_Tagged / 107( {
   / suit-authentication-wrapper / 2: << [
     << [
-      / suit-digest-algorithm-id: / -16 / cose-alg-sha256 /,
-      / suit-digest-bytes: / h'8ADC995573631639C3C6D5FC4026160C8A32C5AADFBEEC9FA49E026FDD74CAB3'
+      / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
+      / suit-digest-bytes: / h'DB601ADE73092B58532CA03FBB663DE49532435336F1558B49BB622726A2FEDD'
     ] >>,
-    << / COSE_Sign1_Tagged / 18 ( [
+    << / COSE_Sign1_Tagged / 18( [
       / protected: / << {
         / algorithm-id / 1: -7 / ES256 /
       } >>,
       / unprotected: / {},
       / payload: / null,
-      / signature: / h'6AC8F0FA591D11E92C28D68689384B6317C665AC3636B2A16A9A8244E750EA55C41492FAE1DF7008584CFB19CF0AD9D56B9562A044F9254DADC698D718FC4003'
+      / signature: / h'5B2D535A2B6D5E3C585C1074F414DA9E10BD285C99A33916DADE3ED38812504817AC48B62B8E984EC622785BD1C411888BE531B1B594507816B201F6F28579A4'
     ] ) >>
   ] >>,
   / suit-manifest / 3: << {
@@ -1917,11 +1854,11 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
         ]
       ],
       / suit-common-sequence / 4: << [
-        / suit-directive-set-parameters / 19, {
+        / suit-directive-override-parameters / 20, {
           / suit-parameter-vendor-identifier / 1: h'C0DDD5F15243566087DB4F5B0AA26C2F',
           / suit-parameter-class-identifier / 2: h'DB42F7093D8C55BAA8C5265FC5820F4E',
           / suit-parameter-image-digest / 3: << [
-            / suit-digest-algorithm-id: / -16 / cose-alg-sha256 /,
+            / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
             / suit-digest-bytes: / h'8CF71AC86AF31BE184EC7A05A411A8C3A14FD9B77A30D046397481469468ECE8'
           ] >>,
           / suit-parameter-image-size / 14: 20
@@ -1931,29 +1868,19 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
       ] >>
     } >>,
     / suit-install / 9: << [
-      / suit-directive-set-parameters / 19, {
+      / suit-directive-override-parameters / 20, {
         / suit-parameter-uri / 21: "https://example.org/8d82573a-926d-4754-9353-32dc29997f74.ta"
       },
       / suit-directive-fetch / 21, 15,
       / suit-condition-image-match / 3, 15
-    ] >>,
-    / suit-text / 13: << {
-      [
-        h'544545502D446576696365',           / "TEEP-Device" /
-        h'5365637572654653',                 / "SecureFS" /
-        h'8D82573A926D4754935332DC29997F74', / tc-uuid /
-        h'7461'                              / "ta" /
-      ]: {
-        / suit-text-model-name / 2: "Reference TEEP-Device",
-        / suit-text-vendor-domain / 3: "example.org"
-      }
-    } >>
+    ] >>
   } >>
 } )
 ~~~~
 
 
 ### CBOR Binary Representation
+{: numbered='no'}
 
 ~~~~
 D8 6B                                               # tag(107) / SUIT_Envelope_Tagged /
@@ -1963,9 +1890,9 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
          82                                         # array(2)
             58 24                                   # bytes(36)
                82                                   # array(2)
-                  2F                                # negative(15) / -16 = cose-alg-sha256 /
+                  2F                                # negative(15) / -16 = suit-cose-alg-sha256 /
                   58 20                             # bytes(32)
-                     8ADC995573631639C3C6D5FC4026160C8A32C5AADFBEEC9FA49E026FDD74CAB3
+                     DB601ADE73092B58532CA03FBB663DE49532435336F1558B49BB622726A2FEDD
             58 4A                                   # bytes(74)
                D2                                   # tag(18) / COSE_Sign1_Tagged /
                   84                                # array(4)
@@ -1976,10 +1903,10 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                      A0                             # map(0)
                      F6                             # primitive(22) / null /
                      58 40                          # bytes(64)
-                        6AC8F0FA591D11E92C28D68689384B6317C665AC3636B2A16A9A8244E750EA55C41492FAE1DF7008584CFB19CF0AD9D56B9562A044F9254DADC698D718FC4003
+                        5B2D535A2B6D5E3C585C1074F414DA9E10BD285C99A33916DADE3ED38812504817AC48B62B8E984EC622785BD1C411888BE531B1B594507816B201F6F28579A4
       03                                            # unsigned(3) / suit-manifest: /
-      59 011D                                       # bytes(285)
-         A5                                         # map(5)
+      58 D4                                         # bytes(212)
+         A4                                         # map(4)
             01                                      # unsigned(1) / suit-manifest-version: /
             01                                      # unsigned(1)
             02                                      # unsigned(2) / suit-manifest-sequence-number: /
@@ -2001,7 +1928,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                   04                                # unsigned(4) / suit-common-sequence: /
                   58 54                             # bytes(84)
                      86                             # array(6)
-                        13                          # unsigned(19) / suit-directive-set-parameters: /
+                        14                          # unsigned(20) / suit-directive-override-parameters: /
                         A4                          # map(4)
                            01                       # unsigned(1) / suit-parameter-vendor-identifier: /
                            50                       # bytes(16)
@@ -2012,7 +1939,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                            03                       # unsigned(3) / suit-parameter-image-digest: /
                            58 24                    # bytes(36)
                               82                    # array(2)
-                                 2F                 # negative(15) / -16 = cose-alg-sha256 /
+                                 2F                 # negative(15) / -16 = suit-cose-alg-sha256 /
                                  58 20              # bytes(32)
                                     8CF71AC86AF31BE184EC7A05A411A8C3A14FD9B77A30D046397481469468ECE8
                            0E                       # unsigned(14) / suit-parameter-image-size: /
@@ -2022,76 +1949,59 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                         02                          # unsigned(2) / suit-condition-class-identifier: /
                         0F                          # unsigned(15)
             09                                      # unsigned(9) / suit-install: /
-            58 40                                   # bytes(64)
+            58 45                                   # bytes(69)
                86                                   # array(6)
-                  13                                # unsigned(19) / suit-directive-set-parameters: /
+                  14                                # unsigned(20) / suit-directive-override-parameters: /
                   A1                                # map(1)
                      15                             # unsigned(21) / suit-parameter-uri: /
-                     78 36                          # text(54)
+                     78 3B                          # text(59)
                         68747470733A2F2F6578616D706C652E6F72672F38643832353733612D393236642D343735342D393335332D3332646332393939376637342E7461 # "https://example.org/8d82573a-926d-4754-9353-32dc29997f74.ta"
                   15                                # unsigned(21) / suit-directive-fetch: /
                   0F                                # unsigned(15)
                   03                                # unsigned(3) / suit-condition-image-match: /
                   0F                                # unsigned(15)
-            0D                                      # unsigned(13) / suit-text: /
-            58 4B                                   # bytes(75)
-               A1                                   # map(1)
-                  84                                # array(4)
-                     4B                             # bytes(11)
-                        544545502D446576696365      # "TEEP-Device"
-                     48                             # bytes(8)
-                        5365637572654653            # "SecureFS"
-                     50                             # bytes(16)
-                        8D82573A926D4754935332DC29997F74 # tc-uuid
-                     42                             # bytes(2)
-                        7461                        # "ta"
-                  A2                                # map(2)
-                     02                             # unsigned(2) / suit-text-model-name: /
-                     75                             # text(21)
-                        5265666572656E636520544545502D446576696365 # "Reference TEEP-Device"
-                     03                             # unsigned(3) / suit-text-vendor-domain: /
-                     6B                             # text(11)
-                        6578616D706C652E6F7267      # "example.org"
 ~~~~
 
 
 ### CBOR Binary in Hex
+{: numbered='no'}
 
 ~~~~
-D86BA2025873825824822F58208ADC995573631639C3C6D5FC4026160C8A
-32C5AADFBEEC9FA49E026FDD74CAB3584AD28443A10126A0F658406AC8F0
-FA591D11E92C28D68689384B6317C665AC3636B2A16A9A8244E750EA55C4
-1492FAE1DF7008584CFB19CF0AD9D56B9562A044F9254DADC698D718FC40
-030359011DA501010203035884A20281844B544545502D44657669636548
-5365637572654653508D82573A926D4754935332DC29997F744274610458
-548613A40150C0DDD5F15243566087DB4F5B0AA26C2F0250DB42F7093D8C
-55BAA8C5265FC5820F4E035824822F58208CF71AC86AF31BE184EC7A05A4
-11A8C3A14FD9B77A30D046397481469468ECE80E14010F020F0958408613
-A115783668747470733A2F2F74632E6F72672F38643832353733612D3932
-36642D343735342D393335332D3332646332393939376637342E7461150F
-030F0D584BA1844B544545502D446576696365485365637572654653508D
-82573A926D4754935332DC29997F74427461A202755265666572656E6365
-20544545502D446576696365036674632E6F7267
+D86BA2025873825824822F5820DB601ADE73092B58532CA03FBB663DE495
+32435336F1558B49BB622726A2FEDD584AD28443A10126A0F658405B2D53
+5A2B6D5E3C585C1074F414DA9E10BD285C99A33916DADE3ED38812504817
+AC48B62B8E984EC622785BD1C411888BE531B1B594507816B201F6F28579
+A40358D4A401010203035884A20281844B544545502D4465766963654853
+65637572654653508D82573A926D4754935332DC29997F74427461045854
+8614A40150C0DDD5F15243566087DB4F5B0AA26C2F0250DB42F7093D8C55
+BAA8C5265FC5820F4E035824822F58208CF71AC86AF31BE184EC7A05A411
+A8C3A14FD9B77A30D046397481469468ECE80E14010F020F0958458614A1
+15783B68747470733A2F2F6578616D706C652E6F72672F38643832353733
+612D393236642D343735342D393335332D3332646332393939376637342E
+7461150F030F
 ~~~~
 
 
 ## Example 2: SUIT Manifest including the Trusted Component Binary {#suit-integrated}
+{: numbered='no'}
+
 ### CBOR Diagnostic Notation of SUIT Manifest
+{: numbered='no'}
 
 ~~~~
-/ SUIT_Envelope_Tagged / 107 ( {
+/ SUIT_Envelope_Tagged / 107( {
   / suit-authentication-wrapper / 2: << [
     << [
-      / suit-digest-algorithm-id: / -16 / cose-alg-sha256 /,
-      / suit-digest-bytes: / h'C8363BDF3DCF68F0234A9DD320C2FEA72DE68F46AAE7CE700AFF87085516A335'
+      / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
+      / suit-digest-bytes: / h'14A98BE957DE38FAE37376EA491FD6CAD9BFBD3C90051C8F5B017D7A496C3B05'
     ] >>,
-    << / COSE_Sign1_Tagged / 18 ( [
+    << / COSE_Sign1_Tagged / 18( [
       / protected: / << {
         / algorithm-id / 1: -7 / ES256 /
       } >>,
       / unprotected: / {},
       / payload: / null,
-      / signature: / h'E0D2973A7B7185BBDA108458FB68EFAF65CD031F2283E784129A95D4229F0EB11F8947D3E589A26CE53CDE0807D58BC976B0FC4AB0E7C0CDE64B13CA41D1D986'
+      / signature: / h'4093B323953785981EB607C8BA61B21E5C4F85726A2AF48C1CB05BD4401B1B1565070728FDA38E6496D631E1D23F966CFF7805EDE721D48507D9192993DA8722'
     ] ) >>
   ] >>,
   / suit-integrated-payload / "#tc": h'48656C6C6F2C2053656375726520576F726C6421', / "Hello, Secure World!" /
@@ -2108,11 +2018,11 @@ A115783668747470733A2F2F74632E6F72672F38643832353733612D3932
         ]
       ],
       / suit-common-sequence / 4: << [
-        / suit-directive-set-parameters / 19, {
+        / suit-directive-override-parameters / 20, {
           / suit-parameter-vendor-identifier / 1: h'C0DDD5F15243566087DB4F5B0AA26C2F',
           / suit-parameter-class-identifier / 2: h'DB42F7093D8C55BAA8C5265FC5820F4E',
           / suit-parameter-image-digest / 3: << [
-            / suit-digest-algorithm-id: / -16 / cose-alg-sha256 /,
+            / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
             / suit-digest-bytes: / h'8CF71AC86AF31BE184EC7A05A411A8C3A14FD9B77A30D046397481469468ECE8'
           ] >>,
           / suit-parameter-image-size / 14: 20
@@ -2122,29 +2032,19 @@ A115783668747470733A2F2F74632E6F72672F38643832353733612D3932
       ] >>
     } >>,
     / suit-install / 9: << [
-      / suit-directive-set-parameters / 19, {
+      / suit-directive-override-parameters / 20, {
         / suit-parameter-uri / 21: "#tc"
       },
       / suit-directive-fetch / 21, 15,
       / suit-condition-image-match / 3, 15
-    ] >>,
-    / suit-text / 13: << {
-      [
-        h'544545502D446576696365',           / "TEEP-Device" /
-        h'5365637572654653',                 / "SecureFS" /
-        h'8D82573A926D4754935332DC29997F74', / tc-uuid /
-        h'7461'                              / "ta" /
-      ]: {
-        / suit-text-model-name / 2: "Reference TEEP-Device",
-        / suit-text-vendor-domain / 3: "example.org"
-      }
-    } >>
+    ] >>
   } >>
 } )
 ~~~~
 
 
 ### CBOR Binary Representation
+{: numbered='no'}
 
 ~~~~
 D8 6B                                               # tag(107) / SUIT_Envelope_Tagged /
@@ -2154,9 +2054,9 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
          82                                         # array(2)
             58 24                                   # bytes(36)
                82                                   # array(2)
-                  2F                                # negative(15) / -16 = cose-alg-sha256 /
+                  2F                                # negative(15) / -16 = suit-cose-alg-sha256 /
                   58 20                             # bytes(32)
-                     C8363BDF3DCF68F0234A9DD320C2FEA72DE68F46AAE7CE700AFF87085516A335
+                     14A98BE957DE38FAE37376EA491FD6CAD9BFBD3C90051C8F5B017D7A496C3B05
             58 4A                                   # bytes(74)
                D2                                   # tag(18) / COSE_Sign1_Tagged /
                   84                                # array(4)
@@ -2167,14 +2067,14 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                      A0                             # map(0)
                      F6                             # primitive(22) / null /
                      58 40                          # bytes(64)
-                        E0D2973A7B7185BBDA108458FB68EFAF65CD031F2283E784129A95D4229F0EB11F8947D3E589A26CE53CDE0807D58BC976B0FC4AB0E7C0CDE64B13CA41D1D986
+                        4093B323953785981EB607C8BA61B21E5C4F85726A2AF48C1CB05BD4401B1B1565070728FDA38E6496D631E1D23F966CFF7805EDE721D48507D9192993DA8722
       63                                            # text(3) / suit-integrated-payload /
          237463                                     # "#tc"
       54                                            # bytes(20)
          48656C6C6F2C2053656375726520576F726C6421   # "Hello, Secure World!"
       03                                            # unsigned(3) / suit-manifest: /
-      58 E8                                         # bytes(232)
-         A5                                         # map(5)
+      58 9A                                         # bytes(154)
+         A4                                         # map(4)
             01                                      # unsigned(1) / suit-manifest-version: /
             01                                      # unsigned(1)
             02                                      # unsigned(2) / suit-manifest-sequence-number: /
@@ -2196,7 +2096,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                   04                                # unsigned(4) / suit-common-sequence: /
                   58 54                             # bytes(84)
                      86                             # array(6)
-                        13                          # unsigned(19) / suit-directive-set-parameters: /
+                        14                          # unsigned(20) / suit-directive-override-parameters: /
                         A4                          # map(4)
                            01                       # unsigned(1) / suit-parameter-vendor-identifier: /
                            50                       # bytes(16)
@@ -2207,7 +2107,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                            03                       # unsigned(3) / suit-parameter-image-digest: /
                            58 24                    # bytes(36)
                               82                    # array(2)
-                                 2F                 # negative(15) / -16 = cose-alg-sha256 /
+                                 2F                 # negative(15) / -16 = suit-cose-alg-sha256 /
                                  58 20              # bytes(32)
                                     8CF71AC86AF31BE184EC7A05A411A8C3A14FD9B77A30D046397481469468ECE8
                            0E                       # unsigned(14) / suit-parameter-image-size: /
@@ -2219,7 +2119,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
             09                                      # unsigned(9) / suit-install: /
             4C                                      # bytes(12)
                86                                   # array(6)
-                  13                                # unsigned(19) / suit-directive-set-parameters: /
+                  14                                # unsigned(20) / suit-directive-override-parameters: /
                   A1                                # map(1)
                      15                             # unsigned(21) / suit-parameter-uri: /
                      63                             # text(3)
@@ -2228,65 +2128,47 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                   0F                                # unsigned(15)
                   03                                # unsigned(3) / suit-condition-image-match: /
                   0F                                # unsigned(15)
-            0D                                      # unsigned(13) / suit-text: /
-            58 4B                                   # bytes(75)
-               A1                                   # map(1)
-                  84                                # array(4)
-                     4B                             # bytes(11)
-                        544545502D446576696365      # "TEEP-Device"
-                     48                             # bytes(8)
-                        5365637572654653            # "SecureFS"
-                     50                             # bytes(16)
-                        8D82573A926D4754935332DC29997F74 # tc-uuid
-                     42                             # bytes(2)
-                        7461                        # "ta"
-                  A2                                # map(2)
-                     02                             # unsigned(2) / suit-model-name: /
-                     75                             # text(21)
-                        5265666572656E636520544545502D446576696365 # "Reference TEEP-Device"
-                     03                             # unsigned(3) / suit-vendor-domain: /
-                     6B                             # text(11)
-                        6578616D706C652E6F7267      # "example.org"
 ~~~~
 
 
 ### CBOR Binary in Hex
+{: numbered='no'}
 
 ~~~~
-D86BA3025873825824822F5820C8363BDF3DCF68F0234A9DD320C2FEA72D
-E68F46AAE7CE700AFF87085516A335584AD28443A10126A0F65840E0D297
-3A7B7185BBDA108458FB68EFAF65CD031F2283E784129A95D4229F0EB11F
-8947D3E589A26CE53CDE0807D58BC976B0FC4AB0E7C0CDE64B13CA41D1D9
-86632374635448656C6C6F2C2053656375726520576F726C64210358E8A5
+D86BA3025873825824822F582014A98BE957DE38FAE37376EA491FD6CAD9
+BFBD3C90051C8F5B017D7A496C3B05584AD28443A10126A0F658404093B3
+23953785981EB607C8BA61B21E5C4F85726A2AF48C1CB05BD4401B1B1565
+070728FDA38E6496D631E1D23F966CFF7805EDE721D48507D9192993DA87
+22632374635448656C6C6F2C2053656375726520576F726C642103589AA4
 01010203035884A20281844B544545502D44657669636548536563757265
-4653508D82573A926D4754935332DC29997F744274610458548613A40150
+4653508D82573A926D4754935332DC29997F744274610458548614A40150
 C0DDD5F15243566087DB4F5B0AA26C2F0250DB42F7093D8C55BAA8C5265F
 C5820F4E035824822F58208CF71AC86AF31BE184EC7A05A411A8C3A14FD9
-B77A30D046397481469468ECE80E14010F020F094C8613A1156323746315
-0F030F0D584BA1844B544545502D44657669636548536563757265465350
-8D82573A926D4754935332DC29997F74427461A202755265666572656E63
-6520544545502D446576696365036674632E6F7267
+B77A30D046397481469468ECE80E14010F020F094C8614A1156323746315
+0F030F
 ~~~~
 
 
 ## Example 3: Supplying Personalization Data for Trusted Component Binary {#suit-personalization}
+{: numbered='no'}
 
 ### CBOR Diagnostic Notation of SUIT Manifest
+{: numbered='no'}
 
 ~~~~
-/ SUIT_Envelope_Tagged / 107 ( {
+/ SUIT_Envelope_Tagged / 107( {
   / suit-authentication-wrapper / 2: << [
     << [
-      / suit-digest-algorithm-id: / -16 / cose-alg-sha256 /,
-      / suit-digest-bytes: / h'A810FBAFCAC8C7E107AD974DDC6FDB4D516B810569A47A7E47B4B6E9BCA98CA1'
+      / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
+      / suit-digest-bytes: / h'CE596D785169B72712560B3A246AA98F814498EA3625EEBB72CED9AF273E7FFD'
     ] >>,
-    << / COSE_Sign1_Tagged / 18 ( [
+    << / COSE_Sign1_Tagged / 18( [
       / protected: / << {
         / algorithm-id / 1: -7 / ES256 /
       } >>,
       / unprotected: / {},
       / payload: / null,
-      / signature: / h'E0F4D43B9CF2E837F58E925AD8041BC64F48C8934537F0CC5E19A8044790B7001FA481C5A7C9DEE8E87633CA2677A2896B15E72086A7CFBC6B4A453C312226F2'
+      / signature: / h'E9083AA71D2BFCE48253037B9C3116A5EDF23BE0F4B4357A8A835F724660DA7482C64345B4C73DE95F05513BD09FC2E58BD2CC865CC851AD797513A9A951A3CA'
     ] ) >>
   ] >>,
   / suit-manifest / 3: << {
@@ -2296,8 +2178,8 @@ B77A30D046397481469468ECE80E14010F020F094C8613A1156323746315
       / suit-dependencies / 1: [
         {
           / suit-dependency-digest / 1: [
-            / suit-digest-algorithm-id: / -16 / cose-alg-sha256 /,
-            / suit-digest-bytes: / h'8ADC995573631639C3C6D5FC4026160C8A32C5AADFBEEC9FA49E026FDD74CAB3'
+            / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
+            / suit-digest-bytes: / h'F8690E5A86D010BF2B5348ABB99F2254DB7B608D0D626B98DB51AB3ECFC51907'
           ]
         }
       ],
@@ -2314,7 +2196,7 @@ B77A30D046397481469468ECE80E14010F020F094C8613A1156323746315
           / suit-parameter-vendor-identifier / 1: h'C0DDD5F15243566087DB4F5B0AA26C2F',
           / suit-parameter-class-identifier / 2: h'DB42F7093D8C55BAA8C5265FC5820F4E',
           / suit-parameter-image-digest / 3: << [
-            / suit-digest-algorithm-id: / -16 / cose-alg-sha256 /,
+            / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
             / suit-digest-bytes: / h'AAABCCCDEEEF00012223444566678889ABBBCDDDEFFF01112333455567778999'
           ] >>,
           / suit-parameter-image-size / 14: 64
@@ -2325,7 +2207,7 @@ B77A30D046397481469468ECE80E14010F020F094C8613A1156323746315
     } >>,
     / suit-dependency-resolution / 7: << [
       / suit-directive-set-dependency-index / 13, 0,
-      / suit-directive-set-parameters / 19, {
+      / suit-directive-override-parameters / 20, {
         / suit-parameter-uri / 21: "https://example.org/8d82573a-926d-4754-9353-32dc29997f74.suit"
       },
       / suit-directive-fetch / 21, 2,
@@ -2335,7 +2217,7 @@ B77A30D046397481469468ECE80E14010F020F094C8613A1156323746315
       / suit-directive-set-dependency-index / 13, 0,
       / suit-directive-process-dependency / 18, 0,
       / suit-directive-set-component-index / 12, 0,
-      / suit-directive-set-parameters / 19, {
+      / suit-directive-override-parameters / 20, {
         / suit-parameter-uri / 21: "https://example.org/config.json"
       },
       / suit-directive-fetch / 21, 2,
@@ -2344,22 +2226,14 @@ B77A30D046397481469468ECE80E14010F020F094C8613A1156323746315
     / suit-validate / 10: << [
       / suit-directive-set-component-index / 12, 0,
       / suit-condition-image-match/ 3, 15
-    ] >>,
-    / suit-text / 13: << {
-      [
-        h'544545502D446576696365', / "TEEP-Device" /
-        h'5365637572654653',       / "SecureFS" /
-        h'636F6E6669672E6A736F6E'  / "config.json" /
-      ]: {
-        / suit-text-model-name / 2: "Reference TEEP-Device",
-        / suit-text-vendor-domain / 3: "example.org"
-      }
-    } >>
+    ] >>
   } >>
 } )
 ~~~~
 
+
 ### CBOR Binary Represenation
+{: numbered='no'}
 
 ~~~~
 D8 6B                                               # tag(107) / SUIT_Envelope_Tagged /
@@ -2369,9 +2243,9 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
          82                                         # array(2)
             58 24                                   # bytes(36)
                82                                   # array(2)
-                  2F                                # negative(15) / -16 = cose-alg-sha256 /
+                  2F                                # negative(15) / -16 = suit-cose-alg-sha256 /
                   58 20                             # bytes(32)
-                     A810FBAFCAC8C7E107AD974DDC6FDB4D516B810569A47A7E47B4B6E9BCA98CA1
+                     CE596D785169B72712560B3A246AA98F814498EA3625EEBB72CED9AF273E7FFD
             58 4A                                   # bytes(74)
                D2                                   # tag(18) / COSE_Sign1_Tagged /
                   84                                # array(4)
@@ -2382,10 +2256,10 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                      A0                             # map(0)
                      F6                             # primitive(22) / null /
                      58 40                          # bytes(64)
-                        E0F4D43B9CF2E837F58E925AD8041BC64F48C8934537F0CC5E19A8044790B7001FA481C5A7C9DEE8E87633CA2677A2896B15E72086A7CFBC6B4A453C312226F2
+                        E9083AA71D2BFCE48253037B9C3116A5EDF23BE0F4B4357A8A835F724660DA7482C64345B4C73DE95F05513BD09FC2E58BD2CC865CC851AD797513A9A951A3CA
       03                                            # unsigned(3) / suit-manifest: /
-      59 017F                                       # bytes(383)
-         A7                                         # map(7)
+      59 0134                                       # bytes(308)
+         A6                                         # map(6)
             01                                      # unsigned(1) / suit-manifest-version: /
             01                                      # unsigned(1)
             02                                      # unsigned(2) / suit-manifest-sequence-number: /
@@ -2398,9 +2272,9 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                      A1                             # map(1)
                         01                          # unsigned(1) suit-dependency-digest: /
                         82                          # array(2)
-                           2F                       # negative(15) / -16 = cose-alg-sha256 /
+                           2F                       # negative(15) / -16 = suit-cose-alg-sha256 /
                            58 20                    # bytes(32)
-                              8ADC995573631639C3C6D5FC4026160C8A32C5AADFBEEC9FA49E026FDD74CAB3
+                              F8690E5A86D010BF2B5348ABB99F2254DB7B608D0D626B98DB51AB3ECFC51907
                   02                                # unsigned(2) / suit-components: /
                   81                                # array(1)
                      83                             # array(3)
@@ -2426,7 +2300,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                            03                       # unsigned(3) / suit-parameter-image-digest: /
                            58 24                    # bytes(36)
                               82                    # array(2)
-                                 2F                 # negative(15) / -16 = cose-alg-sha256 /
+                                 2F                 # negative(15) / -16 = suit-cose-alg-sha256 /
                                  58 20              # bytes(32)
                                     AAABCCCDEEEF00012223444566678889ABBBCDDDEFFF01112333455567778999
                            0E                       # unsigned(14) / suit-parameter-image-size: /
@@ -2440,7 +2314,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                88                                   # array(8)
                   0D                                # unsigned(13) / suit-directive-set-dependency-index: /
                   00                                # unsigned(0)
-                  13                                # unsigned(19) / suit-directive-set-parameters: /
+                  14                                # unsigned(20) / suit-directive-override-parameters: /
                   A1                                # map(1)
                      15                             # unsigned(21) / suit-parameter-uri: /
                      78 3D                          # text(61)
@@ -2458,7 +2332,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                   00                                # unsigned(0)
                   0C                                # unsigned(12) / suit-directive-set-component-index: /
                   00                                # unsigned(0)
-                  13                                # unsigned(19) / suit-directive-set-parameters: /
+                  14                                # unsigned(20) / suit-directive-override-parameters: /
                   A1                                # map(1)
                      15                             # unsigned(21) / suit-parameter-uri: /
                      78 1F                          # text(31)
@@ -2474,46 +2348,28 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                   00
                   03                                # unsigned(3) / suit-condition-image-match: /
                   0F                                # unsigned(15)
-            0D                                      # unsigned(13) / suit-text: /
-            58 48                                   # bytes(72)
-               A1                                   # map(1)
-                  83                                # array(3)
-                     4B                             # bytes(11)
-                        544545502D446576696365      # "TEEP-Device"
-                     48                             # bytes(8)
-                        5365637572654653            # "SecureFS"
-                     4B                             # bytes(11)
-                        636F6E6669672E6A736F6E      # "config.json"
-                  A2                                # map(2)
-                     02                             # unsigned(2) / suit-text-model-name: /
-                     75                             # text(21)
-                        5265666572656E636520544545502D446576696365 # "Reference TEEP-Device"
-                     03                             # unsigned(3) / suit-text-vendor-domain: /
-                     6B                             # text(11)
-                        6578616D706C652E6F7267      # "example.org"
 ~~~~
 
 
 ### CBOR Binary in Hex
+{: numbered='no'}
 
 ~~~~
-D86BA2025873825824822F5820A810FBAFCAC8C7E107AD974DDC6FDB4D51
-6B810569A47A7E47B4B6E9BCA98CA1584AD28443A10126A0F65840E0F4D4
-3B9CF2E837F58E925AD8041BC64F48C8934537F0CC5E19A8044790B7001F
-A481C5A7C9DEE8E87633CA2677A2896B15E72086A7CFBC6B4A453C312226
-F20359017FA7010102030358A7A30181A101822F58208ADC995573631639
-C3C6D5FC4026160C8A32C5AADFBEEC9FA49E026FDD74CAB30281834B5445
+D86BA2025873825824822F5820CE596D785169B72712560B3A246AA98F81
+4498EA3625EEBB72CED9AF273E7FFD584AD28443A10126A0F65840E9083A
+A71D2BFCE48253037B9C3116A5EDF23BE0F4B4357A8A835F724660DA7482
+C64345B4C73DE95F05513BD09FC2E58BD2CC865CC851AD797513A9A951A3
+CA03590134A6010102030358A7A30181A101822F5820DB601ADE73092B58
+532CA03FBB663DE49532435336F1558B49BB622726A2FEDD0281834B5445
 45502D4465766963654853656375726546534B636F6E6669672E6A736F6E
 045857880C0014A40150C0DDD5F15243566087DB4F5B0AA26C2F0250DB42
 F7093D8C55BAA8C5265FC5820F4E035824822F5820AAABCCCDEEEF000122
 23444566678889ABBBCDDDEFFF011123334555677789990E1840010F020F
-075849880D0013A115783D68747470733A2F2F6578616D706C652E6F7267
+075849880D0014A115783D68747470733A2F2F6578616D706C652E6F7267
 2F38643832353733612D393236642D343735342D393335332D3332646332
-393939376637342E737569741502030F09582F8C0D0012000C0013A11578
+393939376637342E737569741502030F09582F8C0D0012000C0014A11578
 1F68747470733A2F2F6578616D706C652E6F72672F636F6E6669672E6A73
-6F6E1502030F0A45840C00030F0D5848A1834B544545502D446576696365
-4853656375726546534B636F6E6669672E6A736F6EA20275526566657265
-6E636520544545502D446576696365036B6578616D706C6522E6F7267
+6F6E1502030F0A45840C00030F
 ~~~~
 
 
@@ -2528,7 +2384,7 @@ F7093D8C55BAA8C5265FC5820F4E035824822F5820AAABCCCDEEEF000122
   / suit-authentication-wrapper / 2: << [
     << [
       / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
-      / suit-digest-bytes: / h'0F2AA1B386F11E5DDD3D6796C89C775F2DC450594C45219589753B2C8F393A54'
+      / suit-digest-bytes: / h'632454F19A9440A5B83493628A7EF8704C8A0205A62C34E425BAA34C71341F42'
     ] >>,
     << / COSE_Sign1_Tagged / 18( [
       / protected / << {
@@ -2536,7 +2392,7 @@ F7093D8C55BAA8C5265FC5820F4E035824822F5820AAABCCCDEEEF000122
       } >>,
       / unprotected: / {},
       / payload: / null,
-      / signature: / h'36C6D380AD9E58F9E82A039C5B2C99B801344BC065215928BD4E1C14295335762502DD8C5237B350F9A6147B39BEBCF856BED27F382D22F5A1427E2C5BE707B5'
+      / signature: / h'A32CDB7C1D089C27408CED3C79087220EB0D77F105BB5330912875F4D94AD108D7658C650463AEB7E1CCA5084F22B2F3993176E8B3529A3202ED735E4D39BBBF'
     ] ) >>
   ] >>,
   / suit-manifest / 3: << {
@@ -2552,36 +2408,24 @@ F7093D8C55BAA8C5265FC5820F4E035824822F5820AAABCCCDEEEF000122
         ]
       ],
       / suit-common-sequence / 4: << [
-        / suit-directive-set-parameters / 19, {
+        / suit-directive-override-parameters / 20, {
           / suit-parameter-vendor-identifier / 1: h'C0DDD5F15243566087DB4F5B0AA26C2F',
           / suit-parameter-class-identifier / 2: h'DB42F7093D8C55BAA8C5265FC5820F4E'
-          ] >>
         },
         / suit-condition-vendor-identifier / 1, 15,
         / suit-condition-class-identifier / 2, 15
       ] >>
     } >>,
     / suit-install / 9: << [
-      / suit-directive-set-component-index / 12, 0,
-      / suit-directive-unlink / 33, 0
-    ] >>,
-    / suit-text / 13: << {
-      [
-        h'544545502D446576696365',           / "TEEP-Device" /
-        h'5365637572654653',                 / "SecureFS" /
-        h'8D82573A926D4754935332DC29997F74', / tc-uuid /
-        h'7461'                              / "ta" /
-      ]: {
-        / suit-text-model-name / 2: "Reference TEEP-Device",
-        / suit-text-vendor-domain / 3: "tc.org"
-      }
-    } >>
+      / suit-directive-set-component-index: / 12, 0,
+      / suit-directive-unlink: / 33, 0
+    ] >>
   } >>
 } )
 ~~~~
 
 
-### CBOR Binary Respresentation
+### CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
@@ -2594,7 +2438,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                82                                   # array(2)
                   2F                                # negative(15) / -16 = suit-cose-alg-sha256 /
                   58 20                             # bytes(32)
-                     0F2AA1B386F11E5DDD3D6796C89C775F2DC450594C45219589753B2C8F393A54
+                     632454F19A9440A5B83493628A7EF8704C8A0205A62C34E425BAA34C71341F42
             58 4A                                   # bytes(74)
                D2                                   # tag(18) / COSE_Sign1_Tagged /
                   84                                # array(4)
@@ -2605,10 +2449,10 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                      A0                             # map(0)
                      F6                             # primitive(22) / null /
                      58 40                          # bytes(64)
-                        36C6D380AD9E58F9E82A039C5B2C99B801344BC065215928BD4E1C14295335762502DD8C5237B350F9A6147B39BEBCF856BED27F382D22F5A1427E2C5BE707B5
+                        A32CDB7C1D089C27408CED3C79087220EB0D77F105BB5330912875F4D94AD108D7658C650463AEB7E1CCA5084F22B2F3993176E8B3529A3202ED735E4D39BBBF
       03                                            # unsigned(3) / suit-manifest: /
-      58 C1                                         # bytes(193)
-         A5                                         # map(5)
+      58 73                                         # bytes(115)
+         A4                                         # map(4)
             01                                      # unsigned(1) / suit-manifest-version: /
             01                                      # unsigned(1)
             02                                      # unsigned(2) / suit-manifest-sequence-number: /
@@ -2630,7 +2474,7 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                   04                                # unsigned(4) / suit-common-sequence: /
                   58 2B                             # bytes(84)
                      86                             # array(6)
-                        13                          # unsigned(19) / suit-directive-set-parameters: /
+                        14                          # unsigned(20) / suit-directive-override-parameters: /
                         A2                          # map(2)
                            01                       # unsigned(1) / suit-parameter-vendor-identifier: /
                            50                       # bytes(16)
@@ -2649,25 +2493,6 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
                   00                                # unsigned(0)
                   18 21                             # unsigned(33) / suit-directive-unlink: /
                   00                                # unsigned(0)
-            0D                                      # unsigned(13) / suit-text: /
-            58 4B                                   # bytes(75)
-               A1                                   # map(1)
-                  84                                # array(4)
-                     4B                             # bytes(11)
-                        544545502D446576696365      # "TEEP-Device"
-                     48                             # bytes(8)
-                        5365637572654653            # "SecureFS"
-                     50                             # bytes(16)
-                        8D82573A926D4754935332DC29997F74 # tc-uuid
-                     42                             # bytes(2)
-                        7461                        # "ta"
-                  A2                                # map(2)
-                     02                             # unsigned(2) / suit-text-model-name: /
-                     75                             # text(21)
-                        5265666572656E636520544545502D446576696365 # "Reference TEEP-Device"
-                     03                             # unsigned(3) / suit-text-vendor-domain: /
-                     66                             # text(6)
-                        74632E6F7267                # "tc.org"
 ~~~~
 
 
@@ -2675,15 +2500,89 @@ D8 6B                                               # tag(107) / SUIT_Envelope_T
 {: numbered='no'}
 
 ~~~~
-D86BA2025873825824822F58200F2AA1B386F11E5DDD3D6796C89C775F2D
-C450594C45219589753B2C8F393A54584AD28443A10126A0F6584036C6D3
-80AD9E58F9E82A039C5B2C99B801344BC065215928BD4E1C142953357625
-02DD8C5237B350F9A6147B39BEBCF856BED27F382D22F5A1427E2C5BE707
-B50358C1A50101021BFFFFFFFFFFFFFFFF03585BA20281844B544545502D
+D86BA2025873825824822F5820632454F19A9440A5B83493628A7EF8704C
+8A0205A62C34E425BAA34C71341F42584AD28443A10126A0F65840A32CDB
+7C1D089C27408CED3C79087220EB0D77F105BB5330912875F4D94AD108D7
+658C650463AEB7E1CCA5084F22B2F3993176E8B3529A3202ED735E4D39BB
+BF035873A40101021BFFFFFFFFFFFFFFFF03585BA20281844B544545502D
 446576696365485365637572654653508D82573A926D4754935332DC2999
-7F7442746104582B8613A20150C0DDD5F15243566087DB4F5B0AA26C2F02
-50DB42F7093D8C55BAA8C5265FC5820F4E010F020F0946840C001821000D
-584BA1844B544545502D446576696365485365637572654653508D82573A
-926D4754935332DC29997F74427461A202755265666572656E6365205445
-45502D446576696365036674632E6F7267
+7F7442746104582B8614A20150C0DDD5F15243566087DB4F5B0AA26C2F02
+50DB42F7093D8C55BAA8C5265FC5820F4E010F020F0946840C00182100
+~~~~
+
+# F. Examples of SUIT Reports {#suit-reports}
+{: numbered='no'}
+
+This section shows some examples of SUIT reports.
+
+## F.1. Example 1: Success
+{: numbered='no'}
+
+SUIT Reports have no records if no conditions have failed.
+The URI in this example is the reference URI provided in the SUIT manifest.
+
+~~~~
+{
+  / suit-report-manifest-digest / 1:<<[
+    / algorithm-id / -16 / "sha256" /,
+    / digest-bytes / h'a7fd6593eac32eb4be578278e6540c5c'
+                     h'09cfd7d4d234973054833b2b93030609'
+  ]>>,
+  / suit-report-manifest-uri / 2: "tam.teep.example/personalisation.suit",
+  / suit-report-records / 4: []
+}
+~~~~
+
+## F.2. Example 2: Faiure
+{: numbered='no'}
+
+~~~~
+{
+  / suit-report-manifest-digest / 1:<<[
+    / algorithm-id / -16 / "sha256" /,
+    / digest-bytes / h'a7fd6593eac32eb4be578278e6540c5c09cfd7d4d234973054833b2b93030609'
+  ]>>,
+  / suit-report-manifest-uri / 2: "tam.teep.example/personalisation.suit",
+  / suit-report-records / 4: [
+    {
+      / suit-record-manifest-id / 1:[],
+      / suit-record-manifest-section / 2: 7 / dependency-resolution /,
+      / suit-record-section-offset / 3: 66,
+      / suit-record-dependency-index / 5: 0,
+      / suit-record-failure-reason / 6: 404
+    }
+  ]
+}
+~~~~
+
+where the dependency-resolution refers to:
+
+~~~~
+107({
+  authentication-wrapper,
+  / manifest / 3:<<{
+    / manifest-version / 1:1,
+    / manifest-sequence-number / 2:3,
+    common,
+    dependency-resolution,
+    install,
+    validate,
+    run,
+    text
+  }>>,
+})
+~~~~
+
+and the suit-record-section-offset refers to:
+
+~~~~
+<<[
+  / directive-set-dependency-index / 13,0 ,
+  / directive-set-parameters / 19,{
+    / uri / 21:'tam.teep.example/'
+               'edd94cd8-9d9c-4cc8-9216-b3ad5a2d5b8a.suit',
+    } ,
+  / directive-fetch / 21,2 ,
+  / condition-image-match / 3,15
+]>>,
 ~~~~
