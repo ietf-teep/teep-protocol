@@ -22,11 +22,11 @@ TEEP-TYPE-update = 3
 TEEP-TYPE-teep-success = 5
 TEEP-TYPE-teep-error = 6
 
-version = .within uint .size 4
-ext-info = .within uint .size 4
+version = uint .size 4
+ext-info = uint .size 4
 
 ; data items as bitmaps
-data-item-requested = $data-item-requested .within uint .size 8
+data-item-requested = $data-item-requested
 attestation = 1
 $data-item-requested /= attestation
 trusted-components = 2
@@ -57,7 +57,8 @@ COSE_Mac_Tagged      = 97
 COSE_Mac0_Tagged     = 17
 
 ;RECOMMENDED to implement:
-teep-cose-algs /= cose-alg-hss-lms = -46
+cose-alg-hss-lms = -46
+teep-cose-algs /= cose-alg-hss-lms
 
 ;OPTIONAL to implement any from IANA cose registry. Listing only partially:
 cose-alg-es256 = -7
@@ -75,7 +76,7 @@ ciphersuite = [ * ( teep-cose-sign / teep-cose-encrypt / teep-cose-mac ) ]
 
 ; freshness-mechanisms
 
-freshness-mechanism = $TEEP-freshness-mechanism .within uint .size 4
+freshness-mechanism = $TEEP-freshness-mechanism
 
 FRESHNESS_NONCE = 0
 FRESHNESS_TIMESTAMP = 1
@@ -104,12 +105,12 @@ query-response = [
 
 tc-info = {
   component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => .within uint .size 8
+  ? tc-manifest-sequence-number => uint .size 8
 }
 
 requested-tc-info = {
   component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => .within uint .size 8
+  ? tc-manifest-sequence-number => uint .size 8
   ? have-binary => bool
 }
 
@@ -128,7 +129,7 @@ teep-success = [
   options: {
     ? token => bstr .size (8..64),
     ? msg => text .size (1..128),
-    ? suit-reports => [ + suit-report ],
+    ? suit-reports => [ + SUIT_Report ],
     * $$teep-success-extensions,
     * $$teep-option-extensions
   }
@@ -142,7 +143,7 @@ teep-error = [
      ? supported-cipher-suites => [ + ciphersuite ],
      ? supported-freshness-mechanisms => [ + freshness-mechanism ],
      ? versions => [ + version ],
-     ? suit-reports => [ + suit-report ],
+     ? suit-reports => [ + SUIT_Report ],
      * $$teep-error-extensions,
      * $$teep-option-extensions
   },
