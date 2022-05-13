@@ -459,8 +459,9 @@ selected-version
 
 evidence-format
 : The evidence-format parameter indicates the IANA Media Type of the
-  attestation evidence contained in the evidence parameter.  It MUST be
-  present if the evidence parameter is present and the format is not an EAT.
+  attestation evidence contained in the evidence parameter.  The absence of
+  this parameter indicates that the format is "application/cwt". It MUST be
+  present if the evidence parameter is present and the format is not "application/cwt".
 
 evidence
 : The evidence parameter contains the attestation evidence.  This parameter
