@@ -341,9 +341,7 @@ token
 
 data-item-requested
 : The data-item-requested parameter indicates what information the TAM requests from the TEEP
-  Agent in the form of a bitmap. Each value in the bitmap corresponds to an 
-  IANA registered information element. This 
-  specification defines the following initial set of information elements:
+  Agent in the form of a bitmap.
 
    attestation (1)
    : With this value the TAM requests the TEEP Agent to return attestation
@@ -361,7 +359,7 @@ data-item-requested
    : With this value the TAM requests the TEEP Agent to return SUIT Reports
      in the response.
 
-   Further values may be added in the future via IANA registration.
+   Further values may be added in the future.
 
 supported-cipher-suites
 : The supported-cipher-suites parameter lists the ciphersuites supported by the TAM. If this parameter is not present, it is to be treated the same as if
