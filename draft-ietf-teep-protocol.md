@@ -84,8 +84,8 @@ normative:
   I-D.ietf-rats-architecture: 
   I-D.ietf-rats-eat: 
   I-D.ietf-suit-manifest: 
-  I-D.moran-suit-trust-domains: 
-  I-D.moran-suit-report: 
+  I-D.ietf-suit-trust-domains:
+  I-D.ietf-suit-report:
   COSE.Algorithm:
     title: "COSE Algorithms"
     author:
@@ -93,7 +93,6 @@ normative:
     target: https://www.iana.org/assignments/cose/cose.xhtml#algorithms
 informative:
   I-D.ietf-teep-architecture: 
-  I-D.birkholz-rats-suit-claims:
   RFC8610: 
   RFC8126: 
   RFC8915: 
@@ -148,6 +147,9 @@ and/or configuration data and keys needed by a TA to operate correctly.
 
 Each Trusted Component is uniquely identified by a SUIT Component Identifier
 (see {{I-D.ietf-suit-manifest}} Section 8.7.2.2).
+
+Attestation related terms, such as Evidence and Attestation Results,
+are as defined in {{I-D.ietf-rats-architecture}}.
 
 # Message Overview {#messages}
 
@@ -305,7 +307,7 @@ query-request = [
   type: TEEP-TYPE-query-request,
   options: {
     ? token => bstr .size (8..64),
-    ? supported-cipher-suites => [ + suite ],
+    ? supported-cipher-suites => [ + ciphersuite ],
     ? supported-freshness-mechanisms => [ + freshness-mechanism ],
     ? challenge => bstr .size (8..512),
     ? versions => [ + version ],
@@ -342,13 +344,11 @@ token
 
 data-item-requested
 : The data-item-requested parameter indicates what information the TAM requests from the TEEP
-  Agent in the form of a bitmap. Each value in the bitmap corresponds to an 
-  IANA registered information element. This 
-  specification defines the following initial set of information elements:
+  Agent in the form of a bitmap.
 
    attestation (1)
-   : With this value the TAM requests the TEEP Agent to return attestation
-     evidence (e.g., an EAT) in the response.
+   : With this value the TAM requests the TEEP Agent to return an attestation payload,
+     whether Evidence (e.g., an EAT) or Attestation Results, in the response.
 
    trusted-components (2)
    : With this value the TAM queries the TEEP Agent for all installed Trusted Components.
@@ -358,7 +358,11 @@ data-item-requested
      and extensions, which allows a TAM to discover the capabilities of a TEEP
      Agent implementation.
 
-   Further values may be added in the future via IANA registration.
+   suit-reports (8)
+   : With this value the TAM requests the TEEP Agent to return SUIT Reports
+     in the response.
+
+   Further values may be added in the future.
 
 supported-cipher-suites
 : The supported-cipher-suites parameter lists the ciphersuites supported by the TAM. If this parameter is not present, it is to be treated the same as if
@@ -372,7 +376,7 @@ supported-freshness-mechanisms
 
 challenge
 : The challenge field is an optional parameter used for ensuring the freshness of the
-  attestation evidence returned with a QueryResponse message. It MUST be absent if
+  attestation payload returned with a QueryResponse message. It MUST be absent if
   the attestation bit is clear (since the token is used instead in that case).
   When a challenge is 
   provided in the QueryRequest and an EAT is returned with a QueryResponse message
@@ -405,10 +409,11 @@ query-response = [
   type: TEEP-TYPE-query-response,
   options: {
     ? token => bstr .size (8..64),
-    ? selected-cipher-suite => suite,
+    ? selected-cipher-suite => ciphersuite,
     ? selected-version => version,
-    ? evidence-format => text,
-    ? evidence => bstr,
+    ? attestation-payload-format => text,
+    ? attestation-payload => bstr,
+    ? suit-reports => [ + suit-report ],
     ? tc-list => [ + tc-info ],
     ? requested-tc-list => [ + requested-tc-info ],
     ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
@@ -450,21 +455,33 @@ selected-cipher-suite
 
 selected-version
 : The selected-version parameter indicates the TEEP protocol version selected by the
-  TEEP Agent. The absense of this parameter indicates the same as if it
+  TEEP Agent. The absence of this parameter indicates the same as if it
   was present with a value of 0.
 
-evidence-format
-: The evidence-format parameter indicates the IANA Media Type of the
-  attestation evidence contained in the evidence parameter.  It MUST be
-  present if the evidence parameter is present and the format is not an EAT.
+attestation-payload-format
+: The attestation-payload-format parameter indicates the IANA Media Type of the
+  attestation-payload parameter.  It MUST be
+  present if the attestation-payload parameter is present and the format is not an EAT.
 
-evidence
-: The evidence parameter contains the attestation evidence.  This parameter
+attestation-payload
+: The attestation-payload parameter contains Evidence or Attestation Results.  This parameter
   MUST be present if the QueryResponse is sent in response to a QueryRequest
-  with the attestation bit set.  If the evidence-format parameter is absent,
-  the attestation evidence contained in this parameter MUST be
+  with the attestation bit set.  If the attestation-payload-format parameter is absent,
+  the attestation payload contained in this parameter MUST be
   an Entity Attestation Token following the encoding
-  defined in {{I-D.ietf-rats-eat}}.  See {{evidence}} for further discussion.
+  defined in {{I-D.ietf-rats-eat}}.  See {{attestation}} for further discussion.
+
+suit-reports
+: If present, the suit-reports parameter contains a set of "boot" (including
+  starting an executable in an OS context) time SUIT Reports
+  as defined in Section 4 of {{I-D.ietf-suit-report}}.
+  If a token parameter was present in the QueryRequest
+  message the QueryResponse message is in response to,
+  the suit-report-nonce field MUST be present in the SUIT Report with a
+  value matching the token parameter in the QueryRequest
+  message.  SUIT Reports can be useful in QueryResponse messages to
+  pass information to the TAM without depending on a Verifier including
+  the relevant information in Attestation Results.
 
 tc-list
 : The tc-list parameter enumerates the Trusted Components installed on the device
@@ -525,12 +542,12 @@ have-binary
   that authorizes installing it.  If have-binary is true, the
   tc-manifest-sequence-number field MUST be present.
 
-### Evidence and Attestation Results {#evidence}
+### Evidence and Attestation Results {#attestation}
 
 Section 7 of {{I-D.ietf-teep-architecture}} lists information that may appear
-in evidence depending on the circumstance.  However, the evidence is
+in Evidence depending on the circumstance.  However, the Evidence is
 opaque to the TEEP protocol and there are no formal requirements on the contents
-of evidence.
+of Evidence.
 
 TAMs however consume Attestation Results and do need enough information therein to
 make decisions on how to remediate a TEE that is out of compliance, or update a TEE
@@ -538,14 +555,15 @@ that is requesting an authorized change.  To do so, the information in
 Section 7 of {{I-D.ietf-teep-architecture}} is often required depending on the policy.
 When an Entity
 Attestation Token is used, the following claims can be used to meet those
-requirements:
+requirements, whether these claims appear in Attestation Results, or in Evidence
+for the Verifier to use when generating Attestation Results of some form:
 
 | Requirement  | Claim | Reference |
 | Device unique identifier | ueid | {{I-D.ietf-rats-eat}} section 3.4 |
 | Vendor of the device | oemid | {{I-D.ietf-rats-eat}} section 3.6 |
-| Class of the device | class-identifier | {{I-D.birkholz-rats-suit-claims}} section 3.1.2 |
-| TEE hardware type | chip-version | {{I-D.ietf-rats-eat}} section 3.7 |
-| TEE hardware version | chip-version | {{I-D.ietf-rats-eat}} section 3.7 |
+| Class of the device | hwmodel | {{I-D.ietf-rats-eat}} section 3.7 |
+| TEE hardware type | chip-version | {{I-D.ietf-rats-eat}} section 3.8 |
+| TEE hardware version | chip-version | {{I-D.ietf-rats-eat}} section 3.8 |
 | TEE firmware type | sw-name | {{I-D.ietf-rats-eat}} section 3.9 |
 | TEE firmware version | sw-version | {{I-D.ietf-rats-eat}} section 3.10 |
 | Freshness proof | nonce | {{I-D.ietf-rats-eat}} section 3.3 |
@@ -605,7 +623,7 @@ The TAM is what authorizes
 apps to be installed, updated, and deleted on a given TEE and so the TEEP
 signature is checked by the TEEP Agent at protocol message processing time.
 (This same TEEP security wrapper is also used on messages like QueryRequest
-so that Agents only send potentially sensitive data such as evidence to
+so that Agents only send potentially sensitive data such as Evidence to
 trusted TAMs.)
 
 The Trusted Component signer on the other hand is what authorizes the
@@ -814,7 +832,7 @@ This subsection shows an example deleting the Trusted Component Binary in the TE
 
 A Trusted Component Developer can also generate SUIT Manifest which unlinks the installed Trusted Component. The TAM deliver it when the TAM want to uninstall the component.
 
-The directive-unlink (see {{I-D.moran-suit-trust-domains}} Section-6.5.4) is located in the manifest to delete the Trusted Component. Note that in case other Trusted Components depend on it, i.e. the reference count is not zero, the TEEP Device SHOULD NOT delete it immediately.
+The directive-unlink (see {{I-D.ietf-suit-trust-domains}} Section-6.5.4) is located in the manifest to delete the Trusted Component. Note that in case other Trusted Components depend on it, i.e. the reference count is not zero, the TEEP Device SHOULD NOT delete it immediately.
 
 ~~~~
     +------------+           +-------------+
@@ -889,7 +907,7 @@ msg
 
 suit-reports
 : If present, the suit-reports parameter contains a set of SUIT Reports
-  as defined in Section 4 of {{I-D.moran-suit-report}}.
+  as defined in Section 4 of {{I-D.ietf-suit-report}}.
   If a token parameter was present in the Update
   message the Success message is in response to,
   the suit-report-nonce field MUST be present in the SUIT Report with a
@@ -911,7 +929,7 @@ teep-error = [
   options: {
      ? token => bstr .size (8..64),
      ? err-msg => text .size (1..128),
-     ? supported-cipher-suites => [ + suite ],
+     ? supported-cipher-suites => [ + ciphersuite ],
      ? supported-freshness-mechanisms => [ + freshness-mechanism ],
      ? versions => [ + version ],
      ? suit-reports => [ + suit-report ],
@@ -954,7 +972,7 @@ versions
 
 suit-reports
 : If present, the suit-reports parameter contains a set of SUIT Reports
-  as defined in Section 4 of {{I-D.moran-suit-report}}.  If
+  as defined in Section 4 of {{I-D.ietf-suit-report}}.  If
   a token parameter was present in the Update message the Error message is in response to,
   the suit-report-nonce field MUST be present in the SUIT Report with a
   value matching the token parameter in the Update
@@ -977,8 +995,7 @@ ERR_PERMANENT_ERROR (1)
   A TAM receiving this error might refuse to communicate further with
   the TEEP Agent for some period of time until it has reason to believe
   it is worth trying again, but it should take care not to give up on
-  communication when there is no attestation evidence indicating that
-  the error is genuine.  In contrast, ERR_TEMPORARY_ERROR is an indication
+  communication.  In contrast, ERR_TEMPORARY_ERROR is an indication
   that a more agressive retry is warranted.
 
 ERR_UNSUPPORTED_EXTENSION (2)
@@ -1044,9 +1061,9 @@ behavioral difference is expected to be.
 The TEEP protocol operates between a TEEP Agent and a TAM.  While
 the TEEP protocol does not require use of EAT, use of EAT is encouraged and
 {{query-response}} explicitly defines a way to carry an Entity Attestation Token
-evidence in a QueryResponse.  
+in a QueryResponse.  
 
-As discussed in {{evidence}}, the content of attestation evidence is opaque to the TEEP
+As discussed in {{attestation}}, the content of Evidence is opaque to the TEEP
 architecture, but the content of Attestation Results is not, where Attestation
 Results flow between a Verifier and a TAM (as the Relying Party).
 Although Attestation Results required by a TAM are separable from the TEEP protocol
@@ -1078,9 +1095,9 @@ of this document.)
 * Freshness: See {{freshness-mechanisms}}.
 * Required Claims: None.
 * Prohibited Claims: None.
-* Additional Claims: Optional claims are those listed in {{evidence}}.
+* Additional Claims: Optional claims are those listed in {{attestation}}.
 * Refined Claim Definition: None.
-* CBOR Tags: CBOT Tags are not used.
+* CBOR Tags: CBOR Tags are not used.
 * Manifests and Software Evidence Claims: The sw-name claim for a Trusted
   Component holds the URI of the SUIT manifest for that component.
 
@@ -1100,13 +1117,13 @@ This specification uses the following mapping:
 | version                        |     3 |
 | selected-cipher-suite          |     5 |
 | selected-version               |     6 |
-| evidence                       |     7 |
+| attestation-payload            |     7 |
 | tc-list                        |     8 |
 | ext-list                       |     9 |
 | manifest-list                  |    10 |
 | msg                            |    11 |
 | err-msg                        |    12 |
-| evidence-format                |    13 |
+| attestation-payload-format     |    13 |
 | requested-tc-list              |    14 |
 | unneeded-tc-list               |    15 |
 | component-id                   |    16 |
@@ -1136,10 +1153,22 @@ from the device that has a valid signature and ignore any subsequent messages th
 value.  The token value MUST NOT be used for other purposes, such as a TAM to
 identify the devices and/or a device to identify TAMs or Trusted Components.
 
-If a QueryResponse message is received that contains evidence, the evidence
+### Handling a QueryResponse Message
+
+If a QueryResponse message is received, the TAM verifies the presence of any parameters
+required based on the data-items-requested in the QueryRequest, and also validates that
+the nonce in any SUIT Report matches the token send in the QueryRequest message if a token
+was present.  If these requirements are not met, the TAM drops the message.  It may also do
+additional implementation specific actions such as logging the results.  If the requirements
+are met, processing continues as follows.
+
+If a QueryResponse message is received that contains that contains Evidence, the Evidence
 is passed to an attestation Verifier (see {{I-D.ietf-rats-architecture}})
-to determine whether the Agent is in a trustworthy state.
-Based on the results of attestation, and the lists of installed, requested,
+to determine whether the Agent is in a trustworthy state.  Once the TAM receives Attestation
+Results, processing continues as follows.
+
+Based on the results of attestation (if any), any SUIT Reports,
+and the lists of installed, requested,
 and unneeded Trusted Components reported in the QueryResponse, the TAM
 determines, in any implementation specific manner, which Trusted Components
 need to be installed, updated, or deleted, if any.
@@ -1152,6 +1181,8 @@ indicated in the manifest, which may take some time, and the resulting Success
 or Error message is generated only after completing the Update Procedure.
 Hence, depending on the freshness mechanism in use, the TAM may need to
 store data (e.g., a nonce) for some time.
+
+### Handling a Success or Error Message
 
 If a Success or Error message is received containing one or more SUIT Reports, the TAM also validates that
 the nonce in any SUIT Report matches the token sent in the Update message,
@@ -1221,16 +1252,16 @@ To negotiate cryptographic mechanisms and algorithms, the TEEP protocol defines 
 ~~~~
 ciphersuite = [
     teep-cose-sign-algs / nil,
-    teep-cose-encrypt-algs / nil ,
-    teep-cose-mac-algs / nil 
+    teep-cose-encrypt-algs / nil,
+    teep-cose-mac-algs / nil
 ]
 ~~~~
 
 The ciphersuite structure is used to present the combination of mechanisms and cryptographic algorithms.
-Each suite value corresponds with a COSE-type defined in Section 2 of {{RFC8152}}.
+Each ciphersuite value corresponds with a COSE-type defined in Section 2 of {{RFC8152}}.
 
 ~~~~
-supported-cipher-suites = [ + suite ]
+supported-cipher-suites = [ + ciphersuite ]
 ~~~~
 
 Cryptographic algorithm values are defined in the COSE Algorithms registry {{COSE.Algorithm}}.
@@ -1239,7 +1270,7 @@ one of the two but can choose which one.  For example, a TEEP Agent might
 choose a given ciphersuite if it has hardware support for it.
 
 ~~~~
-teep-cose-sign-algs /= cose-alg-es256,
+teep-cose-sign-algs /= cose-alg-es256
 teep-cose-sign-algs /= cose-alg-eddsa
 ~~~~
 
@@ -1254,10 +1285,10 @@ teep-cose-mac-algs /= cose-alg-hmac-256
 A TAM or TEEP Agent MAY also support one or more of the following algorithms:
 
 ~~~~
-teep-cose-sign-algs /= cose-alg-ps256,
-teep-cose-sign-algs /= cose-alg-ps384,
-teep-cose-sign-algs /= cose-alg-ps512,
-teep-cose-sign-algs /= cose-alg-rsa-oaep-256,
+teep-cose-sign-algs /= cose-alg-ps256
+teep-cose-sign-algs /= cose-alg-ps384
+teep-cose-sign-algs /= cose-alg-ps512
+teep-cose-sign-algs /= cose-alg-rsa-oaep-256
 teep-cose-sign-algs /= cose-alg-rsa-oaep-512
 ~~~~
 
@@ -1273,7 +1304,7 @@ discussed in Section 9.8 of {{I-D.ietf-teep-architecture}}.
 
 # Freshness Mechanisms {#freshness-mechanisms}
 
-A freshness mechanism determines how a TAM can tell whether evidence provided
+A freshness mechanism determines how a TAM can tell whether an attestation payload provided
 in a Query Response is fresh.  There are multiple ways this can be done
 as discussed in Section 10 of {{I-D.ietf-rats-architecture}}.
 
@@ -1286,11 +1317,11 @@ This document defines the following freshness mechanisms:
 |     2 | Timestamp                                      |
 |     3 | Epoch ID                                       |
 
-In the Nonce mechanism, the evidence MUST include a nonce provided
+In the Nonce mechanism, the attestation payload MUST include a nonce provided
 in the QueryRequest challenge.  In other mechanisms, a timestamp
 or epoch ID determined via mechanisms outside the TEEP protocol is
 used, and the challenge is only needed in the QueryRequest message
-if a challenge is needed in generating evidence for reasons other
+if a challenge is needed in generating the attestation payload for reasons other
 than freshness.
 
 If a TAM supports multiple freshness mechanisms that require different challenge
@@ -1315,16 +1346,21 @@ Cryptographic Algorithms
   and vice versa.
 
 Attestation
-: A TAM can rely on the attestation evidence provided by the TEEP
-  Agent.  To sign the attestation evidence, it is necessary
-  for the device to possess a public key (usually in the form of a
-  certificate {{RFC5280}}) along with the corresponding private key. Depending on
+: A TAM relies on signed Attestation Results provided by a Verifier,
+  either obtained directly using a mechanism outside the TEEP protocol
+  (by using some mechanism to pass Evidence obtained in the attestation payload of
+  a QueryResponse, and getting back the Attestation Results), or indirectly
+  via the TEEP Agent forwarding the Attestation Results in the attestation
+  payload of a QueryResponse. See the security considerations of the
+  specific mechanism in use (e.g., EAT) for more discussion.
+
+  Depending on
   the properties of the attestation mechanism, it is possible to
-  uniquely identify a device based on information in the attestation
-  evidence or in the certificate used to sign the attestation
-  evidence.  This uniqueness may raise privacy concerns. To lower the
-  privacy implications the TEEP Agent MUST present its attestation
-  evidence only to an authenticated and authorized TAM and when using
+  uniquely identify a device based on information in the
+  attestation payload or in the certificate used to sign the
+  attestation payload.  This uniqueness may raise privacy concerns. To lower the
+  privacy implications the TEEP Agent MUST present its
+  attestation payload only to an authenticated and authorized TAM and when using
   EATS, it SHOULD use encryption as discussed in {{I-D.ietf-rats-eat}}, since
   confidentiality is not provided by the TEEP protocol itself and
   the transport protocol under the TEEP protocol might be implemented
@@ -1499,197 +1535,8 @@ Valid TEEP messages MUST adhere to the following CDDL data definitions,
 except that `SUIT_Envelope` and `SUIT_Component_Identifier` are
 specified in {{I-D.ietf-suit-manifest}}.
 
-~~~~
-teep-message = $teep-message-type .within teep-message-framework
-
-SUIT_Envelope = any
-
-teep-message-framework = [
-  type: uint (0..23) / $teep-type-extension,
-  options: { * teep-option },
-  * uint; further integers, e.g., for data-item-requested
-]
-
-teep-option = (uint => any)
-
-; messages defined below:
-$teep-message-type /= query-request
-$teep-message-type /= query-response
-$teep-message-type /= update
-$teep-message-type /= teep-success
-$teep-message-type /= teep-error
-
-; message type numbers, uint (0..23)
-TEEP-TYPE-query-request = 1
-TEEP-TYPE-query-response = 2
-TEEP-TYPE-update = 3
-TEEP-TYPE-teep-success = 5
-TEEP-TYPE-teep-error = 6
-
-version = .within uint .size 4
-ext-info = .within uint .size 4
-
-; data items as bitmaps
-data-item-requested = $data-item-requested .within uint .size 8
-attestation = 1
-$data-item-requested /= attestation
-trusted-components = 2
-$data-item-requested /= trusted-components
-extensions = 4
-$data-item-requested /= extensions
-
-query-request = [
-  type: TEEP-TYPE-query-request,
-  options: {
-    ? token => bstr .size (8..64),
-    ? supported-cipher-suites => [ + suite ],
-    ? supported-freshness-mechanisms => [ + freshness-mechanism ],
-    ? challenge => bstr .size (8..512),
-    ? versions => [ + version ],
-    * $$query-request-extensions
-    * $$teep-option-extensions
-  },
-  data-item-requested: data-item-requested
-]
-
-; ciphersuites
-suite = [
-    teep-cose-sign-algs / nil,
-    teep-cose-encrypt-algs / nil,
-    teep-cose-mac-algs / nil
-]
-
-teep-cose-sign-algs /= cose-alg-es256,
-teep-cose-sign-algs /= cose-alg-eddsa
-teep-cose-sign-algs /= cose-alg-ps256,
-teep-cose-sign-algs /= cose-alg-ps384,
-teep-cose-sign-algs /= cose-alg-ps512,
-teep-cose-sign-algs /= cose-alg-rsa-oaep-256,
-teep-cose-sign-algs /= cose-alg-rsa-oaep-512
-
-teep-cose-encrypt-algs /= cose-alg-accm-16-64-128
-
-teep-cose-mac-algs /= cose-alg-hmac-256
-
-; algorithm identifiers defined in the IANA COSE Algorithms Registry
-cose-alg-es256 = -7
-cose-alg-eddsa = -8
-cose-alg-ps256 = -37
-cose-alg-ps384 = -38
-cose-alg-ps512 = -39
-cose-alg-rsa-oaep-256 = -41
-cose-alg-rsa-oaep-512 = -42
-cose-alg-accm-16-64-128 = 10
-cose-alg-hmac-256 = 5
-
-; freshness-mechanisms
-
-freshness-mechanism = $TEEP-freshness-mechanism .within uint .size 4
-
-FRESHNESS_NONCE = 0
-FRESHNESS_TIMESTAMP = 1
-FRESHNESS_EPOCH_ID = 2
-
-$TEEP-freshness-mechanism /= FRESHNESS_NONCE
-$TEEP-freshness-mechanism /= FRESHNESS_TIMESTAMP
-$TEEP-freshness-mechanism /= FRESHNESS_EPOCH_ID
-
-query-response = [
-  type: TEEP-TYPE-query-response,
-  options: {
-    ? token => bstr .size (8..64),
-    ? selected-cipher-suite => suite,
-    ? selected-version => version,
-    ? evidence-format => text,
-    ? evidence => bstr,
-    ? tc-list => [ + tc-info ],
-    ? requested-tc-list => [ + requested-tc-info ],
-    ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
-    ? ext-list => [ + ext-info ],
-    * $$query-response-extensions,
-    * $$teep-option-extensions
-  }
-]
-
-tc-info = {
-  component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => .within uint .size 8
-}
-
-requested-tc-info = {
-  component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => .within uint .size 8
-  ? have-binary => bool
-}
-
-update = [
-  type: TEEP-TYPE-update,
-  options: {
-    ? token => bstr .size (8..64),
-    ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
-    * $$update-extensions,
-    * $$teep-option-extensions
-  }
-]
-
-teep-success = [
-  type: TEEP-TYPE-teep-success,
-  options: {
-    ? token => bstr .size (8..64),
-    ? msg => text .size (1..128),
-    ? suit-reports => [ + suit-report ],
-    * $$teep-success-extensions,
-    * $$teep-option-extensions
-  }
-]
-
-teep-error = [
-  type: TEEP-TYPE-teep-error,
-  options: {
-     ? token => bstr .size (8..64),
-     ? err-msg => text .size (1..128),
-     ? supported-cipher-suites => [ + suite ],
-     ? supported-freshness-mechanisms => [ + freshness-mechanism ],
-     ? versions => [ + version ],
-     ? suit-reports => [ + suit-report ],
-     * $$teep-error-extensions,
-     * $$teep-option-extensions
-  },
-  err-code: uint (0..23)
-]
-
-; The err-code parameter, uint (0..23)
-ERR_PERMANENT_ERROR = 1
-ERR_UNSUPPORTED_EXTENSION = 2
-ERR_UNSUPPORTED_FRESHNESS_MECHANISMS = 3
-ERR_UNSUPPORTED_MSG_VERSION = 4
-ERR_UNSUPPORTED_CIPHER_SUITES = 5
-ERR_BAD_CERTIFICATE = 6
-ERR_CERTIFICATE_EXPIRED = 9
-ERR_TEMPORARY_ERROR = 10
-ERR_MANIFEST_PROCESSING_FAILED = 17
-
-; labels of mapkey for teep message parameters, uint (0..23)
-supported-cipher-suites = 1
-challenge = 2
-versions = 3
-selected-cipher-suite = 5
-selected-version = 6
-evidence = 7
-tc-list = 8
-ext-list = 9
-manifest-list = 10
-msg = 11
-err-msg = 12
-evidence-format = 13
-requested-tc-list = 14
-unneeded-tc-list = 15
-component-id = 16
-tc-manifest-sequence-number = 17
-have-binary = 18
-suit-reports = 19
-token = 20
-supported-freshness-mechanisms = 21
+~~~~ CDDL
+{::include draft-ietf-teep-protocol.cddl}
 ~~~~
 
 # D. Examples of Diagnostic Notation and Binary Representation
@@ -1787,6 +1634,7 @@ COSE is shown.
     / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
     / selected-cipher-suite / 5 : [ -7, null, null ] / only use ES256 /,
     / selected-version / 6 : 0,
+    / attestation-payload / 7 : "" / empty only example purpose /,
     / tc-list / 8 : [
       {
         / component-id / 16 : [ h'0102030405060708090A0B0C0D0E0F' ]

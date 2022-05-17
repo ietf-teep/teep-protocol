@@ -1,0 +1,184 @@
+teep-message = $teep-message-type .within teep-message-framework
+
+teep-message-framework = [
+  type: uint (0..23) / $teep-type-extension,
+  options: { * teep-option },
+  * uint; further integers, e.g., for data-item-requested
+]
+
+teep-option = (uint => any)
+
+; messages defined below:
+$teep-message-type /= query-request
+$teep-message-type /= query-response
+$teep-message-type /= update
+$teep-message-type /= teep-success
+$teep-message-type /= teep-error
+
+; message type numbers, uint (0..23)
+TEEP-TYPE-query-request = 1
+TEEP-TYPE-query-response = 2
+TEEP-TYPE-update = 3
+TEEP-TYPE-teep-success = 5
+TEEP-TYPE-teep-error = 6
+
+version = uint .size 4
+ext-info = uint .size 4
+
+; data items as bitmaps
+data-item-requested = $data-item-requested
+attestation = 1
+$data-item-requested /= attestation
+trusted-components = 2
+$data-item-requested /= trusted-components
+extensions = 4
+$data-item-requested /= extensions
+
+query-request = [
+  type: TEEP-TYPE-query-request,
+  options: {
+    ? token => bstr .size (8..64),
+    ? supported-cipher-suites => [ + ciphersuite ],
+    ? supported-freshness-mechanisms => [ + freshness-mechanism ],
+    ? challenge => bstr .size (8..512),
+    ? versions => [ + version ],
+    * $$query-request-extensions
+    * $$teep-option-extensions
+  },
+  data-item-requested: data-item-requested
+]
+
+; For ciphersuites from this line
+COSE_Sign_Tagged     = 98
+COSE_Sign1_Tagged    = 18
+COSE_Encrypt_Tagged  = 96
+COSE_Encrypt0_Tagged = 16
+COSE_Mac_Tagged      = 97
+COSE_Mac0_Tagged     = 17
+
+;RECOMMENDED to implement:
+cose-alg-hss-lms = -46
+teep-cose-algs /= cose-alg-hss-lms
+
+;OPTIONAL to implement any from IANA cose registry. Listing only partially:
+cose-alg-es256 = -7
+cose-alg-eddsa = -8
+cose-alg-a256gcm = 3
+cose-alg-hmac-256-256 = 5
+cose-alg-hmac-384-385 = 6
+cose-alg-hmac-512-512 = 7
+
+teep-cose-sign = [ COSE_Sign_Tagged / COSE_Sign1_Tagged, teep-cose-algs ]
+teep-cose-encrypt = [ COSE_Encrypt_Tagged / COSE_Encrypt0_Tagged, teep-cose-algs ]
+teep-cose-mac = [ COSE_Mac_Tagged / COSE_Mac0_Tagged, teep-cose-algs ]
+
+ciphersuite = [ * ( teep-cose-sign / teep-cose-encrypt / teep-cose-mac ) ]
+
+; freshness-mechanisms
+
+freshness-mechanism = $TEEP-freshness-mechanism
+
+FRESHNESS_NONCE = 0
+FRESHNESS_TIMESTAMP = 1
+FRESHNESS_EPOCH_ID = 2
+
+$TEEP-freshness-mechanism /= FRESHNESS_NONCE
+$TEEP-freshness-mechanism /= FRESHNESS_TIMESTAMP
+$TEEP-freshness-mechanism /= FRESHNESS_EPOCH_ID
+
+query-response = [
+  type: TEEP-TYPE-query-response,
+  options: {
+    ? token => bstr .size (8..64),
+    ? selected-cipher-suite => ciphersuite,
+    ? selected-version => version,
+    ? evidence-format => text,
+    ? evidence => bstr,
+    ? tc-list => [ + tc-info ],
+    ? requested-tc-list => [ + requested-tc-info ],
+    ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
+    ? ext-list => [ + ext-info ],
+    * $$query-response-extensions,
+    * $$teep-option-extensions
+  }
+]
+
+tc-info = {
+  component-id => SUIT_Component_Identifier,
+  ? tc-manifest-sequence-number => uint .size 8
+}
+
+requested-tc-info = {
+  component-id => SUIT_Component_Identifier,
+  ? tc-manifest-sequence-number => uint .size 8
+  ? have-binary => bool
+}
+
+update = [
+  type: TEEP-TYPE-update,
+  options: {
+    ? token => bstr .size (8..64),
+    ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
+    * $$update-extensions,
+    * $$teep-option-extensions
+  }
+]
+
+teep-success = [
+  type: TEEP-TYPE-teep-success,
+  options: {
+    ? token => bstr .size (8..64),
+    ? msg => text .size (1..128),
+    ? suit-reports => [ + SUIT_Report ],
+    * $$teep-success-extensions,
+    * $$teep-option-extensions
+  }
+]
+
+teep-error = [
+  type: TEEP-TYPE-teep-error,
+  options: {
+     ? token => bstr .size (8..64),
+     ? err-msg => text .size (1..128),
+     ? supported-cipher-suites => [ + ciphersuite ],
+     ? supported-freshness-mechanisms => [ + freshness-mechanism ],
+     ? versions => [ + version ],
+     ? suit-reports => [ + SUIT_Report ],
+     * $$teep-error-extensions,
+     * $$teep-option-extensions
+  },
+  err-code: uint (0..23)
+]
+
+; The err-code parameter, uint (0..23)
+ERR_PERMANENT_ERROR = 1
+ERR_UNSUPPORTED_EXTENSION = 2
+ERR_UNSUPPORTED_FRESHNESS_MECHANISMS = 3
+ERR_UNSUPPORTED_MSG_VERSION = 4
+ERR_UNSUPPORTED_CIPHER_SUITES = 5
+ERR_BAD_CERTIFICATE = 6
+ERR_CERTIFICATE_EXPIRED = 9
+ERR_TEMPORARY_ERROR = 10
+ERR_MANIFEST_PROCESSING_FAILED = 17
+
+; labels of mapkey for teep message parameters, uint (0..23)
+supported-cipher-suites = 1
+challenge = 2
+versions = 3
+selected-cipher-suite = 5
+selected-version = 6
+evidence = 7
+tc-list = 8
+ext-list = 9
+manifest-list = 10
+msg = 11
+err-msg = 12
+evidence-format = 13
+requested-tc-list = 14
+unneeded-tc-list = 15
+component-id = 16
+tc-manifest-sequence-number = 17
+have-binary = 18
+suit-reports = 19
+token = 20
+supported-freshness-mechanisms = 21
