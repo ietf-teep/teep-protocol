@@ -1634,7 +1634,7 @@ COSE is shown.
     / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
     / selected-cipher-suite / 5 : [ -7, null, null ] / only use ES256 /,
     / selected-version / 6 : 0,
-    / attestation-payload / 7 : h'' / empty only example purpose /,
+    / attestation-payload / 7 : h'' / empty only for example purpose /,
     / tc-list / 8 : [
       {
         / component-id / 16 : [ h'0102030405060708090A0B0C0D0E0F' ]
