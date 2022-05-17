@@ -1634,7 +1634,7 @@ COSE is shown.
     / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
     / selected-cipher-suite / 5 : [ -7, null, null ] / only use ES256 /,
     / selected-version / 6 : 0,
-    / attestation-payload / 7 : "" / empty only example purpose /,
+    / attestation-payload / 7 : h'' / empty only example purpose /,
     / tc-list / 8 : [
       {
         / component-id / 16 : [ h'0102030405060708090A0B0C0D0E0F' ]
@@ -1653,7 +1653,7 @@ COSE is shown.
 ~~~~
 82                  # array(2)
    02               # unsigned(2) / TEEP-TYPE-query-response /
-   A4               # map(4)
+   A5               # map(5)
       14            # unsigned(20) / token: /
       50            # bytes(16)
          A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
@@ -1664,6 +1664,9 @@ COSE is shown.
          F6         # primitive(22) / null /
       06            # unsigned(6) / selected-version: /
       00            # unsigned(0)
+      07            # unsigned(7) / attestation-payload: /
+      40            # bytes(0)
+                    # ""
       08            # unsigned(8) / tc-list: /
       82            # array(2)
          A1         # map(1)
