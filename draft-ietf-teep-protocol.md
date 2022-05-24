@@ -460,8 +460,9 @@ selected-version
 
 attestation-payload-format
 : The attestation-payload-format parameter indicates the IANA Media Type of the
-  attestation-payload parameter.  It MUST be
-  present if the attestation-payload parameter is present and the format is not an EAT.
+  attestation-payload parameter.  The absence of this parameter indicates that
+  the format is "application/cwt". It MUST be present if the evidence parameter
+  is present and the format is not "application/cwt".
 
 attestation-payload
 : The attestation-payload parameter contains Evidence or Attestation Results.  This parameter
