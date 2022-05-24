@@ -67,6 +67,12 @@ cose-alg-a256gcm = 3
 cose-alg-hmac-256-256 = 5
 cose-alg-hmac-384-385 = 6
 cose-alg-hmac-512-512 = 7
+teep-cose-algs /= cose-alg-es256
+teep-cose-algs /= cose-alg-eddsa
+teep-cose-algs /= cose-alg-a256gcm
+teep-cose-algs /= cose-alg-hmac-256-256
+teep-cose-algs /= cose-alg-hmac-384-385
+teep-cose-algs /= cose-alg-hmac-512-512
 
 teep-cose-sign = [ COSE_Sign_Tagged / COSE_Sign1_Tagged, teep-cose-algs ]
 teep-cose-encrypt = [ COSE_Encrypt_Tagged / COSE_Encrypt0_Tagged, teep-cose-algs ]
