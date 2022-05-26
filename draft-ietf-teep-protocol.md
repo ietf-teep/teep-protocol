@@ -413,7 +413,7 @@ query-response = [
     ? selected-version => version,
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
-    ? suit-reports => [ + suit-report ],
+    ? suit-reports => [ + SUIT_Report ],
     ? tc-list => [ + tc-info ],
     ? requested-tc-list => [ + requested-tc-info ],
     ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
@@ -881,7 +881,7 @@ teep-success = [
   options: {
     ? token => bstr .size (8..64),
     ? msg => text .size (1..128),
-    ? suit-reports => [ + suit-report ],
+    ? suit-reports => [ + SUIT_Report ],
     * $$teep-success-extensions,
     * $$teep-option-extensions
   }
@@ -933,7 +933,7 @@ teep-error = [
      ? supported-cipher-suites => [ + ciphersuite ],
      ? supported-freshness-mechanisms => [ + freshness-mechanism ],
      ? versions => [ + version ],
-     ? suit-reports => [ + suit-report ],
+     ? suit-reports => [ + SUIT_Report ],
      * $$teep-error-extensions,
      * $$teep-option-extensions
   },
