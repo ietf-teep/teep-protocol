@@ -441,9 +441,9 @@ token
 
 selected-cipher-suite
 : The selected-cipher-suite parameter indicates the selected ciphersuite. If this
-  parameter is not present, it is to be treated as if it contained all ciphersuites
-  listed in the QueryRequest. Details about the ciphersuite encoding can be found
-  in {{ciphersuite}}.
+  parameter is not present, it is to be treated as if the TEEP Agent accepts
+  any ciphersuites listed in the QueryRequest, and the TAM SHOULD select it.
+  Details about the ciphersuite encoding can be found in {{ciphersuite}}.
 
 selected-version
 : The selected-version parameter indicates the TEEP protocol version selected by the
