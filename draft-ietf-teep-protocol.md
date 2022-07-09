@@ -1115,7 +1115,7 @@ This specification uses the following mapping:
 | Name                           | Label |
 | supported-cipher-suites        |     1 |
 | challenge                      |     2 |
-| version                        |     3 |
+| versions                       |     3 |
 | selected-cipher-suite          |     5 |
 | selected-version               |     6 |
 | attestation-payload            |     7 |
