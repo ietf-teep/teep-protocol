@@ -93,6 +93,7 @@ normative:
     target: https://www.iana.org/assignments/cose/cose.xhtml#algorithms
 informative:
   I-D.ietf-teep-architecture: 
+  I-D.lundblade-rats-eat-media-type:
   RFC8610: 
   RFC8126: 
   RFC8915: 
@@ -462,9 +463,16 @@ selected-version
 
 attestation-payload-format
 : The attestation-payload-format parameter indicates the IANA Media Type of the
-  attestation-payload parameter.  The absence of this parameter indicates that
-  the format is "application/cwt". It MUST be present if the evidence parameter
-  is present and the format is not "application/cwt".
+  attestation-payload parameter, where media type parameters are permitted after
+  the media type.  The absence of this parameter indicates that
+  the format is "application/eat-cwt; profile=https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-08" (see {{I-D.lundblade-rats-eat-media-type}}
+  for further discussion).
+  (RFC-editor: upon RFC publication, replace URI above with
+  "https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
+  of this document.)
+  It MUST be present if the evidence parameter
+  is present and the format is not an EAT in CWT format with the profile
+  defined below in {{eat}}.
 
 attestation-payload
 : The attestation-payload parameter contains Evidence or Attestation Results.  This parameter
