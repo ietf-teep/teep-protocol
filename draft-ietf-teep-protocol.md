@@ -470,7 +470,7 @@ attestation-payload-format
   (RFC-editor: upon RFC publication, replace URI above with
   "https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
   of this document.)
-  It MUST be present if the evidence parameter
+  It MUST be present if the attestation-payload parameter
   is present and the format is not an EAT in CWT format with the profile
   defined below in {{eat}}.
 
@@ -1173,10 +1173,15 @@ was present.  If these requirements are not met, the TAM drops the message.  It 
 additional implementation specific actions such as logging the results.  If the requirements
 are met, processing continues as follows.
 
-If a QueryResponse message is received that contains that contains Evidence, the Evidence
-is passed to an attestation Verifier (see {{I-D.ietf-rats-architecture}})
-to determine whether the Agent is in a trustworthy state.  Once the TAM receives Attestation
-Results, processing continues as follows.
+If a QueryResponse message is received that contains an attestation-payload, the TAM
+checks whether it contains Evidence or an Attesation Result by inspecting the attestation-payload-format
+parameter.  The media type defined in {{eat}} indicates an Attestation Result, though future
+extensions might also indicate other Attestation Result formats in the future. Any other unrecognized
+value indicates Evidence.  If the QueryResponse is determined to contain Evidence, the TAM passes
+the Evidence (via some mechanism out of scope of this document) to an attestation Verifier
+(see {{I-D.ietf-rats-architecture}})
+to determine whether the Agent is in a trustworthy state.  Once the TAM receives an Attestation
+Result from the Verifier, processing continues as follows.
 
 Based on the results of attestation (if any), any SUIT Reports,
 and the lists of installed, requested,
