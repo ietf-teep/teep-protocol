@@ -309,13 +309,13 @@ query-request = [
   type: TEEP-TYPE-query-request,
   options: {
     ? token => bstr .size (8..64),
-    ? supported-ciphersuites => [ + $ciphersuite ],
     ? supported-freshness-mechanisms => [ + freshness-mechanism ],
     ? challenge => bstr .size (8..512),
     ? versions => [ + version ],
     * $$query-request-extensions
     * $$teep-option-extensions
   },
+  supported-ciphersuites: [ + $ciphersuite ],
   data-item-requested: data-item-requested  
 ]
 ~~~~
@@ -326,6 +326,10 @@ The message has the following fields:
 type
 : The value of (1) corresponds to a QueryRequest message sent from the TAM to 
   the TEEP Agent.
+
+supported-ciphersuites
+: The supported-ciphersuites parameter lists the ciphersuites supported by the TAM. Details
+  about the ciphersuite encoding can be found in {{ciphersuite}}.
 
 token
 : The value in the token parameter is used to match responses to requests.
@@ -343,6 +347,11 @@ token
   The TAM MUST expire the token value after receiving the first response
   containing the token value and ignore any subsequent messages that have the same token
   value.
+
+supported-ciphersuites
+: The supported-ciphersuites parameter lists the ciphersuites supported by the TAM. If this parameter is not present, it is to be treated the same as if
+  it contained all ciphersuites defined in this document that are listed as "MUST". Details
+  about the ciphersuite encoding can be found in {{ciphersuite}}.
 
 data-item-requested
 : The data-item-requested parameter indicates what information the TAM requests from the TEEP
@@ -365,11 +374,6 @@ data-item-requested
      in the response.
 
    Further values may be added in the future.
-
-supported-ciphersuites
-: The supported-ciphersuites parameter lists the ciphersuites supported by the TAM. If this parameter is not present, it is to be treated the same as if
-  it contained all ciphersuites defined in this document that are listed as "MUST". Details
-  about the ciphersuite encoding can be found in {{ciphersuite}}.
 
 supported-freshness-mechanisms
 : The supported-freshness-mechanisms parameter lists the freshness mechanism(s) supported by the TAM.
@@ -1572,11 +1576,11 @@ This section includes some examples with the following assumptions:
   / options: /
   {
     / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
-    / supported-ciphersuites / 2 : [ [ [ 18, -7 ] ], / use only ES256 /
-                                     [ [ 18, -8 ] ]  / use only EdDSA /
-                                   ],
     / versions / 3 : [ 0 ]  / 0 is current TEEP Protocol /
   },
+  / supported-ciphersuites / [ [ [ 18, -7 ] ], / use only ES256 /
+                               [ [ 18, -8 ] ]  / use only EdDSA /
+                               ],
   / data-item-requested: / 3 / attestation | trusted-components /
 ]
 ~~~~
@@ -1585,25 +1589,29 @@ This section includes some examples with the following assumptions:
 {: numbered='no'}
 
 ~~~~
-83                  # array(3)
+84                  # array(4)
    01               # unsigned(1) / TEEP-TYPE-query-request /
-   A3               # map(3)
+   81               # array(1)
+      83            # array(3)
+         26         # negative(6) / -7 = cose-alg-es256 /
+         F6         # primitive(22) / null /
+         F6         # primitive(22) / null /
+   A2               # map(2)
       14            # unsigned(20) / token: /
       50            # bytes(16)
          A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
-      01            # unsigned(1) / supported-ciphersuites: /
-      82            # array(2)
-         81         # array(1)
-            82      # array(2)
-               12   # unsigned(18) / cose-sign1 /
-               26   # negative(6) / -7 = cose-alg-es256 /
-         81         # array(1)
-            82      # array(2)
-               12   # unsigned(18) / cose-sign1 /
-               27   # negative(7) / -8 = cose-alg-eddsa /
       03            # unsigned(3) / versions: /
       81            # array(1) / [ 0 ] /
          00         # unsigned(0)
+   82            # array(2) /* supported-ciphersuites /
+      81         # array(1)
+         82      # array(2)
+            12   # unsigned(18) / cose-sign1 /
+            26   # negative(6) / -7 = cose-alg-es256 /
+      81         # array(1)
+         82      # array(2)
+            12   # unsigned(18) / cose-sign1 /
+            27   # negative(7) / -8 = cose-alg-eddsa /
    03               # unsigned(3) / attestation | trusted-components /
 ~~~~
 
