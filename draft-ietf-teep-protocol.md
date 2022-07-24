@@ -1633,8 +1633,8 @@ This section includes some examples with the following assumptions:
     / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
     / versions / 3 : [ 0 ]  / 0 is current TEEP Protocol /
   },
-  / supported-ciphersuites: / [ [ [ 18, -7 ] ], / use only ES256 /
-                               [ [ 18, -8 ] ]  / use only EdDSA /
+  / supported-ciphersuites: / [ [ [ 18, -7 ] ], / Sign1 using ES256 /
+                                [ [ 18, -8 ] ]  / Sign1 using EdDSA /
                                ],
   / data-item-requested: / 3 / attestation | trusted-components /
 ]
