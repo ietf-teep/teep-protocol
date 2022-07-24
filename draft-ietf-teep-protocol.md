@@ -415,7 +415,7 @@ query-response = [
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
     ? suit-reports => [ + SUIT_Report ],
-    ? tc-list => [ + tc-info ],
+    ? tc-list => [ + system-property-claims ],
     ? requested-tc-list => [ + requested-tc-info ],
     ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
     ? ext-list => [ + ext-info ],
@@ -496,7 +496,11 @@ suit-reports
 
 tc-list
 : The tc-list parameter enumerates the Trusted Components installed on the device
-  in the form of tc-info objects.  This parameter MUST be present if the
+  in the form of system-property-claims objects. The system-property-claims may
+  contain TEE properties information when QueryResponse do not have evidence,
+  using it to learn device identifying information and TEE identifying information
+  for distinguishing which Trusted Components to install in the TEE.
+  This parameter MUST be present if the
   QueryResponse is sent in response to a QueryRequest with the
   trusted-components bit set.
 
