@@ -83,6 +83,7 @@ normative:
   RFC7049: 
   I-D.ietf-rats-architecture: 
   I-D.ietf-rats-eat: 
+  I-D.ietf-rats-reference-interaction-models:
   I-D.ietf-suit-manifest: 
   I-D.ietf-suit-trust-domains:
   I-D.ietf-suit-report:
@@ -1387,8 +1388,9 @@ in a Query Response is fresh.  There are multiple ways this can be done
 as discussed in Section 10 of {{I-D.ietf-rats-architecture}}.
 
 Each freshness mechanism is identified with an integer value, which corresponds to
-an IANA registered freshness mechanism (see {{freshness-mechanism-registry}}.
-This document defines the following freshness mechanisms:
+an IANA registered freshness mechanism (see the IANA Considerations section of
+{{I-D.ietf-rats-reference-interaction-models}}).
+This document uses the following freshness mechanisms:
 
 | Value | Freshness mechanism                            |
 |     1 | Nonce                                          |
@@ -1568,25 +1570,6 @@ Author:
 
 Change controller:
 : IETF
-
-## Freshness Mechanism Registry {#freshness-mechanism-registry}
-
-IANA is also requested to create a new registry for freshness mechanisms.
-
-Name of registry: TEEP Freshness Mechanisms
-
-Policy: Specification Required {{RFC8126}}
-
-Additional requirements: The specification must document relevant security considerations.
-
-Initial values: 
-
-| Value | Freshness mechanism                            | Specification
-|     1 | Nonce                                          | RFC TBD {{freshness-mechanisms}}
-|     2 | Timestamp                                      | RFC TBD {{freshness-mechanisms}}
-|     3 | Epoch ID                                       | RFC TBD {{freshness-mechanisms}}
-
-(RFC Editor: please replace TBD above with the number assigned to this document.)
 
 --- back
 
