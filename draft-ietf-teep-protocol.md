@@ -349,7 +349,7 @@ data-item-requested
 
    attestation (1)
    : With this value the TAM requests the TEEP Agent to return an attestation payload,
-     whether Evidence (e.g., an EAT) or Attestation Results, in the response.
+     whether Evidence (e.g., an EAT) or an Attestation Result, in the response.
 
    trusted-components (2)
    : With this value the TAM queries the TEEP Agent for all installed Trusted Components.
@@ -475,7 +475,7 @@ attestation-payload-format
   defined below in {{eat}}.
 
 attestation-payload
-: The attestation-payload parameter contains Evidence or Attestation Results.  This parameter
+: The attestation-payload parameter contains Evidence or an Attestation Result.  This parameter
   MUST be present if the QueryResponse is sent in response to a QueryRequest
   with the attestation bit set.  If the attestation-payload-format parameter is absent,
   the attestation payload contained in this parameter MUST be
@@ -582,7 +582,33 @@ for the Verifier to use when generating Attestation Results of some form:
 ## Update Message {#update-msg-def}
 
 The Update message is used by the TAM to install and/or delete one or more Trusted
-Components via the TEEP Agent. 
+Components via the TEEP Agent.  It can also be used to pass a successful
+Attestation Report back to the TEEP Agent when the TAM is configured as
+an intermediary between the TEEP Agent and a Verifier, as shown in the figure
+below, where the Attestation Result passed back to the Attester can be used
+as a so-called "passport" (see section 5.1 of {{I-D.ietf-rats-architecture}})
+that can be presented to other Relying Parties.
+
+~~~~
+         +---------------+
+         |   Verifier    |
+         +---------------+
+               ^    | Attestation
+      Evidence |    v   Result
+         +---------------+
+         |     TAM /     |
+         | Relying Party |
+         +---------------+
+ QueryResponse ^    |    Update
+   (Evidence)  |    | (Attestation
+               |    v    Result)
+         +---------------+             +---------------+
+         |  TEEP Agent   |------------>|     Other     |
+         |  / Attester   | Attestation | Relying Party |
+         +---------------+    Result   +---------------+
+
+    Figure 1: Example use of TEEP and attestation
+~~~~
 
 Like other TEEP messages, the Update message is
 signed, and the relevant CDDL snippet is shown below. 
@@ -594,6 +620,8 @@ update = [
   options: {
     ? token => bstr .size (8..64),
     ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
+    ? attestation-payload-format => text,
+    ? attestation-payload => bstr,
     * $$update-extensions,
     * $$teep-option-extensions
   }
@@ -624,6 +652,26 @@ manifest-list
   by the same Trusted Component Signer. Other combinations are, however, possible as well. For example,
   it is also possible for the TAM to sign and encrypt the personalization data
   and to let the Trusted Component Developer sign and/or encrypt the Trusted Component binary.
+
+attestation-payload-format
+: The attestation-payload-format parameter indicates the IANA Media Type of the
+  attestation-payload parameter, where media type parameters are permitted after
+  the media type.  The absence of this parameter indicates that
+  the format is "application/eat-cwt; profile=https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-09" (see {{I-D.lundblade-rats-eat-media-type}}
+  for further discussion).
+  (RFC-editor: upon RFC publication, replace URI above with
+  "https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
+  of this document.)
+  It MUST be present if the attestation-payload parameter
+  is present and the format is not an EAT in CWT format with the profile
+  defined below in {{eat}}.
+
+attestation-payload
+: The attestation-payload parameter contains an Attestation Result.  This parameter
+  If the attestation-payload-format parameter is absent,
+  the attestation payload contained in this parameter MUST be
+  an Entity Attestation Token following the encoding
+  defined in {{I-D.ietf-rats-eat}}.  See {{attestation}} for further discussion.
 
 Note that an Update message carrying one or more SUIT manifests will inherently
 involve multiple signatures, one by the TAM in the TEEP message and one from 
@@ -710,7 +758,7 @@ Cons:
           | 48 65 6C 6C 6F 2C 20 ... |
           +==========================+
 
-    Figure 1: URI of the Trusted Component Binary
+    Figure 2: URI of the Trusted Component Binary
 ~~~~
 
 For the full SUIT Manifest example binary, see {{suit-uri}}.
@@ -763,7 +811,7 @@ Cons:
       | ])                                        |
       +===========================================+
 
-    Figure 2: Integrated Payload with Trusted Component Binary
+    Figure 3: Integrated Payload with Trusted Component Binary
 ~~~~
 
 For the full SUIT Manifest example binary, see {{suit-integrated}}.
@@ -832,7 +880,7 @@ The TAM delivers the SUIT manifest of the Personalization Data which depends on 
           | 7B 22 75 73 65 72 22 ... |
           +==========================+
 
-    Figure 3: Personalization Data
+    Figure 4: Personalization Data
 ~~~~
 
 For the full SUIT Manifest example binary, see {{suit-personalization}}.
@@ -871,7 +919,7 @@ The directive-unlink (see {{I-D.ietf-suit-trust-domains}} Section-6.5.4) is loca
       | ])                                        |
       +===========================================+
 
-    Figure 4: Unlink Trusted Component example (summary)
+    Figure 5: Unlink Trusted Component example (summary)
 ~~~~
 
 For the full SUIT Manifest example binary, see [Appendix E. SUIT Example 4](#suit-unlink)
