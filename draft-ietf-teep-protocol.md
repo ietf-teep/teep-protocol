@@ -1115,6 +1115,15 @@ of this document.)
 * Manifests and Software Evidence Claims: The sw-name claim for a Trusted
   Component holds the URI of the SUIT manifest for that component.
 
+A TAM implementation might simply accept a TEEP Agent as trustworthy based on a
+successful Attestation Result, and if not then attempt to update the TEEP Agent
+and all of its dependencies.  This logic is simple but it might result in updating
+some components that do not need to be updated.
+
+An alternate TAM implementation might use any Additional Claims to determine whether
+the TEEP Agent or any of its dependencies are trustworthy, and only update the
+specific components that are out of date.
+
 # Mapping of TEEP Message Parameters to CBOR Labels {#tags}
 
 In COSE, arrays and maps use strings, negative integers, and unsigned
