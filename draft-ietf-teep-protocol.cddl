@@ -140,7 +140,7 @@ teep-error = [
   options: {
      ? token => bstr .size (8..64),
      ? err-msg => text .size (1..128),
-     ? supported-cipher-suites => [ + $ciphersuite ],
+     ? supported-ciphersuites => [ + $ciphersuite ],
      ? supported-freshness-mechanisms => [ + freshness-mechanism ],
      ? versions => [ + version ],
      ? suit-reports => [ + SUIT_Report ],
@@ -162,7 +162,7 @@ ERR_TEMPORARY_ERROR = 10
 ERR_MANIFEST_PROCESSING_FAILED = 17
 
 ; labels of mapkey for teep message parameters, uint (0..23)
-supported-cipher-suites = 1
+supported-ciphersuites = 1
 challenge = 2
 versions = 3
 selected-cipher-suite = 5
