@@ -83,6 +83,7 @@ normative:
   RFC7049: 
   I-D.ietf-rats-architecture: 
   I-D.ietf-rats-eat: 
+  I-D.ietf-rats-reference-interaction-models:
   I-D.ietf-suit-manifest: 
   I-D.ietf-suit-trust-domains:
   I-D.ietf-suit-report:
@@ -309,7 +310,7 @@ query-request = [
   type: TEEP-TYPE-query-request,
   options: {
     ? token => bstr .size (8..64),
-    ? supported-freshness-mechanisms => [ + freshness-mechanism ],
+    ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
     ? challenge => bstr .size (8..512),
     ? versions => [ + version ],
     * $$query-request-extensions
@@ -979,7 +980,7 @@ teep-error = [
      ? token => bstr .size (8..64),
      ? err-msg => text .size (1..128),
      ? supported-ciphersuites => [ + $ciphersuite ],
-     ? supported-freshness-mechanisms => [ + freshness-mechanism ],
+     ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
      ? versions => [ + version ],
      ? suit-reports => [ + SUIT_Report ],
      * $$teep-error-extensions,
@@ -1387,13 +1388,19 @@ in a Query Response is fresh.  There are multiple ways this can be done
 as discussed in Section 10 of {{I-D.ietf-rats-architecture}}.
 
 Each freshness mechanism is identified with an integer value, which corresponds to
-an IANA registered freshness mechanism (see {{freshness-mechanism-registry}}.
-This document defines the following freshness mechanisms:
+an IANA registered freshness mechanism (see the IANA Considerations section of
+{{I-D.ietf-rats-reference-interaction-models}}).
+This document uses the following freshness mechanisms:
 
-| Value | Freshness mechanism                            |
-|     1 | Nonce                                          |
-|     2 | Timestamp                                      |
-|     3 | Epoch ID                                       |
+~~~~
+FRESHNESS_NONCE = 0
+FRESHNESS_TIMESTAMP = 1
+FRESHNESS_EPOCH_ID = 2
+
+$freshness-mechanism /= FRESHNESS_NONCE
+$freshness-mechanism /= FRESHNESS_TIMESTAMP
+$freshness-mechanism /= FRESHNESS_EPOCH_ID
+~~~~
 
 In the Nonce mechanism, the attestation payload MUST include a nonce provided
 in the QueryRequest challenge.  In other mechanisms, a timestamp
@@ -1568,25 +1575,6 @@ Author:
 
 Change controller:
 : IETF
-
-## Freshness Mechanism Registry {#freshness-mechanism-registry}
-
-IANA is also requested to create a new registry for freshness mechanisms.
-
-Name of registry: TEEP Freshness Mechanisms
-
-Policy: Specification Required {{RFC8126}}
-
-Additional requirements: The specification must document relevant security considerations.
-
-Initial values: 
-
-| Value | Freshness mechanism                            | Specification
-|     1 | Nonce                                          | RFC TBD {{freshness-mechanisms}}
-|     2 | Timestamp                                      | RFC TBD {{freshness-mechanisms}}
-|     3 | Epoch ID                                       | RFC TBD {{freshness-mechanisms}}
-
-(RFC Editor: please replace TBD above with the number assigned to this document.)
 
 --- back
 

@@ -75,15 +75,13 @@ $ciphersuite /= teep-ciphersuite-sign1-es256
 
 ; freshness-mechanisms
 
-freshness-mechanism = $TEEP-freshness-mechanism
-
 FRESHNESS_NONCE = 0
 FRESHNESS_TIMESTAMP = 1
 FRESHNESS_EPOCH_ID = 2
 
-$TEEP-freshness-mechanism /= FRESHNESS_NONCE
-$TEEP-freshness-mechanism /= FRESHNESS_TIMESTAMP
-$TEEP-freshness-mechanism /= FRESHNESS_EPOCH_ID
+$freshness-mechanism /= FRESHNESS_NONCE
+$freshness-mechanism /= FRESHNESS_TIMESTAMP
+$freshness-mechanism /= FRESHNESS_EPOCH_ID
 
 query-response = [
   type: TEEP-TYPE-query-response,
