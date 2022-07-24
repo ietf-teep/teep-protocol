@@ -38,13 +38,13 @@ query-request = [
   type: TEEP-TYPE-query-request,
   options: {
     ? token => bstr .size (8..64),
-    ? supported-ciphersuites => [ + $ciphersuite ],
     ? supported-freshness-mechanisms => [ + freshness-mechanism ],
     ? challenge => bstr .size (8..512),
     ? versions => [ + version ],
     * $$query-request-extensions
     * $$teep-option-extensions
   },
+  supported-ciphersuites: [ + $ciphersuite ],
   data-item-requested: data-item-requested
 ]
 
