@@ -310,7 +310,7 @@ query-request = [
   type: TEEP-TYPE-query-request,
   options: {
     ? token => bstr .size (8..64),
-    ? supported-freshness-mechanisms => [ + freshness-mechanism ],
+    ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
     ? challenge => bstr .size (8..512),
     ? versions => [ + version ],
     * $$query-request-extensions
@@ -980,7 +980,7 @@ teep-error = [
      ? token => bstr .size (8..64),
      ? err-msg => text .size (1..128),
      ? supported-ciphersuites => [ + $ciphersuite ],
-     ? supported-freshness-mechanisms => [ + freshness-mechanism ],
+     ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
      ? versions => [ + version ],
      ? suit-reports => [ + SUIT_Report ],
      * $$teep-error-extensions,
@@ -1392,10 +1392,15 @@ an IANA registered freshness mechanism (see the IANA Considerations section of
 {{I-D.ietf-rats-reference-interaction-models}}).
 This document uses the following freshness mechanisms:
 
-| Value | Freshness mechanism                            |
-|     1 | Nonce                                          |
-|     2 | Timestamp                                      |
-|     3 | Epoch ID                                       |
+~~~~
+FRESHNESS_NONCE = 0
+FRESHNESS_TIMESTAMP = 1
+FRESHNESS_EPOCH_ID = 2
+
+$freshness-mechanism /= FRESHNESS_NONCE
+$freshness-mechanism /= FRESHNESS_TIMESTAMP
+$freshness-mechanism /= FRESHNESS_EPOCH_ID
+~~~~
 
 In the Nonce mechanism, the attestation payload MUST include a nonce provided
 in the QueryRequest challenge.  In other mechanisms, a timestamp
