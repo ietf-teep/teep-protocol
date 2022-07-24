@@ -327,10 +327,6 @@ type
 : The value of (1) corresponds to a QueryRequest message sent from the TAM to 
   the TEEP Agent.
 
-supported-ciphersuites
-: The supported-ciphersuites parameter lists the ciphersuites supported by the TAM. Details
-  about the ciphersuite encoding can be found in {{ciphersuite}}.
-
 token
 : The value in the token parameter is used to match responses to requests.
   This is particularly useful when a TAM issues multiple concurrent requests
@@ -349,8 +345,7 @@ token
   value.
 
 supported-ciphersuites
-: The supported-ciphersuites parameter lists the ciphersuites supported by the TAM. If this parameter is not present, it is to be treated the same as if
-  it contained all ciphersuites defined in this document that are listed as "MUST". Details
+: The supported-ciphersuites parameter lists the ciphersuites supported by the TAM. Details
   about the ciphersuite encoding can be found in {{ciphersuite}}.
 
 data-item-requested
@@ -1578,7 +1573,7 @@ This section includes some examples with the following assumptions:
     / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
     / versions / 3 : [ 0 ]  / 0 is current TEEP Protocol /
   },
-  / supported-ciphersuites / [ [ [ 18, -7 ] ], / use only ES256 /
+  / supported-ciphersuites: / [ [ [ 18, -7 ] ], / use only ES256 /
                                [ [ 18, -8 ] ]  / use only EdDSA /
                                ],
   / data-item-requested: / 3 / attestation | trusted-components /
