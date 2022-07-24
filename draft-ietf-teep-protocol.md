@@ -1584,7 +1584,7 @@ This section includes some examples with the following assumptions:
 {: numbered='no'}
 
 ~~~~
-84                  # array(4)
+85                  # array(5)
    01               # unsigned(1) / TEEP-TYPE-query-request /
    81               # array(1)
       83            # array(3)
