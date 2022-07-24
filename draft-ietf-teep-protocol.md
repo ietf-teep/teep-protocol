@@ -1593,12 +1593,14 @@ This section includes some examples with the following assumptions:
          A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
       01            # unsigned(1) / supported-ciphersuites: /
       82            # array(2)
-         82         # array(2)
-            12      # unsigned(18) / cose-sign1 /
-            26      # negative(6) / -7 = cose-alg-es256 /
-         82         # array(2)
-            12      # unsigned(18) / cose-sign1 /
-            26      # negative(7) / -8 = cose-alg-eddsa /
+         81         # array(1)
+            82      # array(2)
+               12   # unsigned(18) / cose-sign1 /
+               26   # negative(6) / -7 = cose-alg-es256 /
+         81         # array(1)
+            82      # array(2)
+               12   # unsigned(18) / cose-sign1 /
+               27   # negative(7) / -8 = cose-alg-eddsa /
       03            # unsigned(3) / versions: /
       81            # array(1) / [ 0 ] /
          00         # unsigned(0)
@@ -1645,7 +1647,7 @@ COSE is shown.
   / options: /
   {
     / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
-    / selected-ciphersuite / 5 : [ -7, null, null ] / only use ES256 /,
+    / selected-ciphersuite / 5 : [ [ 18, -7 ] ] / only use ES256 /,
     / selected-version / 6 : 0,
     / attestation-payload / 7 : h'' / empty only for example purpose /,
     / tc-list / 8 : [
@@ -1671,9 +1673,10 @@ COSE is shown.
       50            # bytes(16)
          A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
       05            # unsigned(5) / selected-ciphersuite: /
-      82            # array(2)
-         12         # unsigned(18) / cose-sign1 /
-         26         # negative(6) / -7 = cose-alg-es256 /
+      81            # array(1)
+         82         # array(2)
+            12      # unsigned(18) / cose-sign1 /
+            26      # negative(6) / -7 = cose-alg-es256 /
       06            # unsigned(6) / selected-version: /
       00            # unsigned(0)
       07            # unsigned(7) / attestation-payload: /
