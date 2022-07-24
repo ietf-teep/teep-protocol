@@ -110,11 +110,6 @@ query-response = [
   }
 ]
 
-tc-info = {
-  component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => uint .size 8
-}
-
 requested-tc-info = {
   component-id => SUIT_Component_Identifier,
   ? tc-manifest-sequence-number => uint .size 8

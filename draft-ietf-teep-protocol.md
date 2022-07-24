@@ -424,11 +424,6 @@ query-response = [
   }
 ]
 
-tc-info = {
-  component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => .within uint .size 8
-}
-
 requested-tc-info = {
   component-id => SUIT_Component_Identifier,
   ? tc-manifest-sequence-number => .within uint .size 8
@@ -528,17 +523,6 @@ ext-list
   define any extensions.  This parameter MUST be present if the
   QueryResponse is sent in response to a QueryRequest with the
   extensions bit set.
-
-The tc-info object has the following fields:
-
-{: vspace='0'}
-
-component-id
-: A SUIT Component Identifier.
-
-tc-manifest-sequence-number
-: The suit-manifest-sequence-number value from the SUIT manifest for the Trusted Component,
-  if a SUIT manifest was used.
 
 The requested-tc-info message has the following fields:
 
