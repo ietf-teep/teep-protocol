@@ -94,7 +94,7 @@ query-response = [
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
     ? suit-reports => [ + SUIT_Report ],
-    ? tc-list => [ + tc-info ],
+    ? tc-list => [ + system-property-claims ],
     ? requested-tc-list => [ + requested-tc-info ],
     ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
     ? ext-list => [ + ext-info ],
@@ -102,11 +102,6 @@ query-response = [
     * $$teep-option-extensions
   }
 ]
-
-tc-info = {
-  component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => uint .size 8
-}
 
 requested-tc-info = {
   component-id => SUIT_Component_Identifier,

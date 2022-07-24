@@ -415,7 +415,7 @@ query-response = [
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
     ? suit-reports => [ + SUIT_Report ],
-    ? tc-list => [ + tc-info ],
+    ? tc-list => [ + system-property-claims ],
     ? requested-tc-list => [ + requested-tc-info ],
     ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
     ? ext-list => [ + ext-info ],
@@ -423,11 +423,6 @@ query-response = [
     * $$teep-option-extensions
   }
 ]
-
-tc-info = {
-  component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => .within uint .size 8
-}
 
 requested-tc-info = {
   component-id => SUIT_Component_Identifier,
@@ -496,7 +491,10 @@ suit-reports
 
 tc-list
 : The tc-list parameter enumerates the Trusted Components installed on the device
-  in the form of tc-info objects.  This parameter MUST be present if the
+  in the form of system-property-claims objects, as defined in Section 4 of {{I-D.ietf-suit-report}}. The system-property-claims can
+  be used to learn device identifying information and TEE identifying information
+  for distinguishing which Trusted Components to install in the TEE.
+  This parameter MUST be present if the
   QueryResponse is sent in response to a QueryRequest with the
   trusted-components bit set.
 
@@ -524,17 +522,6 @@ ext-list
   define any extensions.  This parameter MUST be present if the
   QueryResponse is sent in response to a QueryRequest with the
   extensions bit set.
-
-The tc-info object has the following fields:
-
-{: vspace='0'}
-
-component-id
-: A SUIT Component Identifier.
-
-tc-manifest-sequence-number
-: The suit-manifest-sequence-number value from the SUIT manifest for the Trusted Component,
-  if a SUIT manifest was used.
 
 The requested-tc-info message has the following fields:
 
