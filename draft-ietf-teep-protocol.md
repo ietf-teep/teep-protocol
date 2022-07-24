@@ -1248,7 +1248,7 @@ need to be installed, updated, or deleted, if any.  There are in typically three
    the TEEP Agent itself, etc.) needed to get the TEEP Agent back into an up-to-date state that
    would allow attestation to succeed.
 2. Attestation succeeded (so the QueryResponse information can be accepted as valid), but the set
-   of Trusted Comopnents needs to be updated based on TAM policy changes or requests from the TEEP Agent.
+   of Trusted Components needs to be updated based on TAM policy changes or requests from the TEEP Agent.
 3. Attestation succeeded, and no changes are needed.
 
 If any Trusted Components need to be installed, updated, or deleted,
