@@ -1177,17 +1177,32 @@ If a QueryResponse message is received that contains an attestation-payload, the
 checks whether it contains Evidence or an Attesation Result by inspecting the attestation-payload-format
 parameter.  The media type defined in {{eat}} indicates an Attestation Result, though future
 extensions might also indicate other Attestation Result formats in the future. Any other unrecognized
-value indicates Evidence.  If the QueryResponse is determined to contain Evidence, the TAM passes
+value indicates Evidence.  If it contains an Attesation Result, processing continues as in
+{{attestation-result}}.
+
+If the QueryResponse is instead determined to contain Evidence, the TAM passes
 the Evidence (via some mechanism out of scope of this document) to an attestation Verifier
 (see {{I-D.ietf-rats-architecture}})
 to determine whether the Agent is in a trustworthy state.  Once the TAM receives an Attestation
-Result from the Verifier, processing continues as follows.
+Result from the Verifier, processing continues as in {{attestation-result}}.
+
+#### Handling an Attestation Result {#attestation-result}
 
 Based on the results of attestation (if any), any SUIT Reports,
 and the lists of installed, requested,
 and unneeded Trusted Components reported in the QueryResponse, the TAM
 determines, in any implementation specific manner, which Trusted Components
-need to be installed, updated, or deleted, if any.
+need to be installed, updated, or deleted, if any.  There are in typically three cases:
+
+1. Attestation failed. This indicates that the rest of the information in the QueryResponse
+   cannot necessarily be trusted, as the TEEP Agent may not be healthy (or at least up to date).
+   In this case, the TAM can attempt to use TEEP to update any Trusted Components (e.g., firmware,
+   the TEEP Agent itself, etc.) needed to get the TEEP Agent back into an up-to-date state that
+   would allow attestation to succeed.
+2. Attestation succeeded (so the QueryResponse information can be accepted as valid), but the set
+   of Trusted Comopnents needs to be updated based on TAM policy changes or requests from the TEEP Agent.
+3. Attestation succeeded, and no changes are needed.
+
 If any Trusted Components need to be installed, updated, or deleted,
 the TAM sends an Update message containing SUIT Manifests with command
 sequences to do the relevant installs, updates, or deletes.
@@ -1197,6 +1212,11 @@ indicated in the manifest, which may take some time, and the resulting Success
 or Error message is generated only after completing the Update Procedure.
 Hence, depending on the freshness mechanism in use, the TAM may need to
 store data (e.g., a nonce) for some time.
+
+If no Trusted Components need to be installed, updated, or deleted, but the QueryRequest included
+Evidence, the TAM MAY (e.g., based on attestation-payload-format parameters received from the TEEP Agent
+in the QueryResponse) still send an Update message with no SUIT Manifests, to pass the Attestation
+Result back to the TEEP Agent.
 
 ### Handling a Success or Error Message
 
