@@ -491,7 +491,7 @@ suit-reports
 
 tc-list
 : The tc-list parameter enumerates the Trusted Components installed on the device
-  in the form of system-property-claims objects. The system-property-claims may
+  in the form of system-property-claims objects, as defined in Section 4 of {{I-D.ietf-suit-report}}. The system-property-claims can
   contain TEE properties information when QueryResponse do not have evidence,
   using it to learn device identifying information and TEE identifying information
   for distinguishing which Trusted Components to install in the TEE.
