@@ -83,7 +83,6 @@ normative:
   RFC7049: 
   I-D.ietf-rats-architecture: 
   I-D.ietf-rats-eat: 
-  I-D.ietf-suit-firmware-encryption:
   I-D.ietf-suit-manifest: 
   I-D.ietf-suit-trust-domains:
   I-D.ietf-suit-report:
@@ -93,6 +92,7 @@ normative:
       org: IANA
     target: https://www.iana.org/assignments/cose/cose.xhtml#algorithms
 informative:
+  I-D.ietf-suit-firmware-encryption:
   I-D.ietf-teep-architecture: 
   I-D.lundblade-rats-eat-media-type:
   RFC8610: 
@@ -1306,7 +1306,7 @@ confidentiality will be needed to protect sensitive fields from the TAM as
 discussed in Section 9.8 of {{I-D.ietf-teep-architecture}}.
 
 The ciphersuites defined above do not do encryption at the TEEP layer, but
-can do encryption of the SUIT payload as defined in {{I-D.ietf-suit-firmware-encryption}}.
+permit encryption of the SUIT payload (e.g., using {{I-D.ietf-suit-firmware-encryption}}).
 See {{security}} for more discussion of specific payloads.
 
 # Freshness Mechanisms {#freshness-mechanisms}
@@ -1387,7 +1387,7 @@ Trusted Component Binaries
 Personalization Data
 : A Trusted Component Signer or TAM can supply personalization data along with a Trusted Component.
   This data is also protected by a SUIT manifest.
-  Personalization data signed and encrypted (via {{I-D.ietf-suit-firmware-encryption}})
+  Personalization data signed and encrypted (e.g., via {{I-D.ietf-suit-firmware-encryption}})
   by a Trusted Component Signer other than
   the TAM is opaque to the TAM.
 
