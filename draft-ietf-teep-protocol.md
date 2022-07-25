@@ -291,7 +291,7 @@ the listed steps fail, then the TEEP message MUST be rejected.
 A QueryRequest message is used by the TAM to learn 
 information from the TEEP Agent, such as
 the features supported by the TEEP Agent, including 
-ciphersuites and protocol versions. Additionally, 
+cipher suites and protocol versions. Additionally, 
 the TAM can selectively request data items from the 
 TEEP Agent via the request parameter. Currently, 
 the following features are supported: 
@@ -316,7 +316,7 @@ query-request = [
     * $$query-request-extensions
     * $$teep-option-extensions
   },
-  supported-ciphersuites: [ + $ciphersuite ],
+  supported-cipher-suites: [ + $cipher-suite ],
   data-item-requested: data-item-requested  
 ]
 ~~~~
@@ -345,9 +345,9 @@ token
   containing the token value and ignore any subsequent messages that have the same token
   value.
 
-supported-ciphersuites
-: The supported-ciphersuites parameter lists the ciphersuites supported by the TAM. Details
-  about the ciphersuite encoding can be found in {{ciphersuite}}.
+supported-cipher-suites
+: The supported-cipher-suites parameter lists the cipher suites supported by the TAM. Details
+  about the cipher suite encoding can be found in {{ciphersuite}}.
 
 data-item-requested
 : The data-item-requested parameter indicates what information the TAM requests from the TEEP
@@ -411,7 +411,7 @@ query-response = [
   type: TEEP-TYPE-query-response,
   options: {
     ? token => bstr .size (8..64),
-    ? selected-ciphersuite => $ciphersuite,
+    ? selected-cipher-suite => $cipher-suite,
     ? selected-version => version,
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
@@ -446,11 +446,11 @@ token
   if one was present, and MUST be absent if no token was present in the
   QueryRequest.
 
-selected-ciphersuite
-: The selected-ciphersuite parameter indicates the selected ciphersuite. If this
+selected-cipher-suite
+: The selected-cipher-suite parameter indicates the selected cipher suite. If this
   parameter is not present, it is to be treated as if the TEEP Agent accepts
-  any ciphersuites listed in the QueryRequest, so the TAM can select one.
-  Details about the ciphersuite encoding can be found in {{ciphersuite}}.
+  any cipher suites listed in the QueryRequest, so the TAM can select one.
+  Details about the cipher suite encoding can be found in {{ciphersuite}}.
 
 selected-version
 : The selected-version parameter indicates the TEEP protocol version selected by the
@@ -979,7 +979,7 @@ teep-error = [
   options: {
      ? token => bstr .size (8..64),
      ? err-msg => text .size (1..128),
-     ? supported-ciphersuites => [ + $ciphersuite ],
+     ? supported-cipher-suites => [ + $cipher-suite ],
      ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
      ? versions => [ + version ],
      ? suit-reports => [ + SUIT_Report ],
@@ -1006,9 +1006,9 @@ err-msg
 : The err-msg parameter is human-readable diagnostic text that MUST be encoded
   using UTF-8 {{RFC3629}} using Net-Unicode form {{RFC5198}} with max 128 bytes.
 
-supported-ciphersuites
-: The supported-ciphersuites parameter lists the ciphersuite(s) supported by the TEEP Agent.
-  Details about the ciphersuite encoding can be found in {{ciphersuite}}.
+supported-cipher-suites
+: The supported-cipher-suites parameter lists the cipher suite(s) supported by the TEEP Agent.
+  Details about the cipher suite encoding can be found in {{ciphersuite}}.
   This otherwise optional parameter MUST be returned if err-code is ERR_UNSUPPORTED_CIPHER_SUITES.
 
 supported-freshness-mechanisms
@@ -1069,9 +1069,9 @@ ERR_UNSUPPORTED_MSG_VERSION (4)
 
 ERR_UNSUPPORTED_CIPHER_SUITES (5)
 : The TEEP Agent does not
-  support any ciphersuites indicated in the request message.
+  support any cipher suites indicated in the request message.
   A TAM receiving this error might retry the request using a different
-  set of supported ciphersuites in the request message.
+  set of supported cipher suites in the request message.
 
 ERR_BAD_CERTIFICATE (6)
 : Processing of a certificate failed. For diagnosis purposes it is
@@ -1171,10 +1171,10 @@ as a map key.
 This specification uses the following mapping:
 
 | Name                           | Label |
-| supported-ciphersuites         |     1 |
+| supported-cipher-suites        |     1 |
 | challenge                      |     2 |
 | versions                       |     3 |
-| selected-ciphersuite           |     5 |
+| selected-cipher-suite          |     5 |
 | selected-version               |     6 |
 | attestation-payload            |     7 |
 | tc-list                        |     8 |
@@ -1327,24 +1327,26 @@ Update Procedure requires resolving and installing any dependencies
 indicated in the manifest, which may take some time, and the Success
 or Error message is generated only after completing the Update Procedure.
 
-# Ciphersuites {#ciphersuite}
+# Cipher Suites {#ciphersuite}
 
 The TEEP protocol uses COSE for protection of TEEP messages.
-After a QueryResponse is received, the selected ciphersuite is used in subsequent TEEP messages (Install, Success, and Error).
-To negotiate cryptographic mechanisms and algorithms, the TEEP protocol defines the following ciphersuite structure,
+After a QueryResponse is received, the selected cipher suite is used by both the TAM and the TEEP Agent
+in all subsequent TEEP messages.  That is, a cipher suite is used in both directions.
+
+To negotiate cryptographic mechanisms and algorithms, the TEEP protocol defines the following cipher suite structure,
 which is used to specify an ordered set of operations (e.g., sign) done as part of composing a TEEP message.
 Although this specification only specifies the use of signing and relies on payload encryption to protect sensitive
 information, future extensions might specify support for encryption and/or MAC operations if needed.
 
 ~~~~
-$ciphersuite /= teep-ciphersuite-sign1-es256
-$ciphersuite /= teep-ciphersuite-sign1-eddsa
+$cipher-suite /= teep-cipher-suite-sign1-es256
+$cipher-suite /= teep-cipher-suite-sign1-eddsa
 
-; The following two ciphersuites have only a single operation each.
-; Other ciphersuites may be defined to have multiple operations.
+; The following two cipher suites have only a single operation each.
+; Other cipher suites may be defined to have multiple operations.
 
-teep-ciphersuite-sign1-es256 = [ teep-operation-sign1-es256 ]
-teep-ciphersuite-sign1-eddsa = [ teep-operation-sign1-eddsa ]
+teep-cipher-suite-sign1-es256 = [ teep-operation-sign1-es256 ]
+teep-cipher-suite-sign1-eddsa = [ teep-operation-sign1-eddsa ]
 
 teep-operation-sign1-es256 = [ cose-sign1, cose-alg-es256 ]
 teep-operation-sign1-eddsa = [ cose-sign1, cose-alg-eddsa ]
@@ -1355,19 +1357,19 @@ cose-alg-es256 = -7  ; ECDSA w/ SHA-256
 cose-alg-eddsa = -8  ; EdDSA
 ~~~~
 
-Each operation in a given ciphersuite has two elements:
+Each operation in a given cipher suite has two elements:
 
 * a COSE-type defined in Section 2 of {{RFC8152}} that identifies the type of operation, and
 * a specific cryptographic algorithm as defined in the COSE Algorithms registry {{COSE.Algorithm}} to be used to perform that operation.
 
-A TAM MUST support both of the ciphersuites defined above.  A TEEP Agent MUST support at least
+A TAM MUST support both of the cipher suites defined above.  A TEEP Agent MUST support at least
 one of the two but can choose which one.  For example, a TEEP Agent might
-choose a given ciphersuite if it has hardware support for it.
+choose a given cipher suite if it has hardware support for it.
 A TAM or TEEP Agent MAY also support any other algorithms in the COSE Algorithms
 registry in addition to the mandatory ones listed above.  It MAY also support use
-with COSE_Sign or other COSE types in additional ciphersuites.
+with COSE_Sign or other COSE types in additional cipher suites.
 
-Any ciphersuites without confidentiality protection can only be added if the
+Any cipher suites without confidentiality protection can only be added if the
 associated specification includes a discussion of security considerations and
 applicability, since manifests may carry sensitive information. For example,
 Section 6 of {{I-D.ietf-teep-architecture}} permits implementations that
@@ -1377,7 +1379,7 @@ the manifest for some use cases. For most use cases, however, manifest
 confidentiality will be needed to protect sensitive fields from the TAM as
 discussed in Section 9.8 of {{I-D.ietf-teep-architecture}}.
 
-The ciphersuites defined above do not do encryption at the TEEP layer, but
+The cipher suites defined above do not do encryption at the TEEP layer, but
 permit encryption of the SUIT payload (e.g., using {{I-D.ietf-suit-firmware-encryption}}).
 See {{security}} for more discussion of specific payloads.
 
@@ -1633,9 +1635,9 @@ This section includes some examples with the following assumptions:
     / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
     / versions / 3 : [ 0 ]  / 0 is current TEEP Protocol /
   },
-  / supported-ciphersuites: / [ [ [ 18, -7 ] ], / Sign1 using ES256 /
-                                [ [ 18, -8 ] ]  / Sign1 using EdDSA /
-                               ],
+  / supported-cipher-suites: / [ [ [ 18, -7 ] ], / Sign1 using ES256 /
+                                 [ [ 18, -8 ] ]  / Sign1 using EdDSA /
+                                ],
   / data-item-requested: / 3 / attestation | trusted-components /
 ]
 ~~~~
@@ -1658,7 +1660,7 @@ This section includes some examples with the following assumptions:
       03            # unsigned(3) / versions: /
       81            # array(1) / [ 0 ] /
          00         # unsigned(0)
-   82            # array(2) /* supported-ciphersuites /
+   82            # array(2) /* supported-cipher-suites /
       81         # array(1)
          82      # array(2)
             12   # unsigned(18) / cose-sign1 /
@@ -1710,7 +1712,7 @@ COSE is shown.
   / options: /
   {
     / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
-    / selected-ciphersuite / 5 : [ [ 18, -7 ] ] / only use ES256 /,
+    / selected-cipher-suite / 5 : [ [ 18, -7 ] ] / only use ES256 /,
     / selected-version / 6 : 0,
     / attestation-payload / 7 : h'' / empty only for example purpose /,
     / tc-list / 8 : [
@@ -1735,7 +1737,7 @@ COSE is shown.
       14            # unsigned(20) / token: /
       50            # bytes(16)
          A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
-      05            # unsigned(5) / selected-ciphersuite: /
+      05            # unsigned(5) / selected-cipher-suite: /
       81            # array(1)
          82         # array(2)
             12      # unsigned(18) / cose-sign1 /

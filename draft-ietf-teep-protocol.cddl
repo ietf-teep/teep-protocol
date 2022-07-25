@@ -44,7 +44,7 @@ query-request = [
     * $$query-request-extensions
     * $$teep-option-extensions
   },
-  supported-ciphersuites: [ + $ciphersuite ],
+  supported-cipher-suites: [ + $cipher-suite ],
   data-item-requested: data-item-requested
 ]
 
@@ -60,18 +60,18 @@ COSE_Sign1_Tagged    = 18
 cose-alg-eddsa = -8  ; EdDSA
 cose-alg-es256 = -7  ; ECDSA w/ SHA-256
 
-;MANDATORY for TAM to support the following ciphersuites, and OPTIONAL
+;MANDATORY for TAM to support the following cipher-suites, and OPTIONAL
 ;to support any additional ones that use COSE_Sign_Tagged, or other
 ;signing, encryption, or MAC algorithms.
 
 teep-operation-sign1-eddsa = [ COSE_Sign1_Tagged, cose-alg-eddsa ]
 teep-operation-sign1-es256 = [ COSE_Sign1_Tagged, cose-alg-es256 ]
 
-teep-ciphersuite-sign1-eddsa = [ teep-operation-sign1-eddsa ]
-teep-ciphersuite-sign1-es256 = [ teep-operation-sign1-es256 ]
+teep-cipher-suite-sign1-eddsa = [ teep-operation-sign1-eddsa ]
+teep-cipher-suite-sign1-es256 = [ teep-operation-sign1-es256 ]
 
-$ciphersuite /= teep-ciphersuite-sign1-eddsa
-$ciphersuite /= teep-ciphersuite-sign1-es256
+$cipher-suite /= teep-cipher-suite-sign1-eddsa
+$cipher-suite /= teep-cipher-suite-sign1-es256
 
 ; freshness-mechanisms
 
@@ -87,7 +87,7 @@ query-response = [
   type: TEEP-TYPE-query-response,
   options: {
     ? token => bstr .size (8..64),
-    ? selected-cipher-suite => ciphersuite,
+    ? selected-cipher-suite => cipher-suite,
     ? selected-version => version,
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
@@ -133,7 +133,7 @@ teep-error = [
   options: {
      ? token => bstr .size (8..64),
      ? err-msg => text .size (1..128),
-     ? supported-ciphersuites => [ + $ciphersuite ],
+     ? supported-cipher-suites => [ + $cipher-suite ],
      ? supported-freshness-mechanisms => [ + freshness-mechanism ],
      ? versions => [ + version ],
      ? suit-reports => [ + SUIT_Report ],
@@ -155,7 +155,7 @@ ERR_TEMPORARY_ERROR = 10
 ERR_MANIFEST_PROCESSING_FAILED = 17
 
 ; labels of mapkey for teep message parameters, uint (0..23)
-supported-ciphersuites = 1
+supported-cipher-suites = 1
 challenge = 2
 versions = 3
 selected-cipher-suite = 5
