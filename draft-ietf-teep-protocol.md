@@ -461,7 +461,7 @@ attestation-payload-format
 : The attestation-payload-format parameter indicates the IANA Media Type of the
   attestation-payload parameter, where media type parameters are permitted after
   the media type.  The absence of this parameter indicates that
-  the format is "application/eat-cwt; profile=https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-09" (see {{I-D.lundblade-rats-eat-media-type}}
+  the format is "application/eat-cwt; profile=https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-10" (see {{I-D.lundblade-rats-eat-media-type}}
   for further discussion).
   (RFC-editor: upon RFC publication, replace URI above with
   "https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
@@ -648,7 +648,7 @@ attestation-payload-format
 : The attestation-payload-format parameter indicates the IANA Media Type of the
   attestation-payload parameter, where media type parameters are permitted after
   the media type.  The absence of this parameter indicates that
-  the format is "application/eat-cwt; profile=https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-09" (see {{I-D.lundblade-rats-eat-media-type}}
+  the format is "application/eat-cwt; profile=https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-10" (see {{I-D.lundblade-rats-eat-media-type}}
   for further discussion).
   (RFC-editor: upon RFC publication, replace URI above with
   "https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
@@ -1125,7 +1125,7 @@ Entity Attestation Token profiles.  This section defines an EAT profile
 for use with TEEP.
 
 * profile-label: The profile-label for this specification is the URI
-<https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-09>.
+<https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-10>.
 (RFC-editor: upon RFC publication, replace string with
 "https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
 of this document.)
@@ -1717,7 +1717,7 @@ COSE is shown.
     / attestation-payload / 7 : h'' / empty only for example purpose /,
     / tc-list / 8 : [
       {
-        / component-id / 16 : [ h'0102030405060708090A0B0C0D0E0F' ]
+        / component-id / 16 : [ h'0102030405060708100A0B0C0D0E0F' ]
       },
       {
         / component-id / 16 : [ h'1102030405060708090A0B0C0D0E0F' ]
