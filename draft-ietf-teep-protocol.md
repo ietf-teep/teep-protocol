@@ -1913,7 +1913,12 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
     / manifest-sequence-number / 2: 3,
     / common / 3: << {
       / components / 2: [
-        [h'544545502d446576696365', h'5365637572654653', h'8d82573a926d4754935332dc29997f74', h'7461']
+        [
+          h'544545502d446576696365',            / "TEEP-Device" /
+          h'5365637572654653',                  / "SecureFS" /
+          h'8d82573a926d4754935332dc29997f74',  / tc-uuid /
+          h'7461'                               / "ta" /
+        ]
       ],
       / common-sequence / 4: << [
         / directive-override-parameters / 20, {
@@ -1988,7 +1993,12 @@ a8c3a14fd9b77a30d046397481469468ece80e14010f020f1158458614a1
     / manifest-sequence-number / 2: 3,
     / common / 3: << {
       / components / 2: [
-        [h'544545502d446576696365', h'5365637572654653', h'8d82573a926d4754935332dc29997f74', h'7461']
+        [
+          h'544545502d446576696365',            / "TEEP-Device" /
+          h'5365637572654653',                  / "SecureFS" /
+          h'8d82573a926d4754935332dc29997f74',  / tc-uuid /
+          h'7461'                               / "ta" /
+        ]
       ],
       / common-sequence / 4: << [
         / directive-override-parameters / 20, {
@@ -2012,7 +2022,7 @@ a8c3a14fd9b77a30d046397481469468ece80e14010f020f1158458614a1
       / condition-image-match / 3, 15
     ] >>
   } >>,
-  "#tc" : h'48656c6c6f2c2053656375726520576f726c6421'
+  "#tc" : h'48656c6c6f2c2053656375726520576f726c6421' / "Hello, Secure World!" /
 })
 ~~~~
 
@@ -2069,7 +2079,11 @@ a8c3a14fd9b77a30d046397481469468ece80e14010f020f114c8614a115
         ]
       ],
       / components / 2: [
-        [h'544545502d446576696365', h'5365637572654653', h'636f6e6669672e6a736f6e']
+        [
+          h'544545502d446576696365',  / "TEEP-Device" /
+          h'5365637572654653',        / "SecureFS" /
+          h'636f6e6669672e6a736f6e'   / "config.json" /
+        ]
       ],
       / common-sequence / 4: << [
         / directive-set-component-index / 12, 0,
@@ -2160,10 +2174,15 @@ f7093d8c55baa8c5265fc5820f4e035824822f5820aaabcccdeeef000122
   ] >>,
   / manifest / 3: << {
     / manifest-version / 1: 1,
-    / manifest-sequence-number / 2: 18446744073709551615,
+    / manifest-sequence-number / 2: 18446744073709551615 / UINT64_MAX /,
     / common / 3: << {
       / components / 2: [
-        [h'544545502d446576696365', h'5365637572654653', h'8d82573a926d4754935332dc29997f74', h'7461']
+        [
+          h'544545502d446576696365',            / "TEEP-Device" /
+          h'5365637572654653',                  / "SecureFS" /
+          h'8d82573a926d4754935332dc29997f74',  / tc-uuid /
+          h'7461'                               / "ta" /
+        ]
       ],
       / common-sequence / 4: << [
         / directive-override-parameters / 20, {
