@@ -722,7 +722,7 @@ Cons:
     |       | SUIT_Envelope({                               | |
     |       |   manifest: {                                 | |
     |       |     install: {                                | |
-    |       |       override-parameter: {                   | |
+    |       |       override-parameters: {                  | |
     |       |         uri: "https://example.org/tc-uuid.ta" | |
     |       |       },                                      | |
     |       |       fetch                                   | |
@@ -788,7 +788,7 @@ Cons:
       |       | SUIT_Envelope({                 | |
       |       |   manifest: {                   | |
       |       |     install: {                  | |
-      |       |       override-parameter: {     | |
+      |       |       override-parameters: {    | |
       |       |         uri: "#tc"              | |
       |       |       },                        | |
       |       |       fetch                     | |
@@ -837,13 +837,13 @@ The TAM delivers the SUIT manifest of the Personalization Data which depends on 
       |       |       ]                                         | |
       |       |     }                                           | |
       |       |     dependency-resolution: {                    | |
-      |       |       override-parameter: {                     | |
+      |       |       override-parameters: {                    | |
       |       |         uri: "https://example.org/tc-uuid.suit" | |
       |       |       }                                         | |
       |       |       fetch                                     | |
       |       |     }                                           | |
       |       |     install: {                                  | |
-      |       |       override-parameter: {                     | |
+      |       |       override-parameters: {                    | |
       |       |         uri: "https://example.org/config.json"  | |
       |       |       },                                        | |
       |       |       fetch                                     | |
