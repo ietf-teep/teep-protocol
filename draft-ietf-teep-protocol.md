@@ -756,21 +756,21 @@ For the full SUIT Manifest example binary, see {{suit-uri}}.
 
 ### Example 2: Having a SUIT Manifest include the Trusted Component Binary
 
-In this example, the SUIT manifest contains the entire Trusted Component Binary using the integrated-payload (see {{I-D.ietf-suit-manifest}} Section 7.6).
+In this example, the SUIT manifest contains the entire Trusted Component Binary as an integrated payload (see {{I-D.ietf-suit-manifest}} Section 7.5).
 
-A Trusted Component Developer delegates to the TAM the task of delivering the Trusted Component Binary in the SUIT manifest. The Trusted Component Developer creates a SUIT manifest and embeds the Trusted Component Binary, which is referenced in the URI parameter with identifier "#tc". The Trusted Component Developer provides the SUIT manifest to the TAM.
+A Trusted Component Developer delegates the task of delivering the Trusted Component Binary to the TAM inside the SUIT manifest. The Trusted Component Developer creates a SUIT manifest and embeds the Trusted Component Binary, which is referenced in the URI parameter with identifier "#tc", in the envelope. The Trusted Component Developer transmit the entire bundle to the TAM.
 
 The TAM serves the SUIT manifest containing the Trusted Component Binary to the device in an Update message.
 
 Pros:
 
- - The device can obtain the Trusted Component Binary and its SUIT manifest together in one Update message
- - The Trusted Component Developer does not have to host a server to deliver the Trusted Component Binary directly to devices
+ - The device can obtain the Trusted Component Binary and the SUIT manifest in one Update message.
+ - The Trusted Component Developer does not have to host a server to deliver the Trusted Component Binary to devices.
 
 Cons:
 
- - The TAM must host the Trusted Component Binary itself, rather than delegating such storage to the Trusted Component Developer
- - The TAM must deliver Trusted Component Binaries in Update messages, which result in increased Update message size
+ - The TAM must host the Trusted Component Binary rather than delegating storage to the Trusted Component Developer.
+ - The TAM must deliver Trusted Component Binaries in Update messages, which increases the size of the Update message.
 
 ~~~~
     +------------+           +-------------+
