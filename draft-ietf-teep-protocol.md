@@ -1627,49 +1627,14 @@ This section includes some examples with the following assumptions:
 {: numbered='no'}
 
 ~~~~
-/ query-request = /
-[
-  / type: / 1 / TEEP-TYPE-query-request /,
-  / options: /
-  {
-    / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
-    / versions / 3 : [ 0 ]  / 0 is current TEEP Protocol /
-  },
-  / supported-cipher-suites: / [ [ [ 18, -7 ] ], / Sign1 using ES256 /
-                                 [ [ 18, -8 ] ]  / Sign1 using EdDSA /
-                                ],
-  / data-item-requested: / 3 / attestation | trusted-components /
-]
+{::include examples/query_request.txt}
 ~~~~
 
 ### D.1.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
-85                  # array(5)
-   01               # unsigned(1) / TEEP-TYPE-query-request /
-   81               # array(1)
-      83            # array(3)
-         26         # negative(6) / -7 = cose-alg-es256 /
-         F6         # primitive(22) / null /
-         F6         # primitive(22) / null /
-   A2               # map(2)
-      14            # unsigned(20) / token: /
-      50            # bytes(16)
-         A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
-      03            # unsigned(3) / versions: /
-      81            # array(1) / [ 0 ] /
-         00         # unsigned(0)
-   82            # array(2) /* supported-cipher-suites /
-      81         # array(1)
-         82      # array(2)
-            12   # unsigned(18) / cose-sign1 /
-            26   # negative(6) / -7 = cose-alg-es256 /
-      81         # array(1)
-         82      # array(2)
-            12   # unsigned(18) / cose-sign1 /
-            27   # negative(7) / -8 = cose-alg-eddsa /
-   03               # unsigned(3) / attestation | trusted-components /
+{::include examples/query_request.hex}
 ~~~~
 
 ## D.2. Entity Attestation Token
@@ -1706,59 +1671,14 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-/ query-response = /
-[
-  / type: / 2 / TEEP-TYPE-query-response /,
-  / options: /
-  {
-    / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
-    / selected-cipher-suite / 5 : [ [ 18, -7 ] ] / only use ES256 /,
-    / selected-version / 6 : 0,
-    / attestation-payload / 7 : h'' / empty only for example purpose /,
-    / tc-list / 8 : [
-      {
-        / component-id / 16 : [ h'0102030405060708100A0B0C0D0E0F' ]
-      },
-      {
-        / component-id / 16 : [ h'1102030405060708090A0B0C0D0E0F' ]
-      }
-    ]
-  }
-]
+{::include examples/query_response.txt}
 ~~~~
 
 ### D.3.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
-82                  # array(2)
-   02               # unsigned(2) / TEEP-TYPE-query-response /
-   A5               # map(5)
-      14            # unsigned(20) / token: /
-      50            # bytes(16)
-         A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
-      05            # unsigned(5) / selected-cipher-suite: /
-      81            # array(1)
-         82         # array(2)
-            12      # unsigned(18) / cose-sign1 /
-            26      # negative(6) / -7 = cose-alg-es256 /
-      06            # unsigned(6) / selected-version: /
-      00            # unsigned(0)
-      07            # unsigned(7) / attestation-payload: /
-      40            # bytes(0)
-                    # ""
-      08            # unsigned(8) / tc-list: /
-      82            # array(2)
-         A1         # map(1)
-            10      # unsigned(16) / component-id: /
-            81      # array(1)
-               4F   # bytes(15)
-                  0102030405060708090A0B0C0D0E0F
-         A1         # map(1)
-            10      # unsigned(16) / component-id: /
-            81      # array(1)
-               4F   # bytes(15)
-                  1102030405060708090A0B0C0D0E0F
+{::include examples/query_response.hex}
 ~~~~
 
 ## D.4. Update Message
@@ -1768,30 +1688,14 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-/ update = /
-[
-  / type: / 3 / TEEP-TYPE-update /,
-  / options: /
-  {
-    / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
-    / manifest-list / 10 : [ ] / array of SUIT_Envelope /
-      / empty, example purpose only /
-  }
-]
+{::include examples/update.txt}
 ~~~~
 
 ### D.4.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
-82                  # array(2)
-   03               # unsigned(3) / TEEP-TYPE-update /
-   A2               # map(2)
-      14            # unsigned(20) / token: /
-      50            # bytes(16)
-         A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
-      0A            # unsigned(10) / manifest-list: /
-      80            # array(0) / [] /
+{::include examples/update.hex}
 ~~~~
 
 ## D.5. Success Message
@@ -1801,26 +1705,14 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-/ teep-success = /
-[
-  / type: / 5 / TEEP-TYPE-teep-success /,
-  / options: /
-  {
-    / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF'
-  }
-]
+{::include examples/teep_success.txt}
 ~~~~
 
 ### D.5.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
-82                  # array(2)
-   05               # unsigned(5) / TEEP-TYPE-teep-success /
-   A1               # map(1)
-      14            # unsigned(20) / token: /
-      50            # bytes(16)
-         A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
+{::include examples/teep_success.hex}
 ~~~~
 
 ## D.6. Error Message
@@ -1830,32 +1722,14 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-/ teep-error = /
-[
-  / type: / 6 / TEEP-TYPE-teep-error /,
-  / options: /
-  {
-    / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
-    / err-msg / 12 : "disk-full"
-  },
-  / err-code: / 17 / ERR_MANIFEST_PROCESSING_FAILED /
-]
+{::include examples/teep_error.txt}
 ~~~~
 
 ### D.6.2. CBOR binary Representation
 {: numbered='no'}
 
 ~~~~
-83                  # array(3)
-   06               # unsigned(6) / TEEP-TYPE-teep-error /
-   A2               # map(2)
-      14            # unsigned(20) / token: /
-      50            # bytes(16)
-         A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
-      0C            # unsigned(12) / err-msg: /
-      69            # text(9)
-         6469736B2D66756C6C # "disk-full"
-   11               # unsigned(17) / ERR_MANIFEST_PROCESSING_FAILED /
+{::include examples/teep_error.hex}
 ~~~~
 
 # E. Examples of SUIT Manifests {#suit-examples}
