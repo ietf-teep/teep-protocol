@@ -16,3 +16,6 @@ $(HEX_CBOR_MESSAGES): %.hcbor : %.hex
 
 validate: all
 	$(foreach tmp,$(TXT_MESSAGES),diff $(tmp:.txt=.tcbor) $(tmp:.txt=.hcbor);)
+
+clean:
+	$(RM) *.tcbor *.hcbor
