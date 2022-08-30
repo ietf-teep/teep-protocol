@@ -1,3 +1,4 @@
-SUIT_Envelope = any
+SUIT_Envelope = nil
 SUIT_Report = any
-SUIT_Record = any
+system-property-claims = any
+SUIT_Component_Identifier = any
