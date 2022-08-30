@@ -52,7 +52,7 @@ query-request = [
 ;operations, and OPTIONAL to support additional ones such as
 ;COSE_Sign_Tagged, COSE_Encrypt0_Tagged, etc.
 
-COSE_Sign1_Tagged    = 18
+COSE_Sign1_Tag       = 18
 
 ;MANDATORY for TAM to support the following, and OPTIONAL to implement
 ;any additional algorithms from the IANA COSE Algorithms registry.
@@ -64,8 +64,8 @@ cose-alg-es256 = -7  ; ECDSA w/ SHA-256
 ;to support any additional ones that use COSE_Sign_Tagged, or other
 ;signing, encryption, or MAC algorithms.
 
-teep-operation-sign1-eddsa = [ COSE_Sign1_Tagged, cose-alg-eddsa ]
-teep-operation-sign1-es256 = [ COSE_Sign1_Tagged, cose-alg-es256 ]
+teep-operation-sign1-eddsa = [ COSE_Sign1_Tag, cose-alg-eddsa ]
+teep-operation-sign1-es256 = [ COSE_Sign1_Tag, cose-alg-es256 ]
 
 teep-cipher-suite-sign1-eddsa = [ teep-operation-sign1-eddsa ]
 teep-cipher-suite-sign1-es256 = [ teep-operation-sign1-es256 ]
