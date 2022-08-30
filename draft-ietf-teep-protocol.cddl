@@ -26,13 +26,11 @@ version = uint .size 4
 ext-info = uint .size 4
 
 ; data items as bitmaps
-data-item-requested = $data-item-requested
-attestation = 1
-$data-item-requested /= attestation
-trusted-components = 2
-$data-item-requested /= trusted-components
-extensions = 4
-$data-item-requested /= extensions
+data-item-requested = &(
+  attestation: 0,
+  trusted-components: 1,
+  extensions: 2,
+)
 
 query-request = [
   type: TEEP-TYPE-query-request,
@@ -45,7 +43,7 @@ query-request = [
     * $$teep-option-extensions
   },
   supported-cipher-suites: [ + $cipher-suite ],
-  data-item-requested: data-item-requested
+  data-item-requested: uint .bits data-item-requested
 ]
 
 ;MANDATORY for TAM and TEEP Agent to support the following COSE
