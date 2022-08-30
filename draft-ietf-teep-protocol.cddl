@@ -1,7 +1,7 @@
 teep-message = $teep-message-type .within teep-message-framework
 
 teep-message-framework = [
-  type: uint (0..23) / $teep-type-extension,
+  type: 0..23 / $teep-type-extension,
   options: { * teep-option },
   * any; further elements, e.g., for data-item-requested
 ]
@@ -39,7 +39,7 @@ query-request = [
     ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
     ? challenge => bstr .size (8..512),
     ? versions => [ + version ],
-    * $$query-request-extensions
+    * $$query-request-extensions,
     * $$teep-option-extensions
   },
   supported-cipher-suites: [ + $cipher-suite ],
@@ -138,7 +138,7 @@ teep-error = [
      * $$teep-error-extensions,
      * $$teep-option-extensions
   },
-  err-code: uint (0..23)
+  err-code: 0..23
 ]
 
 ; The err-code parameter, uint (0..23)
