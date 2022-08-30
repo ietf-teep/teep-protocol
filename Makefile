@@ -1,11 +1,12 @@
 FN := $(shell grep 'docname: draft-ietf-teep-protocol' draft-ietf-teep-protocol.md | awk '{print $$2}')
 
-.PHONY: all test clean
+.PHONY: all validate clean
 
-all: $(FN).txt $(FN).html
+all: validate $(FN).txt $(FN).html
 
-test: all
-	make -C examples validate
+validate:
+	make -C cbor validate
+	make -C cddl validate
 
 $(FN).html: $(FN).xml
 	xml2rfc $(FN).xml --html
@@ -18,4 +19,5 @@ $(FN).xml: draft-ietf-teep-protocol.md
 
 clean:
 	rm -fr $(FN).txt $(FN).xml
-	$(MAKE) -C examples clean
+	$(MAKE) -C cbor clean
+	$(MAKE) -C cddl clean
