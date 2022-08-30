@@ -5,4 +5,6 @@
       50            # bytes(16)
          A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
       0A            # unsigned(10) / manifest-list: /
-      80            # array(0) / [] /
+      81            # array(1)
+         41         # bytes(1)
+            F6      # primitive(22) / null /
