@@ -3,7 +3,7 @@ teep-message = $teep-message-type .within teep-message-framework
 teep-message-framework = [
   type: uint (0..23) / $teep-type-extension,
   options: { * teep-option },
-  * uint; further integers, e.g., for data-item-requested
+  * any; further elements, e.g., for data-item-requested
 ]
 
 teep-option = (uint => any)
