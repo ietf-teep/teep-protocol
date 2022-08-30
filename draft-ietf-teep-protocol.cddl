@@ -36,7 +36,7 @@ query-request = [
   type: TEEP-TYPE-query-request,
   options: {
     ? token => bstr .size (8..64),
-    ? supported-freshness-mechanisms => [ + freshness-mechanism ],
+    ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
     ? challenge => bstr .size (8..512),
     ? versions => [ + version ],
     * $$query-request-extensions
@@ -85,7 +85,7 @@ query-response = [
   type: TEEP-TYPE-query-response,
   options: {
     ? token => bstr .size (8..64),
-    ? selected-cipher-suite => cipher-suite,
+    ? selected-cipher-suite => $cipher-suite,
     ? selected-version => version,
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
@@ -132,7 +132,7 @@ teep-error = [
      ? token => bstr .size (8..64),
      ? err-msg => text .size (1..128),
      ? supported-cipher-suites => [ + $cipher-suite ],
-     ? supported-freshness-mechanisms => [ + freshness-mechanism ],
+     ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
      ? versions => [ + version ],
      ? suit-reports => [ + SUIT_Report ],
      * $$teep-error-extensions,
