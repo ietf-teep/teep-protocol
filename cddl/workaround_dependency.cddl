@@ -1,0 +1,21 @@
+SUIT_Report = any
+system-property-claims = any
+
+
+suit-report-manifest-digest = 0
+suit-report-manifest-uri = 1
+suit-report-nonce = 2
+suit-report-records = 3
+suit-report-result = 4
+suit-report-result-code = 5
+suit-report-result-record = 6
+
+suit-system-properties = 13
+system-component-id = 14
+
+suit-record-manifest-id = 0
+suit-record-manifest-section = 1
+suit-record-section-offset = 2
+suit-record-component-index = 3
+suit-record-dependency-index = 4
+suit-record-properties = 5

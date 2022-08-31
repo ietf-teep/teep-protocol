@@ -1,16 +1,17 @@
 MESSAGES := ../cbor/query_request.diag.bin ../cbor/query_response.diag.bin ../cbor/update.diag.bin ../cbor/teep_success.diag.bin ../cbor/teep_error.diag.bin
 
-CONCATENATED_CDDL	:= check-draft-ietf-teep-protocol.cddl
-DUMMY_CDDL			:= dummy.cddl
-TEEP_PROTOCOL_CDDL	:= ../draft-ietf-teep-protocol.cddl
-SUIT_MANIFEST_CDDL	:= draft-ietf-suit-manifest.cddl
-SUIT_REPORT_MD		:= draft-ietf-suit-report.md
-SUIT_REPORT_CDDL	:= draft-ietf-suit-report.cddl
-COSE_CDDL			:= rfc-8152-cose.cddl
+CONCATENATED_CDDL		:= check-draft-ietf-teep-protocol.cddl
+TEEP_PROTOCOL_CDDL		:= ../draft-ietf-teep-protocol.cddl
+SUIT_MANIFEST_CDDL		:= draft-ietf-suit-manifest.cddl
+SUIT_REPORT_MD			:= draft-ietf-suit-report.md
+SUIT_REPORT_CDDL		:= draft-ietf-suit-report.cddl
+COSE_XML				:= rfc-8152-cose.xml
+COSE_CDDL				:= rfc-8152-cose.cddl
+WORKAROUND_DEPENDENCY	:= workaround_dependency.cddl
 
 CDDLS				:= $(TEEP_PROTOCOL_CDDL)
-CDDLS				+= $(DUMMY_CDDL)
-#CDDLS				+= $(COSE_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_REPORT_CDDL) # WIP
+CDDLS				+= $(COSE_CDDL) $(SUIT_MANIFEST_CDDL) #$(SUIT_REPORT_CDDL)
+CDDLS				+= $(WORKAROUND_DEPENDENCY)
 
 .PHONY: all validate clean
 
