@@ -17,12 +17,12 @@
       08            # unsigned(8) / tc-list: /
       82            # array(2)
          A1         # map(1)
-            10      # unsigned(16) / component-id: /
+            00      # unsigned(0) / system-component-id: /
             81      # array(1)
                4F   # bytes(15)
                   0102030405060708090A0B0C0D0E0F
          A1         # map(1)
-            10      # unsigned(16) / component-id: /
+            00      # unsigned(0) / system-component-id: /
             81      # array(1)
                4F   # bytes(15)
                   1102030405060708090A0B0C0D0E0F

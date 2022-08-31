@@ -9,10 +9,10 @@
     / attestation-payload / 7 : h'' / empty only for example purpose /,
     / tc-list / 8 : [
       {
-        / component-id / 16 : [ h'0102030405060708090A0B0C0D0E0F' ]
+        / system-component-id / 0 : [ h'0102030405060708090A0B0C0D0E0F' ]
       },
       {
-        / component-id / 16 : [ h'1102030405060708090A0B0C0D0E0F' ]
+        / system-component-id / 0 : [ h'1102030405060708090A0B0C0D0E0F' ]
       }
     ]
   }
