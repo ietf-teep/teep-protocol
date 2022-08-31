@@ -1,7 +1,3 @@
-SUIT_Report = any
-system-property-claims = any
-
-
 suit-report-manifest-digest = 0
 suit-report-manifest-uri = 1
 suit-report-nonce = 2
@@ -11,7 +7,7 @@ suit-report-result-code = 5
 suit-report-result-record = 6
 
 suit-system-properties = 13
-system-component-id = 14
+system-component-id = 0
 
 suit-record-manifest-id = 0
 suit-record-manifest-section = 1

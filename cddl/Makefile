@@ -10,7 +10,7 @@ COSE_CDDL				:= rfc-8152-cose.cddl
 WORKAROUND_DEPENDENCY	:= workaround_dependency.cddl
 
 CDDLS				:= $(TEEP_PROTOCOL_CDDL)
-CDDLS				+= $(COSE_CDDL) $(SUIT_MANIFEST_CDDL) #$(SUIT_REPORT_CDDL)
+CDDLS				+= $(COSE_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_REPORT_CDDL)
 CDDLS				+= $(WORKAROUND_DEPENDENCY)
 
 .PHONY: all validate clean
@@ -30,11 +30,13 @@ $(SUIT_REPORT_MD):
 	curl https://raw.githubusercontent.com/bremoran/suit-report/main/draft-ietf-suit-report.md -o $@
 
 $(SUIT_REPORT_CDDL): $(SUIT_REPORT_MD)
-	sed -n '/^\~\~\~/,/^\~\~\~/ p' < $^ | sed '/\~\~\~/ d' > $@
+	sed -n '/^\~\~\~/,/^\~\~\~/ p' $^ | sed -e '/\~\~\~/ d' -e 's/suit-record-properties     => SUIT_Parameters/suit-record-properties     => \{ \+ SUIT_Parameters \}/g' -e 's/^  \+ SUIT_Param/  * SUIT_Param/' -e 's/SUIT_Parameters/$$$$SUIT_Parameters/g' > $@
 
-$(COSE_CDDL):
-	curl https://raw.githubusercontent.com/EricssonResearch/EDHOC/master/cose.cddl -o $@
-	sed -i -e 's/\x1a//g' $@
+$(COSE_XML):
+	curl https://www.ietf.org/archive/id/draft-ietf-cose-msg-24.xml -o $@
+
+$(COSE_CDDL): $(COSE_XML)
+	sed -n -e '/<artwork type="CDDL"/,/<\/artwork/ p' $^ | sed -e '/<artwork type="CDDL"/ d' -e '/<\/artwork/ d' -e '/<\/section>/,/<figure title=""/ d' -e 's/\&gt;/>/g' > $@
 
 validate: all $(MESSAGES)
 	$(foreach msg,$(MESSAGES),cddl $(CONCATENATED_CDDL) validate $(msg) || exit 1;)
