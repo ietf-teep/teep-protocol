@@ -1,21 +1,20 @@
-TXT_MESSAGES := query_request.txt query_response.txt update.txt teep_success.txt teep_error.txt
+DIAG_MESSAGES := query_request.diag.txt query_response.diag.txt update.diag.txt teep_success.diag.txt teep_error.diag.txt
 
-TXT_CBOR_MESSAGES := $(TXT_MESSAGES:.txt=.tcbor)
-HEX_MESSAGES := $(TXT_MESSAGES:.txt=.hex)
-HEX_CBOR_MESSAGES := $(TXT_MESSAGES:.txt=.hcbor)
+DIAG_CBOR_MESSAGES := $(DIAG_MESSAGES:.diag.txt=.diag.bin)
+HEX_CBOR_MESSAGES := $(DIAG_MESSAGES:.diag.txt=.hex.bin)
 
 .PHONY: all validate clean
 
-all: $(TXT_CBOR_MESSAGES) $(HEX_CBOR_MESSAGES)
+all: $(DIAG_CBOR_MESSAGES) $(HEX_CBOR_MESSAGES)
 
-$(TXT_CBOR_MESSAGES): %.tcbor : %.txt
-	diag2cbor.rb < $< > $@
+%.diag.bin: %.diag.txt
+	diag2cbor.rb $< > $@
 
-$(HEX_CBOR_MESSAGES): %.hcbor : %.hex
-	pretty2cbor.rb < $< > $@
+%.hex.bin: %.hex.txt
+	pretty2cbor.rb $< > $@
 
 validate: all
-	$(foreach tmp,$(TXT_MESSAGES),diff $(tmp:.txt=.tcbor) $(tmp:.txt=.hcbor);)
+	$(foreach msg,$(DIAG_MESSAGES),diff $(msg:.diag.txt=.diag.bin) $(msg:.diag.txt=.hex.bin);)
 
 clean:
-	$(RM) *.tcbor *.hcbor
+	$(RM) *.bin

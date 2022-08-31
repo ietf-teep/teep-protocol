@@ -1627,14 +1627,14 @@ This section includes some examples with the following assumptions:
 {: numbered='no'}
 
 ~~~~
-{::include cbor/query_request.txt}
+{::include cbor/query_request.diag.txt}
 ~~~~
 
 ### D.1.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
-{::include cbor/query_request.hex}
+{::include cbor/query_request.hex.txt}
 ~~~~
 
 ## D.2. Entity Attestation Token
@@ -1671,14 +1671,14 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-{::include cbor/query_response.txt}
+{::include cbor/query_response.diag.txt}
 ~~~~
 
 ### D.3.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
-{::include cbor/query_response.hex}
+{::include cbor/query_response.hex.txt}
 ~~~~
 
 ## D.4. Update Message
@@ -1688,14 +1688,14 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-{::include cbor/update.txt}
+{::include cbor/update.diag.txt}
 ~~~~
 
 ### D.4.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
-{::include cbor/update.hex}
+{::include cbor/update.hex.txt}
 ~~~~
 
 ## D.5. Success Message
@@ -1705,14 +1705,14 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-{::include cbor/teep_success.txt}
+{::include cbor/teep_success.diag.txt}
 ~~~~
 
 ### D.5.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
-{::include cbor/teep_success.hex}
+{::include cbor/teep_success.hex.txt}
 ~~~~
 
 ## D.6. Error Message
@@ -1722,14 +1722,14 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-{::include cbor/teep_error.txt}
+{::include cbor/teep_error.diag.txt}
 ~~~~
 
 ### D.6.2. CBOR binary Representation
 {: numbered='no'}
 
 ~~~~
-{::include cbor/teep_error.hex}
+{::include cbor/teep_error.hex.txt}
 ~~~~
 
 # E. Examples of SUIT Manifests {#suit-examples}

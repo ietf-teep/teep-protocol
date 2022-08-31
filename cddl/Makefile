@@ -1,4 +1,4 @@
-MESSAGES := ../cbor/query_request.tcbor ../cbor/query_response.tcbor ../cbor/update.tcbor ../cbor/teep_success.tcbor ../cbor/teep_error.tcbor
+MESSAGES := ../cbor/query_request.diag.bin ../cbor/query_response.diag.bin ../cbor/update.diag.bin ../cbor/teep_success.diag.bin ../cbor/teep_error.diag.bin
 
 CONCATENATED_CDDL	:= check-draft-ietf-teep-protocol.cddl
 DUMMY_CDDL			:= dummy.cddl
