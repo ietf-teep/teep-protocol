@@ -1646,13 +1646,8 @@ This section includes some examples with the following assumptions:
 {: numbered='no'}
 
 ~~~~
-85                  # array(5)
+85                  # array(4)
    01               # unsigned(1) / TEEP-TYPE-query-request /
-   81               # array(1)
-      83            # array(3)
-         26         # negative(6) / -7 = cose-alg-es256 /
-         F6         # primitive(22) / null /
-         F6         # primitive(22) / null /
    A2               # map(2)
       14            # unsigned(20) / token: /
       50            # bytes(16)
