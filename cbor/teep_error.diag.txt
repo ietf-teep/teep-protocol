@@ -1,0 +1,10 @@
+/ teep-error = /
+[
+  / type: / 6 / TEEP-TYPE-teep-error /,
+  / options: /
+  {
+    / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
+    / err-msg / 12 : "disk-full"
+  },
+  / err-code: / 17 / ERR_MANIFEST_PROCESSING_FAILED /
+]
