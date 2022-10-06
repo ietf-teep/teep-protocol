@@ -1,0 +1,8 @@
+/ teep-success = /
+[
+  / type: / 5 / TEEP-TYPE-teep-success /,
+  / options: /
+  {
+    / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF'
+  }
+]

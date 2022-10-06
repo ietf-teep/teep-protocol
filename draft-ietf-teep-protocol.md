@@ -1627,49 +1627,14 @@ This section includes some examples with the following assumptions:
 {: numbered='no'}
 
 ~~~~
-/ query-request = /
-[
-  / type: / 1 / TEEP-TYPE-query-request /,
-  / options: /
-  {
-    / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
-    / versions / 3 : [ 0 ]  / 0 is current TEEP Protocol /
-  },
-  / supported-cipher-suites: / [ [ [ 18, -7 ] ], / Sign1 using ES256 /
-                                 [ [ 18, -8 ] ]  / Sign1 using EdDSA /
-                                ],
-  / data-item-requested: / 3 / attestation | trusted-components /
-]
+{::include cbor/query_request.diag.txt}
 ~~~~
 
 ### D.1.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
-85                  # array(5)
-   01               # unsigned(1) / TEEP-TYPE-query-request /
-   81               # array(1)
-      83            # array(3)
-         26         # negative(6) / -7 = cose-alg-es256 /
-         F6         # primitive(22) / null /
-         F6         # primitive(22) / null /
-   A2               # map(2)
-      14            # unsigned(20) / token: /
-      50            # bytes(16)
-         A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
-      03            # unsigned(3) / versions: /
-      81            # array(1) / [ 0 ] /
-         00         # unsigned(0)
-   82            # array(2) /* supported-cipher-suites /
-      81         # array(1)
-         82      # array(2)
-            12   # unsigned(18) / cose-sign1 /
-            26   # negative(6) / -7 = cose-alg-es256 /
-      81         # array(1)
-         82      # array(2)
-            12   # unsigned(18) / cose-sign1 /
-            27   # negative(7) / -8 = cose-alg-eddsa /
-   03               # unsigned(3) / attestation | trusted-components /
+{::include cbor/query_request.hex.txt}
 ~~~~
 
 ## D.2. Entity Attestation Token
@@ -1706,59 +1671,14 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-/ query-response = /
-[
-  / type: / 2 / TEEP-TYPE-query-response /,
-  / options: /
-  {
-    / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
-    / selected-cipher-suite / 5 : [ [ 18, -7 ] ] / only use ES256 /,
-    / selected-version / 6 : 0,
-    / attestation-payload / 7 : h'' / empty only for example purpose /,
-    / tc-list / 8 : [
-      {
-        / component-id / 16 : [ h'0102030405060708100A0B0C0D0E0F' ]
-      },
-      {
-        / component-id / 16 : [ h'1102030405060708090A0B0C0D0E0F' ]
-      }
-    ]
-  }
-]
+{::include cbor/query_response.diag.txt}
 ~~~~
 
 ### D.3.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
-82                  # array(2)
-   02               # unsigned(2) / TEEP-TYPE-query-response /
-   A5               # map(5)
-      14            # unsigned(20) / token: /
-      50            # bytes(16)
-         A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
-      05            # unsigned(5) / selected-cipher-suite: /
-      81            # array(1)
-         82         # array(2)
-            12      # unsigned(18) / cose-sign1 /
-            26      # negative(6) / -7 = cose-alg-es256 /
-      06            # unsigned(6) / selected-version: /
-      00            # unsigned(0)
-      07            # unsigned(7) / attestation-payload: /
-      40            # bytes(0)
-                    # ""
-      08            # unsigned(8) / tc-list: /
-      82            # array(2)
-         A1         # map(1)
-            10      # unsigned(16) / component-id: /
-            81      # array(1)
-               4F   # bytes(15)
-                  0102030405060708090A0B0C0D0E0F
-         A1         # map(1)
-            10      # unsigned(16) / component-id: /
-            81      # array(1)
-               4F   # bytes(15)
-                  1102030405060708090A0B0C0D0E0F
+{::include cbor/query_response.hex.txt}
 ~~~~
 
 ## D.4. Update Message
@@ -1768,30 +1688,14 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-/ update = /
-[
-  / type: / 3 / TEEP-TYPE-update /,
-  / options: /
-  {
-    / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
-    / manifest-list / 10 : [ ] / array of SUIT_Envelope /
-      / empty, example purpose only /
-  }
-]
+{::include cbor/update.diag.txt}
 ~~~~
 
 ### D.4.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
-82                  # array(2)
-   03               # unsigned(3) / TEEP-TYPE-update /
-   A2               # map(2)
-      14            # unsigned(20) / token: /
-      50            # bytes(16)
-         A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
-      0A            # unsigned(10) / manifest-list: /
-      80            # array(0) / [] /
+{::include cbor/update.hex.txt}
 ~~~~
 
 ## D.5. Success Message
@@ -1801,26 +1705,14 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-/ teep-success = /
-[
-  / type: / 5 / TEEP-TYPE-teep-success /,
-  / options: /
-  {
-    / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF'
-  }
-]
+{::include cbor/teep_success.diag.txt}
 ~~~~
 
 ### D.5.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
-82                  # array(2)
-   05               # unsigned(5) / TEEP-TYPE-teep-success /
-   A1               # map(1)
-      14            # unsigned(20) / token: /
-      50            # bytes(16)
-         A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
+{::include cbor/teep_success.hex.txt}
 ~~~~
 
 ## D.6. Error Message
@@ -1830,32 +1722,14 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-/ teep-error = /
-[
-  / type: / 6 / TEEP-TYPE-teep-error /,
-  / options: /
-  {
-    / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
-    / err-msg / 12 : "disk-full"
-  },
-  / err-code: / 17 / ERR_MANIFEST_PROCESSING_FAILED /
-]
+{::include cbor/teep_error.diag.txt}
 ~~~~
 
 ### D.6.2. CBOR binary Representation
 {: numbered='no'}
 
 ~~~~
-83                  # array(3)
-   06               # unsigned(6) / TEEP-TYPE-teep-error /
-   A2               # map(2)
-      14            # unsigned(20) / token: /
-      50            # bytes(16)
-         A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
-      0C            # unsigned(12) / err-msg: /
-      69            # text(9)
-         6469736B2D66756C6C # "disk-full"
-   11               # unsigned(17) / ERR_MANIFEST_PROCESSING_FAILED /
+{::include cbor/teep_error.hex.txt}
 ~~~~
 
 # E. Examples of SUIT Manifests {#suit-examples}
@@ -1891,56 +1765,7 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
 {: numbered='no'}
 
 ~~~~
-/ SUIT_Envelope_Tagged / 107( {
-  / suit-authentication-wrapper / 2: << [
-    << [
-      / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
-      / suit-digest-bytes: / h'DB601ADE73092B58532CA03FBB663DE49532435336F1558B49BB622726A2FEDD'
-    ] >>,
-    << / COSE_Sign1_Tagged / 18( [
-      / protected: / << {
-        / algorithm-id / 1: -7 / ES256 /
-      } >>,
-      / unprotected: / {},
-      / payload: / null,
-      / signature: / h'5B2D535A2B6D5E3C585C1074F414DA9E10BD285C99A33916DADE3ED38812504817AC48B62B8E984EC622785BD1C411888BE531B1B594507816B201F6F28579A4'
-    ] ) >>
-  ] >>,
-  / suit-manifest / 3: << {
-    / suit-manifest-version / 1: 1,
-    / suit-manifest-sequence-number / 2: 3,
-    / suit-common / 3: << {
-      / suit-components / 2: [
-        [
-          h'544545502D446576696365',           / "TEEP-Device" /
-          h'5365637572654653',                 / "SecureFS" /
-          h'8D82573A926D4754935332DC29997F74', / tc-uuid /
-          h'7461'                              / "ta" /
-        ]
-      ],
-      / suit-common-sequence / 4: << [
-        / suit-directive-override-parameters / 20, {
-          / suit-parameter-vendor-identifier / 1: h'C0DDD5F15243566087DB4F5B0AA26C2F',
-          / suit-parameter-class-identifier / 2: h'DB42F7093D8C55BAA8C5265FC5820F4E',
-          / suit-parameter-image-digest / 3: << [
-            / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
-            / suit-digest-bytes: / h'8CF71AC86AF31BE184EC7A05A411A8C3A14FD9B77A30D046397481469468ECE8'
-          ] >>,
-          / suit-parameter-image-size / 14: 20
-        },
-        / suit-condition-vendor-identifier / 1, 15,
-        / suit-condition-class-identifier / 2, 15
-      ] >>
-    } >>,
-    / suit-install / 9: << [
-      / suit-directive-override-parameters / 20, {
-        / suit-parameter-uri / 21: "https://example.org/8d82573a-926d-4754-9353-32dc29997f74.ta"
-      },
-      / suit-directive-fetch / 21, 15,
-      / suit-condition-image-match / 3, 15
-    ] >>
-  } >>
-} )
+{::include cbor/suit_uri.diag.txt}
 ~~~~
 
 
@@ -1948,83 +1773,7 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
 {: numbered='no'}
 
 ~~~~
-D8 6B                                               # tag(107) / SUIT_Envelope_Tagged /
-   A2                                               # map(2)
-      02                                            # unsigned(2) / suit-authentication-wrapper /
-      58 73                                         # bytes(115)
-         82                                         # array(2)
-            58 24                                   # bytes(36)
-               82                                   # array(2)
-                  2F                                # negative(15) / -16 = suit-cose-alg-sha256 /
-                  58 20                             # bytes(32)
-                     DB601ADE73092B58532CA03FBB663DE49532435336F1558B49BB622726A2FEDD
-            58 4A                                   # bytes(74)
-               D2                                   # tag(18) / COSE_Sign1_Tagged /
-                  84                                # array(4)
-                     43                             # bytes(3)
-                        A1                          # map(1)
-                           01                       # unsigned(1) / algorithm-id /
-                           26                       # negative(6) / -7 = ES256 /
-                     A0                             # map(0)
-                     F6                             # primitive(22) / null /
-                     58 40                          # bytes(64)
-                        5B2D535A2B6D5E3C585C1074F414DA9E10BD285C99A33916DADE3ED38812504817AC48B62B8E984EC622785BD1C411888BE531B1B594507816B201F6F28579A4
-      03                                            # unsigned(3) / suit-manifest: /
-      58 D4                                         # bytes(212)
-         A4                                         # map(4)
-            01                                      # unsigned(1) / suit-manifest-version: /
-            01                                      # unsigned(1)
-            02                                      # unsigned(2) / suit-manifest-sequence-number: /
-            03                                      # unsigned(3)
-            03                                      # unsigned(3) / suit-common: /
-            58 84                                   # bytes(132)
-               A2                                   # map(2)
-                  02                                # unsigned(2) / suit-components: /
-                  81                                # array(1)
-                     84                             # array(4)
-                        4B                          # bytes(11)
-                           544545502D446576696365   # "TEEP-Device"
-                        48                          # bytes(8)
-                           5365637572654653         # "SecureFS"
-                        50                          # bytes(16)
-                           8D82573A926D4754935332DC29997F74 # tc-uuid
-                        42                          # bytes(2)
-                           7461                     # "ta"
-                  04                                # unsigned(4) / suit-common-sequence: /
-                  58 54                             # bytes(84)
-                     86                             # array(6)
-                        14                          # unsigned(20) / suit-directive-override-parameters: /
-                        A4                          # map(4)
-                           01                       # unsigned(1) / suit-parameter-vendor-identifier: /
-                           50                       # bytes(16)
-                              C0DDD5F15243566087DB4F5B0AA26C2F
-                           02                       # unsigned(2) / suit-parameter-class-identifier: /
-                           50                       # bytes(16)
-                              DB42F7093D8C55BAA8C5265FC5820F4E
-                           03                       # unsigned(3) / suit-parameter-image-digest: /
-                           58 24                    # bytes(36)
-                              82                    # array(2)
-                                 2F                 # negative(15) / -16 = suit-cose-alg-sha256 /
-                                 58 20              # bytes(32)
-                                    8CF71AC86AF31BE184EC7A05A411A8C3A14FD9B77A30D046397481469468ECE8
-                           0E                       # unsigned(14) / suit-parameter-image-size: /
-                           14                       # unsigned(20)
-                        01                          # unsigned(1) / suit-condition-vendor-identifier: /
-                        0F                          # unsigned(15)
-                        02                          # unsigned(2) / suit-condition-class-identifier: /
-                        0F                          # unsigned(15)
-            09                                      # unsigned(9) / suit-install: /
-            58 45                                   # bytes(69)
-               86                                   # array(6)
-                  14                                # unsigned(20) / suit-directive-override-parameters: /
-                  A1                                # map(1)
-                     15                             # unsigned(21) / suit-parameter-uri: /
-                     78 3B                          # text(59)
-                        68747470733A2F2F6578616D706C652E6F72672F38643832353733612D393236642D343735342D393335332D3332646332393939376637342E7461 # "https://example.org/8d82573a-926d-4754-9353-32dc29997f74.ta"
-                  15                                # unsigned(21) / suit-directive-fetch: /
-                  0F                                # unsigned(15)
-                  03                                # unsigned(3) / suit-condition-image-match: /
-                  0F                                # unsigned(15)
+{::include cbor/suit_uri.hex.txt}
 ~~~~
 
 
