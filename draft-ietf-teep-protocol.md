@@ -1635,6 +1635,7 @@ This section includes some examples with the following assumptions:
 {: numbered='no'}
 
 ~~~~
+
 {::include cbor/query_request.hex.txt}
 ~~~~
 
