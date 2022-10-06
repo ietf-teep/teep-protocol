@@ -96,6 +96,7 @@ informative:
   I-D.ietf-suit-firmware-encryption:
   I-D.ietf-teep-architecture: 
   I-D.lundblade-rats-eat-media-type:
+  I-D.wallace-rats-concise-ta-stores:
   RFC8610: 
   RFC8126: 
   RFC8915: 
@@ -1488,7 +1489,7 @@ Trusted Component Signer Compromise
   before distributing them to TEEP Agents.  
   It is RECOMMENDED to provide a way to
   update the trust anchor store used by the TEE, for example using
-  a firmware update mechanism.  Thus, if a Trusted Component
+  a firmware update mechanism such as {{I-D.wallace-rats-concise-ta-stores}}.  Thus, if a Trusted Component
   Signer is later compromised, the TAM can update the trust anchor
   store used by the TEE, for example using a firmware update mechanism.
 
@@ -1496,7 +1497,7 @@ CA Compromise
 : The CA issuing certificates to a TEE or a Trusted Component Signer might get compromised.
   It is RECOMMENDED to provide a way to
   update the trust anchor store used by the TEE, for example using
-  a firmware update mechanism. If the CA issuing certificates to
+  a firmware update mechanism such as {{I-D.wallace-rats-concise-ta-stores}}. If the CA issuing certificates to
   devices gets compromised then these devices might be rejected by a
   TAM, if revocation is available to the TAM.
 
