@@ -1,7 +1,7 @@
 teep-message = $teep-message-type .within teep-message-framework
 
 teep-message-framework = [
-  type: 0..23 / $teep-type-extension,
+  type: $teep-type / $teep-type-extension,
   options: { * teep-option },
   * any; further elements, e.g., for data-item-requested
 ]
@@ -16,6 +16,7 @@ $teep-message-type /= teep-success
 $teep-message-type /= teep-error
 
 ; message type numbers, uint (0..23)
+$teep-type = uint .size 1
 TEEP-TYPE-query-request = 1
 TEEP-TYPE-query-response = 2
 TEEP-TYPE-update = 3
