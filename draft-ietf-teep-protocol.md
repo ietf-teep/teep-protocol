@@ -96,6 +96,7 @@ informative:
   I-D.ietf-suit-firmware-encryption:
   I-D.ietf-teep-architecture: 
   I-D.lundblade-rats-eat-media-type:
+  I-D.wallace-rats-concise-ta-stores:
   RFC8610: 
   RFC8126: 
   RFC8915: 
@@ -756,21 +757,21 @@ For the full SUIT Manifest example binary, see {{suit-uri}}.
 
 ### Example 2: Having a SUIT Manifest include the Trusted Component Binary
 
-In this example, the SUIT manifest contains the entire Trusted Component Binary using the integrated-payload (see {{I-D.ietf-suit-manifest}} Section 7.6).
+In this example, the SUIT manifest contains the entire Trusted Component Binary as an integrated payload (see {{I-D.ietf-suit-manifest}} Section 7.5).
 
-A Trusted Component Developer delegates to the TAM the task of delivering the Trusted Component Binary in the SUIT manifest. The Trusted Component Developer creates a SUIT manifest and embeds the Trusted Component Binary, which is referenced in the URI parameter with identifier "#tc". The Trusted Component Developer provides the SUIT manifest to the TAM.
+A Trusted Component Developer delegates the task of delivering the Trusted Component Binary to the TAM inside the SUIT manifest. The Trusted Component Developer creates a SUIT manifest and embeds the Trusted Component Binary, which is referenced in the suit-integrated-payload element containing the fragment-only reference "#tc", in the envelope. The Trusted Component Developer transmit the entire bundle to the TAM.
 
 The TAM serves the SUIT manifest containing the Trusted Component Binary to the device in an Update message.
 
 Pros:
 
- - The device can obtain the Trusted Component Binary and its SUIT manifest together in one Update message
- - The Trusted Component Developer does not have to host a server to deliver the Trusted Component Binary directly to devices
+ - The device can obtain the Trusted Component Binary and the SUIT manifest in one Update message.
+ - The Trusted Component Developer does not have to host a server to deliver the Trusted Component Binary to devices.
 
 Cons:
 
- - The TAM must host the Trusted Component Binary itself, rather than delegating such storage to the Trusted Component Developer
- - The TAM must deliver Trusted Component Binaries in Update messages, which result in increased Update message size
+ - The TAM must host the Trusted Component Binary rather than delegating storage to the Trusted Component Developer.
+ - The TAM must deliver Trusted Component Binaries in Update messages, which increases the size of the Update message.
 
 ~~~~
     +------------+           +-------------+
@@ -1488,7 +1489,7 @@ Trusted Component Signer Compromise
   before distributing them to TEEP Agents.  
   It is RECOMMENDED to provide a way to
   update the trust anchor store used by the TEE, for example using
-  a firmware update mechanism.  Thus, if a Trusted Component
+  a firmware update mechanism such as {{I-D.wallace-rats-concise-ta-stores}}.  Thus, if a Trusted Component
   Signer is later compromised, the TAM can update the trust anchor
   store used by the TEE, for example using a firmware update mechanism.
 
@@ -1496,7 +1497,7 @@ CA Compromise
 : The CA issuing certificates to a TEE or a Trusted Component Signer might get compromised.
   It is RECOMMENDED to provide a way to
   update the trust anchor store used by the TEE, for example using
-  a firmware update mechanism. If the CA issuing certificates to
+  a firmware update mechanism such as {{I-D.wallace-rats-concise-ta-stores}}. If the CA issuing certificates to
   devices gets compromised then these devices might be rejected by a
   TAM, if revocation is available to the TAM.
 
@@ -1627,49 +1628,15 @@ This section includes some examples with the following assumptions:
 {: numbered='no'}
 
 ~~~~
-/ query-request = /
-[
-  / type: / 1 / TEEP-TYPE-query-request /,
-  / options: /
-  {
-    / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
-    / versions / 3 : [ 0 ]  / 0 is current TEEP Protocol /
-  },
-  / supported-cipher-suites: / [ [ [ 18, -7 ] ], / Sign1 using ES256 /
-                                 [ [ 18, -8 ] ]  / Sign1 using EdDSA /
-                                ],
-  / data-item-requested: / 3 / attestation | trusted-components /
-]
+{::include cbor/query_request.diag.txt}
 ~~~~
 
 ### D.1.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
-85                  # array(5)
-   01               # unsigned(1) / TEEP-TYPE-query-request /
-   81               # array(1)
-      83            # array(3)
-         26         # negative(6) / -7 = cose-alg-es256 /
-         F6         # primitive(22) / null /
-         F6         # primitive(22) / null /
-   A2               # map(2)
-      14            # unsigned(20) / token: /
-      50            # bytes(16)
-         A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
-      03            # unsigned(3) / versions: /
-      81            # array(1) / [ 0 ] /
-         00         # unsigned(0)
-   82            # array(2) /* supported-cipher-suites /
-      81         # array(1)
-         82      # array(2)
-            12   # unsigned(18) / cose-sign1 /
-            26   # negative(6) / -7 = cose-alg-es256 /
-      81         # array(1)
-         82      # array(2)
-            12   # unsigned(18) / cose-sign1 /
-            27   # negative(7) / -8 = cose-alg-eddsa /
-   03               # unsigned(3) / attestation | trusted-components /
+
+{::include cbor/query_request.hex.txt}
 ~~~~
 
 ## D.2. Entity Attestation Token
@@ -1706,59 +1673,14 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-/ query-response = /
-[
-  / type: / 2 / TEEP-TYPE-query-response /,
-  / options: /
-  {
-    / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
-    / selected-cipher-suite / 5 : [ [ 18, -7 ] ] / only use ES256 /,
-    / selected-version / 6 : 0,
-    / attestation-payload / 7 : h'' / empty only for example purpose /,
-    / tc-list / 8 : [
-      {
-        / component-id / 16 : [ h'0102030405060708100A0B0C0D0E0F' ]
-      },
-      {
-        / component-id / 16 : [ h'1102030405060708090A0B0C0D0E0F' ]
-      }
-    ]
-  }
-]
+{::include cbor/query_response.diag.txt}
 ~~~~
 
 ### D.3.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
-82                  # array(2)
-   02               # unsigned(2) / TEEP-TYPE-query-response /
-   A5               # map(5)
-      14            # unsigned(20) / token: /
-      50            # bytes(16)
-         A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
-      05            # unsigned(5) / selected-cipher-suite: /
-      81            # array(1)
-         82         # array(2)
-            12      # unsigned(18) / cose-sign1 /
-            26      # negative(6) / -7 = cose-alg-es256 /
-      06            # unsigned(6) / selected-version: /
-      00            # unsigned(0)
-      07            # unsigned(7) / attestation-payload: /
-      40            # bytes(0)
-                    # ""
-      08            # unsigned(8) / tc-list: /
-      82            # array(2)
-         A1         # map(1)
-            10      # unsigned(16) / component-id: /
-            81      # array(1)
-               4F   # bytes(15)
-                  0102030405060708090A0B0C0D0E0F
-         A1         # map(1)
-            10      # unsigned(16) / component-id: /
-            81      # array(1)
-               4F   # bytes(15)
-                  1102030405060708090A0B0C0D0E0F
+{::include cbor/query_response.hex.txt}
 ~~~~
 
 ## D.4. Update Message
@@ -1768,30 +1690,14 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-/ update = /
-[
-  / type: / 3 / TEEP-TYPE-update /,
-  / options: /
-  {
-    / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
-    / manifest-list / 10 : [ ] / array of SUIT_Envelope /
-      / empty, example purpose only /
-  }
-]
+{::include cbor/update.diag.txt}
 ~~~~
 
 ### D.4.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
-82                  # array(2)
-   03               # unsigned(3) / TEEP-TYPE-update /
-   A2               # map(2)
-      14            # unsigned(20) / token: /
-      50            # bytes(16)
-         A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
-      0A            # unsigned(10) / manifest-list: /
-      80            # array(0) / [] /
+{::include cbor/update.hex.txt}
 ~~~~
 
 ## D.5. Success Message
@@ -1801,26 +1707,14 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-/ teep-success = /
-[
-  / type: / 5 / TEEP-TYPE-teep-success /,
-  / options: /
-  {
-    / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF'
-  }
-]
+{::include cbor/teep_success.diag.txt}
 ~~~~
 
 ### D.5.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
-82                  # array(2)
-   05               # unsigned(5) / TEEP-TYPE-teep-success /
-   A1               # map(1)
-      14            # unsigned(20) / token: /
-      50            # bytes(16)
-         A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
+{::include cbor/teep_success.hex.txt}
 ~~~~
 
 ## D.6. Error Message
@@ -1830,32 +1724,14 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-/ teep-error = /
-[
-  / type: / 6 / TEEP-TYPE-teep-error /,
-  / options: /
-  {
-    / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
-    / err-msg / 12 : "disk-full"
-  },
-  / err-code: / 17 / ERR_MANIFEST_PROCESSING_FAILED /
-]
+{::include cbor/teep_error.diag.txt}
 ~~~~
 
 ### D.6.2. CBOR binary Representation
 {: numbered='no'}
 
 ~~~~
-83                  # array(3)
-   06               # unsigned(6) / TEEP-TYPE-teep-error /
-   A2               # map(2)
-      14            # unsigned(20) / token: /
-      50            # bytes(16)
-         A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
-      0C            # unsigned(12) / err-msg: /
-      69            # text(9)
-         6469736B2D66756C6C # "disk-full"
-   11               # unsigned(17) / ERR_MANIFEST_PROCESSING_FAILED /
+{::include cbor/teep_error.hex.txt}
 ~~~~
 
 # E. Examples of SUIT Manifests {#suit-examples}
@@ -1892,76 +1768,14 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
 {: numbered='no'}
 
 ~~~~
-/ SUIT_Envelope = / 107({
-  / authentication-wrapper / 2: << [
-    / digest: / << [
-      / algorithm-id: / -16 / SHA-256 /,
-      / digest-bytes: / h'549b1bf2e6f662167342a91e2cd16a695be2ecfb7c325639189d0ea8eba57d0a'
-    ] >>,
-    / signatures: / << 18([
-      / protected: / << {
-        / alg / 1: -7 / ES256 /
-      } >>,
-      / unprotected: / {
-      },
-      / payload: / null,
-      / signature: / h'478c87a8abb1f0388c8541c8396b268c72dbc8dff7aa34357e2a022741287d16df92be53e135a2daecf95800a623801705034d8187bb15de36a7d1dde37b5b7c'
-    ]) >>
-  ] >>,
-  / manifest / 3: << {
-    / manifest-version / 1: 1,
-    / manifest-sequence-number / 2: 3,
-    / common / 3: << {
-      / components / 2: [
-        [
-          h'544545502d446576696365',            / "TEEP-Device" /
-          h'5365637572654653',                  / "SecureFS" /
-          h'8d82573a926d4754935332dc29997f74',  / tc-uuid /
-          h'7461'                               / "ta" /
-        ]
-      ],
-      / common-sequence / 4: << [
-        / directive-override-parameters / 20, {
-          / vendor-id / 1: h'c0ddd5f15243566087db4f5b0aa26c2f' / c0ddd5f1-5243-5660-87db-4f5b0aa26c2f /,
-          / class-id / 2: h'db42f7093d8c55baa8c5265fc5820f4e' / db42f709-3d8c-55ba-a8c5-265fc5820f4e /,
-          / image-digest / 3: << [
-            / algorithm-id: / -16 / SHA-256 /,
-            / digest-bytes: / h'8cf71ac86af31be184ec7a05a411a8c3a14fd9b77a30d046397481469468ece8'
-          ] >>,
-          / image-size / 14: 20
-        },
-        / condition-vendor-identifier / 1, 15,
-        / condition-class-identifier / 2, 15
-      ] >>
-    } >>,
-    / install / 17: << [
-      / directive-override-parameters / 20, {
-        / uri / 21: "https://example.org/8d82573a-926d-4754-9353-32dc29997f74.ta"
-      },
-      / directive-fetch / 21, 15,
-      / condition-image-match / 3, 15
-    ] >>
-  } >>
-})
+{::include cbor/suit_uri.diag.txt}
 ~~~~
-
 
 ### CBOR Binary in Hex
 {: numbered='no'}
 
 ~~~~
-d86ba2025873825824822f5820549b1bf2e6f662167342a91e2cd16a695b
-e2ecfb7c325639189d0ea8eba57d0a584ad28443a10126a0f65840478c87
-a8abb1f0388c8541c8396b268c72dbc8dff7aa34357e2a022741287d16df
-92be53e135a2daecf95800a623801705034d8187bb15de36a7d1dde37b5b
-7c0358d4a401010203035884a20281844b544545502d4465766963654853
-65637572654653508d82573a926d4754935332dc29997f74427461045854
-8614a40150c0ddd5f15243566087db4f5b0aa26c2f0250db42f7093d8c55
-baa8c5265fc5820f4e035824822f58208cf71ac86af31be184ec7a05a411
-a8c3a14fd9b77a30d046397481469468ece80e14010f020f1158458614a1
-15783b68747470733a2f2f6578616d706c652e6f72672f38643832353733
-612d393236642d343735342d393335332d3332646332393939376637342e
-7461150f030f
+{::include cbor/suit_uri.hex.txt}
 ~~~~
 
 
@@ -1972,58 +1786,7 @@ a8c3a14fd9b77a30d046397481469468ece80e14010f020f1158458614a1
 {: numbered='no'}
 
 ~~~~
-/ SUIT_Envelope = / 107({
-  / authentication-wrapper / 2: << [
-    / digest: / << [
-      / algorithm-id: / -16 / SHA-256 /,
-      / digest-bytes: / h'e8b5ec4510260b42b489fdec4b4918e8e97eb6e135c1b3b40e82419bf79224de'
-    ] >>,
-    / signatures: / << 18([
-      / protected: / << {
-        / alg / 1: -7 / ES256 /
-      } >>,
-      / unprotected: / {
-      },
-      / payload: / null,
-      / signature: / h'c3c646030a93ec39e3f27111be73a2810a9f7a57bb34e9c9916fc0601eab8eb506b96c70864149664c1d090757714ace153fbb982dfda5b3fc150d89581e3994'
-    ]) >>
-  ] >>,
-  / manifest / 3: << {
-    / manifest-version / 1: 1,
-    / manifest-sequence-number / 2: 3,
-    / common / 3: << {
-      / components / 2: [
-        [
-          h'544545502d446576696365',            / "TEEP-Device" /
-          h'5365637572654653',                  / "SecureFS" /
-          h'8d82573a926d4754935332dc29997f74',  / tc-uuid /
-          h'7461'                               / "ta" /
-        ]
-      ],
-      / common-sequence / 4: << [
-        / directive-override-parameters / 20, {
-          / vendor-id / 1: h'c0ddd5f15243566087db4f5b0aa26c2f' / c0ddd5f1-5243-5660-87db-4f5b0aa26c2f /,
-          / class-id / 2: h'db42f7093d8c55baa8c5265fc5820f4e' / db42f709-3d8c-55ba-a8c5-265fc5820f4e /,
-          / image-digest / 3: << [
-            / algorithm-id: / -16 / SHA-256 /,
-            / digest-bytes: / h'8cf71ac86af31be184ec7a05a411a8c3a14fd9b77a30d046397481469468ece8'
-          ] >>,
-          / image-size / 14: 20
-        },
-        / condition-vendor-identifier / 1, 15,
-        / condition-class-identifier / 2, 15
-      ] >>
-    } >>,
-    / install / 17: << [
-      / directive-override-parameters / 20, {
-        / uri / 21: "#tc"
-      },
-      / directive-fetch / 21, 15,
-      / condition-image-match / 3, 15
-    ] >>
-  } >>,
-  "#tc" : h'48656c6c6f2c2053656375726520576f726c6421' / "Hello, Secure World!" /
-})
+{::include cbor/suit_integrated.diag.txt}
 ~~~~
 
 
@@ -2031,17 +1794,7 @@ a8c3a14fd9b77a30d046397481469468ece80e14010f020f1158458614a1
 {: numbered='no'}
 
 ~~~~
-d86ba3025873825824822f5820e8b5ec4510260b42b489fdec4b4918e8e9
-7eb6e135c1b3b40e82419bf79224de584ad28443a10126a0f65840c3c646
-030a93ec39e3f27111be73a2810a9f7a57bb34e9c9916fc0601eab8eb506
-b96c70864149664c1d090757714ace153fbb982dfda5b3fc150d89581e39
-9403589aa401010203035884a20281844b544545502d4465766963654853
-65637572654653508d82573a926d4754935332dc29997f74427461045854
-8614a40150c0ddd5f15243566087db4f5b0aa26c2f0250db42f7093d8c55
-baa8c5265fc5820f4e035824822f58208cf71ac86af31be184ec7a05a411
-a8c3a14fd9b77a30d046397481469468ece80e14010f020f114c8614a115
-63237463150f030f632374635448656c6c6f2c2053656375726520576f72
-6c6421
+{::include cbor/suit_integrated.hex.txt}
 ~~~~
 
 
@@ -2052,78 +1805,7 @@ a8c3a14fd9b77a30d046397481469468ece80e14010f020f114c8614a115
 {: numbered='no'}
 
 ~~~~
-/ SUIT_Envelope = / 107({
-  / authentication-wrapper / 2: << [
-    / digest: / << [
-      / algorithm-id: / -16 / SHA-256 /,
-      / digest-bytes: / h'b2967c80d2da2c9c226331ac4cf4c147f1d9e059c4eb6d165ab43e4c86275b9c'
-    ] >>,
-    / signatures: / << 18([
-      / protected: / << {
-        / alg / 1: -7 / ES256 /
-      } >>,
-      / unprotected: / {
-      },
-      / payload: / null,
-      / signature: / h'be370c83aaf922a2d2a807d068879ee3d1f1781750181eee0251e96d320356b6e6d9553b9e33e4d250c52bcd446272f22a00af6f3c43daa7f263ef375307f646'
-    ]) >>
-  ] >>,
-  / manifest / 3: << {
-    / manifest-version / 1: 1,
-    / manifest-sequence-number / 2: 3,
-    / common / 3: << {
-      / dependencies / 1: [
-        / dependency-digest / 1: [
-          / algorithm-id: / -16 / SHA-256 /,
-          / digest-bytes: / h'549b1bf2e6f662167342a91e2cd16a695be2ecfb7c325639189d0ea8eba57d0a'
-        ]
-      ],
-      / components / 2: [
-        [
-          h'544545502d446576696365',  / "TEEP-Device" /
-          h'5365637572654653',        / "SecureFS" /
-          h'636f6e6669672e6a736f6e'   / "config.json" /
-        ]
-      ],
-      / common-sequence / 4: << [
-        / directive-set-component-index / 12, 0,
-        / directive-override-parameters / 20, {
-          / vendor-id / 1: h'c0ddd5f15243566087db4f5b0aa26c2f' / c0ddd5f1-5243-5660-87db-4f5b0aa26c2f /,
-          / class-id / 2: h'db42f7093d8c55baa8c5265fc5820f4e' / db42f709-3d8c-55ba-a8c5-265fc5820f4e /,
-          / image-digest / 3: << [
-            / algorithm-id: / -16 / SHA-256 /,
-            / digest-bytes: / h'aaabcccdeeef00012223444566678889abbbcdddefff01112333455567778999'
-          ] >>,
-          / image-size / 14: 64
-        },
-        / condition-vendor-identifier / 1, 15,
-        / condition-class-identifier / 2, 15
-      ] >>
-    } >>,
-    / validate / 7: << [
-      / directive-set-component-index / 12, 0,
-      / condition-image-match / 3, 15
-    ] >>,
-    / dependency-resolution / 15: << [
-      / directive-set-dependency-index / 13, 0,
-      / directive-override-parameters / 20, {
-        / uri / 21: "https://example.org/8d82573a-926d-4754-9353-32dc29997f74.suit"
-      },
-      / directive-fetch / 21, 2,
-      / condition-image-match / 3, 15
-    ] >>,
-    / install / 17: << [
-      / directive-set-dependency-index / 13, 0,
-      / directive-process-dependency / 18, 0,
-      / directive-set-component-index / 12, 0,
-      / directive-override-parameters / 20, {
-        / uri / 21: "https://example.org/config.json"
-      },
-      / directive-fetch / 21, 2,
-      / condition-image-match / 3, 15
-    ] >>
-  } >>
-})
+{::include cbor/suit_personalization.diag.txt}
 ~~~~
 
 
@@ -2131,21 +1813,7 @@ a8c3a14fd9b77a30d046397481469468ece80e14010f020f114c8614a115
 {: numbered='no'}
 
 ~~~~
-d86ba2025873825824822f5820b2967c80d2da2c9c226331ac4cf4c147f1
-d9e059c4eb6d165ab43e4c86275b9c584ad28443a10126a0f65840be370c
-83aaf922a2d2a807d068879ee3d1f1781750181eee0251e96d320356b6e6
-d9553b9e33e4d250c52bcd446272f22a00af6f3c43daa7f263ef375307f6
-4603590134a6010102030358a7a30181a101822f5820549b1bf2e6f66216
-7342a91e2cd16a695be2ecfb7c325639189d0ea8eba57d0a0281834b5445
-45502d4465766963654853656375726546534b636f6e6669672e6a736f6e
-045857880c0014a40150c0ddd5f15243566087db4f5b0aa26c2f0250db42
-f7093d8c55baa8c5265fc5820f4e035824822f5820aaabcccdeeef000122
-23444566678889abbbcdddefff011123334555677789990e1840010f020f
-0745840c00030f0f5849880d0014a115783d68747470733a2f2f6578616d
-706c652e6f72672f38643832353733612d393236642d343735342d393335
-332d3332646332393939376637342e737569741502030f11582f8c0d0012
-000c0014a115781f68747470733a2f2f6578616d706c652e6f72672f636f
-6e6669672e6a736f6e1502030f
+{::include cbor/suit_personalization.hex.txt}
 ~~~~
 
 
@@ -2156,49 +1824,7 @@ f7093d8c55baa8c5265fc5820f4e035824822f5820aaabcccdeeef000122
 {: numbered='no'}
 
 ~~~~
-/ SUIT_Envelope = / 107({
-  / authentication-wrapper / 2: << [
-    / digest: / << [
-      / algorithm-id: / -16 / SHA-256 /,
-      / digest-bytes: / h'54ea3d80aaf5370527e8c4fc9e0d91ff0bd0fed26aeab602ca516541fef7f15a'
-    ] >>,
-    / signatures: / << 18([
-      / protected: / << {
-        / alg / 1: -7 / ES256 /
-      } >>,
-      / unprotected: / {
-      },
-      / payload: / null,
-      / signature: / h'436a36c33a3300d13acf0075ba751b419fe1e8ccab6cfb7952c2e97fd5da70278ea3d8a8377d247cf8fe7f2874df5a0f31b042c659a98dd57a0dc23f094666e8'
-    ]) >>
-  ] >>,
-  / manifest / 3: << {
-    / manifest-version / 1: 1,
-    / manifest-sequence-number / 2: 18446744073709551615 / UINT64_MAX /,
-    / common / 3: << {
-      / components / 2: [
-        [
-          h'544545502d446576696365',            / "TEEP-Device" /
-          h'5365637572654653',                  / "SecureFS" /
-          h'8d82573a926d4754935332dc29997f74',  / tc-uuid /
-          h'7461'                               / "ta" /
-        ]
-      ],
-      / common-sequence / 4: << [
-        / directive-override-parameters / 20, {
-          / vendor-id / 1: h'c0ddd5f15243566087db4f5b0aa26c2f' / c0ddd5f1-5243-5660-87db-4f5b0aa26c2f /,
-          / class-id / 2: h'db42f7093d8c55baa8c5265fc5820f4e' / db42f709-3d8c-55ba-a8c5-265fc5820f4e /
-        },
-        / condition-vendor-identifier / 1, 15,
-        / condition-class-identifier / 2, 15
-      ] >>
-    } >>,
-    / install / 17: << [
-      / directive-set-component-index / 12, 0,
-      / directive-unlink / 33, 0
-    ] >>
-  } >>
-})
+{::include cbor/suit_unlink.diag.txt}
 ~~~~
 
 
@@ -2206,14 +1832,7 @@ f7093d8c55baa8c5265fc5820f4e035824822f5820aaabcccdeeef000122
 {: numbered='no'}
 
 ~~~~
-d86ba2025873825824822f582054ea3d80aaf5370527e8c4fc9e0d91ff0b
-d0fed26aeab602ca516541fef7f15a584ad28443a10126a0f65840436a36
-c33a3300d13acf0075ba751b419fe1e8ccab6cfb7952c2e97fd5da70278e
-a3d8a8377d247cf8fe7f2874df5a0f31b042c659a98dd57a0dc23f094666
-e8035873a40101021bffffffffffffffff03585ba20281844b544545502d
-446576696365485365637572654653508d82573a926d4754935332dc2999
-7f7442746104582b8614a20150c0ddd5f15243566087db4f5b0aa26c2f02
-50db42f7093d8c55baa8c5265fc5820f4e010f020f1146840c00182100
+{::include cbor/suit_unlink.hex.txt}
 ~~~~
 
 

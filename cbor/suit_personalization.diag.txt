@@ -1,0 +1,72 @@
+/ SUIT_Envelope_Tagged / 107( {
+  / authentication-wrapper / 2: << [
+    / digest: / << [
+      / algorithm-id: / -16 / SHA-256 /,
+      / digest-bytes: / h'B2967C80D2DA2C9C226331AC4CF4C147F1D9E059C4EB6D165AB43E4C86275B9C'
+    ] >>,
+    / signatures: / << 18([
+      / protected: / << {
+        / alg / 1: -7 / ES256 /
+      } >>,
+      / unprotected: / {
+      },
+      / payload: / null,
+      / signature: / h'BE370C83AAF922A2D2A807D068879EE3D1F1781750181EEE0251E96D320356B6E6D9553B9E33E4D250C52BCD446272F22A00AF6F3C43DAA7F263EF375307F646'
+    ]) >>
+  ] >>,
+  / manifest / 3: << {
+    / manifest-version / 1: 1,
+    / manifest-sequence-number / 2: 3,
+    / common / 3: << {
+      / dependencies / 1: [
+        / dependency-digest / 1: [
+          / algorithm-id: / -16 / SHA-256 /,
+          / digest-bytes: / h'549B1BF2E6F662167342A91E2CD16A695BE2ECFB7C325639189D0EA8EBA57D0A'
+        ]
+      ],
+      / components / 2: [
+        [
+          h'544545502D446576696365',  / "TEEP-Device" /
+          h'5365637572654653',        / "SecureFS" /
+          h'636F6E6669672E6A736F6E'   / "config.json" /
+        ]
+      ],
+      / common-sequence / 4: << [
+        / directive-set-component-index / 12, 0,
+        / directive-override-parameters / 20, {
+          / vendor-id / 1: h'C0DDD5F15243566087DB4F5B0AA26C2F' / c0ddd5f1-5243-5660-87db-4f5b0aa26c2f /,
+          / class-id / 2: h'DB42F7093D8C55BAA8C5265FC5820F4E' / db42f709-3d8c-55ba-a8c5-265fc5820f4e /,
+          / image-digest / 3: << [
+            / algorithm-id: / -16 / SHA-256 /,
+            / digest-bytes: / h'AAABCCCDEEEF00012223444566678889ABBBCDDDEFFF01112333455567778999'
+          ] >>,
+          / image-size / 14: 64
+        },
+        / condition-vendor-identifier / 1, 15,
+        / condition-class-identifier / 2, 15
+      ] >>
+    } >>,
+    / validate / 7: << [
+      / directive-set-component-index / 12, 0,
+      / condition-image-match / 3, 15
+    ] >>,
+    / dependency-resolution / 15: << [
+      / directive-set-dependency-index / 13, 0,
+      / directive-override-parameters / 20, {
+        / uri / 21: "https://example.org/8d82573a-926d-4754-9353-32dc29997f74.suit"
+      },
+      / directive-fetch / 21, 2,
+      / condition-image-match / 3, 15
+    ] >>,
+    / install / 17: << [
+      / directive-set-dependency-index / 13, 0,
+      / directive-process-dependency / 18, 0,
+      / directive-set-component-index / 12, 0,
+      / directive-override-parameters / 20, {
+        / uri / 21: "https://example.org/config.json"
+      },
+      / directive-fetch / 21, 2,
+      / condition-image-match / 3, 15
+    ] >>
+  } >>
+} )
