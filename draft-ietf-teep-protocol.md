@@ -968,7 +968,7 @@ suit-reports
 ## Error Message {#error-message-def}
 
 The Error message is used by the TEEP Agent to return an error in
-response to an Update message. 
+response to a message from the TAM. 
 
 Like other TEEP messages, the Error message is
 signed, and the relevant CDDL snippet is shown below. 
@@ -999,7 +999,7 @@ type
 
 token
 : The value in the token parameter is used to match responses to requests.
-  It MUST match the value of the token parameter in the Update
+  It MUST match the value of the token parameter in the
   message the Success is in response to, if one was present.  If none was
   present, the token MUST be absent in the Error message.
 
@@ -1310,7 +1310,8 @@ any implementation specific way, such as logging the error or
 using the information in future choices of TAM URI.
 
 When the ProcessTeepMessage API is invoked, the Agent first does validation
-as specified in {{validation}}, and drops the message if it is not valid.
+as specified in {{validation}}, and if it is not valid then the Agent
+responds with an Error message.
 Otherwise, processing continues as follows based on the type of message.
 
 When a QueryRequest message is received, the Agent responds with a
