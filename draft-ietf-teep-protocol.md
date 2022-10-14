@@ -685,13 +685,13 @@ mechanism.
 See section 5 of {{I-D.ietf-teep-architecture}} for further discussion.
 
 
-The Update Message has a SUIT_Envelope containing SUIT manifests. Following are some examples of using SUIT manifests in the Update Message.
+The Update Message has a SUIT_Envelope containing SUIT manifests. Following are some example scenarios using SUIT manifests in the Update Message.
 
-### Example 1: Having one SUIT Manifest pointing to a URI of a Trusted Component Binary
+### Scenario 1: Having one SUIT Manifest pointing to a URI of a Trusted Component Binary
 
-In this example, a SUIT Manifest has a URI pointing to a Trusted Component Binary.
+In this scenario, a SUIT Manifest has a URI pointing to a Trusted Component Binary.
 
-A Trusted Component Developer creates a new Trusted Component Binary and hosts it at a Trusted Component Developer's URI.  Then the Trusted Component Developer generates an associated SUIT manifest with the filename "tc-uuid.suit" that contains the URI. The filename "tc-uuid.suit" is used in Example 3 later.
+A Trusted Component Developer creates a new Trusted Component Binary and hosts it at a Trusted Component Developer's URI.  Then the Trusted Component Developer generates an associated SUIT manifest with the filename "tc-uuid.suit" that contains the URI. The filename "tc-uuid.suit" is used in Scenario 3 later.
 
 The TAM receives the latest SUIT manifest from the Trusted Component Developer, and
 the URI it contains will not be changeable by the TAM since the SUIT manifest is signed by the Trusted Component Developer.
@@ -755,9 +755,9 @@ Cons:
 
 For the full SUIT Manifest example binary, see {{suit-uri}}.
 
-### Example 2: Having a SUIT Manifest include the Trusted Component Binary
+### Scenario 2: Having a SUIT Manifest include the Trusted Component Binary
 
-In this example, the SUIT manifest contains the entire Trusted Component Binary as an integrated payload (see {{I-D.ietf-suit-manifest}} Section 7.5).
+In this scenario, the SUIT manifest contains the entire Trusted Component Binary as an integrated payload (see {{I-D.ietf-suit-manifest}} Section 7.5).
 
 A Trusted Component Developer delegates the task of delivering the Trusted Component Binary to the TAM inside the SUIT manifest. The Trusted Component Developer creates a SUIT manifest and embeds the Trusted Component Binary, which is referenced in the suit-integrated-payload element containing the fragment-only reference "#tc", in the envelope. The Trusted Component Developer transmit the entire bundle to the TAM.
 
@@ -809,13 +809,13 @@ Cons:
 For the full SUIT Manifest example binary, see {{suit-integrated}}.
 
 
-### Example 3: Supplying Personalization Data for the Trusted Component Binary
+### Scenario 3: Supplying Personalization Data for the Trusted Component Binary
 
-In this example, Personalization Data is associated with the Trusted Component Binary "tc-uuid.suit" from Example 1.
+In this scenario, Personalization Data is associated with the Trusted Component Binary "tc-uuid.suit" from Scenario 1.
 
 The Trusted Component Developer places Personalization Data in a file named "config.json" and hosts it on an HTTPS server.  The Trusted Component Developer then creates a SUIT manifest with the URI, specifying which Trusted Component Binary it correlates to in the parameter 'dependency-resolution', and signs the SUIT manifest.
 
-The TAM delivers the SUIT manifest of the Personalization Data which depends on the Trusted Component Binary from Example 1.
+The TAM delivers the SUIT manifest of the Personalization Data which depends on the Trusted Component Binary from Scenario 1.
 
 ~~~~
     +------------+           +-------------+
@@ -877,9 +877,9 @@ The TAM delivers the SUIT manifest of the Personalization Data which depends on 
 
 For the full SUIT Manifest example binary, see {{suit-personalization}}.
 
-### Example 4: Unlinking Trusted Component
+### Scenario 4: Unlinking Trusted Component
 
-This subsection shows an example deleting the Trusted Component Binary in the TEEP Device.
+This subsection shows a scenario unlinking the Trusted Component Binary in the TEEP Device.
 
 A Trusted Component Developer can also generate SUIT Manifest which unlinks the installed Trusted Component. The TAM deliver it when the TAM want to uninstall the component.
 
