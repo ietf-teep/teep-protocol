@@ -1333,7 +1333,7 @@ or Error message is generated only after completing the Update Procedure.
 # Cipher Suites {#ciphersuite}
 
 The TEEP protocol uses COSE for protection of TEEP messages in both directions.
-The initial QueryRequest message from the TAM is protected by a default cipher suite
+The initial QueryRequest message from the TAM, and any Error response to it, are protected by a default cipher suite
 associated with a given TAM transport endpoint (as identified by a TAM URI), where a TAM has one transport endpoint per
 mandatory ciphersuite.  Once the TEEP Agent successfully processes a QueryRequest, 
 it can select another cipher suite if it determines that both the TEEP Agent and the TAM
