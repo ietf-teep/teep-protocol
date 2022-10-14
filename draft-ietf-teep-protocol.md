@@ -376,6 +376,7 @@ supported-freshness-mechanisms
 : The supported-freshness-mechanisms parameter lists the freshness mechanism(s) supported by the TAM.
   Details about the encoding can be found in {{freshness-mechanisms}}.
   If this parameter is absent, it means only the nonce mechanism is supported.
+  It MUST be absent if the attestation bit is clear.
 
 challenge
 : The challenge field is an optional parameter used for ensuring the freshness of the
@@ -1393,22 +1394,24 @@ as discussed in Section 10 of {{I-D.ietf-rats-architecture}}.
 Each freshness mechanism is identified with an integer value, which corresponds to
 an IANA registered freshness mechanism (see the IANA Considerations section of
 {{I-D.ietf-rats-reference-interaction-models}}).
-This document uses the following freshness mechanisms:
+This document uses the following freshness mechanisms which may be added to in the
+future by TEEP extensions:
 
 ~~~~
 FRESHNESS_NONCE = 0
 FRESHNESS_TIMESTAMP = 1
-FRESHNESS_EPOCH_ID = 2
 
 $freshness-mechanism /= FRESHNESS_NONCE
 $freshness-mechanism /= FRESHNESS_TIMESTAMP
-$freshness-mechanism /= FRESHNESS_EPOCH_ID
 ~~~~
 
+An implementation MUST support the Nonce mechanism and MAY support additional
+mechanisms.
+
 In the Nonce mechanism, the attestation payload MUST include a nonce provided
-in the QueryRequest challenge.  In other mechanisms, a timestamp
-or epoch ID determined via mechanisms outside the TEEP protocol is
-used, and the challenge is only needed in the QueryRequest message
+in the QueryRequest challenge.  The timestamp mechanism uses a timestamp
+determined via mechanisms outside the TEEP protocol,
+and the challenge is only needed in the QueryRequest message
 if a challenge is needed in generating the attestation payload for reasons other
 than freshness.
 
