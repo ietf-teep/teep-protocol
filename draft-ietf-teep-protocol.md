@@ -1200,7 +1200,9 @@ section 6.2.1 of {{I-D.ietf-teep-architecture}}.
 
 ## TAM Behavior {#tam}
 
-When the ProcessConnect API is invoked, the TAM sends a QueryRequest message.
+When the ProcessConnect API is invoked, the TAM sends a QueryRequest message
+using a cipher suite chosen by the TAM (e.g., based on the TAM URI at which
+the ProcessConnect API was invoked as discussed in {{ciphersuite}}).
 
 When the ProcessTeepMessage API is invoked, the TAM first does validation
 as specified in {{validation}}, and drops the message if it is not valid.
@@ -1330,9 +1332,13 @@ or Error message is generated only after completing the Update Procedure.
 
 # Cipher Suites {#ciphersuite}
 
-The TEEP protocol uses COSE for protection of TEEP messages.
-After a QueryResponse is received, the selected cipher suite is used by both the TAM and the TEEP Agent
-in all subsequent TEEP messages.  That is, a cipher suite is used in both directions.
+The TEEP protocol uses COSE for protection of TEEP messages in both directions.
+The initial QueryRequest message from the TAM is protected by a default cipher suite
+associated with a given TAM transport endpoint (as identified by a TAM URI), where a TAM has one transport endpoint per
+mandatory ciphersuite.  Once the TEEP Agent successfully processes a QueryRequest, 
+it can select another cipher suite if it determines that both the TEEP Agent and the TAM
+support another common cipher suite.  Thus, for the QueryResponse and all subsequent TEEP
+messages in both directions, the selected cipher suite is used by both the TAM and the TEEP Agent.
 
 To negotiate cryptographic mechanisms and algorithms, the TEEP protocol defines the following cipher suite structure,
 which is used to specify an ordered set of operations (e.g., sign) done as part of composing a TEEP message.
@@ -1363,8 +1369,9 @@ Each operation in a given cipher suite has two elements:
 * a COSE-type defined in Section 2 of {{RFC8152}} that identifies the type of operation, and
 * a specific cryptographic algorithm as defined in the COSE Algorithms registry {{COSE.Algorithm}} to be used to perform that operation.
 
-A TAM MUST support both of the cipher suites defined above.  A TEEP Agent MUST support at least
-one of the two but can choose which one.  For example, a TEEP Agent might
+A TAM MUST support both of the cipher suites defined above, and have a separate transport endpoint (e.g., TAM URI
+for {{?I-D.ietf-teep-otrp-over-http}}) with each one as the default.  A TEEP Agent MUST support at least
+one of the two cipher suites but can choose which one.  For example, a TEEP Agent might
 choose a given cipher suite if it has hardware support for it.
 A TAM or TEEP Agent MAY also support any other algorithms in the COSE Algorithms
 registry in addition to the mandatory ones listed above.  It MAY also support use
