@@ -1517,10 +1517,10 @@ attestation payload or in the certificate used to sign the
 attestation payload.  This uniqueness may raise privacy concerns. To lower the
 privacy implications the TEEP Agent MUST present its
 attestation payload only to an authenticated and authorized TAM and when using
-EATS, it SHOULD use encryption as discussed in {{I-D.ietf-rats-eat}}, since
+an EAT, it SHOULD use encryption as discussed in {{I-D.ietf-rats-eat}}, since
 confidentiality is not provided by the TEEP protocol itself and
 the transport protocol under the TEEP protocol might be implemented
-outside of any TEE. If any mechanism other than EATs is used, it is
+outside of any TEE. If any mechanism other than EAT is used, it is
 up to that mechanism to specify how privacy is provided.
 
 In addition, in the usage scenario discussed in {{directtam}}, a device
