@@ -330,7 +330,10 @@ type
   the TEEP Agent.
 
 token
-: The value in the token parameter is used to match responses to requests.
+: The value in the token parameter is used to match responses to requests,
+  such as to look up any implementation-specific state it might have saved about
+  that request, or to ignore responses to older QueryRequest messages before
+  some configuration change was made that affected their content.
   This is particularly useful when a TAM issues multiple concurrent requests
   to a TEEP Agent. The token MUST be present if and only if the attestation bit is clear in
   the data-item-requested value. The size of the token is at least 8 bytes
@@ -1387,7 +1390,7 @@ See {{security}} for more discussion of specific payloads.
 # Freshness Mechanisms {#freshness-mechanisms}
 
 A freshness mechanism determines how a TAM can tell whether an attestation payload provided
-in a Query Response is fresh.  There are multiple ways this can be done
+in a QueryResponse is fresh.  There are multiple ways this can be done
 as discussed in Section 10 of {{I-D.ietf-rats-architecture}}.
 
 Each freshness mechanism is identified with an integer value, which corresponds to
