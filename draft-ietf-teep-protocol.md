@@ -621,6 +621,7 @@ update = [
   type: TEEP-TYPE-update,
   options: {
     ? token => bstr .size (8..64),
+    ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
     ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
@@ -643,6 +644,10 @@ type
 
 token
 : The value in the token field is used to match responses to requests.
+
+unneeded-tc-list
+: The unneeded-tc-list parameter enumerates the Trusted Components to be deleted.
+  Each unneeded Trusted Component is identified by its SUIT Component Identifier.
 
 manifest-list
 : The manifest-list field is used to convey one or multiple SUIT manifests
@@ -888,13 +893,13 @@ The TAM delivers the SUIT manifest of the Personalization Data which depends on 
 
 For the full SUIT Manifest example binary, see {{suit-personalization}}.
 
-### Scenario 4: Unlinking Trusted Component
-
-This subsection shows a scenario unlinking the Trusted Component Binary in the TEEP Device.
+### Scenario 4: Unlinking a Trusted Component {#unlinking}
 
 A Trusted Component Developer can also generate SUIT Manifest which unlinks the installed Trusted Component. The TAM delivers it when the TAM wants to uninstall the component.
 
-The directive-unlink (see {{I-D.ietf-suit-trust-domains}} Section-6.5.4) is located in the manifest to delete the Trusted Component. Note that in case other Trusted Components depend on it, i.e. the reference count is not zero, the TEEP Device SHOULD NOT delete it immediately.
+The suit-directive-unlink (see {{I-D.ietf-suit-trust-domains}} Section-6.5.4) is located in the manifest to unlink the Trusted Component, meaning that the reference count
+is decremented and the component is deleted when the reference count becomes zero.
+(If other Trusted Components depend on it, the reference count will not be zero.)
 
 ~~~~
     +------------+           +-------------+
@@ -1333,7 +1338,11 @@ When a QueryRequest message is received, the Agent responds with a
 QueryResponse message if all fields were understood, or an Error message
 if any error was encountered.
 
-When an Update message is received, the Agent attempts to update
+When an Update message is received, the Agent attempts to unlink any
+Trusted Components listed in the unneeded-tc-list field of the message,
+and responds with an Error message if any error was encountered.
+If the unneeded-tc-list was empty, or no error was encountered processing it,
+the Agent attempts to update
 the Trusted Components specified in the SUIT manifests
 by following the Update Procedure specified
 in {{I-D.ietf-suit-manifest}}, and responds with a Success message if
