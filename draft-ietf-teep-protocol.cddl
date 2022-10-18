@@ -1,9 +1,9 @@
 teep-message = $teep-message-type .within teep-message-framework
 
 teep-message-framework = [
-  type: uint (0..23) / $teep-type-extension,
+  type: $teep-type / $teep-type-extension,
   options: { * teep-option },
-  * uint; further integers, e.g., for data-item-requested
+  * any; further elements, e.g., for data-item-requested
 ]
 
 teep-option = (uint => any)
@@ -16,6 +16,7 @@ $teep-message-type /= teep-success
 $teep-message-type /= teep-error
 
 ; message type numbers, uint (0..23)
+$teep-type = uint .size 1
 TEEP-TYPE-query-request = 1
 TEEP-TYPE-query-response = 2
 TEEP-TYPE-update = 3
@@ -26,33 +27,31 @@ version = uint .size 4
 ext-info = uint .size 4
 
 ; data items as bitmaps
-data-item-requested = $data-item-requested
-attestation = 1
-$data-item-requested /= attestation
-trusted-components = 2
-$data-item-requested /= trusted-components
-extensions = 4
-$data-item-requested /= extensions
+data-item-requested = &(
+  attestation: 0,
+  trusted-components: 1,
+  extensions: 2,
+)
 
 query-request = [
   type: TEEP-TYPE-query-request,
   options: {
     ? token => bstr .size (8..64),
-    ? supported-freshness-mechanisms => [ + freshness-mechanism ],
+    ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
     ? challenge => bstr .size (8..512),
     ? versions => [ + version ],
-    * $$query-request-extensions
+    * $$query-request-extensions,
     * $$teep-option-extensions
   },
   supported-cipher-suites: [ + $cipher-suite ],
-  data-item-requested: data-item-requested
+  data-item-requested: uint .bits data-item-requested
 ]
 
 ;MANDATORY for TAM and TEEP Agent to support the following COSE
 ;operations, and OPTIONAL to support additional ones such as
 ;COSE_Sign_Tagged, COSE_Encrypt0_Tagged, etc.
 
-COSE_Sign1_Tagged    = 18
+COSE_Sign1_Tag       = 18
 
 ;MANDATORY for TAM to support the following, and OPTIONAL to implement
 ;any additional algorithms from the IANA COSE Algorithms registry.
@@ -64,8 +63,8 @@ cose-alg-es256 = -7  ; ECDSA w/ SHA-256
 ;to support any additional ones that use COSE_Sign_Tagged, or other
 ;signing, encryption, or MAC algorithms.
 
-teep-operation-sign1-eddsa = [ COSE_Sign1_Tagged, cose-alg-eddsa ]
-teep-operation-sign1-es256 = [ COSE_Sign1_Tagged, cose-alg-es256 ]
+teep-operation-sign1-eddsa = [ COSE_Sign1_Tag, cose-alg-eddsa ]
+teep-operation-sign1-es256 = [ COSE_Sign1_Tag, cose-alg-es256 ]
 
 teep-cipher-suite-sign1-eddsa = [ teep-operation-sign1-eddsa ]
 teep-cipher-suite-sign1-es256 = [ teep-operation-sign1-es256 ]
@@ -87,7 +86,7 @@ query-response = [
   type: TEEP-TYPE-query-response,
   options: {
     ? token => bstr .size (8..64),
-    ? selected-cipher-suite => cipher-suite,
+    ? selected-cipher-suite => $cipher-suite,
     ? selected-version => version,
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
@@ -103,7 +102,7 @@ query-response = [
 
 requested-tc-info = {
   component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => uint .size 8
+  ? tc-manifest-sequence-number => uint .size 8,
   ? have-binary => bool
 }
 
@@ -111,7 +110,7 @@ update = [
   type: TEEP-TYPE-update,
   options: {
     ? token => bstr .size (8..64),
-    ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
+    ? manifest-list => [ + bstr .cbor SUIT_Envelope_Tagged ],
     * $$update-extensions,
     * $$teep-option-extensions
   }
@@ -134,13 +133,13 @@ teep-error = [
      ? token => bstr .size (8..64),
      ? err-msg => text .size (1..128),
      ? supported-cipher-suites => [ + $cipher-suite ],
-     ? supported-freshness-mechanisms => [ + freshness-mechanism ],
+     ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
      ? versions => [ + version ],
      ? suit-reports => [ + SUIT_Report ],
      * $$teep-error-extensions,
      * $$teep-option-extensions
   },
-  err-code: uint (0..23)
+  err-code: 0..23
 ]
 
 ; The err-code parameter, uint (0..23)
