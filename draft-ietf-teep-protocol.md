@@ -1260,7 +1260,11 @@ Update Procedure requires resolving and installing any dependencies
 indicated in the manifest, which may take some time, and the resulting Success
 or Error message is generated only after completing the Update Procedure.
 Hence, depending on the freshness mechanism in use, the TAM may need to
-store data (e.g., a nonce) for some time.
+store data (e.g., a nonce) for some time.  For example, if a mobile device
+needs an unmetered connection to download a dependency, it may take
+hours or longer before the device has sufficient access.  A different
+freshness mechanism, such as timestamps, might be more appropriate in such
+cases.
 
 If no Trusted Components need to be installed, updated, or deleted, but the QueryRequest included
 Evidence, the TAM MAY (e.g., based on attestation-payload-format parameters received from the TEEP Agent
