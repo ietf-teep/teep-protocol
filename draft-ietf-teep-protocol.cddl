@@ -110,6 +110,7 @@ update = [
   type: TEEP-TYPE-update,
   options: {
     ? token => bstr .size (8..64),
+    ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
     ? manifest-list => [ + bstr .cbor SUIT_Envelope_Tagged ],
     * $$update-extensions,
     * $$teep-option-extensions
