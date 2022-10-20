@@ -227,13 +227,30 @@ TEEP messages are protected by the COSE_Sign1 structure.
 The TEEP protocol messages are described in CDDL format {{RFC8610}} below.
 
 ~~~~
-{
-    teep-message                => (query-request /
-                                    query-response /
-                                    update /
-                                    teep-success /
-                                    teep-error ),
-}
+teep-message = $teep-message-type .within teep-message-framework
+
+teep-message-framework = [
+  type: $teep-type / $teep-type-extension,
+  options: { * teep-option },
+  * any; further elements, e.g., for data-item-requested
+]
+
+teep-option = (uint => any)
+
+; messages defined below:
+$teep-message-type /= query-request
+$teep-message-type /= query-response
+$teep-message-type /= update
+$teep-message-type /= teep-success
+$teep-message-type /= teep-error
+
+; message type numbers, uint (0..23)
+$teep-type = uint .size 1
+TEEP-TYPE-query-request = 1
+TEEP-TYPE-query-response = 2
+TEEP-TYPE-update = 3
+TEEP-TYPE-teep-success = 5
+TEEP-TYPE-teep-error = 6
 ~~~~
 
 ## Creating and Validating TEEP Messages
@@ -314,11 +331,11 @@ query-request = [
     ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
     ? challenge => bstr .size (8..512),
     ? versions => [ + version ],
-    * $$query-request-extensions
+    * $$query-request-extensions,
     * $$teep-option-extensions
   },
   supported-cipher-suites: [ + $cipher-suite ],
-  data-item-requested: data-item-requested  
+  data-item-requested: uint .bits data-item-requested
 ]
 ~~~~
 
@@ -432,7 +449,7 @@ query-response = [
 
 requested-tc-info = {
   component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => .within uint .size 8
+  ? tc-manifest-sequence-number => .within uint .size 8,
   ? have-binary => bool
 }
 ~~~~
@@ -1003,7 +1020,7 @@ teep-error = [
      * $$teep-error-extensions,
      * $$teep-option-extensions
   },
-  err-code: uint (0..23)
+  err-code: 0..23
 ]
 ~~~~
 
