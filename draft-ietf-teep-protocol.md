@@ -333,7 +333,7 @@ token
 : The value in the token parameter is used to match responses to requests,
   such as to look up any implementation-specific state it might have saved about
   that request, or to ignore responses to older QueryRequest messages before
-  some configuration change was made that affected their content.
+  some configuration changes were made that affected their content.
   This is particularly useful when a TAM issues multiple concurrent requests
   to a TEEP Agent. The token MUST be present if and only if the attestation bit is clear in
   the data-item-requested value. The size of the token is at least 8 bytes
@@ -768,7 +768,7 @@ For the full SUIT Manifest example binary, see {{suit-uri}}.
 
 In this scenario, the SUIT manifest contains the entire Trusted Component Binary as an integrated payload (see {{I-D.ietf-suit-manifest}} Section 7.5).
 
-A Trusted Component Developer delegates the task of delivering the Trusted Component Binary to the TAM inside the SUIT manifest. The Trusted Component Developer creates a SUIT manifest and embeds the Trusted Component Binary, which is referenced in the suit-integrated-payload element containing the fragment-only reference "#tc", in the envelope. The Trusted Component Developer transmit the entire bundle to the TAM.
+A Trusted Component Developer delegates the task of delivering the Trusted Component Binary to the TAM inside the SUIT manifest. The Trusted Component Developer creates a SUIT manifest and embeds the Trusted Component Binary, which is referenced in the suit-integrated-payload element containing the fragment-only reference "#tc", in the envelope. The Trusted Component Developer transmits the entire bundle to the TAM.
 
 The TAM serves the SUIT manifest containing the Trusted Component Binary to the device in an Update message.
 
@@ -890,7 +890,7 @@ For the full SUIT Manifest example binary, see {{suit-personalization}}.
 
 This subsection shows a scenario unlinking the Trusted Component Binary in the TEEP Device.
 
-A Trusted Component Developer can also generate SUIT Manifest which unlinks the installed Trusted Component. The TAM deliver it when the TAM want to uninstall the component.
+A Trusted Component Developer can also generate SUIT Manifest which unlinks the installed Trusted Component. The TAM delivers it when the TAM wants to uninstall the component.
 
 The directive-unlink (see {{I-D.ietf-suit-trust-domains}} Section-6.5.4) is located in the manifest to delete the Trusted Component. Note that in case other Trusted Components depend on it, i.e. the reference count is not zero, the TEEP Device SHOULD NOT delete it immediately.
 
@@ -1056,7 +1056,7 @@ ERR_PERMANENT_ERROR (1)
   the TEEP Agent for some period of time until it has reason to believe
   it is worth trying again, but it should take care not to give up on
   communication.  In contrast, ERR_TEMPORARY_ERROR is an indication
-  that a more agressive retry is warranted.
+  that a more aggressive retry is warranted.
 
 ERR_UNSUPPORTED_EXTENSION (2)
 : The TEEP Agent does not support an extension included in the request
