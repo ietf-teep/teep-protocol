@@ -1338,10 +1338,7 @@ or Error message is generated only after completing the Update Procedure.
 
 # Cipher Suites {#ciphersuite}
 
-The TEEP protocol uses COSE for protection of TEEP messages.
-After a QueryResponse is received, the selected cipher suite is used by both the TAM and the TEEP Agent
-in all subsequent TEEP messages.  That is, a cipher suite is used in both directions.
-
+The TEEP protocol uses COSE for protection of TEEP messages in both directions.
 To negotiate cryptographic mechanisms and algorithms, the TEEP protocol defines the following cipher suite structure,
 which is used to specify an ordered set of operations (e.g., sign) done as part of composing a TEEP message.
 Although this specification only specifies the use of signing and relies on payload encryption to protect sensitive
@@ -1391,6 +1388,18 @@ discussed in Section 9.8 of {{I-D.ietf-teep-architecture}}.
 The cipher suites defined above do not do encryption at the TEEP layer, but
 permit encryption of the SUIT payload (e.g., using {{I-D.ietf-suit-firmware-encryption}}).
 See {{security}} for more discussion of specific payloads.
+
+For the initial QueryRequest message, unless the TAM has more specific knowledge about the TEEP Agent
+(e.g., if the QueryRequest is sent in response to some underlying transport message that contains a hint),
+the message does not use one of the above cipher suites but instead uses COSE_Sign with multiple signatures,
+one for each algorithm used in any of the cipher suites listed in the supported-cipher-suites
+parameter of the QueryRequest, so that a TEEP Agent supporting any one of them can verify a signature.
+
+For an Error message with code ERR_UNSUPPORTED_CIPHER_SUITES, the TEEP Agent MUST
+protect it with one of the cipher suites mandatory for the TAM.
+
+For all other messages between the TAM and TEEP Agent,
+the selected cipher suite MUST be used in both directions.
 
 # Freshness Mechanisms {#freshness-mechanisms}
 
