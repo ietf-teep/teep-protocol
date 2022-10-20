@@ -709,7 +709,7 @@ Cons:
 
  - The Trusted Component Developer must host the Trusted Component Binary server
  - The device must fetch the Trusted Component Binary in another connection after receiving an Update message
- - The device must reveal its IP address (and hence a clue as to its location), to the Trusted Component Binary server
+ - A device's IP address and therefore location may be revealed to the Trusted Component Binary server
 
 ~~~~
     +------------+           +-------------+
