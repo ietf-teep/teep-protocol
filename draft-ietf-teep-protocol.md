@@ -1394,6 +1394,8 @@ For the initial QueryRequest message, unless the TAM has more specific knowledge
 the message does not use one of the above cipher suites but instead uses COSE_Sign with multiple signatures,
 one for each algorithm used in any of the cipher suites listed in the supported-cipher-suites
 parameter of the QueryRequest, so that a TEEP Agent supporting any one of them can verify a signature.
+If the TAM does have specific knowledge about which cipher suite the TEEP Agent supports,
+it MAY instead use that cipher suite with the QueryRequest.
 
 For an Error message with code ERR_UNSUPPORTED_CIPHER_SUITES, the TEEP Agent MUST
 protect it with one of the cipher suites mandatory for the TAM.
