@@ -556,8 +556,14 @@ TAMs however consume Attestation Results and do need enough information therein 
 make decisions on how to remediate a TEE that is out of compliance, or update a TEE
 that is requesting an authorized change.  To do so, the information in
 Section 7 of {{I-D.ietf-teep-architecture}} is often required depending on the policy.
-When an Entity
-Attestation Token is used, the following claims can be used to meet those
+
+Attestation Results SHOULD use Entity Attestation Tokens (EATs).  Use of any other
+format, such as a widely implemented format for a specific processor vendor, is
+permitted but increases the complexity of the TAM by requiring it to understand
+the format for each such format rather than only the common EAT format so is not
+recommended.
+
+When an EAT is used, the following claims can be used to meet those
 requirements, whether these claims appear in Attestation Results, or in Evidence
 for the Verifier to use when generating Attestation Results of some form:
 
@@ -1226,10 +1232,10 @@ additional implementation specific actions such as logging the results.  If the 
 are met, processing continues as follows.
 
 If a QueryResponse message is received that contains an attestation-payload, the TAM
-checks whether it contains Evidence or an Attesation Result by inspecting the attestation-payload-format
+checks whether it contains Evidence or an Attestation Result by inspecting the attestation-payload-format
 parameter.  The media type defined in {{eat}} indicates an Attestation Result, though future
 extensions might also indicate other Attestation Result formats in the future. Any other unrecognized
-value indicates Evidence.  If it contains an Attesation Result, processing continues as in
+value indicates Evidence.  If it contains an Attestation Result, processing continues as in
 {{attestation-result}}.
 
 If the QueryResponse is instead determined to contain Evidence, the TAM passes
