@@ -1391,7 +1391,7 @@ See {{security}} for more discussion of specific payloads.
 
 For the initial QueryRequest message, unless the TAM has more specific knowledge about the TEEP Agent
 (e.g., if the QueryRequest is sent in response to some underlying transport message that contains a hint),
-the message does not use one of the above cipher suites but instead uses COSE_Sign with multiple signatures,
+the message does not use COSE_Sign1 with one of the above cipher suites, but instead uses COSE_Sign with multiple signatures,
 one for each algorithm used in any of the cipher suites listed in the supported-cipher-suites
 parameter of the QueryRequest, so that a TEEP Agent supporting any one of them can verify a signature.
 If the TAM does have specific knowledge about which cipher suite the TEEP Agent supports,
