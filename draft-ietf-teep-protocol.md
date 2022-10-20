@@ -696,7 +696,7 @@ See section 5 of {{I-D.ietf-teep-architecture}} for further discussion.
 
 The Update Message has a SUIT_Envelope containing SUIT manifests. Following are some example scenarios using SUIT manifests in the Update Message.
 
-### Scenario 1: Having one SUIT Manifest pointing to a URI of a Trusted Component Binary
+### Scenario 1: Having one SUIT Manifest pointing to a URI of a Trusted Component Binary {#directtam}
 
 In this scenario, a SUIT Manifest has a URI pointing to a Trusted Component Binary.
 
@@ -715,6 +715,7 @@ Cons:
 
  - The Trusted Component Developer must host the Trusted Component Binary server
  - The device must fetch the Trusted Component Binary in another connection after receiving an Update message
+ - A device's IP address and therefore location may be revealed to the Trusted Component Binary server
 
 ~~~~
     +------------+           +-------------+
@@ -1456,19 +1457,6 @@ Attestation
   payload of a QueryResponse. See the security considerations of the
   specific mechanism in use (e.g., EAT) for more discussion.
 
-  Depending on
-  the properties of the attestation mechanism, it is possible to
-  uniquely identify a device based on information in the
-  attestation payload or in the certificate used to sign the
-  attestation payload.  This uniqueness may raise privacy concerns. To lower the
-  privacy implications the TEEP Agent MUST present its
-  attestation payload only to an authenticated and authorized TAM and when using
-  EATS, it SHOULD use encryption as discussed in {{I-D.ietf-rats-eat}}, since
-  confidentiality is not provided by the TEEP protocol itself and
-  the transport protocol under the TEEP protocol might be implemented
-  outside of any TEE. If any mechanism other than EATs is used, it is
-  up to that mechanism to specify how privacy is provided.
-
 Trusted Component Binaries
 : Each Trusted Component binary is signed by a Trusted Component Signer. It is the responsibility of the
   TAM to relay only verified Trusted Components from authorized Trusted Component Signers.  Delivery of
@@ -1525,6 +1513,26 @@ Compromised Time Source
   validity dates to the current time, which relies on having a trusted
   source of time, such as {{RFC8915}}.  A compromised time source could
   thus be used to subvert such validity checks.
+
+# Privacy Considerations {#privacy}
+
+Depending on
+the properties of the attestation mechanism, it is possible to
+uniquely identify a device based on information in the
+attestation payload or in the certificate used to sign the
+attestation payload.  This uniqueness may raise privacy concerns. To lower the
+privacy implications the TEEP Agent MUST present its
+attestation payload only to an authenticated and authorized TAM and when using
+an EAT, it SHOULD use encryption as discussed in {{I-D.ietf-rats-eat}}, since
+confidentiality is not provided by the TEEP protocol itself and
+the transport protocol under the TEEP protocol might be implemented
+outside of any TEE. If any mechanism other than EAT is used, it is
+up to that mechanism to specify how privacy is provided.
+
+In addition, in the usage scenario discussed in {{directtam}}, a device
+reveals its IP address to the Trusted Component Binary server.  This
+can reveal to that server at least a clue as to its location, which
+might be sensitive information in some cases.
 
 # IANA Considerations {#IANA}
 
