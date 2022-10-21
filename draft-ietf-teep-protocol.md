@@ -1627,9 +1627,12 @@ We would also like to thank Carsten Bormann and Henk Birkholz for their help wit
 # C. Complete CDDL
 {: numbered='no'}
 
-Valid TEEP messages MUST adhere to the following CDDL data definitions,
+Valid TEEP messages adhere to the following CDDL data definitions,
 except that `SUIT_Envelope` and `SUIT_Component_Identifier` are
 specified in {{I-D.ietf-suit-manifest}}.
+
+This section is informative and merely summarizes the normative CDDL
+snippets in the body of this document.
 
 ~~~~ CDDL
 {::include draft-ietf-teep-protocol.cddl}
