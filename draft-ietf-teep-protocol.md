@@ -423,7 +423,7 @@ query-response = [
     ? suit-reports => [ + SUIT_Report ],
     ? tc-list => [ + system-property-claims ],
     ? requested-tc-list => [ + requested-tc-info ],
-    ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
+    ? unneeded-manifest-list => [ + bstr .cbor SUIT_Digest ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
     * $$teep-option-extensions
@@ -514,12 +514,12 @@ requested-tc-list
   A TEEP Agent can get this information from the RequestTA conceptual API
   defined in {{I-D.ietf-teep-architecture}} section 6.2.1.
 
-unneeded-tc-list
-: The unneeded-tc-list parameter enumerates the Trusted Components that are
+unneeded-manifest-list
+: The unneeded-manifest-list parameter enumerates the SUIT manifests whose components are
   currently installed in the TEE, but which are no longer needed by any
   other application.  The TAM can use this information in determining
-  whether a Trusted Component can be deleted.  Each unneeded Trusted Component is identified
-  by its SUIT Component Identifier.
+  whether a SUIT manifest can be unlinked.  Each unneeded SUIT manifest is identified
+  by its SUIT Digest.
   A TEEP Agent can get this information from the UnrequestTA conceptual API
   defined in {{I-D.ietf-teep-architecture}} section 6.2.1.
 
@@ -621,6 +621,7 @@ update = [
   type: TEEP-TYPE-update,
   options: {
     ? token => bstr .size (8..64),
+    ? unneeded-manifest-list => [ + bstr .cbor SUIT_Digest ],
     ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
@@ -643,6 +644,10 @@ type
 
 token
 : The value in the token field is used to match responses to requests.
+
+unneeded-manifest-list
+: The unneeded-manifest-list parameter enumerates the SUIT manifests to be unlinked.
+  Each unneeded SUIT manifest is identified by its SUIT Digest.
 
 manifest-list
 : The manifest-list field is used to convey one or multiple SUIT manifests
@@ -888,13 +893,13 @@ The TAM delivers the SUIT manifest of the Personalization Data which depends on 
 
 For the full SUIT Manifest example binary, see {{suit-personalization}}.
 
-### Scenario 4: Unlinking Trusted Component
+### Scenario 4: Unlinking a Trusted Component {#unlinking}
 
-This subsection shows a scenario unlinking the Trusted Component Binary in the TEEP Device.
+A Trusted Component Developer can also generate a SUIT Manifest that unlinks the installed Trusted Component. The TAM delivers it when the TAM wants to uninstall the component.
 
-A Trusted Component Developer can also generate SUIT Manifest which unlinks the installed Trusted Component. The TAM delivers it when the TAM wants to uninstall the component.
-
-The directive-unlink (see {{I-D.ietf-suit-trust-domains}} Section-6.5.4) is located in the manifest to delete the Trusted Component. Note that in case other Trusted Components depend on it, i.e. the reference count is not zero, the TEEP Device SHOULD NOT delete it immediately.
+The suit-directive-unlink (see {{I-D.ietf-suit-trust-domains}} Section-6.5.4) is located in the manifest to unlink the Trusted Component, meaning that the reference count
+is decremented and the component is deleted when the reference count becomes zero.
+(If other Trusted Components depend on it, the reference count will not be zero.)
 
 ~~~~
     +------------+           +-------------+
@@ -1196,7 +1201,7 @@ This specification uses the following mapping:
 | err-msg                        |    12 |
 | attestation-payload-format     |    13 |
 | requested-tc-list              |    14 |
-| unneeded-tc-list               |    15 |
+| unneeded-manifest-list         |    15 |
 | component-id                   |    16 |
 | tc-manifest-sequence-number    |    17 |
 | have-binary                    |    18 |
@@ -1333,7 +1338,11 @@ When a QueryRequest message is received, the Agent responds with a
 QueryResponse message if all fields were understood, or an Error message
 if any error was encountered.
 
-When an Update message is received, the Agent attempts to update
+When an Update message is received, the Agent attempts to unlink any
+SUIT manifests listed in the unneeded-manifest-list field of the message,
+and responds with an Error message if any error was encountered.
+If the unneeded-manifest-list was empty, or no error was encountered processing it,
+the Agent attempts to update
 the Trusted Components specified in the SUIT manifests
 by following the Update Procedure specified
 in {{I-D.ietf-suit-manifest}}, and responds with a Success message if

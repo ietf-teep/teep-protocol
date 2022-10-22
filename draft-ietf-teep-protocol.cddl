@@ -93,7 +93,7 @@ query-response = [
     ? suit-reports => [ + SUIT_Report ],
     ? tc-list => [ + system-property-claims ],
     ? requested-tc-list => [ + requested-tc-info ],
-    ? unneeded-tc-list => [ + SUIT_Component_Identifier ],
+    ? unneeded-manifest-list => [ + bstr .cbor SUIT_Digest ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
     * $$teep-option-extensions
@@ -110,6 +110,7 @@ update = [
   type: TEEP-TYPE-update,
   options: {
     ? token => bstr .size (8..64),
+    ? unneeded-manifest-list => [ + bstr .cbor SUIT_Digest ],
     ? manifest-list => [ + bstr .cbor SUIT_Envelope_Tagged ],
     * $$update-extensions,
     * $$teep-option-extensions
@@ -167,7 +168,7 @@ msg = 11
 err-msg = 12
 attestation-payload-format = 13
 requested-tc-list = 14
-unneeded-tc-list = 15
+unneeded-manifest-list = 15
 component-id = 16
 tc-manifest-sequence-number = 17
 have-binary = 18
