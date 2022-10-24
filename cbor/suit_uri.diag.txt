@@ -1,4 +1,4 @@
-/ SUIT_Envelope_Tagged / 107( {
+/ SUIT_Envelope / {
   / suit-authentication-wrapper / 2: << [
     << [
       / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
@@ -47,4 +47,4 @@
       / suit-condition-image-match / 3, 15
     ] >>
   } >>
-} )
+}

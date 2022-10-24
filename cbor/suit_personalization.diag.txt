@@ -1,4 +1,4 @@
-/ SUIT_Envelope_Tagged / 107( {
+/ SUIT_Envelope / {
   / authentication-wrapper / 2: << [
     / digest: / << [
       / algorithm-id: / -16 / SHA-256 /,
@@ -69,4 +69,4 @@
       / condition-image-match / 3, 15
     ] >>
   } >>
-} )
+}

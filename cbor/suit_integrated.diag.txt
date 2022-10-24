@@ -1,4 +1,4 @@
-/ SUIT_Envelope_Tagged / 107( {
+/ SUIT_Envelope / {
   / suit-authentication-wrapper / 2: << [
     / digest: / << [
       / suit-digest-algorithm-id: / -16 / SHA-256 /,
@@ -48,4 +48,4 @@
     ] >>
   } >>,
   "#tc" : h'48656C6C6F2C2053656375726520576F726C6421' / "Hello, Secure World!" /
-} )
+}
