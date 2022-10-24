@@ -6,7 +6,7 @@
     / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
     / manifest-list / 10 : [
       <<
-        / SUIT_Envelope_Tagged / 107( {
+        / SUIT_Envelope / {
           / suit-authentication-wrapper / 2: << [
             << [
               / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
@@ -55,7 +55,7 @@
               / suit-condition-image-match / 3, 15
             ] >>
           } >>
-        } )
+        }
       >>
     ] / array of bstr wrapped SUIT_Envelope /
   }
