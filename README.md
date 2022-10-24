@@ -28,7 +28,12 @@ apt-get -y install ruby-kramdown-rfc2629 python3-pip git
 pip3 install xml2rfc
 ```
 
-Installing cddl tool, see https://rubygems.org/gems/cddl
+Installing cddl tool from either https://github.com/anweiss/cddl or
+https://rubygems.org/gems/cddl
+```
+cargo install cddl
+```
+or
 ```
 gem install cddl
 ```
