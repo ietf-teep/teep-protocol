@@ -79,7 +79,6 @@ normative:
   RFC8152: 
   RFC3629: 
   RFC5198: 
-  RFC5280: 
   RFC7049: 
   I-D.ietf-rats-architecture: 
   I-D.ietf-rats-eat: 
@@ -98,7 +97,6 @@ informative:
   I-D.lundblade-rats-eat-media-type:
   I-D.wallace-rats-concise-ta-stores:
   RFC8610: 
-  RFC8126: 
   RFC8915: 
 
 --- abstract
