@@ -28,6 +28,11 @@ apt-get -y install ruby-kramdown-rfc2629 python3-pip git
 pip3 install xml2rfc
 ```
 
+Installing cddl tool, see https://rubygems.org/gems/cddl
+```
+gem install cddl -v 0.8.5
+```
+
 ### Generating draft from a markdown file
 
 ```
