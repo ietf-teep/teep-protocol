@@ -30,7 +30,7 @@ pip3 install xml2rfc
 
 Installing cddl tool, see https://rubygems.org/gems/cddl
 ```
-gem install cddl -v 0.8.5
+gem install cddl
 ```
 
 ### Generating draft from a markdown file
