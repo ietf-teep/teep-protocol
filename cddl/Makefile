@@ -5,9 +5,9 @@ TEEP_PROTOCOL_CDDL		:= ../draft-ietf-teep-protocol.cddl
 SUIT_MANIFEST_CDDL		:= draft-ietf-suit-manifest.cddl
 SUIT_REPORT_MD			:= draft-ietf-suit-report.md
 SUIT_REPORT_CDDL		:= draft-ietf-suit-report.cddl
-COSE_XML				:= rfc-8152-cose.xml
-COSE_CDDL				:= rfc-8152-cose.cddl
-WORKAROUND_DEPENDENCY	:= workaround_dependency.cddl
+COSE_XML			:= rfc-8152-cose.xml
+COSE_CDDL			:= rfc-8152-cose.cddl
+WORKAROUND_DEPENDENCY		:= workaround_dependency.cddl
 
 CDDLS				:= $(TEEP_PROTOCOL_CDDL)
 CDDLS				+= $(COSE_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_REPORT_CDDL)
