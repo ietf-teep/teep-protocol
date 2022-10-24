@@ -35,11 +35,11 @@ author:
   ins: M. Pei
   name: Mingliang Pei
   org: Broadcom
-  street: 350 Ellis St
-  city: Mountain View
-  region: CA
-  code: '94043'
-  country: USA
+  street: ''
+  city: ''
+  region: ''
+  code: ''
+  country: US
   email: mingliang.pei@broadcom.com
 
  -
