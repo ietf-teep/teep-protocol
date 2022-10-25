@@ -590,8 +590,8 @@ for the Verifier to use when generating Attestation Results of some form:
 | Class of the device | hardware-model | {{I-D.ietf-rats-eat}} section 4.2.4 |
 | TEE hardware type | hardware-version | {{I-D.ietf-rats-eat}} section 4.2.5 |
 | TEE hardware version | hardware-version | {{I-D.ietf-rats-eat}} section 4.2.5 |
-| TEE firmware type | manifests | {{I-D.ietf-rats-eat}} section 4.2.16 |
-| TEE firmware version | manifests | {{I-D.ietf-rats-eat}} section 4.2.16 |
+| TEE firmware type | manifests | {{I-D.ietf-rats-eat}} section 4.2.15 |
+| TEE firmware version | manifests | {{I-D.ietf-rats-eat}} section 4.2.15 |
 
 The "manifests" claim should include information about the TEEP Agent as well
 as any of its dependencies such as firmware.
