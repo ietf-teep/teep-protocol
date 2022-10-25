@@ -584,14 +584,14 @@ requirements, whether these claims appear in Attestation Results, or in Evidence
 for the Verifier to use when generating Attestation Results of some form:
 
 | Requirement  | Claim | Reference |
-| Freshness proof | nonce | {{I-D.ietf-rats-eat}} section 4.1 |
-| Device unique identifier | ueid | {{I-D.ietf-rats-eat}} section 4.2.1 |
-| Vendor of the device | oemid | {{I-D.ietf-rats-eat}} section 4.2.3 |
-| Class of the device | hardware-model | {{I-D.ietf-rats-eat}} section 4.2.4 |
-| TEE hardware type | hardware-version | {{I-D.ietf-rats-eat}} section 4.2.5 |
-| TEE hardware version | hardware-version | {{I-D.ietf-rats-eat}} section 4.2.5 |
-| TEE firmware type | manifests | {{I-D.ietf-rats-eat}} section 4.2.15 |
-| TEE firmware version | manifests | {{I-D.ietf-rats-eat}} section 4.2.15 |
+| Freshness proof | nonce | {{Section 4.1 of I-D.ietf-rats-eat}} |
+| Device unique identifier | ueid | {{Section 4.2.1 of I-D.ietf-rats-eat}} |
+| Vendor of the device | oemid | {{Section 4.2.3 of I-D.ietf-rats-eat}} |
+| Class of the device | hardware-model | {{Section 4.2.4 of I-D.ietf-rats-eat}} |
+| TEE hardware type | hardware-version | {{Section 4.2.5 of I-D.ietf-rats-eat}} |
+| TEE hardware version | hardware-version | {{Section 4.2.5 of I-D.ietf-rats-eat}} |
+| TEE firmware type | manifests | {{Section 4.2.15 of I-D.ietf-rats-eat}} |
+| TEE firmware version | manifests | {{Section 4.2.15 of I-D.ietf-rats-eat}} |
 
 The "manifests" claim should include information about the TEEP Agent as well
 as any of its dependencies such as firmware.

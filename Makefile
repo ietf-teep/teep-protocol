@@ -2,7 +2,8 @@ FN := $(shell grep 'docname: draft-ietf-teep-protocol' draft-ietf-teep-protocol.
 
 .PHONY: all validate clean
 
-all: validate $(FN).txt $(FN).html
+#all: validate $(FN).txt $(FN).html
+all: $(FN).txt $(FN).html
 
 validate:
 	make -C cbor validate
