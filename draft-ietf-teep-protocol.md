@@ -584,14 +584,14 @@ requirements, whether these claims appear in Attestation Results, or in Evidence
 for the Verifier to use when generating Attestation Results of some form:
 
 | Requirement  | Claim | Reference |
-| Freshness proof | nonce | {{I-D.ietf-rats-eat}} section 4.1 |
+| Freshness proof | eat_nonce | {{I-D.ietf-rats-eat}} section 4.1 |
 | Device unique identifier | ueid | {{I-D.ietf-rats-eat}} section 4.2.1 |
 | Vendor of the device | oemid | {{I-D.ietf-rats-eat}} section 4.2.3 |
-| Class of the device | hardware-model | {{I-D.ietf-rats-eat}} section 4.2.4 |
-| TEE hardware type | hardware-version | {{I-D.ietf-rats-eat}} section 4.2.5 |
-| TEE hardware version | hardware-version | {{I-D.ietf-rats-eat}} section 4.2.5 |
-| TEE firmware type | manifests | {{I-D.ietf-rats-eat}} section 4.2.16 |
-| TEE firmware version | manifests | {{I-D.ietf-rats-eat}} section 4.2.16 |
+| Class of the device | hwmodel | {{I-D.ietf-rats-eat}} section 4.2.4 |
+| TEE hardware type | hwersion | {{I-D.ietf-rats-eat}} section 4.2.5 |
+| TEE hardware version | hwversion | {{I-D.ietf-rats-eat}} section 4.2.5 |
+| TEE firmware type | manifests | {{I-D.ietf-rats-eat}} section 4.2.15 |
+| TEE firmware version | manifests | {{I-D.ietf-rats-eat}} section 4.2.15 |
 
 The "manifests" claim should include information about the TEEP Agent as well
 as any of its dependencies such as firmware.
@@ -1175,9 +1175,10 @@ of this document.)
 * Endorsement Identification: Optional, but semantics are the same
   as in Verification Key Identification.
 * Freshness: See {{freshness-mechanisms}}.
-* Required Claims: None.
+* Required Claims: ueid, oemid, hwmodel, hwversion, and manifests.
+  See {{attestation}} for discussion.
 * Prohibited Claims: None.
-* Additional Claims: Optional claims are those listed in {{attestation}}.
+* Additional Claims: eat_nonce. See {{freshness-mechanisms}} for discussion.
 * Refined Claim Definition: None.
 * CBOR Tags: CBOR Tags are not used.
 * Manifests and Software Evidence Claims: The sw-name claim for a Trusted
@@ -1714,18 +1715,26 @@ COSE is shown.
 ~~~~
 / eat-claim-set = /
 {
-    / issuer /                   1: "joe",
-    / timestamp (iat) /          6: 1(1526542894)
-    / nonce /                   10: h'948f8860d13a463e8e',
-    / secure-boot /             15: true,
-    / debug-status /            16: 3, / disabled-permanently /
-    / security-level /          14: 3, / secure-restricted /
-    / device-identifier /    <TBD>: h'e99600dd921649798b013e9752dcf0c5',
-    / vendor-identifier /    <TBD>: h'2b03879b33434a7ca682b8af84c19fd4', 
-    / class-identifier /     <TBD>: h'9714a5796bd245a3a4ab4f977cb8487f',
-    / chip-version /            26: [ "MyTEE", 1 ],
-    / component-identifier / <TBD>: h'60822887d35e43d5b603d18bcaa3f08d',
-    / version /              <TBD>: "v0.1"
+    / eat_nonce /   10: h'948f8860d13a463e8e',
+    / ueid /       256: h'0198f50a4ff6c05861c8860d13a638ea',
+    / oemid /      258: h'894823', / IEEE OUI format OEM ID /
+    / hwmodel /    259: h'549dcecc8b987c737b44e40f7c635ce8'
+                          / Hash of chip model name /,
+    / hwversion /  260: ["1.3.4", 1], / Multipartnumeric  /
+    / manifests /  273: [
+                          [ 60, / application/cbor, TO BE REPLACED /
+                                / with the format value for a /
+                                / SUIT_Reference once one is allocated /
+                            {   / SUIT_Reference /
+                              / suit-report-manifest-uri / 1: "https://example.com/manifest.cbor",
+                              / suit-report-manifest-digest / 0:[
+                                / algorithm-id / -16 / "sha256" /,
+                                / digest-bytes / h'a7fd6593eac32eb4be578278e6540c5c'
+                                                 h'09cfd7d4d234973054833b2b93030609'
+                                ]
+                            }
+                          ]
+                        ]
 }
 ~~~~
 
