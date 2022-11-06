@@ -438,7 +438,7 @@ query-response = [
     ? suit-reports => [ + SUIT_Report ],
     ? tc-list => [ + system-property-claims ],
     ? requested-tc-list => [ + requested-tc-info ],
-    ? unneeded-manifest-list => [ + bstr .cbor SUIT_Digest ],
+    ? unneeded-manifest-list => [ + SUIT_Component_Identifier ],
     ? ext-list => [ + ext-info ],
     * $$query-response-extensions,
     * $$teep-option-extensions
@@ -534,7 +534,9 @@ unneeded-manifest-list
   currently installed in the TEE, but which are no longer needed by any
   other application.  The TAM can use this information in determining
   whether a SUIT manifest can be unlinked.  Each unneeded SUIT manifest is identified
-  by its SUIT Digest.
+  by its SUIT Manifest Component ID (note that this is the Component ID for the manifest
+  itself, which is different from the Component ID of a component installed by the manifest,
+  see {{I-D.ietf-suit-trust-domains}} for more discussion).
   A TEEP Agent can get this information from the UnrequestTA conceptual API
   defined in {{I-D.ietf-teep-architecture}} section 6.2.1.
 
@@ -636,7 +638,7 @@ update = [
   type: TEEP-TYPE-update,
   options: {
     ? token => bstr .size (8..64),
-    ? unneeded-manifest-list => [ + bstr .cbor SUIT_Digest ],
+    ? unneeded-manifest-list => [ + SUIT_Component_Identifier ],
     ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
@@ -662,7 +664,7 @@ token
 
 unneeded-manifest-list
 : The unneeded-manifest-list parameter enumerates the SUIT manifests to be unlinked.
-  Each unneeded SUIT manifest is identified by its SUIT Digest.
+  Each unneeded SUIT manifest is identified by its SUIT Manifest Component ID.
 
 manifest-list
 : The manifest-list field is used to convey one or multiple SUIT manifests
