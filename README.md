@@ -31,6 +31,7 @@ pip3 install xml2rfc
 Installing cddl tool https://rubygems.org/gems/cddl
 ```
 gem install cddl
+gem install abnc
 ```
 
 Note that the cddl validation uses this cddl tool, not the one from https://github.com/anweiss/cddl.
@@ -45,3 +46,21 @@ make
 
 It will create `draft-ietf-teep-protocol-latest.txt` and
 `draft-ietf-teep-protocol-latest.xml`.
+
+### Checking cddl syntax
+
+#### Creating cddl file for TEEP Protocol.
+
+The file name `check-draft-ietf-teep-protocol.cddl` will be created under directory cddl.
+The cddl file for TEEP Protocol require cddl file from suit-report and suit-manifest.
+This command downloads cddl files from respected repos and concatinate them to one cddl file usable to run with cddl tool.
+```
+make cat-cddl
+```
+
+#### Run cddl tools
+
+The command to run cddl syntax check.
+````
+make cddl-validate
+````
