@@ -1,23 +1,23 @@
 / SUIT_Envelope / {
-  / suit-authentication-wrapper / 2: << [
+  / authentication-wrapper / 2: << [
     << [
-      / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
-      / suit-digest-bytes: / h'DB601ADE73092B58532CA03FBB663DE49532435336F1558B49BB622726A2FEDD'
+      / digest-algorithm-id: / -16 / cose-alg-sha256 /,
+      / digest-bytes: / h'A191CC46EF600B93DBA5C7274694E49A38FB41ADAE9D3D3FD94B123571D7B2F6'
     ] >>,
-    << / COSE_Sign1_Tagged / 18( [
+    << / COSE_Sign1_Tagged / 18([
       / protected: / << {
         / algorithm-id / 1: -7 / ES256 /
       } >>,
       / unprotected: / {},
       / payload: / null,
-      / signature: / h'5B2D535A2B6D5E3C585C1074F414DA9E10BD285C99A33916DADE3ED38812504817AC48B62B8E984EC622785BD1C411888BE531B1B594507816B201F6F28579A4'
-    ] ) >>
+      / signature: / h'C6CD84E96EF770ED3024FE5DCCECB9B39012625236562757D59994CB34645D675F3BC49CD68BADA2C0DA14B151495AB96ECB915F66959D2A50FD3299A218A723'
+    ]) >>
   ] >>,
-  / suit-manifest / 3: << {
-    / suit-manifest-version / 1: 1,
-    / suit-manifest-sequence-number / 2: 3,
-    / suit-common / 3: << {
-      / suit-components / 2: [
+  / manifest / 3: << {
+    / manifest-version / 1: 1,
+    / manifest-sequence-number / 2: 3,
+    / common / 3: << {
+      / components / 2: [
         [
           h'544545502D446576696365',           / "TEEP-Device" /
           h'5365637572654653',                 / "SecureFS" /
@@ -25,26 +25,32 @@
           h'7461'                              / "ta" /
         ]
       ],
-      / suit-common-sequence / 4: << [
-        / suit-directive-override-parameters / 20, {
-          / suit-parameter-vendor-identifier / 1: h'C0DDD5F15243566087DB4F5B0AA26C2F',
-          / suit-parameter-class-identifier / 2: h'DB42F7093D8C55BAA8C5265FC5820F4E',
-          / suit-parameter-image-digest / 3: << [
-            / suit-digest-algorithm-id: / -16 / suit-cose-alg-sha256 /,
-            / suit-digest-bytes: / h'8CF71AC86AF31BE184EC7A05A411A8C3A14FD9B77A30D046397481469468ECE8'
+      / shared-sequence / 4: << [
+        / directive-override-parameters / 20, {
+          / parameter-vendor-identifier / 1: h'C0DDD5F15243566087DB4F5B0AA26C2F',
+          / parameter-class-identifier / 2: h'DB42F7093D8C55BAA8C5265FC5820F4E',
+          / parameter-image-digest / 3: << [
+            / digest-algorithm-id: / -16 / cose-alg-sha256 /,
+            / digest-bytes: / h'8CF71AC86AF31BE184EC7A05A411A8C3A14FD9B77A30D046397481469468ECE8'
           ] >>,
-          / suit-parameter-image-size / 14: 20
+          / parameter-image-size / 14: 20
         },
-        / suit-condition-vendor-identifier / 1, 15,
-        / suit-condition-class-identifier / 2, 15
-      ] >>
+        / condition-vendor-identifier / 1, 15,
+        / condition-class-identifier / 2, 15
+      ] >>,
+      / manifest-component-id / 5: [
+        h'544545502D446576696365',              / "TEEP-Device" /
+        h'5365637572654653',                    / "SecureFS" /
+        h'8D82573A926D4754935332DC29997F74',    / tc-uuid /
+        h'73756974'                             / "suit" /
+      ]
     } >>,
-    / suit-install / 9: << [
-      / suit-directive-override-parameters / 20, {
-        / suit-parameter-uri / 21: "https://example.org/8d82573a-926d-4754-9353-32dc29997f74.ta"
+    / install / 17: << [
+      / directive-override-parameters / 20, {
+        / parameter-uri / 21: "https://example.org/8d82573a-926d-4754-9353-32dc29997f74.ta"
       },
-      / suit-directive-fetch / 21, 15,
-      / suit-condition-image-match / 3, 15
+      / directive-fetch / 21, 15,
+      / condition-image-match / 3, 15
     ] >>
   } >>
 }

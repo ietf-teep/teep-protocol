@@ -1,17 +1,16 @@
 / SUIT_Envelope / {
   / authentication-wrapper / 2: << [
-    / digest: / << [
-      / algorithm-id: / -16 / SHA-256 /,
-      / digest-bytes: / h'54EA3D80AAF5370527E8C4FC9E0D91FF0BD0FED26AEAB602CA516541FEF7F15A'
+    << [
+      / digest-algorithm-id: / -16 / cose-alg-sha256 /,
+      / digest-bytes: / h'7D22496B457FE53299A18018A18507429E483A4B66F79B49877D7A10D80CD291'
     ] >>,
-    / signatures: / << / COSE_Sign1_Tagged / 18( [
+    << / COSE_Sign1_Tagged / 18([
       / protected: / << {
-        / alg / 1: -7 / ES256 /
+        / algorithm-id / 1: -7 / ES256 /
       } >>,
-      / unprotected: / {
-      },
+      / unprotected: / {},
       / payload: / null,
-      / signature: / h'436A36C33A3300D13ACF0075BA751B419FE1E8CCAB6CFB7952C2E97FD5DA70278EA3D8A8377D247CF8FE7F2874DF5A0F31B042C659A98DD57A0DC23F094666E8'
+      / signature: / h'159B03659E0ED52751AD9C3CB67D361F3616F496A1098D6B05B2CF6C5E49B496FF85858AD8992A40F513924698A428BC79DA51A1CCC6E19D0606383F788172BD'
     ]) >>
   ] >>,
   / manifest / 3: << {
@@ -33,7 +32,13 @@
         },
         / condition-vendor-identifier / 1, 15,
         / condition-class-identifier / 2, 15
-      ] >>
+      ] >>,
+      / component-identifier / 5: [
+        h'544545502D446576696365',              / "TEEP-Device" /
+        h'5365637572654653',                    / "SecureFS" /
+        h'8D82573A926D4754935332DC29997F74',    / tc-uuid /
+        h'73756974'                             / "suit" /
+      ]
     } >>,
     / install / 17: << [
       / directive-set-component-index / 12, 0,

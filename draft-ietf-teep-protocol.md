@@ -1699,7 +1699,7 @@ This section includes some examples with the following assumptions:
 
 ~~~~
 
-{::include cbor/query_request.hex.txt}
+{::include cbor/query_request.pretty.txt}
 ~~~~
 
 ## D.2. Entity Attestation Token
@@ -1743,7 +1743,7 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-{::include cbor/query_response.hex.txt}
+{::include cbor/query_response.pretty.txt}
 ~~~~
 
 ## D.4. Update Message
@@ -1760,7 +1760,7 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-{::include cbor/update.hex.txt}
+{::include cbor/update.pretty.txt}
 ~~~~
 
 ## D.5. Success Message
@@ -1777,7 +1777,7 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-{::include cbor/teep_success.hex.txt}
+{::include cbor/teep_success.pretty.txt}
 ~~~~
 
 ## D.6. Error Message
@@ -1794,7 +1794,7 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-{::include cbor/teep_error.hex.txt}
+{::include cbor/teep_error.pretty.txt}
 ~~~~
 
 # E. Examples of SUIT Manifests {#suit-examples}
