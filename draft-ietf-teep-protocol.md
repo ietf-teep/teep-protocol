@@ -1235,6 +1235,8 @@ When the ProcessConnect API is invoked, the TAM sends a QueryRequest message.
 
 When the ProcessTeepMessage API is invoked, the TAM first does validation
 as specified in {{validation}}, and drops the message if it is not valid.
+It may also do additional implementation specific actions such as logging the results
+or attempting to update the TEEP Agent to a version that does not send invalid messages.
 Otherwise, it proceeds as follows.
 
 If the message includes a token, it can be used to 
@@ -1248,7 +1250,7 @@ identify the devices and/or a device to identify TAMs or Trusted Components.
 
 If a QueryResponse message is received, the TAM verifies the presence of any parameters
 required based on the data-items-requested in the QueryRequest, and also validates that
-the nonce in any SUIT Report matches the token send in the QueryRequest message if a token
+the nonce in any SUIT Report matches the token sent in the QueryRequest message if a token
 was present.  If these requirements are not met, the TAM drops the message.  It may also do
 additional implementation specific actions such as logging the results.  If the requirements
 are met, processing continues as follows.
