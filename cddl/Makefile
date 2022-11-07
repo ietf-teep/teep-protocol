@@ -44,10 +44,8 @@ $(COSE_CDDL): $(COSE_XML)
 
 .PHONY: cddl-validate-all
 cddl-validate-all: $(CONCATENATED_CDDL) $(TEEP_MESSAGES) $(SUIT_MANIFESTS)
-	$(foreach mfst,$(SUIT_MANIFESTS),cddl $(CONCATENATED_UNTAGGED_SUIT_MANIFEST_CDDL) validate $(mfst)
-		|| exit 1;)
-	$(foreach msg,$(TEEP_MESSAGES),cddl $(CONCATENATED_CDDL) validate $(msg)
-		|| exit 1;)
+	$(foreach mfst,$(SUIT_MANIFESTS),cddl $(CONCATENATED_UNTAGGED_SUIT_MANIFEST_CDDL) validate $(mfst) || exit 1;)
+	$(foreach msg,$(TEEP_MESSAGES),cddl $(CONCATENATED_CDDL) validate $(msg) || exit 1;)
 
 .PHONY: cddl-gen
 cddl-gen: cat-cddl $(CONCATENATED_CDDL)
