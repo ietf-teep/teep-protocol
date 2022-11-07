@@ -2,7 +2,7 @@
   / authentication-wrapper / 2: << [
     << [
       / digest-algorithm-id: / -16 / cose-alg-sha256 /,
-      / digest-bytes: / h'16A0FA2B644983181966AF7AE4BA28B115957AD5179019B8C02DA259AE7F37EC'
+      / digest-bytes: / h'4CEDEE7C1B7879F25B6753A828B0CBD0B4A8003363CF2D4307FEF2A042AA8DF1'
     ] >>,
     << / COSE_Sign1_Tagged / 18([
       / protected: / << {
@@ -10,7 +10,7 @@
       } >>,
       / unprotected: / {},
       / payload: / null,
-      / signature: / h'B9CBB61F94A195F5AF840F34DBEB26E5EF339028A4E903226412FE12EA00C4F24ADA798262E563409E2599B550FB96B4CFE69E761429F624F133EB435A9272CC'
+      / signature: / h'525797C39F737FDD23213A60636E826732FE7D597F21DEA509E97F8DAD8163FBC8FD51C0649C86DC3A0EB79FD681A6C8B55AD3C5F978F81EE9C0B3E203DAC20D'
     ]) >>
   ] >>,
   / manifest / 3: << {
@@ -48,14 +48,14 @@
         },
         / condition-vendor-identifier / 1, 15,
         / condition-class-identifier / 2, 15
-      ] >>,
-      / component-identifier / 5: [
-        h'544545502D446576696365',  / "TEEP-Device" /
-        h'5365637572654653',        / "SecureFS" /
-        h'636F6E6669672E',          / "config" /
-        h'73756974'                 / "suit" /
-      ]
+      ] >>
     } >>,
+    / component-identifier / 5: [
+      h'544545502D446576696365',  / "TEEP-Device" /
+      h'5365637572654653',        / "SecureFS" /
+      h'636F6E6669672E',          / "config" /
+      h'73756974'                 / "suit" /
+    ],
     / validate / 7: << [
       / directive-set-component-index / 12, 0,
       / condition-image-match / 3, 15
