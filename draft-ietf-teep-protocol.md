@@ -588,7 +588,7 @@ for the Verifier to use when generating Attestation Results of some form:
 | Device unique identifier | ueid | {{I-D.ietf-rats-eat}} section 4.2.1 |
 | Vendor of the device | oemid | {{I-D.ietf-rats-eat}} section 4.2.3 |
 | Class of the device | hwmodel | {{I-D.ietf-rats-eat}} section 4.2.4 |
-| TEE hardware type | hwersion | {{I-D.ietf-rats-eat}} section 4.2.5 |
+| TEE hardware type | hwversion | {{I-D.ietf-rats-eat}} section 4.2.5 |
 | TEE hardware version | hwversion | {{I-D.ietf-rats-eat}} section 4.2.5 |
 | TEE firmware type | manifests | {{I-D.ietf-rats-eat}} section 4.2.15 |
 | TEE firmware version | manifests | {{I-D.ietf-rats-eat}} section 4.2.15 |
