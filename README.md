@@ -31,7 +31,6 @@ pip3 install xml2rfc
 Installing cddl tool https://rubygems.org/gems/cddl
 ```
 gem install cddl
-gem install abnc
 ```
 
 Note that the cddl validation uses this cddl tool, not the one from https://github.com/anweiss/cddl.
@@ -62,5 +61,5 @@ make cat-cddl
 
 The command to run cddl syntax check.
 ````
-make cddl-validate
+make validate-cddl
 ````
