@@ -2,26 +2,25 @@ TEEP_MESSAGES	:= ../cbor/query_request.diag.bin ../cbor/query_response.diag.bin 
 SUIT_MANIFESTS	:= ../cbor/suit_uri.diag.bin ../cbor/suit_integrated.diag.bin ../cbor/suit_personalization.diag.bin ../cbor/suit_unlink.diag.bin
 
 CONCATENATED_CDDL	:= check-draft-ietf-teep-protocol.cddl
-CONCATENATED_UNTAGGED_SUIT_MANIFEST_CDDL	:= check-draft-ietf-suit-manifest.cddl
+CONCATENATED_UNTAGGED_SUIT_CDDL	:= check-draft-ietf-suit-manifest.cddl
 
 TEEP_PROTOCOL_CDDL		:= ../draft-ietf-teep-protocol.cddl
-SUIT_MANIFEST_SHIM_CDDL	:= suit-manifest-shim.cddl
+SUIT_ENVELOPE_SHIM_CDDL	:= suit-envelope-shim.cddl
 SUIT_MANIFEST_CDDL		:= draft-ietf-suit-manifest.cddl
 SUIT_TRUST_DOMAINS_CDDL	:= draft-ietf-trust-domains.cddl
 SUIT_REPORT_CDDL		:= draft-ietf-suit-report.cddl
 COSE_XML			:= rfc-8152-cose.xml
 COSE_CDDL			:= rfc-8152-cose.cddl
 
-CDDLS				:= $(TEEP_PROTOCOL_CDDL)
-CDDLS				+= $(COSE_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL)
+SUIT_CDDLS			:= $(COSE_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL)
 
 .PHONY: cat-cddl
-cat-cddl: $(CONCATENATED_CDDL) $(CONCATENATED_UNTAGGED_SUIT_MANIFEST_CDDL)
+cat-cddl: $(CONCATENATED_CDDL)
 
-$(CONCATENATED_CDDL): $(CDDLS)
-	cat $(CDDLS) > $@
+$(CONCATENATED_CDDL): $(TEEP_PROTOCOL_CDDL) $(CONCATENATED_UNTAGGED_SUIT_CDDL)
+	cat $^ > $@
 
-$(CONCATENATED_UNTAGGED_SUIT_MANIFEST_CDDL): $(SUIT_MANIFEST_SHIM_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL) $(COSE_CDDL)
+$(CONCATENATED_UNTAGGED_SUIT_CDDL): $(SUIT_ENVELOPE_SHIM_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL) $(COSE_CDDL)
 	cat $^ > $@
 
 $(MESSAGES):
@@ -42,18 +41,17 @@ $(COSE_XML):
 $(COSE_CDDL): $(COSE_XML)
 	sed -n -e '/<artwork type="CDDL"/,/<\/artwork/ p' $< | sed -e '/<artwork type="CDDL"/ d' -e '/<\/artwork/ d' -e '/<\/section>/,/<figure title=""/ d' -e 's/\&gt;/>/g' -e 's/\r$$//g' > $@
 
-.PHONY: cddl-validate-all
-cddl-validate-all: $(CONCATENATED_CDDL) $(TEEP_MESSAGES) $(SUIT_MANIFESTS)
-	$(foreach mfst,$(SUIT_MANIFESTS),cddl $(CONCATENATED_UNTAGGED_SUIT_MANIFEST_CDDL) validate $(mfst) || exit 1;)
+.PHONY: validate-cddl
+validate-cddl: validate-suit-cddl $(CONCATENATED_CDDL) $(TEEP_MESSAGES)
 	$(foreach msg,$(TEEP_MESSAGES),cddl $(CONCATENATED_CDDL) validate $(msg) || exit 1;)
 
-.PHONY: cddl-gen
-cddl-gen: cat-cddl $(CONCATENATED_CDDL)
-	cddl $(CONCATENATED_CDDL) generate
+.PHONY: validate-suit-cddl
+validate-suit-cddl: $(CONCATENATED_UNTAGGED_SUIT_CDDL) $(SUIT_MANIFESTS)
+	$(foreach mfst,$(SUIT_MANIFESTS),cddl $(CONCATENATED_UNTAGGED_SUIT_CDDL) validate $(mfst) || exit 1;)
 
-.PHONY: cddl-validate
-cddl-validate: cat-cddl $(MESSAGES) $(CONCATENATED_CDDL)
-	cddl $(CONCATENATED_CDDL) validate ../cbor/query_request.diag.bin
+.PHONY: gen-cddl
+gen-cddl: cat-cddl $(CONCATENATED_CDDL)
+	cddl $(CONCATENATED_CDDL) generate
 
 .PHONY: clean
 clean:

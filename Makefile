@@ -11,9 +11,9 @@ cat-cddl:
 validate-cbor:
 	make -C cbor validate
 
-.PHONY: cddl-validate
-cddl-validate:
-	make -C cddl cddl-validate
+.PHONY: validate-cddl
+validate-cddl:
+	make -C cddl validate-cddl
 
 $(FN).html: $(FN).xml
 	xml2rfc $(FN).xml --html
@@ -26,6 +26,6 @@ $(FN).xml: draft-ietf-teep-protocol.md
 
 .PHONY: clean
 clean:
-	rm -fr $(FN).txt $(FN).xml
+	$(RM) -fr $(FN).txt $(FN).xml
 	$(MAKE) -C cbor clean
 	$(MAKE) -C cddl clean
