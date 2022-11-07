@@ -76,10 +76,10 @@ author:
   email: akira.tsukamoto@aist.go.jp
 
 normative:
-  RFC8152: 
+  RFC9052:
   RFC3629: 
   RFC5198: 
-  RFC7049: 
+  RFC8949:
   I-D.ietf-rats-architecture: 
   I-D.ietf-rats-eat: 
   I-D.ietf-rats-reference-interaction-models:
@@ -163,7 +163,7 @@ TEEP Agent, but Trusted
 Applications may also be encrypted and signed by a Trusted Component Developer or
 Device Administrator.
 The TEEP protocol not only uses
-CBOR but also the respective security wrapper, namely COSE {{RFC8152}}. Furthermore, for software updates the SUIT
+CBOR but also the respective security wrapper, namely COSE {{RFC9052}}. Furthermore, for software updates the SUIT
 manifest format {{I-D.ietf-suit-manifest}} is used, and
 for attestation the Entity Attestation Token (EAT) {{I-D.ietf-rats-eat}}
 format is supported although other attestation formats are also permitted.
@@ -267,11 +267,11 @@ To create a TEEP message, the following steps are performed.
   created by a TAM.
 
 1. Create a COSE Header containing the desired set of Header
-  Parameters.  The COSE Header MUST be valid per the {{RFC8152}} specification.
+  Parameters.  The COSE Header MUST be valid per the {{RFC9052}} specification.
 
 1. Create a COSE_Sign1 object
   using the TEEP message as the COSE_Sign1 Payload; all
-  steps specified in {{RFC8152}} for creating a
+  steps specified in {{RFC9052}} for creating a
   COSE_Sign1 object MUST be followed.
 
 ### Validating a TEEP Message {#validation}
@@ -290,7 +290,7 @@ the listed steps fail, then the TEEP message MUST be rejected.
   supported or that are specified as being ignored when not
   understood.
 
-1. Follow the steps specified in Section 4 of {{RFC8152}} ("Signing Objects") for
+1. Follow the steps specified in {{Section 4 of RFC9052}} ("Signing Objects") for
   validating a COSE_Sign1 object. The COSE_Sign1 payload is the content
   of the TEEP message.
 
@@ -584,14 +584,14 @@ requirements, whether these claims appear in Attestation Results, or in Evidence
 for the Verifier to use when generating Attestation Results of some form:
 
 | Requirement  | Claim | Reference |
-| Freshness proof | eat_nonce | {{I-D.ietf-rats-eat}} section 4.1 |
-| Device unique identifier | ueid | {{I-D.ietf-rats-eat}} section 4.2.1 |
-| Vendor of the device | oemid | {{I-D.ietf-rats-eat}} section 4.2.3 |
-| Class of the device | hwmodel | {{I-D.ietf-rats-eat}} section 4.2.4 |
-| TEE hardware type | hwversion | {{I-D.ietf-rats-eat}} section 4.2.5 |
-| TEE hardware version | hwversion | {{I-D.ietf-rats-eat}} section 4.2.5 |
-| TEE firmware type | manifests | {{I-D.ietf-rats-eat}} section 4.2.15 |
-| TEE firmware version | manifests | {{I-D.ietf-rats-eat}} section 4.2.15 |
+| Freshness proof | nonce | {{Section 4.1 of I-D.ietf-rats-eat}} |
+| Device unique identifier | ueid | {{Section 4.2.1 of I-D.ietf-rats-eat}} |
+| Vendor of the device | oemid | {{Section 4.2.3 of I-D.ietf-rats-eat}} |
+| Class of the device | hwmodel | {{Section 4.2.4 of I-D.ietf-rats-eat}} |
+| TEE hardware type | hwversion | {{Section 4.2.5 of I-D.ietf-rats-eat}} |
+| TEE hardware version | hwversion | {{Section 4.2.5 of I-D.ietf-rats-eat}} |
+| TEE firmware type | manifests | {{Section 4.2.15 of I-D.ietf-rats-eat}} |
+| TEE firmware version | manifests | {{Section 4.2.15 of I-D.ietf-rats-eat}} |
 
 The "manifests" claim should include information about the TEEP Agent as well
 as any of its dependencies such as firmware.
@@ -1398,7 +1398,7 @@ cose-alg-eddsa = -8  ; EdDSA
 
 Each operation in a given cipher suite has two elements:
 
-* a COSE-type defined in Section 2 of {{RFC8152}} that identifies the type of operation, and
+* a COSE-type defined in {{Section 2 of RFC9052}} that identifies the type of operation, and
 * a specific cryptographic algorithm as defined in the COSE Algorithms registry {{COSE.Algorithm}} to be used to perform that operation.
 
 A TAM MUST support both of the cipher suites defined above.  A TEEP Agent MUST support at least
@@ -1601,7 +1601,7 @@ Security considerations:
 
 Interoperability considerations:
 : Same as interoperability
-  considerations of application/cbor as specified in {{RFC7049}}.
+  considerations of application/cbor as specified in {{RFC8949}}.
 
 Published specification:
 : This document.
