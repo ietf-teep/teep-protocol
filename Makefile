@@ -7,6 +7,9 @@ all: $(FN).txt $(FN).html
 cat-cddl:
 	make -C cddl cat-cddl
 
+.PHONY: validate
+validate: validate-cbor validate-cddl
+
 .PHONY: validate-cbor
 validate-cbor:
 	make -C cbor validate

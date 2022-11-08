@@ -1,5 +1,15 @@
-TEEP_MESSAGES	:= ../cbor/query_request.diag.bin ../cbor/query_response.diag.bin ../cbor/update.diag.bin ../cbor/teep_success.diag.bin ../cbor/teep_error.diag.bin
-SUIT_MANIFESTS	:= ../cbor/suit_uri.diag.bin ../cbor/suit_integrated.diag.bin ../cbor/suit_personalization.diag.bin ../cbor/suit_unlink.diag.bin
+TEEP_MESSAGES := \
+		../cbor/query_request.diag.bin \
+		../cbor/query_response.diag.bin \
+		../cbor/update.diag.bin \
+		../cbor/teep_success.diag.bin \
+		../cbor/teep_error.diag.bin
+
+SUIT_MANIFESTS := \
+		../cbor/suit_uri.diag.bin \
+		../cbor/suit_integrated.diag.bin \
+		../cbor/suit_personalization.diag.bin \
+		../cbor/suit_unlink.diag.bin
 
 CONCATENATED_CDDL	:= check-draft-ietf-teep-protocol.cddl
 CONCATENATED_UNTAGGED_SUIT_CDDL	:= check-draft-ietf-suit-manifest.cddl
@@ -9,8 +19,8 @@ SUIT_ENVELOPE_SHIM_CDDL	:= suit-envelope-shim.cddl
 SUIT_MANIFEST_CDDL		:= draft-ietf-suit-manifest.cddl
 SUIT_TRUST_DOMAINS_CDDL	:= draft-ietf-trust-domains.cddl
 SUIT_REPORT_CDDL		:= draft-ietf-suit-report.cddl
-COSE_XML			:= rfc-8152-cose.xml
-COSE_CDDL			:= rfc-8152-cose.cddl
+COSE_XML				:= rfc-8152-cose.xml
+COSE_CDDL				:= rfc-8152-cose.cddl
 
 SUIT_CDDLS			:= $(COSE_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL)
 
@@ -23,14 +33,14 @@ $(CONCATENATED_CDDL): $(TEEP_PROTOCOL_CDDL) $(CONCATENATED_UNTAGGED_SUIT_CDDL)
 $(CONCATENATED_UNTAGGED_SUIT_CDDL): $(SUIT_ENVELOPE_SHIM_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL) $(COSE_CDDL)
 	cat $^ > $@
 
-$(MESSAGES):
+$(TEEP_MESSAGES) $(SUIT_MANIFESTS):
 	make -C ../cbor
 
 $(SUIT_MANIFEST_CDDL):
 	curl https://raw.githubusercontent.com/suit-wg/manifest-spec/master/draft-ietf-suit-manifest.cddl -o $@
 
 $(SUIT_TRUST_DOMAINS_CDDL):
-	curl https://raw.githubusercontent.com/bremoran/suit-multiple-trust-domains/f/component-id/draft-ietf-suit-trust-domains.cddl -o $@
+	curl https://raw.githubusercontent.com/bremoran/suit-multiple-trust-domains/main/draft-ietf-suit-trust-domains.cddl -o $@
 
 $(SUIT_REPORT_CDDL):
 	curl https://raw.githubusercontent.com/suit-wg/suit-report/main/draft-ietf-suit-report.cddl -o $@
@@ -43,15 +53,15 @@ $(COSE_CDDL): $(COSE_XML)
 
 .PHONY: validate-cddl
 validate-cddl: validate-suit-cddl $(CONCATENATED_CDDL) $(TEEP_MESSAGES)
+	@echo "Checking each TEEP Protocol binary file matches TEEP Protcol CDDL"
 	$(foreach msg,$(TEEP_MESSAGES),cddl $(CONCATENATED_CDDL) validate $(msg) || exit 1;)
+	@echo "Success: Each TEEP Protocol message matches the CDDL"
 
 .PHONY: validate-suit-cddl
 validate-suit-cddl: $(CONCATENATED_UNTAGGED_SUIT_CDDL) $(SUIT_MANIFESTS)
+	@echo "Checking each SUIT Manifest binary file matches SUIT Manifest CDDL"
 	$(foreach mfst,$(SUIT_MANIFESTS),cddl $(CONCATENATED_UNTAGGED_SUIT_CDDL) validate $(mfst) || exit 1;)
-
-.PHONY: gen-cddl
-gen-cddl: cat-cddl $(CONCATENATED_CDDL)
-	cddl $(CONCATENATED_CDDL) generate
+	@echo "Success: Each SUIT Manifest matches the CDDL"
 
 .PHONY: clean
 clean:

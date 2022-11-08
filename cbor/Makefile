@@ -1,15 +1,31 @@
 # input files
-TEEP_DIAG_MESSAGES := query_request.diag.txt query_response.diag.txt update.diag.txt teep_success.diag.txt teep_error.diag.txt
-TEEP_PRETTY_MESSAGES := $(TEEP_DIAG_MESSAGES:.diag.txt=.pretty.txt)
-SUIT_DIAG_MESSAGES := suit_uri.diag.txt suit_integrated.diag.txt suit_personalization.diag.txt suit_unlink.diag.txt
+DIAG_TEEP_MESSAGES := \
+		query_request.diag.txt \
+		query_response.diag.txt \
+		update.diag.txt \
+		teep_success.diag.txt \
+		teep_error.diag.txt
 
-HEX_MESSAGES := $(SUIT_DIAG_MESSAGES:.diag.txt=.hex.txt)
-DIAG_CBOR_MESSAGES := $(TEEP_DIAG_MESSAGES:.diag.txt=.diag.bin) $(SUIT_DIAG_MESSAGES:.diag.txt=.diag.bin)
-PRETTY_CBOR_MESSAGES := $(TEEP_PRETTY_MESSAGES:.pretty.txt=.pretty.bin)
+DIAG_SUIT_MANIFESTS := \
+		suit_uri.diag.txt \
+		suit_integrated.diag.txt \
+		suit_personalization.diag.txt \
+		suit_unlink.diag.txt
 
-.PHONY: all validate clean
+DIAG_FILES := $(DIAG_TEEP_MESSAGES) $(DIAG_SUIT_MANIFESTS)
+PRETTY_FILES := $(DIAG_TEEP_MESSAGES:.diag.txt=.pretty.txt)
+HEX_FILES := $(DIAG_SUIT_MANIFESTS:.diag.txt=.hex.txt)
 
-all: $(HEX_MESSAGES) $(DIAG_CBOR_MESSAGES) $(PRETTY_CBOR_MESSAGES)
+# output files
+CBOR_FILES_FROM_DIAG := $(DIAG_FILES:.diag.txt=.diag.bin)
+CBOR_FILES_FROM_PRETTY := $(PRETTY_FILES:.pretty.txt=.pretty.bin)
+CBOR_FILES_FROM_HEX := $(HEX_FILES:.hex.txt=.hex.bin)
+
+.PHONY: all
+all: generate-cbor
+
+.PHONY: generate-cbor
+generate-cbor: $(CBOR_FILES_FROM_DIAG) $(CBOR_FILES_FROM_PRETTY) $(CBOR_FILES_FROM_HEX)
 
 %.diag.bin: %.diag.txt
 	diag2cbor.rb $< > $@
@@ -17,11 +33,17 @@ all: $(HEX_MESSAGES) $(DIAG_CBOR_MESSAGES) $(PRETTY_CBOR_MESSAGES)
 %.pretty.bin: %.pretty.txt
 	pretty2cbor.rb $< > $@
 
-%.hex.txt: %.diag.bin
-	xxd -p -u $< > $@
+%.hex.bin: %.hex.txt
+	pretty2cbor.rb $< > $@
 
+.PHONY: validate
 validate: all
-	$(foreach msg,$(TEEP_DIAG_MESSAGES),diff $(msg:.diag.txt=.diag.bin) $(msg:.diag.txt=.pretty.bin) || echo "msg $(msg) is different";)
+	@echo "Checking each TEEP Protocol DIAG file matches corresponding PRETTY file"
+	$(foreach msg,$(DIAG_TEEP_MESSAGES),diff $(msg:.diag.txt=.diag.bin) $(msg:.diag.txt=.pretty.bin) || exit 1;)
+	@echo "Checking each SUIT Manifest DIAG file matches corresponding HEX file"
+	$(foreach mfst,$(DIAG_SUIT_MANIFESTS),diff $(mfst:.diag.txt=.diag.bin) $(mfst:.diag.txt=.hex.bin) || exit 1;)
+	@echo "Success: Each diagnostic notation matches its hex"
 
+.PHONY: clean
 clean:
-	$(RM) $(HEX_MESSAGES) $(DIAG_CBOR_MESSAGES) $(HEX_CBOR_MESSAGES)
+	$(RM) $(CBOR_FILES_FROM_DIAG) $(CBOR_FILES_FROM_PRETTY) $(CBOR_FILES_FROM_HEX)
