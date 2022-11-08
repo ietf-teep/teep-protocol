@@ -51,9 +51,9 @@ It will create `draft-ietf-teep-protocol-latest.txt` and
 
 #### Creating cddl file for TEEP Protocol.
 
-The file name `check-draft-ietf-teep-protocol.cddl` will be created under directory cddl.
-The cddl file for TEEP Protocol require cddl file from suit-report and suit-manifest.
-This command downloads cddl files from respected repos and concatinate them to one cddl file usable to run with cddl tool.
+The file name 'check-draft-ietf-teep-protocol.cddl' will be created under directory 'cddl'.
+The cddl file for TEEP Protocol requires cddl files from suit-report and suit-manifest.
+This command downloads cddl files from respected repos and concatenates them to one cddl file usable to run with the cddl tool.
 ```
 make cat-cddl
 ```
