@@ -1947,7 +1947,7 @@ The URI in this example is the reference URI provided in the SUIT manifest.
 where the dependency-resolution refers to:
 
 ~~~~
-107({
+{
   authentication-wrapper,
   / manifest / 3:<<{
     / manifest-version / 1:1,
@@ -1959,7 +1959,7 @@ where the dependency-resolution refers to:
     run,
     text
   }>>,
-})
+}
 ~~~~
 
 and the suit-record-section-offset refers to:
