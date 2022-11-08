@@ -50,7 +50,7 @@
         / condition-class-identifier / 2, 15
       ] >>
     } >>,
-    / component-identifier / 5: [
+    / manifest-component-id / 5: [
       h'544545502D446576696365',  / "TEEP-Device" /
       h'5365637572654653',        / "SecureFS" /
       h'636F6E6669672E',          / "config" /
