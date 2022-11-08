@@ -24,8 +24,9 @@ pip3 install xml2rfc
 Installing required packages on Ubuntu
 ```
 apt-get update
-apt-get -y install ruby-kramdown-rfc2629 python3-pip git
+apt-get -y install python3-pip ruby git curl
 pip3 install xml2rfc
+gem install kramdown-rfc2629
 ```
 
 Installing cddl tool https://rubygems.org/gems/cddl
