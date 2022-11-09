@@ -63,6 +63,14 @@ validate-suit-cddl: $(CONCATENATED_UNTAGGED_SUIT_CDDL) $(SUIT_MANIFESTS)
 	$(foreach mfst,$(SUIT_MANIFESTS),cddl $(CONCATENATED_UNTAGGED_SUIT_CDDL) validate $(mfst) || exit 1;)
 	@echo "Success: Each SUIT Manifest matches the CDDL"
 
+.PHONY: cddl-gen
+cddl-gen: cat-cddl $(CONCATENATED_CDDL)
+	cddl $(CONCATENATED_CDDL) generate
+
+.PHONY: cddl-validate-teep
+cddl-validate-teep: $(CONCATENATED_CDDL)
+	cddl $(CONCATENATED_CDDL) validate ../cbor/query_request.diag.bin
+
 .PHONY: clean
 clean:
 	$(RM) $(CONCATENATED_TEEP_PROTOCOL_CDDL) $(CONCATENATED_SUIT_MANIFEST_CDDL) $(COSE_XML) $(COSE_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL)

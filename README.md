@@ -59,7 +59,12 @@ make -C cddl cat-cddl
 
 #### Run cddl tools
 
-The command to run cddl syntax check.
+The command to run cddl syntax check for all teep and suit.
 ````
 make validate-cddl
 ````
+
+To check syntax cddl syntax in teep file and not suit which is useful during debugging teep by using only QueryRequest which do not contain suit.
+```
+make -C cddl cddl-validate-teep
+```
