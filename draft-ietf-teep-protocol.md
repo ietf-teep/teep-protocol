@@ -67,13 +67,13 @@ author:
  -
   ins: A. Tsukamoto
   name: Akira Tsukamoto
-  org: AIST
+  org: ''
   street: ''
   city: ''
   region: ''
   code: ''
   country: JP
-  email: akira.tsukamoto@aist.go.jp
+  email: akira.tsukamoto@gmail.com
 
 normative:
   RFC9052:
