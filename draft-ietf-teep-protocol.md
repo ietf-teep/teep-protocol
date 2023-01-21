@@ -221,7 +221,7 @@ otherwise.
 
 # Detailed Messages Specification {#detailmsg}
 
-TEEP messages are protected by the COSE_Sign1 or COSE_Sign structure. The initial QueryRequest message MAY have COSE_Sign structure with both ES256 (cose-alg-es256) and EdDSA (cose-alg-eddsa) as described in {{ciphersuite}}. 
+TEEP messages are protected by the COSE_Sign1 or COSE_Sign structure as described in {{ciphersuite}}.
 The TEEP protocol messages are described in CDDL format {{RFC8610}} below.
 
 ~~~~
