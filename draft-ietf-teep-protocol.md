@@ -221,7 +221,7 @@ otherwise.
 
 # Detailed Messages Specification {#detailmsg}
 
-TEEP messages are protected by the COSE_Sign1 structure.
+TEEP messages are protected by the COSE_Sign1 or COSE_Sign structure as described in {{ciphersuite}}.
 The TEEP protocol messages are described in CDDL format {{RFC8610}} below.
 
 ~~~~
@@ -269,10 +269,10 @@ To create a TEEP message, the following steps are performed.
 1. Create a COSE Header containing the desired set of Header
   Parameters.  The COSE Header MUST be valid per the {{RFC9052}} specification.
 
-1. Create a COSE_Sign1 object
-  using the TEEP message as the COSE_Sign1 Payload; all
+1. Create a COSE_Sign1 or COSE_Sign object
+  using the TEEP message as the COSE_Sign1 or COSE_Sign Payload; all
   steps specified in {{RFC9052}} for creating a
-  COSE_Sign1 object MUST be followed.
+  COSE_Sign1 or COSE_Sign object MUST be followed.
 
 ### Validating a TEEP Message {#validation}
 
@@ -283,7 +283,7 @@ the listed steps fail, then the TEEP message MUST be rejected.
 
 1. Verify that the received message is a valid CBOR object.
 
-1. Verify that the message contains a COSE_Sign1 structure.
+1. Verify that the message contains a COSE_Sign1 or COSE_Sign structure.
 
 1. Verify that the resulting COSE Header includes only parameters
   and values whose syntax and semantics are both understood and
@@ -291,7 +291,7 @@ the listed steps fail, then the TEEP message MUST be rejected.
   understood.
 
 1. Follow the steps specified in {{Section 4 of RFC9052}} ("Signing Objects") for
-  validating a COSE_Sign1 object. The COSE_Sign1 payload is the content
+  validating a COSE_Sign1 or COSE_Sign object. The COSE_Sign1 or COSE_Sign payload is the content
   of the TEEP message.
 
 1. Verify that the TEEP message is a valid CBOR map and verify the fields of
