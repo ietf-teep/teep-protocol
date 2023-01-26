@@ -642,6 +642,7 @@ update = [
     ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
+    ? err-code => uint .size 1,
     * $$update-extensions,
     * $$teep-option-extensions
   }
@@ -1226,6 +1227,7 @@ This specification uses the following mapping:
 | suit-reports                   |    19 |
 | token                          |    20 |
 | supported-freshness-mechanisms |    21 |
+| err-code                       |    23 |
 
 # Behavior Specification
 
