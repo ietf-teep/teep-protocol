@@ -40,7 +40,7 @@ $(SUIT_MANIFEST_CDDL):
 	curl https://raw.githubusercontent.com/suit-wg/manifest-spec/master/draft-ietf-suit-manifest.cddl -o $@
 
 $(SUIT_TRUST_DOMAINS_CDDL):
-	curl https://raw.githubusercontent.com/bremoran/suit-multiple-trust-domains/main/draft-ietf-suit-trust-domains.cddl -o $@
+	curl https://raw.githubusercontent.com/suit-wg/suit-multiple-trust-domains/main/draft-ietf-suit-trust-domains.cddl -o $@
 
 $(SUIT_REPORT_CDDL):
 	curl https://raw.githubusercontent.com/suit-wg/suit-report/main/draft-ietf-suit-report.cddl -o $@
