@@ -4,12 +4,11 @@
       / algorithm-id: / -16 / SHA-256 /,
       / digest-bytes: / h'54EA3D80AAF5370527E8C4FC9E0D91FF0BD0FED26AEAB602CA516541FEF7F15A'
     ] >>,
-    / signatures: / << / COSE_Sign1_Tagged / 18( [
+    << / COSE_Sign1_Tagged / 18([
       / protected: / << {
-        / alg / 1: -7 / ES256 /
+        / algorithm-id / 1: -7 / ES256 /
       } >>,
-      / unprotected: / {
-      },
+      / unprotected: / {},
       / payload: / null,
       / signature: / h'436A36C33A3300D13ACF0075BA751B419FE1E8CCAB6CFB7952C2E97FD5DA70278EA3D8A8377D247CF8FE7F2874DF5A0F31B042C659A98DD57A0DC23F094666E8'
     ]) >>
