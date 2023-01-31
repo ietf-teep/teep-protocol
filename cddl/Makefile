@@ -3,11 +3,10 @@ MESSAGES := ../cbor/query_request.diag.bin ../cbor/query_response.diag.bin ../cb
 CONCATENATED_CDDL		:= check-draft-ietf-teep-protocol.cddl
 TEEP_PROTOCOL_CDDL		:= ../draft-ietf-teep-protocol.cddl
 SUIT_MANIFEST_CDDL		:= draft-ietf-suit-manifest.cddl
-SUIT_TRUST_COMANS_CDDL	:= draft-ietf-suit-trust-domains.cddl
+SUIT_TRUST_DOMAINS_CDDL	:= draft-ietf-suit-trust-domains.cddl
 SUIT_REPORT_CDDL		:= draft-ietf-suit-report.cddl
 COSE_XML			:= rfc-8152-cose.xml
 COSE_CDDL			:= rfc-8152-cose.cddl
-WORKAROUND_DEPENDENCY		:= workaround_dependency.cddl
 
 CDDLS				:= $(TEEP_PROTOCOL_CDDL)
 CDDLS				+= $(COSE_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL)
@@ -49,4 +48,4 @@ cddl-validate: cat-cddl $(MESSAGES) $(CONCATENATED_CDDL)
 
 .PHONY: clean
 clean:
-	$(RM) $(CONCATENATED_CDDL) $(COSE_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_REPORT_CDDL) $(SUIT_REPORT_MD)
+	$(RM) $(CONCATENATED_CDDL) $(COSE_CDDL) $(COSE_XML) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL)
