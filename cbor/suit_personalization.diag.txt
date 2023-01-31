@@ -4,12 +4,11 @@
       / algorithm-id: / -16 / SHA-256 /,
       / digest-bytes: / h'B2967C80D2DA2C9C226331AC4CF4C147F1D9E059C4EB6D165AB43E4C86275B9C'
     ] >>,
-    / signatures: / << 18([
+    << / COSE_Sign1_Tagged / 18([
       / protected: / << {
-        / alg / 1: -7 / ES256 /
+        / algorithm-id / 1: -7 / ES256 /
       } >>,
-      / unprotected: / {
-      },
+      / unprotected: / {},
       / payload: / null,
       / signature: / h'BE370C83AAF922A2D2A807D068879EE3D1F1781750181EEE0251E96D320356B6E6D9553B9E33E4D250C52BCD446272F22A00AF6F3C43DAA7F263EF375307F646'
     ]) >>
@@ -31,7 +30,7 @@
           h'636F6E6669672E6A736F6E'   / "config.json" /
         ]
       ],
-      / common-sequence / 4: << [
+      / shared-sequence / 4: << [
         / directive-set-component-index / 12, 0,
         / directive-override-parameters / 20, {
           / vendor-id / 1: h'C0DDD5F15243566087DB4F5B0AA26C2F' / c0ddd5f1-5243-5660-87db-4f5b0aa26c2f /,
