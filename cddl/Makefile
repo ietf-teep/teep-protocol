@@ -1,9 +1,12 @@
 MESSAGES := ../cbor/query_request.diag.bin ../cbor/query_response.diag.bin ../cbor/update.diag.bin ../cbor/teep_success.diag.bin ../cbor/teep_error.diag.bin
 
 CONCATENATED_CDDL		:= check-draft-ietf-teep-protocol.cddl
+CONCATENATED_UNTAGGED_SUIT_CDDL	:= check-draft-ietf-suit-manifest.cddl
+CONCATENATED_CDDL		:= check-draft-ietf-teep-protocol.cddl
 TEEP_PROTOCOL_CDDL		:= ../draft-ietf-teep-protocol.cddl
+SUIT_ENVELOPE_SHIM_CDDL := suit-envelope-shim.cddl
 SUIT_MANIFEST_CDDL		:= draft-ietf-suit-manifest.cddl
-SUIT_TRUST_COMANS_CDDL	:= draft-ietf-suit-trust-domains.cddl
+SUIT_TRUST_DOMAINS_CDDL	:= draft-ietf-suit-trust-domains.cddl
 SUIT_REPORT_CDDL		:= draft-ietf-suit-report.cddl
 COSE_XML			:= rfc-8152-cose.xml
 COSE_CDDL			:= rfc-8152-cose.cddl
@@ -13,8 +16,13 @@ CDDLS				:= $(TEEP_PROTOCOL_CDDL)
 CDDLS				+= $(COSE_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL)
 
 .PHONY: cat-cddl
-$(CONCATENATED_CDDL) cat-cddl: $(CDDLS)
-	cat $^ > $(CONCATENATED_CDDL)
+cat-cddl: $(CONCATENATED_CDDL)
+
+$(CONCATENATED_CDDL): $(TEEP_PROTOCOL_CDDL) $(CONCATENATED_UNTAGGED_SUIT_CDDL)
+	cat $^ > $@
+
+$(CONCATENATED_UNTAGGED_SUIT_CDDL): $(SUIT_ENVELOPE_SHIM_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL) $(COSE_CDDL)
+	cat $^ > $@
 
 $(MESSAGES):
 	make -C ../cbor
@@ -49,4 +57,4 @@ cddl-validate: cat-cddl $(MESSAGES) $(CONCATENATED_CDDL)
 
 .PHONY: clean
 clean:
-	$(RM) $(CONCATENATED_CDDL) $(COSE_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_REPORT_CDDL) $(SUIT_REPORT_MD)
+	$(RM) $(CONCATENATED_CDDL) $(CONCATENATED_UNTAGGED_SUIT_CDDL) $(COSE_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL) $(SUIT_REPORT_MD)
