@@ -7,13 +7,20 @@ all: $(FN).txt $(FN).html
 cat-cddl:
 	make -C cddl cat-cddl
 
+.PHONY: validate
+validate: validate-cbor validate-cddl
+
 .PHONY: validate-cbor
 validate-cbor:
 	make -C cbor validate
 
-.PHONY: cddl-validate
-cddl-validate:
-	make -C cddl cddl-validate
+.PHONY: validate-cddl
+validate-cddl:
+	make -C cddl validate-cddl
+
+.PHONY: validate-teep-cddl
+validate-teep-cddl:
+	make -C cddl validate-teep-cddl
 
 $(FN).html: $(FN).xml
 	xml2rfc $(FN).xml --html

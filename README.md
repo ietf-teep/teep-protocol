@@ -56,12 +56,17 @@ The file name 'check-draft-ietf-teep-protocol.cddl' will be created under direct
 The cddl file for TEEP Protocol requires cddl files from suit-report and suit-manifest.
 This command downloads cddl files from respected repos and concatenates them to one cddl file usable to run with the cddl tool.
 ```
-make cat-cddl
+make -C cddl
 ```
 
 #### Run cddl tools
 
-The command to run cddl syntax check.
+The command to run FULL cddl syntax check.
 ````
-make cddl-validate
+make validate-cddl
 ````
+
+To check syntax cddl syntax in TEEP file and not suit which is useful during debugging teep by using only QueryRequest which do not contain SUIT part.
+```
+make validate-teep-cddl
+```

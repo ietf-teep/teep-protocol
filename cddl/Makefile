@@ -54,17 +54,26 @@ $(COSE_XML):
 $(COSE_CDDL): $(COSE_XML)
 	sed -n -e '/<artwork type="CDDL"/,/<\/artwork/ p' $< | sed -e '/<artwork type="CDDL"/ d' -e '/<\/artwork/ d' -e '/<\/section>/,/<figure title=""/ d' -e 's/\&gt;/>/g' -e 's/\r$$//g' > $@
 
-.PHONY: cddl-validate-all
-cddl-validate-all: $(CONCATENATED_CDDL) $(TEEP_MESSAGES)
+.PHONY: validate-cddl
+validate-cddl: validate-suit-cddl $(CONCATENATED_CDDL) $(TEEP_MESSAGES)
+	@echo "Checking each TEEP Protocol binary file matches TEEP Protcol CDDL"
 	$(foreach msg,$(TEEP_MESSAGES),cddl $(CONCATENATED_CDDL) validate $(msg) || exit 1;)
+	@echo "Success: Each TEEP Protocol message matches the CDDL"
 
-.PHONY: cddl-gen
-cddl-gen: cat-cddl $(CONCATENATED_CDDL)
-	cddl $(CONCATENATED_CDDL) generate
+.PHONY: validate-suit-cddl
+validate-suit-cddl: $(CONCATENATED_UNTAGGED_SUIT_CDDL) $(SUIT_MANIFESTS)
+	@echo "Checking each SUIT Manifest binary file matches SUIT Manifest CDDL"
+	$(foreach mfst,$(SUIT_MANIFESTS),cddl $(CONCATENATED_UNTAGGED_SUIT_CDDL) validate $(mfst) || exit 1;)
+	@echo "Success: Each SUIT Manifest matches the CDDL"
 
-.PHONY: cddl-validate
-cddl-validate: cat-cddl $(TEEP_MESSAGES) $(CONCATENATED_CDDL)
+.PHONY: validate-teep-cddl
+validate-teep-cddl: $(CONCATENATED_CDDL) ../cbor/query_request.diag.bin
 	cddl $(CONCATENATED_CDDL) validate ../cbor/query_request.diag.bin
+	@echo "Success: QueryRequest message matches TEEP Protocol CDDL"
+
+.PHONY: gen-cddl
+gen-cddl: cat-cddl $(CONCATENATED_CDDL)
+	cddl $(CONCATENATED_CDDL) generate
 
 .PHONY: clean
 clean:
