@@ -21,7 +21,6 @@ SUIT_TRUST_DOMAINS_CDDL	:= draft-ietf-suit-trust-domains.cddl
 SUIT_REPORT_CDDL		:= draft-ietf-suit-report.cddl
 COSE_XML			:= rfc-8152-cose.xml
 COSE_CDDL			:= rfc-8152-cose.cddl
-WORKAROUND_DEPENDENCY		:= workaround_dependency.cddl
 
 CDDLS				:= $(TEEP_PROTOCOL_CDDL)
 CDDLS				+= $(COSE_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL)
@@ -52,7 +51,7 @@ $(COSE_XML):
 	curl https://www.ietf.org/archive/id/draft-ietf-cose-msg-24.xml -o $@
 
 $(COSE_CDDL): $(COSE_XML)
-	sed -n -e '/<artwork type="CDDL"/,/<\/artwork/ p' $< | sed -e '/<artwork type="CDDL"/ d' -e '/<\/artwork/ d' -e '/<\/section>/,/<figure title=""/ d' -e 's/\&gt;/>/g' -e 's/\r$$//g' > $@
+	sed -n -e '/<artwork type="CDDL"/,/<\/artwork/ p' $< | sed -e '/<artwork type="CDDL"/ d' -e '/<\/artwork/ d' -e '/<\/section>/,/<figure title=""/ d' -e 's/\&gt;/>/g' > $@
 
 .PHONY: cddl-validate-all
 cddl-validate-all: $(CONCATENATED_CDDL) $(TEEP_MESSAGES)
@@ -68,4 +67,4 @@ cddl-validate: cat-cddl $(TEEP_MESSAGES) $(CONCATENATED_CDDL)
 
 .PHONY: clean
 clean:
-	$(RM) $(CONCATENATED_CDDL) $(CONCATENATED_UNTAGGED_SUIT_CDDL) $(COSE_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL) $(SUIT_REPORT_MD)
+	$(RM) $(CONCATENATED_CDDL) $(CONCATENATED_UNTAGGED_SUIT_CDDL) $(COSE_CDDL) $(COSE_XML) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL)
