@@ -1,4 +1,15 @@
-MESSAGES := ../cbor/query_request.diag.bin ../cbor/query_response.diag.bin ../cbor/update.diag.bin ../cbor/teep_success.diag.bin ../cbor/teep_error.diag.bin
+TEEP_MESSAGES := \
+		../cbor/query_request.diag.bin \
+		../cbor/query_response.diag.bin \
+		../cbor/update.diag.bin \
+		../cbor/teep_success.diag.bin \
+		../cbor/teep_error.diag.bin
+
+SUIT_MANIFESTS := \
+		../cbor/suit_uri.diag.bin \
+		../cbor/suit_integrated.diag.bin \
+		../cbor/suit_personalization.diag.bin \
+		../cbor/suit_unlink.diag.bin
 
 CONCATENATED_CDDL		:= check-draft-ietf-teep-protocol.cddl
 CONCATENATED_UNTAGGED_SUIT_CDDL	:= check-draft-ietf-suit-manifest.cddl
@@ -24,7 +35,7 @@ $(CONCATENATED_CDDL): $(TEEP_PROTOCOL_CDDL) $(CONCATENATED_UNTAGGED_SUIT_CDDL)
 $(CONCATENATED_UNTAGGED_SUIT_CDDL): $(SUIT_ENVELOPE_SHIM_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL) $(COSE_CDDL)
 	cat $^ > $@
 
-$(MESSAGES):
+$(TEEP_MESSAGES) $(SUIT_MANIFESTS):
 	make -C ../cbor
 
 $(SUIT_MANIFEST_CDDL):
@@ -44,15 +55,15 @@ $(COSE_CDDL): $(COSE_XML)
 	sed -n -e '/<artwork type="CDDL"/,/<\/artwork/ p' $< | sed -e '/<artwork type="CDDL"/ d' -e '/<\/artwork/ d' -e '/<\/section>/,/<figure title=""/ d' -e 's/\&gt;/>/g' -e 's/\r$$//g' > $@
 
 .PHONY: cddl-validate-all
-cddl-validate-all: $(CONCATENATED_CDDL) $(MESSAGES)
-	$(foreach msg,$(MESSAGES),cddl $(CONCATENATED_CDDL) validate $(msg) || exit 1;)
+cddl-validate-all: $(CONCATENATED_CDDL) $(TEEP_MESSAGES)
+	$(foreach msg,$(TEEP_MESSAGES),cddl $(CONCATENATED_CDDL) validate $(msg) || exit 1;)
 
 .PHONY: cddl-gen
 cddl-gen: cat-cddl $(CONCATENATED_CDDL)
 	cddl $(CONCATENATED_CDDL) generate
 
 .PHONY: cddl-validate
-cddl-validate: cat-cddl $(MESSAGES) $(CONCATENATED_CDDL)
+cddl-validate: cat-cddl $(TEEP_MESSAGES) $(CONCATENATED_CDDL)
 	cddl $(CONCATENATED_CDDL) validate ../cbor/query_request.diag.bin
 
 .PHONY: clean
