@@ -33,7 +33,7 @@ $(COSE_XML):
 	curl https://www.ietf.org/archive/id/draft-ietf-cose-msg-24.xml -o $@
 
 $(COSE_CDDL): $(COSE_XML)
-	sed -n -e '/<artwork type="CDDL"/,/<\/artwork/ p' $^ | sed -e '/<artwork type="CDDL"/ d' -e '/<\/artwork/ d' -e '/<\/section>/,/<figure title=""/ d' -e 's/\&gt;/>/g' > $@
+	sed -n -e '/<artwork type="CDDL"/,/<\/artwork/ p' $< | sed -e '/<artwork type="CDDL"/ d' -e '/<\/artwork/ d' -e '/<\/section>/,/<figure title=""/ d' -e 's/\&gt;/>/g' -e 's/\r$$//g' > $@
 
 .PHONY: cddl-validate-all
 cddl-validate-all: $(CONCATENATED_CDDL) $(MESSAGES)
