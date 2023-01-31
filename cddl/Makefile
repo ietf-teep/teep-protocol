@@ -3,14 +3,14 @@ MESSAGES := ../cbor/query_request.diag.bin ../cbor/query_response.diag.bin ../cb
 CONCATENATED_CDDL		:= check-draft-ietf-teep-protocol.cddl
 TEEP_PROTOCOL_CDDL		:= ../draft-ietf-teep-protocol.cddl
 SUIT_MANIFEST_CDDL		:= draft-ietf-suit-manifest.cddl
-SUIT_REPORT_MD			:= draft-ietf-suit-report.md
+SUIT_TRUST_COMANS_CDDL	:= draft-ietf-suit-trust-domains.cddl
 SUIT_REPORT_CDDL		:= draft-ietf-suit-report.cddl
 COSE_XML			:= rfc-8152-cose.xml
 COSE_CDDL			:= rfc-8152-cose.cddl
 WORKAROUND_DEPENDENCY		:= workaround_dependency.cddl
 
 CDDLS				:= $(TEEP_PROTOCOL_CDDL)
-CDDLS				+= $(COSE_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_REPORT_CDDL)
+CDDLS				+= $(COSE_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL)
 
 .PHONY: cat-cddl
 $(CONCATENATED_CDDL) cat-cddl: $(CDDLS)
@@ -21,6 +21,9 @@ $(MESSAGES):
 
 $(SUIT_MANIFEST_CDDL):
 	curl https://raw.githubusercontent.com/suit-wg/manifest-spec/master/draft-ietf-suit-manifest.cddl -o $@
+
+$(SUIT_TRUST_DOMAINS_CDDL):
+	curl https://raw.githubusercontent.com/suit-wg/suit-multiple-trust-domains/main/draft-ietf-suit-trust-domains.cddl -o $@
 
 $(SUIT_REPORT_CDDL):
 	curl https://raw.githubusercontent.com/suit-wg/suit-report/main/draft-ietf-suit-report.cddl -o $@
