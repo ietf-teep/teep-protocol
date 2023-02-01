@@ -4,12 +4,11 @@
       / digest-algorithm-id: / -16 / cose-alg-sha256 /,
       / digest-bytes: / h'99D1AD5D2C44320B247BB37B8CDB418CADA53590DF4EF928E30240F5717088FA'
     ] >>,
-    / signatures: / << 18([
+    << / COSE_Sign1_Tagged / 18([
       / protected: / << {
-        / alg / 1: -7 / ES256 /
+        / algorithm-id / 1: -7 / ES256 /
       } >>,
-      / unprotected: / {
-      },
+      / unprotected: / {},
       / payload: / null,
       / signature: / h'447D94B8249CB15AA544EF2315BCBBC8DC1F8A790DC863D6CC83F799DF3576AFAEDC2E63512E5C0699F62B20A555CF4176E1D7018FE748D9BFEF47A4E1C8889E'
     ]) >>
@@ -35,7 +34,7 @@
           h'636F6E6669672E6A736F6E'   / "config.json" /
         ]
       ],
-      / common-sequence / 4: << [
+      / shared-sequence / 4: << [
         / directive-set-component-index / 12, 0,
         / directive-override-parameters / 20, {
           / vendor-id / 1: h'C0DDD5F15243566087DB4F5B0AA26C2F' / c0ddd5f1-5243-5660-87db-4f5b0aa26c2f /,

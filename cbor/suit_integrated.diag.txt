@@ -4,9 +4,9 @@
       / digest-algorithm-id: / -16 / cose-alg-sha256 /,
       / digest-bytes: / h'C20DE9B1378EC787D9A9F7C3B0F196E4C51FB519E3FFD45A6B985CE3E9222993'
     ] >>,
-    / signatures: / << / COSE_Sign1_Tagged / 18( [
+    << / COSE_Sign1_Tagged / 18([
       / protected: / << {
-        / alg / 1: -7 / ES256 /
+        / algorithm-id / 1: -7 / ES256 /
       } >>,
       / unprotected: / {},
       / payload: / null,
@@ -25,7 +25,7 @@
           h'7461'                               / "ta" /
         ]
       ],
-      / common-sequence / 4: << [
+      / shared-sequence / 4: << [
         / directive-override-parameters / 20, {
           / vendor-id / 1: h'C0DDD5F15243566087DB4F5B0AA26C2F' / c0ddd5f1-5243-5660-87db-4f5b0aa26c2f /,
           / class-id / 2: h'DB42F7093D8C55BAA8C5265FC5820F4E' / db42f709-3d8c-55ba-a8c5-265fc5820f4e /,

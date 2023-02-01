@@ -4,12 +4,11 @@
       / digest-algorithm-id: / -16 / cose-alg-sha256 /,
       / digest-bytes: / h'F9D837B7118A8972360022D51AC5319023D245A76F7504079B9ED01C0B4934F2'
     ] >>,
-    / signatures: / << / COSE_Sign1_Tagged / 18( [
+    << / COSE_Sign1_Tagged / 18([
       / protected: / << {
-        / alg / 1: -7 / ES256 /
+        / algorithm-id / 1: -7 / ES256 /
       } >>,
-      / unprotected: / {
-      },
+      / unprotected: / {},
       / payload: / null,
       / signature: / h'332BE0CC2D109F23ADF1D220CECA17EA38047814A6CE0389AC370A32AB2008B44C67789CEFEEEC9208FEBC55EA60AC2E88365498D70689C190BBDAD2E60072B9'
     ]) >>
