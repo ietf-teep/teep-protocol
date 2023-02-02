@@ -48,19 +48,14 @@ query-request = [
   data-item-requested: uint .bits data-item-requested
 ]
 
-;MANDATORY for TAM and TEEP Agent to support the following COSE
-;operations, and OPTIONAL to support additional ones such as
-;COSE_Sign_Tagged, COSE_Encrypt0_Tagged, etc.
+; cipher-suites
 
-cose-sign1 = 18      ; CoAP Content-Format value
+$cipher-suite /= teep-cipher-suite-sign1-eddsa
+$cipher-suite /= teep-cipher-suite-sign1-es256
 
-;MANDATORY for TAM to support the following, and OPTIONAL to implement
-;any additional algorithms from the IANA COSE Algorithms registry.
-
-cose-alg-eddsa = -8  ; EdDSA
-cose-alg-es256 = -7  ; ECDSA w/ SHA-256
-
-;MANDATORY for TAM to support the following cipher-suites, and OPTIONAL
+;The following two cipher suites have only a single operation each.
+;Other cipher suites may be defined to have multiple operations.
+;MANDATORY for TAM to support them, and OPTIONAL
 ;to support any additional ones that use COSE_Sign_Tagged, or other
 ;signing, encryption, or MAC algorithms.
 
@@ -70,18 +65,25 @@ teep-operation-sign1-es256 = [ cose-sign1, cose-alg-es256 ]
 teep-cipher-suite-sign1-eddsa = [ teep-operation-sign1-eddsa ]
 teep-cipher-suite-sign1-es256 = [ teep-operation-sign1-es256 ]
 
-$cipher-suite /= teep-cipher-suite-sign1-eddsa
-$cipher-suite /= teep-cipher-suite-sign1-es256
+;MANDATORY for TAM and TEEP Agent to support the following COSE
+;operations, and OPTIONAL to support additional ones such as
+;COSE_Sign_Tagged, COSE_Encrypt0_Tagged, etc.
+
+cose-sign1 = 18      ; CoAP Content-Format value
+
+;MANDATORY for TAM to support the following, and OPTIONAL to implement
+;any additional algorithms from the IANA COSE Algorithms registry.
+
+cose-alg-es256 = -7  ; ECDSA w/ SHA-256
+cose-alg-eddsa = -8  ; EdDSA
 
 ; freshness-mechanisms
 
 FRESHNESS_NONCE = 0
 FRESHNESS_TIMESTAMP = 1
-FRESHNESS_EPOCH_ID = 2
 
 $freshness-mechanism /= FRESHNESS_NONCE
 $freshness-mechanism /= FRESHNESS_TIMESTAMP
-$freshness-mechanism /= FRESHNESS_EPOCH_ID
 
 query-response = [
   type: TEEP-TYPE-query-response,
