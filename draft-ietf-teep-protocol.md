@@ -447,7 +447,7 @@ query-response = [
 
 requested-tc-info = {
   component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => .within uint .size 8,
+  ? tc-manifest-sequence-number => uint .size 8,
   ? have-binary => bool
 }
 ~~~~
