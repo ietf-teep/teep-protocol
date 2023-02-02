@@ -115,6 +115,8 @@ update = [
     ? token => bstr .size (8..64),
     ? unneeded-manifest-list => [ + SUIT_Component_Identifier ],
     ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
+    ? attestation-payload-format => text,
+    ? attestation-payload => bstr,
     * $$update-extensions,
     * $$teep-option-extensions
   }
