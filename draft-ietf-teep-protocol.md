@@ -447,7 +447,7 @@ query-response = [
 
 requested-tc-info = {
   component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => .within uint .size 8,
+  ? tc-manifest-sequence-number => uint .size 8,
   ? have-binary => bool
 }
 ~~~~
@@ -1382,19 +1382,31 @@ Although this specification only specifies the use of signing and relies on payl
 information, future extensions might specify support for encryption and/or MAC operations if needed.
 
 ~~~~
-$cipher-suite /= teep-cipher-suite-sign1-es256
+; cipher-suites
+
 $cipher-suite /= teep-cipher-suite-sign1-eddsa
+$cipher-suite /= teep-cipher-suite-sign1-es256
 
-; The following two cipher suites have only a single operation each.
-; Other cipher suites may be defined to have multiple operations.
+;The following two cipher suites have only a single operation each.
+;Other cipher suites may be defined to have multiple operations.
+;MANDATORY for TAM to support them, and OPTIONAL
+;to support any additional ones that use COSE_Sign_Tagged, or other
+;signing, encryption, or MAC algorithms.
 
-teep-cipher-suite-sign1-es256 = [ teep-operation-sign1-es256 ]
-teep-cipher-suite-sign1-eddsa = [ teep-operation-sign1-eddsa ]
-
-teep-operation-sign1-es256 = [ cose-sign1, cose-alg-es256 ]
 teep-operation-sign1-eddsa = [ cose-sign1, cose-alg-eddsa ]
+teep-operation-sign1-es256 = [ cose-sign1, cose-alg-es256 ]
+
+teep-cipher-suite-sign1-eddsa = [ teep-operation-sign1-eddsa ]
+teep-cipher-suite-sign1-es256 = [ teep-operation-sign1-es256 ]
+
+;MANDATORY for TAM and TEEP Agent to support the following COSE
+;operations, and OPTIONAL to support additional ones such as
+;COSE_Sign_Tagged, COSE_Encrypt0_Tagged, etc.
 
 cose-sign1 = 18      ; CoAP Content-Format value
+
+;MANDATORY for TAM to support the following, and OPTIONAL to implement
+;any additional algorithms from the IANA COSE Algorithms registry.
 
 cose-alg-es256 = -7  ; ECDSA w/ SHA-256
 cose-alg-eddsa = -8  ; EdDSA
@@ -1453,6 +1465,8 @@ This document uses the following freshness mechanisms which may be added to in t
 future by TEEP extensions:
 
 ~~~~
+; freshness-mechanisms
+
 FRESHNESS_NONCE = 0
 FRESHNESS_TIMESTAMP = 1
 
