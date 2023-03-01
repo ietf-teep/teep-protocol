@@ -80,7 +80,7 @@ normative:
   RFC3629: 
   RFC5198: 
   RFC8949:
-  I-D.ietf-rats-architecture: 
+  RFC9334:
   I-D.ietf-rats-eat: 
   I-D.ietf-rats-reference-interaction-models:
   I-D.ietf-suit-manifest: 
@@ -95,7 +95,7 @@ informative:
   I-D.ietf-suit-firmware-encryption:
   I-D.ietf-teep-architecture: 
   I-D.lundblade-rats-eat-media-type:
-  I-D.wallace-rats-concise-ta-stores:
+  I-D.ietf-rats-concise-ta-stores:
   RFC8610: 
   RFC8915: 
 
@@ -151,7 +151,7 @@ Each Trusted Component is uniquely identified by a SUIT Component Identifier
 (see {{I-D.ietf-suit-manifest}} Section 8.7.2.2).
 
 Attestation related terms, such as Evidence and Attestation Results,
-are as defined in {{I-D.ietf-rats-architecture}}.
+are as defined in {{RFC9334}}.
 
 # Message Overview {#messages}
 
@@ -605,7 +605,7 @@ Components via the TEEP Agent.  It can also be used to pass a successful
 Attestation Report back to the TEEP Agent when the TAM is configured as
 an intermediary between the TEEP Agent and a Verifier, as shown in the figure
 below, where the Attestation Result passed back to the Attester can be used
-as a so-called "passport" (see section 5.1 of {{I-D.ietf-rats-architecture}})
+as a so-called "passport" (see section 5.1 of {{RFC9334}})
 that can be presented to other Relying Parties.
 
 ~~~~
@@ -1267,7 +1267,7 @@ value indicates Evidence.  If it contains an Attestation Result, processing cont
 
 If the QueryResponse is instead determined to contain Evidence, the TAM passes
 the Evidence (via some mechanism out of scope of this document) to an attestation Verifier
-(see {{I-D.ietf-rats-architecture}})
+(see {{RFC9334}})
 to determine whether the Agent is in a trustworthy state.  Once the TAM receives an Attestation
 Result from the Verifier, processing continues as in {{attestation-result}}.
 
@@ -1456,7 +1456,7 @@ the selected cipher suite MUST be used in both directions.
 
 A freshness mechanism determines how a TAM can tell whether an attestation payload provided
 in a QueryResponse is fresh.  There are multiple ways this can be done
-as discussed in Section 10 of {{I-D.ietf-rats-architecture}}.
+as discussed in Section 10 of {{RFC9334}}.
 
 Each freshness mechanism is identified with an integer value, which corresponds to
 an IANA registered freshness mechanism (see the IANA Considerations section of
@@ -1548,7 +1548,7 @@ Trusted Component Signer Compromise
   before distributing them to TEEP Agents.  
   It is RECOMMENDED to provide a way to
   update the trust anchor store used by the TEE, for example using
-  a firmware update mechanism such as {{I-D.wallace-rats-concise-ta-stores}}.  Thus, if a Trusted Component
+  a firmware update mechanism such as {{I-D.ietf-rats-concise-ta-stores}}.  Thus, if a Trusted Component
   Signer is later compromised, the TAM can update the trust anchor
   store used by the TEE, for example using a firmware update mechanism.
 
