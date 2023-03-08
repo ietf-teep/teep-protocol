@@ -699,6 +699,15 @@ attestation-payload
   an Entity Attestation Token following the encoding
   defined in {{I-D.ietf-rats-eat}}.  See {{attestation}} for further discussion.
 
+err-code
+: The err-code parameter contains one of the error codes listed in the
+  {{error-message-def}} which dsicribes the reasons for the error when
+  performing QueryResponse in the TAM.
+
+err-msg
+: The err-msg parameter is human-readable diagnostic text that MUST be encoded
+  using UTF-8 {{RFC3629}} using Net-Unicode form {{RFC5198}} with max 128 bytes.
+
 Note that an Update message carrying one or more SUIT manifests will inherently
 involve multiple signatures, one by the TAM in the TEEP message and one from 
 a Trusted Component Signer inside each manifest.  This is intentional as they
