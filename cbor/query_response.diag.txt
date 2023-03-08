@@ -4,7 +4,7 @@
   / options: /
   {
     / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
-    / selected-cipher-suite / 5 : [ [ 18, -7 ] ] / only use ES256 /,
+    / selected-teep-cipher-suite / 5 : [ [ 18, -7 ] ] / only use ES256 /,
     / selected-version / 6 : 0,
     / attestation-payload / 7 : h'' / empty only for example purpose /,
     / tc-list / 8 : [
