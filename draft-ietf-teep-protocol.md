@@ -1447,7 +1447,7 @@ discussed in Section 9.8 of {{I-D.ietf-teep-architecture}}.
 
 The cipher suites defined above do not do encryption at the TEEP layer, but
 permit encryption of the SUIT payload (e.g., using {{I-D.ietf-suit-firmware-encryption}}).
-See {{security}} and {{eat-suit-ciphersuites}} for more discussion of specific payloads.
+See {{security}} and {{eat-suit-ciphersuite}} for more discussion of specific payloads.
 
 For the initial QueryRequest message, unless the TAM has more specific knowledge about the TEEP Agent
 (e.g., if the QueryRequest is sent in response to some underlying transport message that contains a hint),
