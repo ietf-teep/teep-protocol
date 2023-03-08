@@ -6,8 +6,8 @@
     / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
     / versions / 3 : [ 0 ]  / 0 is current TEEP Protocol /
   },
-  / supported-cipher-suites: / [ [ [ 18, -7 ] ], / Sign1 using ES256 /
-                                 [ [ 18, -8 ] ]  / Sign1 using EdDSA /
-                                ],
+  / supported-teep-cipher-suites: / [ [ [ 18, -7 ] ], / Sign1 using ES256 /
+                                      [ [ 18, -8 ] ]  / Sign1 using EdDSA /
+                                    ],
   / data-item-requested: / 3 / attestation | trusted-components /
 ]

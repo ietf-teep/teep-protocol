@@ -80,7 +80,7 @@ normative:
   RFC3629: 
   RFC5198: 
   RFC8949:
-  I-D.ietf-rats-architecture: 
+  RFC9334:
   I-D.ietf-rats-eat: 
   I-D.ietf-rats-reference-interaction-models:
   I-D.ietf-suit-manifest: 
@@ -95,7 +95,7 @@ informative:
   I-D.ietf-suit-firmware-encryption:
   I-D.ietf-teep-architecture: 
   I-D.lundblade-rats-eat-media-type:
-  I-D.wallace-rats-concise-ta-stores:
+  I-D.ietf-rats-concise-ta-stores:
   RFC8610: 
   RFC8915: 
 
@@ -151,7 +151,7 @@ Each Trusted Component is uniquely identified by a SUIT Component Identifier
 (see {{I-D.ietf-suit-manifest}} Section 8.7.2.2).
 
 Attestation related terms, such as Evidence and Attestation Results,
-are as defined in {{I-D.ietf-rats-architecture}}.
+are as defined in {{RFC9334}}.
 
 # Message Overview {#messages}
 
@@ -221,7 +221,7 @@ otherwise.
 
 # Detailed Messages Specification {#detailmsg}
 
-TEEP messages are protected by the COSE_Sign1 or COSE_Sign structure as described in {{ciphersuite}}.
+TEEP messages are protected by the COSE_Sign1 or COSE_Sign structure as described in {{teep-ciphersuite}}.
 The TEEP protocol messages are described in CDDL format {{RFC8610}} below.
 
 ~~~~
@@ -332,7 +332,8 @@ query-request = [
     * $$query-request-extensions,
     * $$teep-option-extensions
   },
-  supported-cipher-suites: [ + $cipher-suite ],
+  supported-teep-cipher-suites: [ + $teep-cipher-suite ],
+  supported-eat-suit-cipher-suites: [ + $eat-suit-cipher-suite ],
   data-item-requested: uint .bits data-item-requested
 ]
 ~~~~
@@ -364,9 +365,15 @@ token
   containing the token value and ignore any subsequent messages that have the same token
   value.
 
-supported-cipher-suites
-: The supported-cipher-suites parameter lists the cipher suites supported by the TAM. Details
-  about the cipher suite encoding can be found in {{ciphersuite}}.
+supported-teep-cipher-suites
+: The supported-teep-cipher-suites parameter lists the TEEP cipher suites
+  supported by the TAM. Details
+  about the cipher suite encoding can be found in {{teep-ciphersuite}}.
+
+supported-eat-suit-cipher-suites
+: The supported-eat-suit-cipher-suites parameter lists the EAT and SUIT cipher suites
+  supported by the TAM. Details
+  about the cipher suite encoding can be found in {{eat-suit-ciphersuite}}.
 
 data-item-requested
 : The data-item-requested parameter indicates what information the TAM requests from the TEEP
@@ -431,11 +438,11 @@ query-response = [
   type: TEEP-TYPE-query-response,
   options: {
     ? token => bstr .size (8..64),
-    ? selected-cipher-suite => $cipher-suite,
+    ? selected-teep-cipher-suite => $teep-cipher-suite,
     ? selected-version => version,
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
-    ? suit-reports => [ + SUIT_Report ],
+    ? suit-reports => [ + bstr ],
     ? tc-list => [ + system-property-claims ],
     ? requested-tc-list => [ + requested-tc-info ],
     ? unneeded-manifest-list => [ + SUIT_Component_Identifier ],
@@ -447,7 +454,7 @@ query-response = [
 
 requested-tc-info = {
   component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => .within uint .size 8,
+  ? tc-manifest-sequence-number => uint .size 8,
   ? have-binary => bool
 }
 ~~~~
@@ -466,11 +473,11 @@ token
   if one was present, and MUST be absent if no token was present in the
   QueryRequest.
 
-selected-cipher-suite
-: The selected-cipher-suite parameter indicates the selected cipher suite. If this
+selected-teep-cipher-suite
+: The selected-teep-cipher-suite parameter indicates the selected TEEP cipher suite. If this
   parameter is not present, it is to be treated as if the TEEP Agent accepts
-  any cipher suites listed in the QueryRequest, so the TAM can select one.
-  Details about the cipher suite encoding can be found in {{ciphersuite}}.
+  any TEEP cipher suites listed in the QueryRequest, so the TAM can select one.
+  Details about the TEEP cipher suite encoding can be found in {{teep-ciphersuite}}.
 
 selected-version
 : The selected-version parameter indicates the TEEP protocol version selected by the
@@ -501,7 +508,8 @@ attestation-payload
 suit-reports
 : If present, the suit-reports parameter contains a set of "boot" (including
   starting an executable in an OS context) time SUIT Reports
-  as defined in Section 4 of {{I-D.ietf-suit-report}}.
+  as defined by SUIT_Report in Section 4 of {{I-D.ietf-suit-report}},
+  encoded using COSE as discussed in {{eat-suit-ciphersuite}}.
   If a token parameter was present in the QueryRequest
   message the QueryResponse message is in response to,
   the suit-report-nonce field MUST be present in the SUIT Report with a
@@ -605,7 +613,7 @@ Components via the TEEP Agent.  It can also be used to pass a successful
 Attestation Report back to the TEEP Agent when the TAM is configured as
 an intermediary between the TEEP Agent and a Verifier, as shown in the figure
 below, where the Attestation Result passed back to the Attester can be used
-as a so-called "passport" (see section 5.1 of {{I-D.ietf-rats-architecture}})
+as a so-called "passport" (see section 5.1 of {{RFC9334}})
 that can be presented to other Relying Parties.
 
 ~~~~
@@ -1024,7 +1032,7 @@ teep-error = [
   options: {
      ? token => bstr .size (8..64),
      ? err-msg => text .size (1..128),
-     ? supported-cipher-suites => [ + $cipher-suite ],
+     ? supported-teep-cipher-suites => [ + $teep-cipher-suite ],
      ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
      ? versions => [ + version ],
      ? suit-reports => [ + SUIT_Report ],
@@ -1051,9 +1059,9 @@ err-msg
 : The err-msg parameter is human-readable diagnostic text that MUST be encoded
   using UTF-8 {{RFC3629}} using Net-Unicode form {{RFC5198}} with max 128 bytes.
 
-supported-cipher-suites
-: The supported-cipher-suites parameter lists the cipher suite(s) supported by the TEEP Agent.
-  Details about the cipher suite encoding can be found in {{ciphersuite}}.
+supported-teep-cipher-suites
+: The supported-teep-cipher-suites parameter lists the TEEP cipher suite(s) supported by the TEEP Agent.
+  Details about the cipher suite encoding can be found in {{teep-ciphersuite}}.
   This otherwise optional parameter MUST be returned if err-code is ERR_UNSUPPORTED_CIPHER_SUITES.
 
 supported-freshness-mechanisms
@@ -1180,7 +1188,7 @@ of this document.)
 * CBOR String Encoding: Only definite-length strings are allowed.
 * CBOR Preferred Serialization: Encoders must use preferred serialization,
   and decoders need not accept non-preferred serialization.
-* COSE/JOSE Protection: See {{ciphersuite}}.
+* COSE/JOSE Protection: See {{eat-suit-ciphersuite}}.
 * Detached EAT Bundle Support: DEB use is permitted.
 * Verification Key Identification: COSE Key ID (kid) is used, where
   the key ID is the hash of a public key (where the public key may be
@@ -1216,28 +1224,29 @@ as a map key.
 
 This specification uses the following mapping:
 
-| Name                           | Label |
-| supported-cipher-suites        |     1 |
-| challenge                      |     2 |
-| versions                       |     3 |
-| selected-cipher-suite          |     5 |
-| selected-version               |     6 |
-| attestation-payload            |     7 |
-| tc-list                        |     8 |
-| ext-list                       |     9 |
-| manifest-list                  |    10 |
-| msg                            |    11 |
-| err-msg                        |    12 |
-| attestation-payload-format     |    13 |
-| requested-tc-list              |    14 |
-| unneeded-manifest-list         |    15 |
-| component-id                   |    16 |
-| tc-manifest-sequence-number    |    17 |
-| have-binary                    |    18 |
-| suit-reports                   |    19 |
-| token                          |    20 |
-| supported-freshness-mechanisms |    21 |
-| err-code                       |    23 |
+| Name                             | Label |
+| supported-teep-cipher-suites     |     1 |
+| challenge                        |     2 |
+| versions                         |     3 |
+| supported-eat-suit-cipher-suites |     4 |
+| selected-teep-cipher-suite       |     5 |
+| selected-version                 |     6 |
+| attestation-payload              |     7 |
+| tc-list                          |     8 |
+| ext-list                         |     9 |
+| manifest-list                    |    10 |
+| msg                              |    11 |
+| err-msg                          |    12 |
+| attestation-payload-format       |    13 |
+| requested-tc-list                |    14 |
+| unneeded-manifest-list           |    15 |
+| component-id                     |    16 |
+| tc-manifest-sequence-number      |    17 |
+| have-binary                      |    18 |
+| suit-reports                     |    19 |
+| token                            |    20 |
+| supported-freshness-mechanisms   |    21 |
+| err-code                         |    23 |
 
 # Behavior Specification
 
@@ -1279,7 +1288,7 @@ value indicates Evidence.  If it contains an Attestation Result, processing cont
 
 If the QueryResponse is instead determined to contain Evidence, the TAM passes
 the Evidence (via some mechanism out of scope of this document) to an attestation Verifier
-(see {{I-D.ietf-rats-architecture}})
+(see {{RFC9334}})
 to determine whether the Agent is in a trustworthy state.  Once the TAM receives an Attestation
 Result from the Verifier, processing continues as in {{attestation-result}}.
 
@@ -1387,6 +1396,8 @@ or Error message is generated only after completing the Update Procedure.
 
 # Cipher Suites {#ciphersuite}
 
+## TEEP Messages {#teep-ciphersuite}
+
 The TEEP protocol uses COSE for protection of TEEP messages in both directions.
 To negotiate cryptographic mechanisms and algorithms, the TEEP protocol defines the following cipher suite structure,
 which is used to specify an ordered set of operations (e.g., sign) done as part of composing a TEEP message.
@@ -1394,19 +1405,31 @@ Although this specification only specifies the use of signing and relies on payl
 information, future extensions might specify support for encryption and/or MAC operations if needed.
 
 ~~~~
-$cipher-suite /= teep-cipher-suite-sign1-es256
-$cipher-suite /= teep-cipher-suite-sign1-eddsa
+; teep-cipher-suites
 
-; The following two cipher suites have only a single operation each.
-; Other cipher suites may be defined to have multiple operations.
+$teep-cipher-suite /= teep-cipher-suite-sign1-eddsa
+$teep-cipher-suite /= teep-cipher-suite-sign1-es256
 
-teep-cipher-suite-sign1-es256 = [ teep-operation-sign1-es256 ]
-teep-cipher-suite-sign1-eddsa = [ teep-operation-sign1-eddsa ]
+;The following two cipher suites have only a single operation each.
+;Other cipher suites may be defined to have multiple operations.
+;MANDATORY for TAM to support them, and OPTIONAL
+;to support any additional ones that use COSE_Sign_Tagged, or other
+;signing, encryption, or MAC algorithms.
 
-teep-operation-sign1-es256 = [ cose-sign1, cose-alg-es256 ]
 teep-operation-sign1-eddsa = [ cose-sign1, cose-alg-eddsa ]
+teep-operation-sign1-es256 = [ cose-sign1, cose-alg-es256 ]
+
+teep-cipher-suite-sign1-eddsa = [ teep-operation-sign1-eddsa ]
+teep-cipher-suite-sign1-es256 = [ teep-operation-sign1-es256 ]
+
+;MANDATORY for TAM and TEEP Agent to support the following COSE
+;operations, and OPTIONAL to support additional ones such as
+;COSE_Sign_Tagged, COSE_Encrypt0_Tagged, etc.
 
 cose-sign1 = 18      ; CoAP Content-Format value
+
+;MANDATORY for TAM to support the following, and OPTIONAL to implement
+;any additional algorithms from the IANA COSE Algorithms registry.
 
 cose-alg-es256 = -7  ; ECDSA w/ SHA-256
 cose-alg-eddsa = -8  ; EdDSA
@@ -1436,27 +1459,45 @@ discussed in Section 9.8 of {{I-D.ietf-teep-architecture}}.
 
 The cipher suites defined above do not do encryption at the TEEP layer, but
 permit encryption of the SUIT payload (e.g., using {{I-D.ietf-suit-firmware-encryption}}).
-See {{security}} for more discussion of specific payloads.
+See {{security}} and {{eat-suit-ciphersuites}} for more discussion of specific payloads.
 
 For the initial QueryRequest message, unless the TAM has more specific knowledge about the TEEP Agent
 (e.g., if the QueryRequest is sent in response to some underlying transport message that contains a hint),
 the message does not use COSE_Sign1 with one of the above cipher suites, but instead uses COSE_Sign with multiple signatures,
-one for each algorithm used in any of the cipher suites listed in the supported-cipher-suites
+one for each algorithm used in any of the cipher suites listed in the supported-teep-cipher-suites
 parameter of the QueryRequest, so that a TEEP Agent supporting any one of them can verify a signature.
 If the TAM does have specific knowledge about which cipher suite the TEEP Agent supports,
 it MAY instead use that cipher suite with the QueryRequest.
 
 For an Error message with code ERR_UNSUPPORTED_CIPHER_SUITES, the TEEP Agent MUST
-protect it with one of the cipher suites mandatory for the TAM.
+protect it with any of the cipher suites mandatory for the TAM.
 
-For all other messages between the TAM and TEEP Agent,
-the selected cipher suite MUST be used in both directions.
+For all other TEEP messages between the TAM and TEEP Agent,
+the selected TEEP cipher suite MUST be used in both directions.
+
+## EATs and SUIT Reports {#eat-suit-ciphersuite}
+
+TEEP uses COSE for confidentiality of EATs and SUIT Reports sent by a TEEP Agent.
+EATs and SUIT Reports sent by a TEEP Agent MUST support the cipher suite
+listed below, and MAY support other algorithms.
+
+~~~~
+$eat-suit-cipher-suite /= eat-suit-cipher-suite-encrypt0-aesccm
+
+eat-suit-cipher-suite-encrypt0-aesccm = [ teep-operation-encrypt0-aesccm ]
+
+eat-suit-operation-encrypt0-aesccm = [ cose-encrypt0, cose-alg-aesccm ]
+
+cose-encrypt0 = 16    ; CoAP Content-Format value
+
+cose-alg-aesccm = 12  ; AES-CCM-64-64-128
+~~~~
 
 # Freshness Mechanisms {#freshness-mechanisms}
 
 A freshness mechanism determines how a TAM can tell whether an attestation payload provided
 in a QueryResponse is fresh.  There are multiple ways this can be done
-as discussed in Section 10 of {{I-D.ietf-rats-architecture}}.
+as discussed in Section 10 of {{RFC9334}}.
 
 Each freshness mechanism is identified with an integer value, which corresponds to
 an IANA registered freshness mechanism (see the IANA Considerations section of
@@ -1465,6 +1506,8 @@ This document uses the following freshness mechanisms which may be added to in t
 future by TEEP extensions:
 
 ~~~~
+; freshness-mechanisms
+
 FRESHNESS_NONCE = 0
 FRESHNESS_TIMESTAMP = 1
 
@@ -1546,7 +1589,7 @@ Trusted Component Signer Compromise
   before distributing them to TEEP Agents.  
   It is RECOMMENDED to provide a way to
   update the trust anchor store used by the TEE, for example using
-  a firmware update mechanism such as {{I-D.wallace-rats-concise-ta-stores}}.  Thus, if a Trusted Component
+  a firmware update mechanism such as {{I-D.ietf-rats-concise-ta-stores}}.  Thus, if a Trusted Component
   Signer is later compromised, the TAM can update the trust anchor
   store used by the TEE, for example using a firmware update mechanism.
 
@@ -1583,6 +1626,9 @@ confidentiality is not provided by the TEEP protocol itself and
 the transport protocol under the TEEP protocol might be implemented
 outside of any TEE. If any mechanism other than EAT is used, it is
 up to that mechanism to specify how privacy is provided.
+
+Since SUIT Reports can also contain sensitive information, a TEEP Agent
+SHOULD also encrypt SUIT Reports as discussed in {{eat-suit-ciphersuite}}.
 
 In addition, in the usage scenario discussed in {{directtam}}, a device
 reveals its IP address to the Trusted Component Binary server.  This
