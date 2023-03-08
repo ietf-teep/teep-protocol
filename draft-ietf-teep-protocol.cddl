@@ -44,14 +44,15 @@ query-request = [
     * $$query-request-extensions,
     * $$teep-option-extensions
   },
-  supported-cipher-suites: [ + $cipher-suite ],
+  supported-teep-cipher-suites: [ + $teep-cipher-suite ],
+  supported-eat-suit-cipher-suites: [ + $eat-suit-cipher-suite ],
   data-item-requested: uint .bits data-item-requested
 ]
 
-; cipher-suites
+; teep-cipher-suites
 
-$cipher-suite /= teep-cipher-suite-sign1-eddsa
-$cipher-suite /= teep-cipher-suite-sign1-es256
+$teep-cipher-suite /= teep-cipher-suite-sign1-eddsa
+$teep-cipher-suite /= teep-cipher-suite-sign1-es256
 
 ;The following two cipher suites have only a single operation each.
 ;Other cipher suites may be defined to have multiple operations.
@@ -77,6 +78,18 @@ cose-sign1 = 18      ; CoAP Content-Format value
 cose-alg-es256 = -7  ; ECDSA w/ SHA-256
 cose-alg-eddsa = -8  ; EdDSA
 
+; eat-suit-cipher-suites
+
+$eat-suit-cipher-suite /= eat-suit-cipher-suite-encrypt0-aesccm
+
+eat-suit-cipher-suite-encrypt0-aesccm = [ teep-operation-encrypt0-aesccm ]
+
+eat-suit-operation-encrypt0-aesccm = [ cose-encrypt0, cose-alg-aesccm ]
+
+cose-encrypt0 = 16    ; CoAP Content-Format value
+
+cose-alg-aesccm = 12  ; AES-CCM-64-64-128
+
 ; freshness-mechanisms
 
 FRESHNESS_NONCE = 0
@@ -89,11 +102,11 @@ query-response = [
   type: TEEP-TYPE-query-response,
   options: {
     ? token => bstr .size (8..64),
-    ? selected-cipher-suite => $cipher-suite,
+    ? selected-teep-cipher-suite => $teep-cipher-suite,
     ? selected-version => version,
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
-    ? suit-reports => [ + SUIT_Report ],
+    ? suit-reports => [ + bstr ],
     ? tc-list => [ + system-property-claims ],
     ? requested-tc-list => [ + requested-tc-info ],
     ? unneeded-manifest-list => [ + SUIT_Component_Identifier ],
@@ -138,7 +151,7 @@ teep-error = [
   options: {
      ? token => bstr .size (8..64),
      ? err-msg => text .size (1..128),
-     ? supported-cipher-suites => [ + $cipher-suite ],
+     ? supported-teep-cipher-suites => [ + $teep-cipher-suite ],
      ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
      ? versions => [ + version ],
      ? suit-reports => [ + SUIT_Report ],
@@ -160,10 +173,11 @@ ERR_TEMPORARY_ERROR = 10
 ERR_MANIFEST_PROCESSING_FAILED = 17
 
 ; labels of mapkey for teep message parameters, uint (0..23)
-supported-cipher-suites = 1
+supported-teep-cipher-suites = 1
 challenge = 2
 versions = 3
-selected-cipher-suite = 5
+supported-eat-suit-cipher-suites = 4
+selected-teep-cipher-suite = 5
 selected-version = 6
 attestation-payload = 7
 tc-list = 8
