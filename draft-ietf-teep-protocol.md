@@ -1198,7 +1198,7 @@ specific components that are out of date.
 
 ## Relationship to AR4SI
 
-{{I-D.ietf-rats-ar4si}} defines another EAT profile for arbitrary Relying Parties
+{{I-D.ietf-rats-ar4si}} defines an EAT profile for arbitrary Relying Parties
 to use with Attestation Results.  However the TAM as a Relying Party needs specific
 claims that are not required in the AR4SI profile, and so needs its own more
 specific profile.
