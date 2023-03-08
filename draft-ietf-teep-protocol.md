@@ -94,7 +94,7 @@ normative:
 informative:
   I-D.ietf-suit-firmware-encryption:
   I-D.ietf-teep-architecture: 
-  I-D.lundblade-rats-eat-media-type:
+  I-D.ietf-rats-eat-media-type:
   I-D.ietf-rats-concise-ta-stores:
   RFC8610: 
   RFC8915: 
