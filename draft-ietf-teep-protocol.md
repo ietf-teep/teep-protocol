@@ -643,6 +643,7 @@ update = [
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
     ? err-code => uint .size 1,
+    ? err-msg => text .size (1..128),
     * $$update-extensions,
     * $$teep-option-extensions
   }
