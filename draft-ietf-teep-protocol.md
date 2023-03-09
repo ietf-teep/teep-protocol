@@ -709,7 +709,7 @@ attestation-payload
 
 err-code
 : The err-code parameter contains one of the error codes listed in the
-  {{error-message-def}} which describes the reasons for the error when
+  {{error-message-def}}, which describes the reasons for the error when
   performing QueryResponse in the TAM.
 
 err-msg
