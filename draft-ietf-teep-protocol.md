@@ -96,6 +96,8 @@ informative:
   I-D.ietf-teep-architecture: 
   I-D.lundblade-rats-eat-media-type:
   I-D.ietf-rats-concise-ta-stores:
+  I-D.lundblade-rats-eat-media-type:
+  I-D.wallace-rats-concise-ta-stores:
   RFC8610: 
   RFC8915: 
 
