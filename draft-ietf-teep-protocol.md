@@ -87,6 +87,7 @@ normative:
   I-D.ietf-suit-trust-domains:
   I-D.ietf-suit-report:
   I-D.ietf-suit-firmware-encryption: 
+  I-D.ietf-cose-hpke:
   COSE.Algorithm:
     title: "COSE Algorithms"
     author:
@@ -1532,23 +1533,29 @@ the selected TEEP cipher suite MUST be used in both directions.
 ## EATs and SUIT Reports {#eat-suit-ciphersuite}
 
 TEEP uses COSE for confidentiality of EATs and SUIT Reports sent by a TEEP Agent.
-EATs and SUIT Reports sent by a TEEP Agent MUST support the cipher suite
-listed below (which is intended to be consistent with SUIT recommendations in
-{{I-D.moran-suit-mti}}), and MAY support other algorithms.
+A TAM MUST support both of the cipher suites defined below, which are defined to
+be consistent with profiles listed in {{I-D.moran-suit-mti}}.  A TEEP Agent MUST
+support at least one of the two but can choose which one.  For example, a TEEP
+Agent might choose a given cipher suite if it has hardware support for it.
+A TAM or TEEP Agent MAY also support other algorithms in the COSE Algorithms
+registry in addition to the mandatory ones listed below.  It MAY also support use
+with COSE_Encrypt or other COSE types in additional cipher suites.
 
 ~~~~
-$eat-suit-cipher-suite /= eat-suit-cipher-suite-encrypt0-aesccm
+$eat-suit-cipher-suite /= eat-suit-cipher-suite-encrypt0-hpke-es256
 
-eat-suit-cipher-suite-encrypt0-aesccm = [ teep-operation-encrypt0-aesccm ]
+eat-suit-cipher-suite-encrypt0-hpke-es256 = [ teep-operation-encrypt0-hpke-es256 ]
+eat-suit-cipher-suite-encrypt0-hpke-eddsa = [ teep-operation-encrypt0-hpke-eddsa ]
 
-eat-suit-operation-encrypt0-aesccm = [ cose-encrypt0, cose-alg-aesccm ]
+eat-suit-operation-encrypt0-hpke-es256 = [ cose-encrypt0, cose-alg-es256, cose-alg-a128gcm ]
+eat-suit-operation-encrypt0-hpke-eddsa = [ cose-encrypt0, cose-alg-eddsa, cose-alg-a128gcm ]
 
 cose-encrypt0 = 16    ; CoAP Content-Format value
 
-cose-alg-aesccm = 12  ; AES-CCM-16-128-128
+cose-alg-a128gcm = 1  ; AES-GCM mode w/ 128-bit key, 128-bit tag
 ~~~~
 
-Encryption is done by the TEEP agent using the key of the destination TAM.
+HPKE {{I-D.ietf-cose-hpke}} is done by the TEEP agent using the key of the destination TAM.
 See section 5 of {{I-D.ietf-teep-architecture}} for more discussion of TAM keys used by the TEEP agent.
 
 # Freshness Mechanisms {#freshness-mechanisms}
