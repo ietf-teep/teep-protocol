@@ -714,7 +714,7 @@ err-code
 
 err-msg
 : The err-msg parameter is human-readable diagnostic text that MUST be encoded
-  using UTF-8 {{RFC3629}} using Net-Unicode form {{RFC5198}} with max 128 bytes.
+  using UTF-8 {{RFC3629}} in Net-Unicode format {{RFC5198}} with a maximum of 128 bytes.
 
 Note that an Update message carrying one or more SUIT manifests will inherently
 involve multiple signatures, one by the TAM in the TEEP message and one from 
