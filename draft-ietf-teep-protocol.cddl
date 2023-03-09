@@ -15,7 +15,7 @@ $teep-message-type /= update
 $teep-message-type /= teep-success
 $teep-message-type /= teep-error
 
-; message type numbers, uint (0..23)
+; message type numbers, uint .size 1 which takes a number from 0 to 23
 $teep-type = uint .size 1
 TEEP-TYPE-query-request = 1
 TEEP-TYPE-query-response = 2
@@ -161,7 +161,7 @@ teep-error = [
   err-code: 0..23
 ]
 
-; The err-code parameter, uint (0..23)
+; The err-code parameter, uint .size 1 which takes a number from 0 to 23
 ERR_PERMANENT_ERROR = 1
 ERR_UNSUPPORTED_EXTENSION = 2
 ERR_UNSUPPORTED_FRESHNESS_MECHANISMS = 3
@@ -172,7 +172,8 @@ ERR_CERTIFICATE_EXPIRED = 9
 ERR_TEMPORARY_ERROR = 10
 ERR_MANIFEST_PROCESSING_FAILED = 17
 
-; labels of mapkey for teep message parameters, uint (0..23)
+; labels of mapkey for teep message parameters in
+; uint .size 1 which takes a number from 0 to 23
 supported-teep-cipher-suites = 1
 challenge = 2
 versions = 3

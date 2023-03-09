@@ -242,7 +242,7 @@ $teep-message-type /= update
 $teep-message-type /= teep-success
 $teep-message-type /= teep-error
 
-; message type numbers, uint (0..23)
+; message type numbers, uint .size 1 which takes a number from 0 to 23
 $teep-type = uint .size 1
 TEEP-TYPE-query-request = 1
 TEEP-TYPE-query-response = 2
