@@ -1039,7 +1039,7 @@ teep-error = [
      * $$teep-error-extensions,
      * $$teep-option-extensions
   },
-  err-code: 0..23
+  err-code: uint .size 1
 ]
 ~~~~
 
