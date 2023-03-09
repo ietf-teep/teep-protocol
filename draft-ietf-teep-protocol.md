@@ -92,6 +92,7 @@ normative:
       org: IANA
     target: https://www.iana.org/assignments/cose/cose.xhtml#algorithms
 informative:
+  I-D.ietf-rats-ar4si:
   I-D.ietf-suit-firmware-encryption:
   I-D.ietf-teep-architecture: 
   I-D.ietf-rats-eat-media-type:
@@ -1202,6 +1203,40 @@ some components that do not need to be updated.
 An alternate TAM implementation might use any Additional Claims to determine whether
 the TEEP Agent or any of its dependencies are trustworthy, and only update the
 specific components that are out of date.
+
+## Relationship to AR4SI
+
+{{I-D.ietf-rats-ar4si}} defines an EAT profile for arbitrary Relying Parties
+to use with Attestation Results.  However the TAM as a Relying Party needs specific
+claims that are not required in the AR4SI profile, and so needs its own more
+specific profile.
+
+In some deployments, a TAM can be used as an intermediary between Verifier and a
+TEEP Agent acting as an Attester in the Passport model or acting as a Relying
+Party in the Background Check Model of {{RFC9334}}.  This is depicted in the
+example in Figure 1.  In such a case, both profiles need to be obtained from the 
+Verifier: one for use by the TAM itself, and the other to pass on to the TEEP
+Agent.
+
+When the TAM and Verifier are combined into the same implementation, obtaining
+both profiles can be straightforward, but when they are on different machines,
+the situation is more complex, especially if Nonces are used to ensure freshness
+of Evidence. There are thus several such cases:
+
+1. The protocol between the TAM and the Verifier (which is outside
+   the scope of TEEP itself) allows requesting multiple Attestation Results from
+   the same Evidence.  In this case, the TAM can request both EAT profiles be
+   returned.
+2. The protocol between the TAM and the Verifier only allows requesting one
+   Attestation Result format, but the Evidence freshness mechanism does not use
+   Nonces.  In this case, the TAM can send the same Evidence in two separate
+   requests, each requesting a different EAT profile for the Attestation Results.
+3. The protocol between the TAM and the Verifier only allows requesting one
+   Attestation Result format, and the Evidence freshness mechanism uses Nonces.
+   In this case, it is simpler to not have the TAM be an intermediary, since
+   the Verifier will require a separate Nonce for each Attestation Result, but
+   have the Attester or Relying Party contact the Verifier directly to get
+   Attestation Results in the AR4SI profile.
 
 # Mapping of TEEP Message Parameters to CBOR Labels {#tags}
 
