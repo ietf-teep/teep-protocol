@@ -97,7 +97,7 @@ informative:
   I-D.ietf-teep-architecture: 
   I-D.ietf-rats-eat-media-type:
   I-D.ietf-rats-concise-ta-stores:
-  I-D.wallace-rats-concise-ta-stores:
+  I-D.moran-suit-mti:
   RFC8610: 
   RFC8915:
   RFC5934:
@@ -1533,7 +1533,8 @@ the selected TEEP cipher suite MUST be used in both directions.
 
 TEEP uses COSE for confidentiality of EATs and SUIT Reports sent by a TEEP Agent.
 EATs and SUIT Reports sent by a TEEP Agent MUST support the cipher suite
-listed below, and MAY support other algorithms.
+listed below (which is intended to be consistent with SUIT recommendations in
+{{I-D.moran-suit-mti}}), and MAY support other algorithms.
 
 ~~~~
 $eat-suit-cipher-suite /= eat-suit-cipher-suite-encrypt0-aesccm
@@ -1544,8 +1545,11 @@ eat-suit-operation-encrypt0-aesccm = [ cose-encrypt0, cose-alg-aesccm ]
 
 cose-encrypt0 = 16    ; CoAP Content-Format value
 
-cose-alg-aesccm = 12  ; AES-CCM-64-64-128
+cose-alg-aesccm = 12  ; AES-CCM-16-128-128
 ~~~~
+
+Encryption is done by the TEEP agent using the key of the destination TAM.
+See section 5 of {{I-D.ietf-teep-architecture}} for more discussion of TAM keys used by the TEEP agent.
 
 # Freshness Mechanisms {#freshness-mechanisms}
 
