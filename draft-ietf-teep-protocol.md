@@ -1178,22 +1178,27 @@ of this document.)
 * CBOR String Encoding: Only definite-length strings are allowed.
 * CBOR Preferred Serialization: Encoders must use preferred serialization,
   and decoders need not accept non-preferred serialization.
+* CBOR Tags: CBOR Tags are not used.
 * COSE/JOSE Protection: See {{eat-suit-ciphersuite}}.
+* COSE/JOSE Algorithms: See {{eat-suit-ciphersuite}}.
 * Detached EAT Bundle Support: DEB use is permitted.
-* Verification Key Identification: COSE Key ID (kid) is used, where
+* Key Identification: COSE Key ID (kid) is used, where
   the key ID is the hash of a public key (where the public key may be
   used as a raw public key, or in a certificate).
 * Endorsement Identification: Optional, but semantics are the same
   as in Verification Key Identification.
 * Freshness: See {{freshness-mechanisms}}.
-* Required Claims: ueid, oemid, hwmodel, hwversion, and manifests.
-  See {{attestation}} for discussion.
-* Prohibited Claims: None.
-* Additional Claims: eat_nonce. See {{freshness-mechanisms}} for discussion.
-* Refined Claim Definition: None.
-* CBOR Tags: CBOR Tags are not used.
-* Manifests and Software Evidence Claims: The sw-name claim for a Trusted
+* Claims Requirements:
+  * The following claims are required: ueid, oemid,
+  hwmodel, hwversion, and manifests.  See {{attestation}} for discussion.  Other claims are optional.
+  * See {{freshness-mechanisms}} for discussion affecting whether the
+  eat_nonce claim is used.
+  * The sw-name claim for a Trusted
   Component holds the URI of the SUIT manifest for that component.
+  * The manifests claim uses a SUIT manifest, where the manifest
+    body contains a SUIT_Reference as defined in Section 4 of
+    {{I-D.ietf-suit-report}}, and the content type is as defined
+    in {{I-D.ietf-suit-report}}.
 
 A TAM implementation might simply accept a TEEP Agent as trustworthy based on a
 successful Attestation Result, and if not then attempt to update the TEEP Agent
