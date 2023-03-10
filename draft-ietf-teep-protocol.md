@@ -489,7 +489,7 @@ attestation-payload-format
 : The attestation-payload-format parameter indicates the IANA Media Type of the
   attestation-payload parameter, where media type parameters are permitted after
   the media type.  For protocol version 0, the absence of this parameter indicates that
-  the format is "application/eat-cwt; eat_profile=https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-10" (see {{I-D.lundblade-rats-eat-media-type}}
+  the format is "application/eat+cwt; eat_profile=https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-10" (see {{I-D.ietf-rats-eat-media-type}}
   for further discussion).
   (RFC-editor: upon RFC publication, replace URI above with
   "https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
@@ -692,7 +692,7 @@ attestation-payload-format
 : The attestation-payload-format parameter indicates the IANA Media Type of the
   attestation-payload parameter, where media type parameters are permitted after
   the media type.  The absence of this parameter indicates that
-  the format is "application/eat-cwt; eat_profile=https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-10" (see {{I-D.lundblade-rats-eat-media-type}}
+  the format is "application/eat+cwt; eat_profile=https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-10" (see {{I-D.ietf-rats-eat-media-type}}
   for further discussion).
   (RFC-editor: upon RFC publication, replace URI above with
   "https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
