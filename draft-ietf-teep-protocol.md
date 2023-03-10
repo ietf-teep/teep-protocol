@@ -1572,7 +1572,10 @@ cose-encrypt0 = 16    ; CoAP Content-Format value
 cose-alg-a128gcm = 1  ; AES-GCM mode w/ 128-bit key, 128-bit tag
 ~~~~
 
-
+Each "eat-suit-operation" above is defined as a tuple including:
+* a COSE-type defined in {{Section 2 of RFC9052}} that identifies the type of operation,
+* a specific Authentication Algorithm as defined in the COSE Algorithms registry {{COSE.Algorithm}}
+* a specific Encryption Algorithm as defined in the COSE Algorithms registry {{COSE.Algorithm}}
 
 # Freshness Mechanisms {#freshness-mechanisms}
 
