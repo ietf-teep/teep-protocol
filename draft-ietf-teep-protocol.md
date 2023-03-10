@@ -1543,6 +1543,7 @@ with COSE_Encrypt or other COSE types in additional cipher suites.
 
 ~~~~
 $eat-suit-cipher-suite /= eat-suit-cipher-suite-encrypt0-hpke-es256
+$eat-suit-cipher-suite /= eat-suit-cipher-suite-encrypt0-hpke-eddsa
 
 eat-suit-cipher-suite-encrypt0-hpke-es256 = [ teep-operation-encrypt0-hpke-es256 ]
 eat-suit-cipher-suite-encrypt0-hpke-eddsa = [ teep-operation-encrypt0-hpke-eddsa ]

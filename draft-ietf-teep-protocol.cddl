@@ -80,15 +80,18 @@ cose-alg-eddsa = -8  ; EdDSA
 
 ; eat-suit-cipher-suites
 
-$eat-suit-cipher-suite /= eat-suit-cipher-suite-encrypt0-aesccm
+$eat-suit-cipher-suite /= eat-suit-cipher-suite-encrypt0-hpke-es256
+$eat-suit-cipher-suite /= eat-suit-cipher-suite-encrypt0-hpke-eddsa
 
-eat-suit-cipher-suite-encrypt0-aesccm = [ teep-operation-encrypt0-aesccm ]
+eat-suit-cipher-suite-encrypt0-hpke-es256 = [ teep-operation-encrypt0-hpke-es256 ]
+eat-suit-cipher-suite-encrypt0-hpke-eddsa = [ teep-operation-encrypt0-hpke-eddsa ]
 
-eat-suit-operation-encrypt0-aesccm = [ cose-encrypt0, cose-alg-aesccm ]
+eat-suit-operation-encrypt0-hpke-es256 = [ cose-encrypt0, cose-alg-es256, cose-alg-a128gcm ]
+eat-suit-operation-encrypt0-hpke-eddsa = [ cose-encrypt0, cose-alg-eddsa, cose-alg-a128gcm ]
 
 cose-encrypt0 = 16    ; CoAP Content-Format value
 
-cose-alg-aesccm = 12  ; AES-CCM-64-64-128
+cose-alg-a128gcm = 1  ; AES-GCM mode w/ 128-bit key, 128-bit tag
 
 ; freshness-mechanisms
 
