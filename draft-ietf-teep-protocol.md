@@ -1558,24 +1558,21 @@ listed below.  It MAY also support use with COSE_Encrypt or other COSE types in
 additional cipher suites.
 
 ~~~~
-$eat-suit-cipher-suite /= eat-suit-cipher-suite-encrypt0-hpke-es256
-$eat-suit-cipher-suite /= eat-suit-cipher-suite-encrypt0-hpke-eddsa
+$eat-suit-cipher-suite /= eat-suit-cipher-suite-hpke-v1-base
 
-eat-suit-cipher-suite-encrypt0-hpke-es256 = [ teep-operation-encrypt0-hpke-es256 ]
-eat-suit-cipher-suite-encrypt0-hpke-eddsa = [ teep-operation-encrypt0-hpke-eddsa ]
+eat-suit-cipher-suite-hpke-v1-base = [ teep-operation-hpke-v1-base ]
 
-eat-suit-operation-encrypt0-hpke-es256 = [ cose-encrypt0, cose-alg-es256, cose-alg-a128gcm ]
-eat-suit-operation-encrypt0-hpke-eddsa = [ cose-encrypt0, cose-alg-eddsa, cose-alg-a128gcm ]
+eat-suit-operation-hpke-v1-base = [ cose-encrypt0, HPKE-v1-BASE ]
 
-cose-encrypt0 = 16    ; CoAP Content-Format value
+cose-encrypt0 = 16 ; CoAP Content-Format value
 
-cose-alg-a128gcm = 1  ; AES-GCM mode w/ 128-bit key, 128-bit tag
+HPKE-v1-BASE = -1  ; TBD
 ~~~~
 
-Each "eat-suit-operation" above is defined as a tuple including:
+Each operation in a given cipher suite has two elements:
+
 * a COSE-type defined in {{Section 2 of RFC9052}} that identifies the type of operation,
-* a specific Authentication Algorithm as defined in the COSE Algorithms registry {{COSE.Algorithm}}
-* a specific Encryption Algorithm as defined in the COSE Algorithms registry {{COSE.Algorithm}}
+* a specific cryptographic algorithm as defined in the COSE Algorithms registry {{COSE.Algorithm}} to be used to perform that operation.
 
 # Freshness Mechanisms {#freshness-mechanisms}
 
