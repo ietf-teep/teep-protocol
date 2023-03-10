@@ -243,7 +243,7 @@ $teep-message-type /= update
 $teep-message-type /= teep-success
 $teep-message-type /= teep-error
 
-; message type numbers, uint (0..23)
+; message type numbers, uint .size 1 which takes a number from 0 to 23
 $teep-type = uint .size 1
 TEEP-TYPE-query-request = 1
 TEEP-TYPE-query-response = 2
@@ -651,6 +651,8 @@ update = [
     ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
+    ? err-code => uint .size 1,
+    ? err-msg => text .size (1..128),
     * $$update-extensions,
     * $$teep-option-extensions
   }
@@ -705,6 +707,15 @@ attestation-payload
   the attestation payload contained in this parameter MUST be
   an Entity Attestation Token following the encoding
   defined in {{I-D.ietf-rats-eat}}.  See {{attestation}} for further discussion.
+
+err-code
+: The err-code parameter contains one of the error codes listed in the
+  {{error-message-def}}, which describes the reasons for the error when
+  performing QueryResponse in the TAM.
+
+err-msg
+: The err-msg parameter is human-readable diagnostic text that MUST be encoded
+  using UTF-8 {{RFC3629}} in Net-Unicode format {{RFC5198}} with a maximum of 128 bytes.
 
 Note that an Update message carrying one or more SUIT manifests will inherently
 involve multiple signatures, one by the TAM in the TEEP message and one from 
@@ -1029,7 +1040,7 @@ teep-error = [
      * $$teep-error-extensions,
      * $$teep-option-extensions
   },
-  err-code: 0..23
+  err-code: uint .size 1
 ]
 ~~~~
 
@@ -1270,6 +1281,7 @@ This specification uses the following mapping:
 | suit-reports                     |    19 |
 | token                            |    20 |
 | supported-freshness-mechanisms   |    21 |
+| err-code                         |    23 |
 
 # Behavior Specification
 
