@@ -1533,13 +1533,29 @@ the selected TEEP cipher suite MUST be used in both directions.
 ## EATs and SUIT Reports {#eat-suit-ciphersuite}
 
 TEEP uses COSE for confidentiality of EATs and SUIT Reports sent by a TEEP Agent.
-A TAM MUST support both of the cipher suites defined below, which are defined to
-be consistent with profiles listed in {{I-D.moran-suit-mti}}.  A TEEP Agent MUST
-support at least one of the two but can choose which one.  For example, a TEEP
-Agent might choose a given cipher suite if it has hardware support for it.
-A TAM or TEEP Agent MAY also support other algorithms in the COSE Algorithms
-registry in addition to the mandatory ones listed below.  It MAY also support use
-with COSE_Encrypt or other COSE types in additional cipher suites.
+EATs are typically signed by the attester, which is component different from the
+TEEP Agent. The TEEP Agent then obtains the signed EAT and encrypts it with the TAM
+as the recipient. The SUIT Report is most likely created by a SUIT processor, which
+is part of the TEEP Agent itself. The TEEP Agent is therefore in control of signing
+and encrypting the SUIT Report. Again, the TAM is the recipient of the encrypted
+content. For content-key distribution Hybrid Public Key Encryption (HPKE) is used
+in this specification. See COSE-HPKE {{I-D.ietf-cose-hpke}} for more details.
+This specification uses the COSE-HPKE variant for a single recipient, i.e. the TAM,
+which uses COSE_Encrypt0. This variant is described in Section 3.1.1 of {{I-D.ietf-cose-hpke}}.
+
+To perform encryption with HPKE the TEEP Agent needs to be in possession of the public
+key of the recipient, i.e. the TAM. See Section 5 of {{I-D.ietf-teep-architecture}}
+for more discussion of TAM keys used by the TEEP Agent.
+
+This specification defines ciphersuites for confidentiality protection of EATs and
+SUIT Reports together with a digital signature algorithm. A TAM MUST support both
+of the cipher suites defined below, which are defined to be consistent with profiles
+listed in {{I-D.moran-suit-mti}}.  A TEEP Agent MUST support at least one of the
+two but can choose which one.  For example, a TEEP Agent might choose a given
+cipher suite if it has hardware support for it. A TAM or TEEP Agent MAY also support
+other algorithms in the COSE Algorithms registry in addition to the mandatory ones
+listed below.  It MAY also support use with COSE_Encrypt or other COSE types in
+additional cipher suites.
 
 ~~~~
 $eat-suit-cipher-suite /= eat-suit-cipher-suite-encrypt0-hpke-es256
@@ -1556,8 +1572,7 @@ cose-encrypt0 = 16    ; CoAP Content-Format value
 cose-alg-a128gcm = 1  ; AES-GCM mode w/ 128-bit key, 128-bit tag
 ~~~~
 
-HPKE {{I-D.ietf-cose-hpke}} is done by the TEEP agent using the key of the destination TAM.
-See section 5 of {{I-D.ietf-teep-architecture}} for more discussion of TAM keys used by the TEEP agent.
+
 
 # Freshness Mechanisms {#freshness-mechanisms}
 
