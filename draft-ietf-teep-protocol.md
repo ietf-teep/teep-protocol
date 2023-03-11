@@ -1637,7 +1637,7 @@ CA Compromise
 : The CA issuing certificates to a TEE or a Trusted Component Signer might get compromised.
   It is RECOMMENDED to provide a way to
   update the trust anchor store used by the TEE, for example using
-  a firmware update mechanism such as {{I-D.wallace-rats-concise-ta-stores}}. If the CA issuing certificates to
+  a firmware update mechanism such as {{I-D.ietf-rats-concise-ta-stores}}. If the CA issuing certificates to
   devices gets compromised then these devices might be rejected by a
   TAM, if revocation is available to the TAM.
 
