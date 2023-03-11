@@ -1639,7 +1639,7 @@ CA Compromise
   It is RECOMMENDED to provide a way to update the trust anchor store used by the TEE, for example
   by using a firmware update mechanism, Concise TA Stores {{I-D.ietf-rats-concise-ta-stores}}, Trust
   Anchor Management Protocol (TAMP) {{RFC5934}} or a similar mechanism. If the CA issuing 
-  certificates to devices gets compromised then these devices will rejected by a
+  certificates to devices gets compromised then these devices will be rejected by a
   TAM, if revocation is available to the TAM.
 
 TAM Certificate Expiry
