@@ -77,13 +77,13 @@ author:
 
 normative:
   RFC9052:
-  RFC3629: 
-  RFC5198: 
+  RFC3629:
+  RFC5198:
   RFC8949:
   RFC9334:
-  I-D.ietf-rats-eat: 
+  I-D.ietf-rats-eat:
   I-D.ietf-rats-reference-interaction-models:
-  I-D.ietf-suit-manifest: 
+  I-D.ietf-suit-manifest:
   I-D.ietf-suit-trust-domains:
   I-D.ietf-suit-report:
   COSE.Algorithm:
@@ -94,11 +94,12 @@ normative:
 informative:
   I-D.ietf-rats-ar4si:
   I-D.ietf-suit-firmware-encryption:
-  I-D.ietf-teep-architecture: 
+  I-D.ietf-teep-architecture:
   I-D.ietf-rats-eat-media-type:
   I-D.ietf-rats-concise-ta-stores:
+  I-D.wallace-rats-concise-ta-stores:
   RFC8610: 
-  RFC8915: 
+  RFC8915:
 
 --- abstract
 
@@ -305,21 +306,21 @@ the listed steps fail, then the TEEP message MUST be rejected.
 ## QueryRequest Message
 
 
-A QueryRequest message is used by the TAM to learn 
+A QueryRequest message is used by the TAM to learn
 information from the TEEP Agent, such as
-the features supported by the TEEP Agent, including 
-cipher suites and protocol versions. Additionally, 
-the TAM can selectively request data items from the 
-TEEP Agent via the request parameter. Currently, 
-the following features are supported: 
+the features supported by the TEEP Agent, including
+cipher suites and protocol versions. Additionally,
+the TAM can selectively request data items from the
+TEEP Agent via the request parameter. Currently,
+the following features are supported:
 
  - Request for attestation information,
- - Listing supported extensions, 
- - Querying installed Trusted Components, and 
+ - Listing supported extensions,
+ - Querying installed Trusted Components, and
  - Listing supported SUIT commands.
 
 Like other TEEP messages, the QueryRequest message is
-signed, and the relevant CDDL snippet is shown below. 
+signed, and the relevant CDDL snippet is shown below.
 The complete CDDL structure is shown in Appendix C.
 
 ~~~~
@@ -339,11 +340,11 @@ query-request = [
 ]
 ~~~~
 
-The message has the following fields: 
+The message has the following fields:
 
 {: vspace='0'}
 type
-: The value of (1) corresponds to a QueryRequest message sent from the TAM to 
+: The value of (1) corresponds to a QueryRequest message sent from the TAM to
   the TEEP Agent.
 
 token
@@ -408,7 +409,7 @@ challenge
 : The challenge field is an optional parameter used for ensuring the freshness of the
   attestation payload returned with a QueryResponse message. It MUST be absent if
   the attestation bit is clear (since the token is used instead in that case).
-  When a challenge is 
+  When a challenge is
   provided in the QueryRequest and an EAT is returned with a QueryResponse message
   then the challenge contained in this request MUST be used to generate the EAT,
   such as by copying the challenge into the eat_nonce in the EAT profile {{eat}} if
@@ -425,13 +426,13 @@ versions
 
 ## QueryResponse Message {#query-response}
 
-The QueryResponse message is the successful response by the TEEP Agent after 
+The QueryResponse message is the successful response by the TEEP Agent after
 receiving a QueryRequest message.  As discussed in {{agent}}, it can also be sent
 unsolicited if the contents of the QueryRequest are already known and do not vary
 per message.
 
 Like other TEEP messages, the QueryResponse message is
-signed, and the relevant CDDL snippet is shown below. 
+signed, and the relevant CDDL snippet is shown below.
 The complete CDDL structure is shown in Appendix C.
 
 ~~~~
@@ -639,7 +640,7 @@ that can be presented to other Relying Parties.
 ~~~~
 
 Like other TEEP messages, the Update message is
-signed, and the relevant CDDL snippet is shown below. 
+signed, and the relevant CDDL snippet is shown below.
 The complete CDDL structure is shown in Appendix C.
 
 ~~~~
@@ -718,7 +719,7 @@ err-msg
   using UTF-8 {{RFC3629}} in Net-Unicode format {{RFC5198}} with a maximum of 128 bytes.
 
 Note that an Update message carrying one or more SUIT manifests will inherently
-involve multiple signatures, one by the TAM in the TEEP message and one from 
+involve multiple signatures, one by the TAM in the TEEP message and one from
 a Trusted Component Signer inside each manifest.  This is intentional as they
 are for different purposes.
 
@@ -972,10 +973,10 @@ For the full SUIT Manifest example binary, see [Appendix E. SUIT Example 4](#sui
 ## Success Message
 
 The Success message is used by the TEEP Agent to return a success in
-response to an Update message. 
+response to an Update message.
 
 Like other TEEP messages, the Success message is
-signed, and the relevant CDDL snippet is shown below. 
+signed, and the relevant CDDL snippet is shown below.
 The complete CDDL structure is shown in Appendix C.
 
 ~~~~
@@ -1021,10 +1022,10 @@ suit-reports
 ## Error Message {#error-message-def}
 
 The Error message is used by the TEEP Agent to return an error in
-response to a message from the TAM. 
+response to a message from the TAM.
 
 Like other TEEP messages, the Error message is
-signed, and the relevant CDDL snippet is shown below. 
+signed, and the relevant CDDL snippet is shown below.
 The complete CDDL structure is shown in Appendix C.
 
 ~~~~
@@ -1083,7 +1084,7 @@ suit-reports
   message.
 
 err-code
-: The err-code parameter contains one of the 
+: The err-code parameter contains one of the
   error codes listed below). Only selected values are applicable
   to each message.
 
@@ -1230,7 +1231,7 @@ specific profile.
 In some deployments, a TAM can be used as an intermediary between Verifier and a
 TEEP Agent acting as an Attester in the Passport model or acting as a Relying
 Party in the Background Check Model of {{RFC9334}}.  This is depicted in the
-example in Figure 1.  In such a case, both profiles need to be obtained from the 
+example in Figure 1.  In such a case, both profiles need to be obtained from the
 Verifier: one for use by the TAM itself, and the other to pass on to the TEEP
 Agent.
 
@@ -1303,7 +1304,7 @@ It may also do additional implementation specific actions such as logging the re
 or attempting to update the TEEP Agent to a version that does not send invalid messages.
 Otherwise, it proceeds as follows.
 
-If the message includes a token, it can be used to 
+If the message includes a token, it can be used to
 match the response to a request previously sent by the TAM.
 The TAM MUST expire the token value after receiving the first response
 from the device that has a valid signature and ignore any subsequent messages that have the same token
@@ -1383,9 +1384,9 @@ specific way, but {{error-message-def}} provides recommendations for such handli
 
 When the RequestTA API is invoked, the TEEP Agent first checks whether the
 requested TA is already installed.  If it is already installed, the
-TEEP Agent passes no data back to the caller.  Otherwise, 
+TEEP Agent passes no data back to the caller.  Otherwise,
 if the TEEP Agent chooses to initiate the process of requesting the indicated
-TA, it determines (in any implementation specific way) the TAM URI based on 
+TA, it determines (in any implementation specific way) the TAM URI based on
 any TAM URI provided by the RequestTA caller and any local configuration,
 and passes back the TAM URI to connect to.  It MAY also pass back a
 QueryResponse message if all of the following conditions are true:
@@ -1760,7 +1761,7 @@ We would like to thank Kohei Isobe (TRASIO/SECOM), Ken Takayama (SECOM)
 Kuniyasu Suzaki (TRASIO/AIST), Tsukasa Oi (TRASIO), and Yuichi Takita (SECOM)
 for their valuable implementation feedback.
 
-We would also like to thank Carsten Bormann and Henk Birkholz for their help with the CDDL. 
+We would also like to thank Carsten Bormann and Henk Birkholz for their help with the CDDL.
 
 # C. Complete CDDL
 {: numbered='no'}
