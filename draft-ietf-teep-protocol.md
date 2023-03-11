@@ -1436,7 +1436,20 @@ or Error message is generated only after completing the Update Procedure.
 
 # Cipher Suites {#ciphersuite}
 
+
+TEEP requires algorithms for various purposes:
+
+* Algorithms for signing TEEP messages exchanged between the TEEP Agent and the TAM.
+* Algorithms for signing EAT-based evidence sent by the Attester via the TEEP Agent and the TAM to the Verifier. (If evidence is not encrypted by the TEEP Agent then it will be opaque to the TEEP Agent and to the TAM.)
+* Algorithms for encrypting EAT-based evidence sent by the TEEP Agent to the TAM. (The TAM will decrypt the encrypted evidence and will forward it to the Verifier.)
+* Algorithms for signing and optionally encrypting SUIT reports sent by the TEEP Agent to the TAM.
+* Algorithms for signing and optionally encrypting SUIT manifests sent by the Trusted Component Signer to the TEEP Agent.
+
+Further details are provided for the protection of TEEP messages, SUIT Reports and EATs.
+
+
 ## TEEP Messages {#teep-ciphersuite}
+
 
 The TEEP protocol uses COSE for protection of TEEP messages in both directions.
 To negotiate cryptographic mechanisms and algorithms, the TEEP protocol defines the following cipher suite structure,
@@ -1608,7 +1621,7 @@ Trusted Component Binaries
 Personalization Data
 : A Trusted Component Signer or TAM can supply personalization data along with a Trusted Component.
   This data is also protected by a SUIT manifest.
-  Personalization data signed and encrypted (e.g., via {{I-D.ietf-suit-firmware-encryption}})
+  Personalization data signed and encrypted via {{I-D.ietf-suit-firmware-encryption}}
   by a Trusted Component Signer other than
   the TAM is opaque to the TAM.
 
