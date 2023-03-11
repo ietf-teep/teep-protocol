@@ -1621,7 +1621,7 @@ Trusted Component Binaries
 Personalization Data
 : A Trusted Component Signer or TAM can supply personalization data along with a Trusted Component.
   This data is also protected by a SUIT manifest.
-  Personalization data signed and encrypted via {{I-D.ietf-suit-firmware-encryption}}
+  Personalization data signed and encrypted (e.g., via {{I-D.ietf-suit-firmware-encryption}})
   by a Trusted Component Signer other than
   the TAM is opaque to the TAM.
 
