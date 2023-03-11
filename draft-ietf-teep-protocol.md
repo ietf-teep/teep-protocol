@@ -100,6 +100,7 @@ informative:
   I-D.wallace-rats-concise-ta-stores:
   RFC8610: 
   RFC8915:
+  RFC5934:
 
 --- abstract
 
@@ -1635,10 +1636,10 @@ Trusted Component Signer Compromise
 
 CA Compromise
 : The CA issuing certificates to a TEE or a Trusted Component Signer might get compromised.
-  It is RECOMMENDED to provide a way to
-  update the trust anchor store used by the TEE, for example using
-  a firmware update mechanism such as {{I-D.wallace-rats-concise-ta-stores}}. If the CA issuing certificates to
-  devices gets compromised then these devices might be rejected by a
+  It is RECOMMENDED to provide a way to update the trust anchor store used by the TEE, for example
+  by using a firmware update mechanism, Concise TA Stores {{I-D.ietf-rats-concise-ta-stores}}, Trust
+  Anchor Management Protocol (TAMP) {{RFC5934}} or a similar mechanism. If the CA issuing 
+  certificates to devices gets compromised then these devices will be rejected by a
   TAM, if revocation is available to the TAM.
 
 TAM Certificate Expiry
