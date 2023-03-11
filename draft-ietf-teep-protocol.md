@@ -1533,14 +1533,14 @@ the selected TEEP cipher suite MUST be used in both directions.
 ## EATs and SUIT Reports {#eat-suit-ciphersuite}
 
 TEEP uses COSE for confidentiality of EATs and SUIT Reports sent by a TEEP Agent.
-The TEEP Agent obtains a signed EAT and then encrypts it with the TAM
+The TEEP Agent obtains a signed EAT and then SHOULD encrypt it using the TAM
 as the recipient. A SUIT Report is created by a SUIT processor, which
 is part of the TEEP Agent itself. The TEEP Agent is therefore in control of signing
-and encrypting the SUIT Report. Again, the TAM is the recipient of the encrypted
+the SUIT Report and SHOULD encrypt it. Again, the TAM is the recipient of the encrypted
 content. For content-key distribution Hybrid Public Key Encryption (HPKE) is used
 in this specification. See COSE-HPKE {{I-D.ietf-cose-hpke}} for more details.
 This specification uses the COSE-HPKE variant for a single recipient, i.e., the TAM,
-which uses COSE_Encrypt0. This variant is described in Section 3.1.1 of {{I-D.ietf-cose-hpke}}.
+which uses COSE_Encrypt0. This variant is described in {{Section 3.1.1 of I-D.ietf-cose-hpke}}.
 
 To perform encryption with HPKE the TEEP Agent needs to be in possession of the public
 key of the recipient, i.e., the TAM. See Section 5 of {{I-D.ietf-teep-architecture}}
