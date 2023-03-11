@@ -1445,7 +1445,7 @@ TEEP requires algorithms for various purposes:
 * Algorithms for signing and optionally encrypting SUIT reports sent by the TEEP Agent to the TAM.
 * Algorithms for signing and optionally encrypting SUIT manifests sent by the Trusted Component Signer to the TEEP Agent.
 
-Further details are provided for the protection of TEEP messages, SUIT Reports and EATs.
+Further details are provided for the protection of TEEP messages, SUIT Reports, and EATs.
 
 
 ## TEEP Messages {#teep-ciphersuite}
