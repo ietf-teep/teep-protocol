@@ -86,6 +86,7 @@ normative:
   I-D.ietf-suit-manifest:
   I-D.ietf-suit-trust-domains:
   I-D.ietf-suit-report:
+  I-D.ietf-suit-firmware-encryption: 
   COSE.Algorithm:
     title: "COSE Algorithms"
     author:
@@ -93,8 +94,7 @@ normative:
     target: https://www.iana.org/assignments/cose/cose.xhtml#algorithms
 informative:
   I-D.ietf-rats-ar4si:
-  I-D.ietf-suit-firmware-encryption:
-  I-D.ietf-teep-architecture:
+  I-D.ietf-teep-architecture: 
   I-D.ietf-rats-eat-media-type:
   I-D.ietf-rats-concise-ta-stores:
   I-D.wallace-rats-concise-ta-stores:
@@ -1499,7 +1499,7 @@ confidentiality will be needed to protect sensitive fields from the TAM as
 discussed in Section 9.8 of {{I-D.ietf-teep-architecture}}.
 
 The cipher suites defined above do not do encryption at the TEEP layer, but
-permit encryption of the SUIT payload (e.g., using {{I-D.ietf-suit-firmware-encryption}}).
+permit encryption of the SUIT payload using {{I-D.ietf-suit-firmware-encryption}}.
 See {{security}} and {{eat-suit-ciphersuite}} for more discussion of specific payloads.
 
 For the initial QueryRequest message, unless the TAM has more specific knowledge about the TEEP Agent
@@ -1602,16 +1602,15 @@ Trusted Component Binaries
   a Trusted Component to the TEEP Agent is then the responsibility of the TAM,
   using the security mechanisms provided by the TEEP
   protocol.  To protect the Trusted Component binary, the SUIT manifest format is used and
-  it offers a variety of security features, including digitial
-  signatures and can support symmetric encryption if a SUIT mechanism such as {{I-D.ietf-suit-firmware-encryption}}
+  it offers a variety of security features, including digital
+  signatures and content encryption, if a SUIT mechanism such as {{I-D.ietf-suit-firmware-encryption}}
   is used.
 
 Personalization Data
 : A Trusted Component Signer or TAM can supply personalization data along with a Trusted Component.
-  This data is also protected by a SUIT manifest.
-  Personalization data signed and encrypted (e.g., via {{I-D.ietf-suit-firmware-encryption}})
-  by a Trusted Component Signer other than
-  the TAM is opaque to the TAM.
+  This data is also protected by a SUIT manifest. Personalization data is signed and encrypted
+  by a Trusted Component Signer, if a SUIT mechanism such as {{I-D.ietf-suit-firmware-encryption}}
+  is used.
 
 TEEP Broker
 : As discussed in section 6 of {{I-D.ietf-teep-architecture}},
