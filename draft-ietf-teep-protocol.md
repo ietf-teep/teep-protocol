@@ -1440,8 +1440,8 @@ or Error message is generated only after completing the Update Procedure.
 TEEP requires algorithms for various purposes:
 
 * Algorithms for signing TEEP messages exchanged between the TEEP Agent and the TAM.
-* Algorithms for signing EAT-based evidence sent by the Attester via the TEEP Agent and the TAM to the Verifier. (If evidence is not encrypted by the TEEP Agent then it will be opaque to the TEEP Agent and to the TAM.)
-* Algorithms for encrypting EAT-based evidence sent by the TEEP Agent to the TAM. (The TAM will decrypt the encrypted evidence and will forward it to the Verifier.)
+* Algorithms for signing EAT-based Evidence sent by the Attester via the TEEP Agent and the TAM to the Verifier. (If evidence is not encrypted by the TEEP Agent then it will be opaque to the TEEP Agent and to the TAM.)
+* Algorithms for encrypting EAT-based Evidence sent by the TEEP Agent to the TAM. (The TAM will decrypt the encrypted Evidence and will forward it to the Verifier.)
 * Algorithms for signing and optionally encrypting SUIT reports sent by the TEEP Agent to the TAM.
 * Algorithms for signing and optionally encrypting SUIT manifests sent by the Trusted Component Signer to the TEEP Agent.
 
