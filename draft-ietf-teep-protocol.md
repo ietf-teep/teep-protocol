@@ -1450,7 +1450,6 @@ Further details are provided for the protection of TEEP messages, SUIT Reports, 
 
 ## TEEP Messages {#teep-ciphersuite}
 
-
 The TEEP protocol uses COSE for protection of TEEP messages in both directions.
 To negotiate cryptographic mechanisms and algorithms, the TEEP protocol defines the following cipher suite structure,
 which is used to specify an ordered set of operations (e.g., sign) done as part of composing a TEEP message.
