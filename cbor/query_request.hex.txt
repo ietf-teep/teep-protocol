@@ -7,7 +7,7 @@
       03            # unsigned(3) / versions: /
       81            # array(1) / [ 0 ] /
          00         # unsigned(0)
-   82               # array(2) /* supported-teep-cipher-suites /
+   82               # array(2) / supported-teep-cipher-suites /
       81            # array(1)
          82         # array(2)
             12      # unsigned(18) / cose-sign1 /
@@ -16,9 +16,11 @@
          82         # array(2)
             12      # unsigned(18) / cose-sign1 /
             27      # negative(7) / -8 = cose-alg-eddsa /
-   81               # array(1) /* supported-eat-suit-cipher-suites /
-      81            # array(1)
-         82         # array(2)
-            10      # unsigned(16) / cose-encrypt0 /
-            0C      # unsigned(12) / 12 = cose-alg-aesccm /
+   82               # array(2) / supported-suit-cose-profiles /
+      82            # array(2) / suit-sha256-es256-hpke-a128gcm /
+         26         # negative(6) / -7 = cose-alg-es256 /
+         01         # unsigned(1) / 1 = A128GCM */
+      82            # array(2) / suit-sha256-eddsa-hpke-a128gcm /
+         27         # negative(7) / -8 = cose-alg-eddsa /
+         01         # unsigned(1) / 1 = A128GCM */
    03               # unsigned(3) / attestation | trusted-components /

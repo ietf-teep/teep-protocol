@@ -337,7 +337,7 @@ query-request = [
     * $$teep-option-extensions
   },
   supported-teep-cipher-suites: [ + $teep-cipher-suite ],
-  supported-eat-suit-cipher-suites: [ + $eat-suit-cipher-suite ],
+  supported-suit-cose-profiles: [ + $suit-cose-profile ],
   data-item-requested: uint .bits data-item-requested
 ]
 ~~~~
@@ -374,8 +374,8 @@ supported-teep-cipher-suites
   supported by the TAM. Details
   about the cipher suite encoding can be found in {{teep-ciphersuite}}.
 
-supported-eat-suit-cipher-suites
-: The supported-eat-suit-cipher-suites parameter lists the EAT and SUIT cipher suites
+supported-suit-cose-profiles
+: The supported-suit-cose-profiles parameter lists the SUIT profiles
   supported by the TAM. Details
   about the cipher suite encoding can be found in {{eat-suit-ciphersuite}}.
 
@@ -1271,7 +1271,7 @@ This specification uses the following mapping:
 | supported-teep-cipher-suites     |     1 |
 | challenge                        |     2 |
 | versions                         |     3 |
-| supported-eat-suit-cipher-suites |     4 |
+| supported-suit-cose-profiles     |     4 |
 | selected-teep-cipher-suite       |     5 |
 | selected-version                 |     6 |
 | attestation-payload              |     7 |
@@ -1547,30 +1547,17 @@ key of the recipient, i.e., the TAM. See Section 5 of {{I-D.ietf-teep-architectu
 for more discussion of TAM keys used by the TEEP Agent.
 
 This specification defines cipher suites for confidentiality protection of EATs and
-SUIT Reports. The TEEP Agent and the TAM MUST support
-the cipher suite define below, which is defined to be consistent
-with {{I-D.moran-suit-mti}}.
-A TAM or TEEP Agent MAY also support
-other algorithms in the COSE Algorithms registry in addition to the mandatory one
-listed below.  It MAY also support use with COSE_Encrypt or other COSE types in
-additional cipher suites.
+SUIT Reports. The TAM MUST support each cipher suite defined below, based on definitions in
+{{I-D.moran-suit-mti}}.  A TEEP Agent MUST support at least one of the cipher
+suites below but can choose which one.  For example, a TEEP Agent might
+choose a given cipher suite if it has hardware support for it.
+A TAM or TEEP Agent MAY also support other algorithms in the COSE Algorithms registry.
+It MAY also support use with COSE_Encrypt or other COSE types in additional cipher suites.
 
 ~~~~
-$eat-suit-cipher-suite /= eat-suit-cipher-suite-hpke-v1-base
-
-eat-suit-cipher-suite-hpke-v1-base = [ teep-operation-hpke-v1-base ]
-
-eat-suit-operation-hpke-v1-base = [ cose-encrypt0, HPKE-v1-BASE ]
-
-cose-encrypt0 = 16 ; CoAP Content-Format value
-
-HPKE-v1-BASE = -1  ; TBD
+$suit-cose-profile /= suit-sha256-es256-hpke-a128gcm
+$suit-cose-profile /= suit-sha256-eddsa-hpke-a128gcm
 ~~~~
-
-Each operation in a given cipher suite has two elements:
-
-* a COSE-type defined in {{Section 2 of RFC9052}} that identifies the type of operation,
-* a specific cryptographic algorithm as defined in the COSE Algorithms registry {{COSE.Algorithm}} to be used to perform that operation.
 
 # Freshness Mechanisms {#freshness-mechanisms}
 
