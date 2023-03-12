@@ -87,6 +87,7 @@ normative:
   I-D.ietf-suit-trust-domains:
   I-D.ietf-suit-report:
   I-D.ietf-suit-firmware-encryption: 
+  I-D.ietf-cose-hpke:
   COSE.Algorithm:
     title: "COSE Algorithms"
     author:
@@ -97,7 +98,7 @@ informative:
   I-D.ietf-teep-architecture: 
   I-D.ietf-rats-eat-media-type:
   I-D.ietf-rats-concise-ta-stores:
-  I-D.wallace-rats-concise-ta-stores:
+  I-D.moran-suit-mti:
   RFC8610: 
   RFC8915:
   RFC5934:
@@ -336,7 +337,7 @@ query-request = [
     * $$teep-option-extensions
   },
   supported-teep-cipher-suites: [ + $teep-cipher-suite ],
-  supported-eat-suit-cipher-suites: [ + $eat-suit-cipher-suite ],
+  supported-suit-cose-profiles: [ + $suit-cose-profile ],
   data-item-requested: uint .bits data-item-requested
 ]
 ~~~~
@@ -373,8 +374,8 @@ supported-teep-cipher-suites
   supported by the TAM. Details
   about the cipher suite encoding can be found in {{teep-ciphersuite}}.
 
-supported-eat-suit-cipher-suites
-: The supported-eat-suit-cipher-suites parameter lists the EAT and SUIT cipher suites
+supported-suit-cose-profiles
+: The supported-suit-cose-profiles parameter lists the SUIT profiles
   supported by the TAM. Details
   about the cipher suite encoding can be found in {{eat-suit-ciphersuite}}.
 
@@ -491,7 +492,7 @@ attestation-payload-format
 : The attestation-payload-format parameter indicates the IANA Media Type of the
   attestation-payload parameter, where media type parameters are permitted after
   the media type.  For protocol version 0, the absence of this parameter indicates that
-  the format is "application/eat+cwt; eat_profile=https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-10" (see {{I-D.ietf-rats-eat-media-type}}
+  the format is "application/eat+cwt; eat_profile=https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-12" (see {{I-D.ietf-rats-eat-media-type}}
   for further discussion).
   (RFC-editor: upon RFC publication, replace URI above with
   "https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
@@ -694,7 +695,7 @@ attestation-payload-format
 : The attestation-payload-format parameter indicates the IANA Media Type of the
   attestation-payload parameter, where media type parameters are permitted after
   the media type.  The absence of this parameter indicates that
-  the format is "application/eat+cwt; eat_profile=https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-10" (see {{I-D.ietf-rats-eat-media-type}}
+  the format is "application/eat+cwt; eat_profile=https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-12" (see {{I-D.ietf-rats-eat-media-type}}
   for further discussion).
   (RFC-editor: upon RFC publication, replace URI above with
   "https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
@@ -1181,7 +1182,7 @@ Entity Attestation Token profiles.  This section defines an EAT profile
 for use with TEEP.
 
 * profile-label: The profile-label for this specification is the URI
-<https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-10>.
+<https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-12>.
 (RFC-editor: upon RFC publication, replace string with
 "https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
 of this document.)
@@ -1270,7 +1271,7 @@ This specification uses the following mapping:
 | supported-teep-cipher-suites     |     1 |
 | challenge                        |     2 |
 | versions                         |     3 |
-| supported-eat-suit-cipher-suites |     4 |
+| supported-suit-cose-profiles     |     4 |
 | selected-teep-cipher-suite       |     5 |
 | selected-version                 |     6 |
 | attestation-payload              |     7 |
@@ -1532,19 +1533,30 @@ the selected TEEP cipher suite MUST be used in both directions.
 ## EATs and SUIT Reports {#eat-suit-ciphersuite}
 
 TEEP uses COSE for confidentiality of EATs and SUIT Reports sent by a TEEP Agent.
-EATs and SUIT Reports sent by a TEEP Agent MUST support the cipher suite
-listed below, and MAY support other algorithms.
+The TEEP Agent obtains a signed EAT and then SHOULD encrypt it using the TAM
+as the recipient. A SUIT Report is created by a SUIT processor, which
+is part of the TEEP Agent itself. The TEEP Agent is therefore in control of signing
+the SUIT Report and SHOULD encrypt it. Again, the TAM is the recipient of the encrypted
+content. For content-key distribution Hybrid Public Key Encryption (HPKE) is used
+in this specification. See COSE-HPKE {{I-D.ietf-cose-hpke}} for more details.
+This specification uses the COSE-HPKE variant for a single recipient, i.e., the TAM,
+which uses COSE_Encrypt0. This variant is described in {{Section 3.1.1 of I-D.ietf-cose-hpke}}.
+
+To perform encryption with HPKE the TEEP Agent needs to be in possession of the public
+key of the recipient, i.e., the TAM. See Section 5 of {{I-D.ietf-teep-architecture}}
+for more discussion of TAM keys used by the TEEP Agent.
+
+This specification defines cipher suites for confidentiality protection of EATs and
+SUIT Reports. The TAM MUST support each cipher suite defined below, based on definitions in
+{{I-D.moran-suit-mti}}.  A TEEP Agent MUST support at least one of the cipher
+suites below but can choose which one.  For example, a TEEP Agent might
+choose a given cipher suite if it has hardware support for it.
+A TAM or TEEP Agent MAY also support other algorithms in the COSE Algorithms registry.
+It MAY also support use with COSE_Encrypt or other COSE types in additional cipher suites.
 
 ~~~~
-$eat-suit-cipher-suite /= eat-suit-cipher-suite-encrypt0-aesccm
-
-eat-suit-cipher-suite-encrypt0-aesccm = [ teep-operation-encrypt0-aesccm ]
-
-eat-suit-operation-encrypt0-aesccm = [ cose-encrypt0, cose-alg-aesccm ]
-
-cose-encrypt0 = 16    ; CoAP Content-Format value
-
-cose-alg-aesccm = 12  ; AES-CCM-64-64-128
+$suit-cose-profile /= suit-sha256-es256-hpke-a128gcm
+$suit-cose-profile /= suit-sha256-eddsa-hpke-a128gcm
 ~~~~
 
 # Freshness Mechanisms {#freshness-mechanisms}

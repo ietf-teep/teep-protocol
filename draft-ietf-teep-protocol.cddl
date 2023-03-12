@@ -80,15 +80,15 @@ cose-alg-eddsa = -8  ; EdDSA
 
 ; eat-suit-cipher-suites
 
-$eat-suit-cipher-suite /= eat-suit-cipher-suite-encrypt0-aesccm
+$eat-suit-cipher-suite /= eat-suit-cipher-suite-hpke-v1-base
 
-eat-suit-cipher-suite-encrypt0-aesccm = [ teep-operation-encrypt0-aesccm ]
+eat-suit-cipher-suite-hpke-v1-base = [ teep-operation-hpke-v1-base ]
 
-eat-suit-operation-encrypt0-aesccm = [ cose-encrypt0, cose-alg-aesccm ]
+eat-suit-operation-hpke-v1-base = [ cose-encrypt0, HPKE-v1-BASE ]
 
-cose-encrypt0 = 16    ; CoAP Content-Format value
+cose-encrypt0 = 16 ; CoAP Content-Format value
 
-cose-alg-aesccm = 12  ; AES-CCM-64-64-128
+HPKE-v1-BASE = -1  ; TBD
 
 ; freshness-mechanisms
 
