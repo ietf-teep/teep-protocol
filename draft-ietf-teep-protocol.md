@@ -79,6 +79,7 @@ normative:
   RFC9052:
   RFC3629:
   RFC5198:
+  RFC8747:
   RFC8949:
   RFC9334:
   I-D.ietf-rats-eat:
@@ -1198,13 +1199,14 @@ of this document.)
 * Detached EAT Bundle Support: DEB use is permitted.
 * Key Identification: COSE Key ID (kid) is used, where
   the key ID is the hash of a public key (where the public key may be
-  used as a raw public key, or in a certificate).
+  used as a raw public key, or in a certificate).  See {{attestation-result}}
+  discussion on the choice of hash algorithm.
 * Endorsement Identification: Optional, but semantics are the same
   as in Verification Key Identification.
 * Freshness: See {{freshness-mechanisms}}.
 * Claims Requirements:
   * The following claims are required: ueid, oemid,
-  hwmodel, hwversion, and manifests.  See {{attestation}} for discussion.  Other claims are optional.
+  hwmodel, hwversion, manifests, and cnf.  See {{attestation}} for discussion.  Other claims are optional.
   * See {{freshness-mechanisms}} for discussion affecting whether the
   eat_nonce claim is used.
   * The sw-name claim for a Trusted
@@ -1336,6 +1338,16 @@ to determine whether the Agent is in a trustworthy state.  Once the TAM receives
 Result from the Verifier, processing continues as in {{attestation-result}}.
 
 #### Handling an Attestation Result {#attestation-result}
+
+The Attestation Result must first be validated as follows:
+
+1. Verify that the Attestation Result was signed by a Verifier that the TAM trusts.
+2. Verify that the Attestation Result contains a "cnf" claim (as defined in {{Section 3.1 of RFC8747}}) where
+   the key ID is the hash of the TEEP Agent public key used to verify the signature on the TEEP message,
+   and the hash is computed using the Digest Algorithm specified by one of the SUIT profiles
+   supported by the TAM (SHA-256 for the ones mandated in this document).
+
+   See Sections 3.4 and 6 of {{RFC8747}} for more discussion.
 
 Based on the results of attestation (if any), any SUIT Reports,
 and the lists of installed, requested,
@@ -1621,6 +1633,12 @@ Attestation
   payload of a QueryResponse. See the security considerations of the
   specific mechanism in use (e.g., EAT) for more discussion.
 
+  An impersonation attack, where one TEEP Agent attempts to use the attestation
+  payload of another TEEP Agent, can be prevented using a proof-of-possession
+  approach.  The "cnf" claim is mandatory in the EAT profile for EAT for this
+  purpose.  See {{Section 6 of RFC8747}} and {{attestation-result}} of this document
+  for more discussion.
+
 Trusted Component Binaries
 : Each Trusted Component binary is signed by a Trusted Component Signer. It is the responsibility of the
   TAM to relay only verified Trusted Components from authorized Trusted Component Signers.  Delivery of
@@ -1842,6 +1860,10 @@ COSE is shown.
 ~~~~
 / eat-claim-set = /
 {
+    / cnf /          8: {
+                         / kid / 3 : h'ba7816bf8f01cfea414140de5dae2223'
+                                     h'b00361a396177a9cb410ff61f20015ad'
+                        },
     / eat_nonce /   10: h'948f8860d13a463e8e',
     / ueid /       256: h'0198f50a4ff6c05861c8860d13a638ea',
     / oemid /      258: h'894823', / IEEE OUI format OEM ID /
