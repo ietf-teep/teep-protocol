@@ -1343,7 +1343,7 @@ The Attestation Result must first be validated as follows:
 
 1. Verify that the Attestation Result was signed by a Verifier that the TAM trusts.
 2. Verify that the Attestation Result contains a "cnf" claim (as defined in {{Section 3.1 of RFC8747}}) where
-   the key ID is the hash of the TEEP Agent public key.used to verify the signature on the TEEP message,
+   the key ID is the hash of the TEEP Agent public key used to verify the signature on the TEEP message,
    and the hash is computed using the Digest Algorithm specified by one of the SUIT profiles
    supported by the TAM (SHA-256 for the ones mandated in this document).
 
