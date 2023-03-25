@@ -247,8 +247,8 @@ $teep-message-type /= update
 $teep-message-type /= teep-success
 $teep-message-type /= teep-error
 
-; message type numbers, uint .size 1 which takes a number from 0 to 23
-$teep-type = uint .size 1
+; message type numbers take a number from 0 to 23
+$teep-type = (0..23)
 TEEP-TYPE-query-request = 1
 TEEP-TYPE-query-response = 2
 TEEP-TYPE-update = 3
@@ -459,7 +459,7 @@ query-response = [
 
 requested-tc-info = {
   component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => uint .size 8,
+  ? tc-manifest-sequence-number => (0..18446744073709551615) / 1B FFFFFFFFFFFFFFFF /,
   ? have-binary => bool
 }
 ~~~~
@@ -655,7 +655,7 @@ update = [
     ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
-    ? err-code => uint .size 1,
+    ? err-code => (0..23),
     ? err-msg => text .size (1..128),
     * $$update-extensions,
     * $$teep-option-extensions
@@ -1044,7 +1044,7 @@ teep-error = [
      * $$teep-error-extensions,
      * $$teep-option-extensions
   },
-  err-code: uint .size 1
+  err-code: (0..23)
 ]
 ~~~~
 
