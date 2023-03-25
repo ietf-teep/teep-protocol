@@ -23,17 +23,6 @@ TEEP-TYPE-update = 3
 TEEP-TYPE-teep-success = 5
 TEEP-TYPE-teep-error = 6
 
-version = uint .size 4
-ext-info = uint .size 4
-
-; data items as bitmaps
-data-item-requested = &(
-  attestation: 0,
-  trusted-components: 1,
-  extensions: 2,
-  suit-reports: 3,
-)
-
 query-request = [
   type: TEEP-TYPE-query-request,
   options: {
@@ -45,9 +34,20 @@ query-request = [
     * $$teep-option-extensions
   },
   supported-teep-cipher-suites: [ + $teep-cipher-suite ],
-  supported-eat-suit-cipher-suites: [ + $eat-suit-cipher-suite ],
+  supported-suit-cose-profiles: [ + $suit-cose-profile ],
   data-item-requested: uint .bits data-item-requested
 ]
+
+version = uint .size 4
+ext-info = uint .size 4
+
+; data items as bitmaps
+data-item-requested = &(
+  attestation: 0,
+  trusted-components: 1,
+  extensions: 2,
+  suit-reports: 3,
+)
 
 ; teep-cipher-suites
 
@@ -77,18 +77,6 @@ cose-sign1 = 18      ; CoAP Content-Format value
 
 cose-alg-es256 = -7  ; ECDSA w/ SHA-256
 cose-alg-eddsa = -8  ; EdDSA
-
-; eat-suit-cipher-suites
-
-$eat-suit-cipher-suite /= eat-suit-cipher-suite-hpke-v1-base
-
-eat-suit-cipher-suite-hpke-v1-base = [ teep-operation-hpke-v1-base ]
-
-eat-suit-operation-hpke-v1-base = [ cose-encrypt0, HPKE-v1-BASE ]
-
-cose-encrypt0 = 16 ; CoAP Content-Format value
-
-HPKE-v1-BASE = -1  ; TBD
 
 ; freshness-mechanisms
 
@@ -130,6 +118,8 @@ update = [
     ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
+    ? err-code => uint .size 1,
+    ? err-msg => text .size (1..128),
     * $$update-extensions,
     * $$teep-option-extensions
   }
@@ -161,7 +151,7 @@ teep-error = [
   err-code: uint .size 1
 ]
 
-; The err-code parameter, uint .size 1 which takes a number from 0 to 23
+; The err-code parameter, uint (0..23)
 ERR_PERMANENT_ERROR = 1
 ERR_UNSUPPORTED_EXTENSION = 2
 ERR_UNSUPPORTED_FRESHNESS_MECHANISMS = 3
@@ -172,12 +162,11 @@ ERR_CERTIFICATE_EXPIRED = 9
 ERR_TEMPORARY_ERROR = 10
 ERR_MANIFEST_PROCESSING_FAILED = 17
 
-; labels of mapkey for teep message parameters in
-; uint .size 1 which takes a number from 0 to 23
+; labels of mapkey for teep message parameters, uint (0..23)
 supported-teep-cipher-suites = 1
 challenge = 2
 versions = 3
-supported-eat-suit-cipher-suites = 4
+supported-suit-cose-profiles = 4
 selected-teep-cipher-suite = 5
 selected-version = 6
 attestation-payload = 7

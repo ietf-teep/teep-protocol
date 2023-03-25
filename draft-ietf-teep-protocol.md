@@ -1317,10 +1317,11 @@ This specification uses the following mapping:
 
 ~~~~ cddl-label
 ; labels of mapkey for teep message parameters, uint (0..23)
-supported-cipher-suites = 1
+supported-teep-cipher-suites = 1
 challenge = 2
 versions = 3
-selected-cipher-suite = 5
+supported-suit-cose-profiles = 4
+selected-teep-cipher-suite = 5
 selected-version = 6
 attestation-payload = 7
 tc-list = 8
