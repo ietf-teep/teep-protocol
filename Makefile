@@ -1,7 +1,8 @@
 FN := $(shell grep 'docname: draft-ietf-teep-protocol' draft-ietf-teep-protocol.md | awk '{print $$2}')
+CDDL_FILE := draft-ietf-teep-protocol.cddl
 
 .PHONY: all
-all: $(FN).cddl $(FN).txt $(FN).html
+all: $(CDDL_FILE) $(FN).txt $(FN).html
 
 .PHONY: cat-cddl
 cat-cddl:
@@ -23,13 +24,15 @@ validate-teep-cddl:
 	make -C cddl validate-teep-cddl
 
 CODE_PAT	:= ^\~\~\~\~
-%.cddl: %.md
+$(CDDL_FILE): $(CDDL_FILE:%.cddl=%.md)
 	> $@
 	sed -n '/${CODE_PAT} cddl-teep-message/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' > $@
 	echo >> $@
 	sed -n '/${CODE_PAT} cddl-query-request/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' >> $@
 	echo >> $@
 	sed -n '/${CODE_PAT} cddl-cipher-suite/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' >> $@
+	echo >> $@
+	sed -n '/${CODE_PAT} cddl-suit-cose-profile/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' >> $@
 	echo >> $@
 	sed -n '/${CODE_PAT} cddl-freshness/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' >> $@
 	echo >> $@
@@ -49,7 +52,7 @@ $(FN).html: $(FN).xml
 $(FN).txt: $(FN).xml
 	xml2rfc $(FN).xml
 
-$(FN).xml: draft-ietf-teep-protocol.md
+$(FN).xml: draft-ietf-teep-protocol.md $(CDDL_FILE)
 	kramdown-rfc2629 draft-ietf-teep-protocol.md > $(FN).xml
 
 .PHONY: clean

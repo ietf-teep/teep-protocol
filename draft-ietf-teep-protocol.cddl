@@ -50,7 +50,6 @@ data-item-requested = &(
 )
 
 ; teep-cipher-suites
-
 $teep-cipher-suite /= teep-cipher-suite-sign1-eddsa
 $teep-cipher-suite /= teep-cipher-suite-sign1-es256
 
@@ -78,8 +77,11 @@ cose-sign1 = 18      ; CoAP Content-Format value
 cose-alg-es256 = -7  ; ECDSA w/ SHA-256
 cose-alg-eddsa = -8  ; EdDSA
 
-; freshness-mechanisms
+; suit-cose-profile
+$suit-cose-profile /= suit-sha256-es256-hpke-a128gcm
+$suit-cose-profile /= suit-sha256-eddsa-hpke-a128gcm
 
+; freshness-mechanisms
 FRESHNESS_NONCE = 0
 FRESHNESS_TIMESTAMP = 1
 

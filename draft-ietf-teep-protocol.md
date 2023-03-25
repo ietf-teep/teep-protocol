@@ -1520,7 +1520,6 @@ information, future extensions might specify support for encryption and/or MAC o
 
 ~~~~ cddl-cipher-suite
 ; teep-cipher-suites
-
 $teep-cipher-suite /= teep-cipher-suite-sign1-eddsa
 $teep-cipher-suite /= teep-cipher-suite-sign1-es256
 
@@ -1613,7 +1612,8 @@ choose a given cipher suite if it has hardware support for it.
 A TAM or TEEP Agent MAY also support other algorithms in the COSE Algorithms registry.
 It MAY also support use with COSE_Encrypt or other COSE types in additional cipher suites.
 
-~~~~
+~~~~ cddl-suit-cose-profile
+; suit-cose-profile
 $suit-cose-profile /= suit-sha256-es256-hpke-a128gcm
 $suit-cose-profile /= suit-sha256-eddsa-hpke-a128gcm
 ~~~~
@@ -1632,7 +1632,6 @@ future by TEEP extensions:
 
 ~~~~ cddl-freshness
 ; freshness-mechanisms
-
 FRESHNESS_NONCE = 0
 FRESHNESS_TIMESTAMP = 1
 
