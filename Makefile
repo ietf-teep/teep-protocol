@@ -1,5 +1,6 @@
-FN := $(shell grep 'docname: draft-ietf-teep-protocol' draft-ietf-teep-protocol.md | awk '{print $$2}')
-CDDL_FILE := draft-ietf-teep-protocol.cddl
+MD_FILE := draft-ietf-teep-protocol.md
+CDDL_FILE := $(MD_FILE:%.md=%.cddl)
+FN := $(shell grep 'docname: draft-ietf-teep-protocol' $(MD_FILE) | awk '{print $$2}')
 
 .PHONY: all
 all: $(CDDL_FILE) $(FN).txt $(FN).html
@@ -24,7 +25,7 @@ validate-teep-cddl:
 	make -C cddl validate-teep-cddl
 
 CODE_PAT	:= ^\~\~\~\~
-$(CDDL_FILE): $(CDDL_FILE:%.cddl=%.md)
+$(CDDL_FILE): $(MD_FILE)
 	> $@
 	sed -n '/${CODE_PAT} cddl-teep-message/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' > $@
 	echo >> $@
@@ -52,8 +53,8 @@ $(FN).html: $(FN).xml
 $(FN).txt: $(FN).xml
 	xml2rfc $(FN).xml
 
-$(FN).xml: draft-ietf-teep-protocol.md $(CDDL_FILE)
-	kramdown-rfc2629 draft-ietf-teep-protocol.md > $(FN).xml
+$(FN).xml: $(MD_FILE) $(CDDL_FILE)
+	kramdown-rfc2629 $(MD_FILE) > $(FN).xml
 
 .PHONY: clean
 clean:
