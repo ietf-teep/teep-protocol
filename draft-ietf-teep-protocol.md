@@ -459,7 +459,7 @@ query-response = [
 
 requested-tc-info = {
   component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => (0..18446744073709551615) / 1B FFFFFFFFFFFFFFFF /,
+  ? tc-manifest-sequence-number => uint .size 8,
   ? have-binary => bool
 }
 ~~~~
