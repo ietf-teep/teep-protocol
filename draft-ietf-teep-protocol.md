@@ -295,7 +295,7 @@ the listed steps fail, then the TEEP message MUST be rejected.
   supported or that are specified as being ignored when not
   understood.
 
-1. Follow the steps specified in {{Section 4 of RFC9052}} ("Signing Objects") for
+1. Follow the steps specified in Section 4 of {{RFC9052}} ("Signing Objects") for
   validating a COSE_Sign1 or COSE_Sign object. The COSE_Sign1 or COSE_Sign payload is the content
   of the TEEP message.
 
@@ -610,14 +610,14 @@ requirements, whether these claims appear in Attestation Results, or in Evidence
 for the Verifier to use when generating Attestation Results of some form:
 
 | Requirement  | Claim | Reference |
-| Freshness proof | nonce | {{Section 4.1 of I-D.ietf-rats-eat}} |
-| Device unique identifier | ueid | {{Section 4.2.1 of I-D.ietf-rats-eat}} |
-| Vendor of the device | oemid | {{Section 4.2.3 of I-D.ietf-rats-eat}} |
-| Class of the device | hwmodel | {{Section 4.2.4 of I-D.ietf-rats-eat}} |
-| TEE hardware type | hwversion | {{Section 4.2.5 of I-D.ietf-rats-eat}} |
-| TEE hardware version | hwversion | {{Section 4.2.5 of I-D.ietf-rats-eat}} |
-| TEE firmware type | manifests | {{Section 4.2.15 of I-D.ietf-rats-eat}} |
-| TEE firmware version | manifests | {{Section 4.2.15 of I-D.ietf-rats-eat}} |
+| Freshness proof | nonce | Section 4.1 of {{I-D.ietf-rats-eat}} |
+| Device unique identifier | ueid | Section 4.2.1 of {{I-D.ietf-rats-eat}} |
+| Vendor of the device | oemid | Section 4.2.3 of {{I-D.ietf-rats-eat}} |
+| Class of the device | hwmodel | Section 4.2.4 of {{I-D.ietf-rats-eat}} |
+| TEE hardware type | hwversion | Section 4.2.5 of {{I-D.ietf-rats-eat}} |
+| TEE hardware version | hwversion | Section 4.2.5 of {{I-D.ietf-rats-eat}} |
+| TEE firmware type | manifests | Section 4.2.15 of {{I-D.ietf-rats-eat}} |
+| TEE firmware version | manifests | Section 4.2.15 of {{I-D.ietf-rats-eat}} |
 
 The "manifests" claim should include information about the TEEP Agent as well
 as any of its dependencies such as firmware.
@@ -1389,7 +1389,7 @@ Result from the Verifier, processing continues as in {{attestation-result}}.
 The Attestation Result must first be validated as follows:
 
 1. Verify that the Attestation Result was signed by a Verifier that the TAM trusts.
-2. Verify that the Attestation Result contains a "cnf" claim (as defined in {{Section 3.1 of RFC8747}}) where
+2. Verify that the Attestation Result contains a "cnf" claim (as defined in Section 3.1 of {{RFC8747}}) where
    the key ID is the hash of the TEEP Agent public key used to verify the signature on the TEEP message,
    and the hash is computed using the Digest Algorithm specified by one of the SUIT profiles
    supported by the TAM (SHA-256 for the ones mandated in this document).
@@ -1550,7 +1550,7 @@ cose-alg-eddsa = -8  ; EdDSA
 
 Each operation in a given cipher suite has two elements:
 
-* a COSE-type defined in {{Section 2 of RFC9052}} that identifies the type of operation, and
+* a COSE-type defined in Section 2 of {{RFC9052}} that identifies the type of operation, and
 * a specific cryptographic algorithm as defined in the COSE Algorithms registry {{COSE.Algorithm}} to be used to perform that operation.
 
 A TAM MUST support both of the cipher suites defined above.  A TEEP Agent MUST support at least
@@ -1598,7 +1598,7 @@ the SUIT Report and SHOULD encrypt it. Again, the TAM is the recipient of the en
 content. For content-key distribution Hybrid Public Key Encryption (HPKE) is used
 in this specification. See COSE-HPKE {{I-D.ietf-cose-hpke}} for more details.
 This specification uses the COSE-HPKE variant for a single recipient, i.e., the TAM,
-which uses COSE_Encrypt0. This variant is described in {{Section 3.1.1 of I-D.ietf-cose-hpke}}.
+which uses COSE_Encrypt0. This variant is described in Section 3.1.1 of {{I-D.ietf-cose-hpke}}.
 
 To perform encryption with HPKE the TEEP Agent needs to be in possession of the public
 key of the recipient, i.e., the TAM. See Section 5 of {{I-D.ietf-teep-architecture}}
@@ -1682,7 +1682,7 @@ Attestation
   An impersonation attack, where one TEEP Agent attempts to use the attestation
   payload of another TEEP Agent, can be prevented using a proof-of-possession
   approach.  The "cnf" claim is mandatory in the EAT profile for EAT for this
-  purpose.  See {{Section 6 of RFC8747}} and {{attestation-result}} of this document
+  purpose.  See Section 6 of {{RFC8747}} and {{attestation-result}} of this document
   for more discussion.
 
 Trusted Component Binaries
