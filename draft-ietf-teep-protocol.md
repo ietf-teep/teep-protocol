@@ -229,7 +229,7 @@ otherwise.
 TEEP messages are protected by the COSE_Sign1 or COSE_Sign structure as described in {{teep-ciphersuite}}.
 The TEEP protocol messages are described in CDDL format {{RFC8610}} below.
 
-~~~~
+~~~~ cddl-teep-message
 teep-message = $teep-message-type .within teep-message-framework
 
 teep-message-framework = [
@@ -326,7 +326,7 @@ Like other TEEP messages, the QueryRequest message is
 signed, and the relevant CDDL snippet is shown below.
 The complete CDDL structure is shown in Appendix C.
 
-~~~~
+~~~~ cddl-query-request
 query-request = [
   type: TEEP-TYPE-query-request,
   options: {
@@ -341,6 +341,17 @@ query-request = [
   supported-suit-cose-profiles: [ + $suit-cose-profile ],
   data-item-requested: uint .bits data-item-requested
 ]
+
+version = uint .size 4
+ext-info = uint .size 4
+
+; data items as bitmaps
+data-item-requested = &(
+  attestation: 0,
+  trusted-components: 1,
+  extensions: 2,
+  suit-reports: 3,
+)
 ~~~~
 
 The message has the following fields:
@@ -438,7 +449,7 @@ Like other TEEP messages, the QueryResponse message is
 signed, and the relevant CDDL snippet is shown below.
 The complete CDDL structure is shown in Appendix C.
 
-~~~~
+~~~~ cddl-query-response
 query-response = [
   type: TEEP-TYPE-query-response,
   options: {
@@ -646,7 +657,7 @@ Like other TEEP messages, the Update message is
 signed, and the relevant CDDL snippet is shown below.
 The complete CDDL structure is shown in Appendix C.
 
-~~~~
+~~~~ cddl-update
 update = [
   type: TEEP-TYPE-update,
   options: {
@@ -982,7 +993,7 @@ Like other TEEP messages, the Success message is
 signed, and the relevant CDDL snippet is shown below.
 The complete CDDL structure is shown in Appendix C.
 
-~~~~
+~~~~ cddl-teep-success
 teep-success = [
   type: TEEP-TYPE-teep-success,
   options: {
@@ -1031,7 +1042,7 @@ Like other TEEP messages, the Error message is
 signed, and the relevant CDDL snippet is shown below.
 The complete CDDL structure is shown in Appendix C.
 
-~~~~
+~~~~ cddl-teep-error
 teep-error = [
   type: TEEP-TYPE-teep-error,
   options: {
@@ -1046,6 +1057,17 @@ teep-error = [
   },
   err-code: (0..23)
 ]
+
+; The err-code parameter, uint (0..23)
+ERR_PERMANENT_ERROR = 1
+ERR_UNSUPPORTED_EXTENSION = 2
+ERR_UNSUPPORTED_FRESHNESS_MECHANISMS = 3
+ERR_UNSUPPORTED_MSG_VERSION = 4
+ERR_UNSUPPORTED_CIPHER_SUITES = 5
+ERR_BAD_CERTIFICATE = 6
+ERR_CERTIFICATE_EXPIRED = 9
+ERR_TEMPORARY_ERROR = 10
+ERR_MANIFEST_PROCESSING_FAILED = 17
 ~~~~
 
 The Error message has the following fields:
@@ -1293,6 +1315,31 @@ This specification uses the following mapping:
 | supported-freshness-mechanisms   |    21 |
 | err-code                         |    23 |
 
+~~~~ cddl-label
+; labels of mapkey for teep message parameters, uint (0..23)
+supported-teep-cipher-suites = 1
+challenge = 2
+versions = 3
+supported-suit-cose-profiles = 4
+selected-teep-cipher-suite = 5
+selected-version = 6
+attestation-payload = 7
+tc-list = 8
+ext-list = 9
+manifest-list = 10
+msg = 11
+err-msg = 12
+attestation-payload-format = 13
+requested-tc-list = 14
+unneeded-manifest-list = 15
+component-id = 16
+tc-manifest-sequence-number = 17
+have-binary = 18
+suit-reports = 19
+token = 20
+supported-freshness-mechanisms = 21
+~~~~
+
 # Behavior Specification
 
 Behavior is specified in terms of the conceptual APIs defined in
@@ -1471,9 +1518,8 @@ which is used to specify an ordered set of operations (e.g., sign) done as part 
 Although this specification only specifies the use of signing and relies on payload encryption to protect sensitive
 information, future extensions might specify support for encryption and/or MAC operations if needed.
 
-~~~~
+~~~~ cddl-cipher-suite
 ; teep-cipher-suites
-
 $teep-cipher-suite /= teep-cipher-suite-sign1-eddsa
 $teep-cipher-suite /= teep-cipher-suite-sign1-es256
 
@@ -1566,7 +1612,8 @@ choose a given cipher suite if it has hardware support for it.
 A TAM or TEEP Agent MAY also support other algorithms in the COSE Algorithms registry.
 It MAY also support use with COSE_Encrypt or other COSE types in additional cipher suites.
 
-~~~~
+~~~~ cddl-suit-cose-profile
+; suit-cose-profile
 $suit-cose-profile /= suit-sha256-es256-hpke-a128gcm
 $suit-cose-profile /= suit-sha256-eddsa-hpke-a128gcm
 ~~~~
@@ -1583,9 +1630,8 @@ an IANA registered freshness mechanism (see the IANA Considerations section of
 This document uses the following freshness mechanisms which may be added to in the
 future by TEEP extensions:
 
-~~~~
+~~~~ cddl-freshness
 ; freshness-mechanisms
-
 FRESHNESS_NONCE = 0
 FRESHNESS_TIMESTAMP = 1
 
