@@ -58,6 +58,6 @@ $(FN).xml: $(MD_FILE) $(CDDL_FILE)
 
 .PHONY: clean
 clean:
-	rm -fr $(FN).txt $(FN).xml
+	rm -fr $(FN).txt $(FN).xml $(CDDL_FILE)
 	$(MAKE) -C cbor clean
 	$(MAKE) -C cddl clean
