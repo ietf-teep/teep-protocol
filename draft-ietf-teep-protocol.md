@@ -224,7 +224,7 @@ otherwise.
 TEEP messages are protected by the COSE_Sign1 or COSE_Sign structure as described in {{ciphersuite}}.
 The TEEP protocol messages are described in CDDL format {{RFC8610}} below.
 
-~~~~
+~~~~ cddl-teep-message
 teep-message = $teep-message-type .within teep-message-framework
 
 teep-message-framework = [
@@ -321,7 +321,7 @@ Like other TEEP messages, the QueryRequest message is
 signed, and the relevant CDDL snippet is shown below. 
 The complete CDDL structure is shown in Appendix C.
 
-~~~~
+~~~~ cddl-query-request
 query-request = [
   type: TEEP-TYPE-query-request,
   options: {
@@ -426,7 +426,7 @@ Like other TEEP messages, the QueryResponse message is
 signed, and the relevant CDDL snippet is shown below. 
 The complete CDDL structure is shown in Appendix C.
 
-~~~~
+~~~~ cddl-query-response
 query-response = [
   type: TEEP-TYPE-query-response,
   options: {
@@ -633,7 +633,7 @@ Like other TEEP messages, the Update message is
 signed, and the relevant CDDL snippet is shown below. 
 The complete CDDL structure is shown in Appendix C.
 
-~~~~
+~~~~ cddl-update
 update = [
   type: TEEP-TYPE-update,
   options: {
@@ -958,7 +958,7 @@ Like other TEEP messages, the Success message is
 signed, and the relevant CDDL snippet is shown below. 
 The complete CDDL structure is shown in Appendix C.
 
-~~~~
+~~~~ cddl-teep-success
 teep-success = [
   type: TEEP-TYPE-teep-success,
   options: {
@@ -1007,7 +1007,7 @@ Like other TEEP messages, the Error message is
 signed, and the relevant CDDL snippet is shown below. 
 The complete CDDL structure is shown in Appendix C.
 
-~~~~
+~~~~ cddl-teep-error
 teep-error = [
   type: TEEP-TYPE-teep-error,
   options: {
@@ -1381,7 +1381,7 @@ which is used to specify an ordered set of operations (e.g., sign) done as part 
 Although this specification only specifies the use of signing and relies on payload encryption to protect sensitive
 information, future extensions might specify support for encryption and/or MAC operations if needed.
 
-~~~~
+~~~~ cddl-cipher-suite
 $cipher-suite /= teep-cipher-suite-sign1-es256
 $cipher-suite /= teep-cipher-suite-sign1-eddsa
 
@@ -1452,7 +1452,7 @@ an IANA registered freshness mechanism (see the IANA Considerations section of
 This document uses the following freshness mechanisms which may be added to in the
 future by TEEP extensions:
 
-~~~~
+~~~~ cddl-freshness
 FRESHNESS_NONCE = 0
 FRESHNESS_TIMESTAMP = 1
 
