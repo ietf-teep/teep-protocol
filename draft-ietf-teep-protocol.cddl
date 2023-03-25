@@ -15,7 +15,7 @@ $teep-message-type /= update
 $teep-message-type /= teep-success
 $teep-message-type /= teep-error
 
-; message type numbers, uint (0..23)
+; message type numbers, uint .size 1 which takes a number from 0 to 23
 $teep-type = uint .size 1
 TEEP-TYPE-query-request = 1
 TEEP-TYPE-query-response = 2
@@ -44,9 +44,27 @@ query-request = [
     * $$query-request-extensions,
     * $$teep-option-extensions
   },
-  supported-cipher-suites: [ + $cipher-suite ],
+  supported-teep-cipher-suites: [ + $teep-cipher-suite ],
+  supported-eat-suit-cipher-suites: [ + $eat-suit-cipher-suite ],
   data-item-requested: uint .bits data-item-requested
 ]
+
+; teep-cipher-suites
+
+$teep-cipher-suite /= teep-cipher-suite-sign1-eddsa
+$teep-cipher-suite /= teep-cipher-suite-sign1-es256
+
+;The following two cipher suites have only a single operation each.
+;Other cipher suites may be defined to have multiple operations.
+;MANDATORY for TAM to support them, and OPTIONAL
+;to support any additional ones that use COSE_Sign_Tagged, or other
+;signing, encryption, or MAC algorithms.
+
+teep-operation-sign1-eddsa = [ cose-sign1, cose-alg-eddsa ]
+teep-operation-sign1-es256 = [ cose-sign1, cose-alg-es256 ]
+
+teep-cipher-suite-sign1-eddsa = [ teep-operation-sign1-eddsa ]
+teep-cipher-suite-sign1-es256 = [ teep-operation-sign1-es256 ]
 
 ;MANDATORY for TAM and TEEP Agent to support the following COSE
 ;operations, and OPTIONAL to support additional ones such as
@@ -57,41 +75,38 @@ cose-sign1 = 18      ; CoAP Content-Format value
 ;MANDATORY for TAM to support the following, and OPTIONAL to implement
 ;any additional algorithms from the IANA COSE Algorithms registry.
 
-cose-alg-eddsa = -8  ; EdDSA
 cose-alg-es256 = -7  ; ECDSA w/ SHA-256
+cose-alg-eddsa = -8  ; EdDSA
 
-;MANDATORY for TAM to support the following cipher-suites, and OPTIONAL
-;to support any additional ones that use COSE_Sign_Tagged, or other
-;signing, encryption, or MAC algorithms.
+; eat-suit-cipher-suites
 
-teep-operation-sign1-eddsa = [ cose-sign1, cose-alg-eddsa ]
-teep-operation-sign1-es256 = [ cose-sign1, cose-alg-es256 ]
+$eat-suit-cipher-suite /= eat-suit-cipher-suite-hpke-v1-base
 
-teep-cipher-suite-sign1-eddsa = [ teep-operation-sign1-eddsa ]
-teep-cipher-suite-sign1-es256 = [ teep-operation-sign1-es256 ]
+eat-suit-cipher-suite-hpke-v1-base = [ teep-operation-hpke-v1-base ]
 
-$cipher-suite /= teep-cipher-suite-sign1-eddsa
-$cipher-suite /= teep-cipher-suite-sign1-es256
+eat-suit-operation-hpke-v1-base = [ cose-encrypt0, HPKE-v1-BASE ]
+
+cose-encrypt0 = 16 ; CoAP Content-Format value
+
+HPKE-v1-BASE = -1  ; TBD
 
 ; freshness-mechanisms
 
 FRESHNESS_NONCE = 0
 FRESHNESS_TIMESTAMP = 1
-FRESHNESS_EPOCH_ID = 2
 
 $freshness-mechanism /= FRESHNESS_NONCE
 $freshness-mechanism /= FRESHNESS_TIMESTAMP
-$freshness-mechanism /= FRESHNESS_EPOCH_ID
 
 query-response = [
   type: TEEP-TYPE-query-response,
   options: {
     ? token => bstr .size (8..64),
-    ? selected-cipher-suite => $cipher-suite,
+    ? selected-teep-cipher-suite => $teep-cipher-suite,
     ? selected-version => version,
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
-    ? suit-reports => [ + SUIT_Report ],
+    ? suit-reports => [ + bstr ],
     ? tc-list => [ + system-property-claims ],
     ? requested-tc-list => [ + requested-tc-info ],
     ? unneeded-manifest-list => [ + SUIT_Component_Identifier ],
@@ -113,6 +128,8 @@ update = [
     ? token => bstr .size (8..64),
     ? unneeded-manifest-list => [ + SUIT_Component_Identifier ],
     ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
+    ? attestation-payload-format => text,
+    ? attestation-payload => bstr,
     * $$update-extensions,
     * $$teep-option-extensions
   }
@@ -134,17 +151,17 @@ teep-error = [
   options: {
      ? token => bstr .size (8..64),
      ? err-msg => text .size (1..128),
-     ? supported-cipher-suites => [ + $cipher-suite ],
+     ? supported-teep-cipher-suites => [ + $teep-cipher-suite ],
      ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
      ? versions => [ + version ],
      ? suit-reports => [ + SUIT_Report ],
      * $$teep-error-extensions,
      * $$teep-option-extensions
   },
-  err-code: 0..23
+  err-code: uint .size 1
 ]
 
-; The err-code parameter, uint (0..23)
+; The err-code parameter, uint .size 1 which takes a number from 0 to 23
 ERR_PERMANENT_ERROR = 1
 ERR_UNSUPPORTED_EXTENSION = 2
 ERR_UNSUPPORTED_FRESHNESS_MECHANISMS = 3
@@ -155,11 +172,13 @@ ERR_CERTIFICATE_EXPIRED = 9
 ERR_TEMPORARY_ERROR = 10
 ERR_MANIFEST_PROCESSING_FAILED = 17
 
-; labels of mapkey for teep message parameters, uint (0..23)
-supported-cipher-suites = 1
+; labels of mapkey for teep message parameters in
+; uint .size 1 which takes a number from 0 to 23
+supported-teep-cipher-suites = 1
 challenge = 2
 versions = 3
-selected-cipher-suite = 5
+supported-eat-suit-cipher-suites = 4
+selected-teep-cipher-suite = 5
 selected-version = 6
 attestation-payload = 7
 tc-list = 8
