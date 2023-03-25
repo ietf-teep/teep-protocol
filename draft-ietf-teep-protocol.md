@@ -335,6 +335,17 @@ query-request = [
   supported-cipher-suites: [ + $cipher-suite ],
   data-item-requested: uint .bits data-item-requested
 ]
+
+version = uint .size 4
+ext-info = uint .size 4
+
+; data items as bitmaps
+data-item-requested = &(
+  attestation: 0,
+  trusted-components: 1,
+  extensions: 2,
+  suit-reports: 3,
+)
 ~~~~
 
 The message has the following fields: 
@@ -1022,6 +1033,17 @@ teep-error = [
   },
   err-code: 0..23
 ]
+
+; The err-code parameter, uint (0..23)
+ERR_PERMANENT_ERROR = 1
+ERR_UNSUPPORTED_EXTENSION = 2
+ERR_UNSUPPORTED_FRESHNESS_MECHANISMS = 3
+ERR_UNSUPPORTED_MSG_VERSION = 4
+ERR_UNSUPPORTED_CIPHER_SUITES = 5
+ERR_BAD_CERTIFICATE = 6
+ERR_CERTIFICATE_EXPIRED = 9
+ERR_TEMPORARY_ERROR = 10
+ERR_MANIFEST_PROCESSING_FAILED = 17
 ~~~~
 
 The Error message has the following fields:
@@ -1226,6 +1248,30 @@ This specification uses the following mapping:
 | suit-reports                   |    19 |
 | token                          |    20 |
 | supported-freshness-mechanisms |    21 |
+
+~~~~ cddl-label
+; labels of mapkey for teep message parameters, uint (0..23)
+supported-cipher-suites = 1
+challenge = 2
+versions = 3
+selected-cipher-suite = 5
+selected-version = 6
+attestation-payload = 7
+tc-list = 8
+ext-list = 9
+manifest-list = 10
+msg = 11
+err-msg = 12
+attestation-payload-format = 13
+requested-tc-list = 14
+unneeded-manifest-list = 15
+component-id = 16
+tc-manifest-sequence-number = 17
+have-binary = 18
+suit-reports = 19
+token = 20
+supported-freshness-mechanisms = 21
+~~~~
 
 # Behavior Specification
 

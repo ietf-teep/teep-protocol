@@ -29,6 +29,10 @@ CODE_PAT	:= ^\~\~\~\~
 	echo >> $@
 	sed -n '/${CODE_PAT} cddl-query-request/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' >> $@
 	echo >> $@
+	sed -n '/${CODE_PAT} cddl-cipher-suite/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' >> $@
+	echo >> $@
+	sed -n '/${CODE_PAT} cddl-freshness/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' >> $@
+	echo >> $@
 	sed -n '/${CODE_PAT} cddl-query-response/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' >> $@
 	echo >> $@
 	sed -n '/${CODE_PAT} cddl-update/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' >> $@
@@ -37,10 +41,7 @@ CODE_PAT	:= ^\~\~\~\~
 	echo >> $@
 	sed -n '/${CODE_PAT} cddl-teep-error/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' >> $@
 	echo >> $@
-	sed -n '/${CODE_PAT} cddl-cipher-suite/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' >> $@
-	echo >> $@
-	sed -n '/${CODE_PAT} cddl-freshness/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' >> $@
-	echo >> $@
+	sed -n '/${CODE_PAT} cddl-label/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' >> $@
 
 $(FN).html: $(FN).xml
 	xml2rfc $(FN).xml --html
