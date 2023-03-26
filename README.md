@@ -50,7 +50,7 @@ It will create `draft-ietf-teep-protocol-latest.txt` and
 
 ### Checking cddl syntax
 
-#### Creating cddl file for TEEP Protocol.
+#### Creating concatenated cddl file for TEEP Protocol.
 
 The file name 'check-draft-ietf-teep-protocol.cddl' will be created under directory 'cddl'.
 The cddl file for TEEP Protocol requires cddl files from suit-report and suit-manifest.
@@ -59,7 +59,7 @@ This command downloads cddl files from respected repos and concatenates them to 
 make -C cddl
 ```
 
-#### Run cddl tools
+#### Perform cddl syntax check with cddl tool.
 
 The command to run FULL cddl syntax check.
 ````
@@ -70,3 +70,9 @@ To check syntax cddl syntax in TEEP file and not suit which is useful during deb
 ```
 make validate-teep-cddl
 ```
+
+#### Push both md and cddl file to git repo every time revising md file.
+
+The cddl file will be updated from the md file every time when running `make`.
+
+You must push the changes of commit of both md file and cddl file even if you only have changed md file.
