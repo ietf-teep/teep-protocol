@@ -87,7 +87,6 @@ normative:
   I-D.ietf-suit-manifest:
   I-D.ietf-suit-trust-domains:
   I-D.ietf-suit-report:
-  I-D.ietf-suit-firmware-encryption: 
   I-D.ietf-cose-hpke:
   COSE.Algorithm:
     title: "COSE Algorithms"
@@ -95,6 +94,7 @@ normative:
       org: IANA
     target: https://www.iana.org/assignments/cose/cose.xhtml#algorithms
 informative:
+  I-D.ietf-suit-firmware-encryption: 
   I-D.ietf-rats-ar4si:
   I-D.ietf-teep-architecture: 
   I-D.ietf-rats-eat-media-type:
@@ -1571,7 +1571,7 @@ confidentiality will be needed to protect sensitive fields from the TAM as
 discussed in Section 9.8 of {{I-D.ietf-teep-architecture}}.
 
 The cipher suites defined above do not do encryption at the TEEP layer, but
-permit encryption of the SUIT payload using {{I-D.ietf-suit-firmware-encryption}}.
+permit encryption of the SUIT payload using a mechanism such as {{I-D.ietf-suit-firmware-encryption}}.
 See {{security}} and {{eat-suit-ciphersuite}} for more discussion of specific payloads.
 
 For the initial QueryRequest message, unless the TAM has more specific knowledge about the TEEP Agent
