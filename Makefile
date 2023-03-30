@@ -27,7 +27,13 @@ validate-teep-cddl:
 CODE_PAT	:= ^\~\~\~\~
 $(CDDL_FILE): $(MD_FILE)
 	> $@
-	sed -n '/${CODE_PAT} cddl-teep-message/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' > $@
+	echo "; DO NOT EDIT this cddl file manually." >> $@
+	echo "; This cddl file is Auto-generated file from md file." >> $@
+	echo "; Edit the md file and run make for generating this cddl file." >> $@
+	echo "; Please do not forget to commit and push this cddl file to git repo" >> $@
+	echo "; every time you have revised the md file." >> $@
+	echo >> $@
+	sed -n '/${CODE_PAT} cddl-teep-message/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' >> $@
 	echo >> $@
 	sed -n '/${CODE_PAT} cddl-query-request/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' >> $@
 	echo >> $@
