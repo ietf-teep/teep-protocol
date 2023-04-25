@@ -85,6 +85,7 @@ normative:
   I-D.ietf-rats-eat:
   I-D.ietf-rats-reference-interaction-models:
   I-D.ietf-suit-manifest:
+  I-D.ietf-suit-mti:
   I-D.ietf-suit-trust-domains:
   I-D.ietf-suit-report:
   I-D.ietf-cose-hpke:
@@ -99,7 +100,6 @@ informative:
   I-D.ietf-teep-architecture: 
   I-D.ietf-rats-eat-media-type:
   I-D.ietf-rats-concise-ta-stores:
-  I-D.moran-suit-mti:
   RFC8610: 
   RFC8915:
   RFC5934:
@@ -1606,7 +1606,7 @@ for more discussion of TAM keys used by the TEEP Agent.
 
 This specification defines cipher suites for confidentiality protection of EATs and
 SUIT Reports. The TAM MUST support each cipher suite defined below, based on definitions in
-{{I-D.moran-suit-mti}}.  A TEEP Agent MUST support at least one of the cipher
+{{I-D.ietf-suit-mti}}.  A TEEP Agent MUST support at least one of the cipher
 suites below but can choose which one.  For example, a TEEP Agent might
 choose a given cipher suite if it has hardware support for it.
 A TAM or TEEP Agent MAY also support other algorithms in the COSE Algorithms registry.
