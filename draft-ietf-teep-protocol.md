@@ -420,13 +420,13 @@ supported-freshness-mechanisms
   It MUST be absent if the attestation bit is clear.
 
 challenge
-: The challenge field is an optional parameter used for ensuring the freshness of the
-  attestation payload returned with a QueryResponse message. It MUST be absent if
-  the attestation bit is clear (since the token is used instead in that case).
+: The challenge field is an optional parameter used for ensuring the freshness of
+  attestation evidence returned with a QueryResponse message. It MUST be absent if
+  the attestation bit is clear or the Passport model is used (since the token is used instead in those cases).
   When a challenge is
-  provided in the QueryRequest and an EAT is returned with a QueryResponse message
+  provided in the QueryRequest and Evidence in the form of an EAT is returned with a QueryResponse message
   then the challenge contained in this request MUST be used to generate the EAT,
-  such as by copying the challenge into the eat_nonce in the EAT profile {{eat}} if
+  by copying the challenge into the eat_nonce in the EAT profile {{eat}} if
   using the Nonce freshness mechanism.  For more details see {{freshness-mechanisms}}.
 
   If any format other than EAT is used, it is up to that
@@ -1225,7 +1225,8 @@ of this document.)
   discussion on the choice of hash algorithm.
 * Endorsement Identification: Optional, but semantics are the same
   as in Verification Key Identification.
-* Freshness: See {{freshness-mechanisms}}.
+* Freshness: See {{freshness-mechanisms}} for details.  When the
+  eat_nonce claim is used, the value is a single bstr.
 * Claims Requirements:
   * The following claims are required: ueid, oemid,
   hwmodel, hwversion, manifests, and cnf.  See {{attestation}} for discussion.  Other claims are optional.
@@ -1643,7 +1644,8 @@ An implementation MUST support the Nonce mechanism and MAY support additional
 mechanisms.
 
 In the Nonce mechanism, the attestation payload MUST include a nonce provided
-in the QueryRequest challenge.  The timestamp mechanism uses a timestamp
+in the QueryRequest challenge if the Background Check model is used, or in
+the QueryRequest token if the Passport model is used.  The timestamp mechanism uses a timestamp
 determined via mechanisms outside the TEEP protocol,
 and the challenge is only needed in the QueryRequest message
 if a challenge is needed in generating the attestation payload for reasons other
