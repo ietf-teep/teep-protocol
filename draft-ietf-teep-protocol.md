@@ -81,13 +81,13 @@ normative:
   RFC5198:
   RFC8747:
   RFC8949:
+  RFC9052:
   RFC9334:
   I-D.ietf-rats-eat:
   I-D.ietf-rats-reference-interaction-models:
   I-D.ietf-suit-manifest:
   I-D.ietf-suit-trust-domains:
   I-D.ietf-suit-report:
-  I-D.ietf-cose-hpke:
   COSE.Algorithm:
     title: "COSE Algorithms"
     author:
@@ -1595,12 +1595,12 @@ The TEEP Agent obtains a signed EAT and then SHOULD encrypt it using the TAM
 as the recipient. A SUIT Report is created by a SUIT processor, which
 is part of the TEEP Agent itself. The TEEP Agent is therefore in control of signing
 the SUIT Report and SHOULD encrypt it. Again, the TAM is the recipient of the encrypted
-content. For content-key distribution Hybrid Public Key Encryption (HPKE) is used
-in this specification. See COSE-HPKE {{I-D.ietf-cose-hpke}} for more details.
-This specification uses the COSE-HPKE variant for a single recipient, i.e., the TAM,
-which uses COSE_Encrypt0. This variant is described in Section 3.1.1 of {{I-D.ietf-cose-hpke}}.
+content. For content-key distribution Ephemeral-Static Diffie-Hellman is used
+in this specification. See Section 8.5.5 and Appendix B of {{RFC9052}} for more details.
+(If {{I-D.ietf-suit-firmware-encryption}} is used, it is also the same as discussed in
+Section 6.2 of that document.)
 
-To perform encryption with HPKE the TEEP Agent needs to be in possession of the public
+To perform encryption with ECDH the TEEP Agent needs to be in possession of the public
 key of the recipient, i.e., the TAM. See Section 5 of {{I-D.ietf-teep-architecture}}
 for more discussion of TAM keys used by the TEEP Agent.
 
@@ -1614,8 +1614,8 @@ It MAY also support use with COSE_Encrypt or other COSE types in additional ciph
 
 ~~~~ cddl-suit-cose-profile
 ; suit-cose-profile
-$suit-cose-profile /= suit-sha256-es256-hpke-a128gcm
-$suit-cose-profile /= suit-sha256-eddsa-hpke-a128gcm
+$suit-cose-profile /= suit-sha256-es256-ecdh-a128gcm
+$suit-cose-profile /= suit-sha256-eddsa-ecdh-a128gcm
 ~~~~
 
 # Freshness Mechanisms {#freshness-mechanisms}
