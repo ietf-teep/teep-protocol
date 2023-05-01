@@ -883,7 +883,7 @@ For the full SUIT Manifest example binary, see {{suit-integrated}}.
 In this scenario, Personalization Data is associated with the Trusted Component Binary "tc-uuid.suit" from Scenario 1.
 
 The Trusted Component Developer places encrypted Personalization Data in the SUIT manifest, and it will be delivered by the TAM.
-The SUIT manifest processor decrypts it and then store it into config.json, and then install the dependency component.
+The SUIT manifest processor decrypts it and then store it into file named "config.json", and then install the dependency component.
 
 The TAM delivers the SUIT manifest of the Personalization Data which depends on the Trusted Component Binary from Scenario 1.
 
@@ -2043,6 +2043,8 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
 {::include cbor/suit_personalization.hex.txt}
 ~~~~
 
+The Personalization Data above is encrypted with A128KW.
+The secret key is h'61616161616161616161616161616161' (0x61 = 'a', and the length is 16).
 
 # F. Examples of SUIT Reports {#suit-reports}
 {: numbered='no'}
