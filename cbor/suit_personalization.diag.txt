@@ -1,8 +1,8 @@
 / SUIT_Envelope / {
   / authentication-wrapper / 2: << [
     << [
-      / digest-algorithm-id: / -16 / cose-alg-sha256 /,
-      / digest-bytes: / h'99D1AD5D2C44320B247BB37B8CDB418CADA53590DF4EF928E30240F5717088FA'
+      / digest-algorithm-id: / -16 / SHA256 /,
+      / digest-bytes: / h'F8CDE205EA2C63FB23042AAF336BA51C12DBDFAA9714149F42FA0F701490DF43'
     ] >>,
     << / COSE_Sign1_Tagged / 18([
       / protected: / << {
@@ -10,7 +10,7 @@
       } >>,
       / unprotected: / {},
       / payload: / null,
-      / signature: / h'447D94B8249CB15AA544EF2315BCBBC8DC1F8A790DC863D6CC83F799DF3576AFAEDC2E63512E5C0699F62B20A555CF4176E1D7018FE748D9BFEF47A4E1C8889E'
+      / signature: / h'34994DB97D120652829B242C9A33AEF892C213BB10550341B9816207EF78E21BE323A8B4C3BF2BD90E3EEE34D749D3AF45C972E3EA96B8FE3D49B3CD27FCF779'
     ]) >>
   ] >>,
   / manifest / 3: << {
@@ -20,42 +20,45 @@
       / dependencies / 1: {
         / component-index / 1: {
           / dependency-prefix / 1: [
-            h'544545502D446576696365',           / "TEEP-Device" /
-            h'5365637572654653',                 / "SecureFS" /
+             'TEEP-Device',
+             'SecureFS',
             h'8D82573A926D4754935332DC29997F74', / tc-uuid /
-            h'73756974'                          / "suit" /
+             'suit'
           ]
         }
       },
       / components / 2: [
         [
-          h'544545502D446576696365',  / "TEEP-Device" /
-          h'5365637572654653',        / "SecureFS" /
-          h'636F6E6669672E6A736F6E'   / "config.json" /
+          'TEEP-Device',
+          'SecureFS',
+          'config.json'
         ]
       ],
       / shared-sequence / 4: << [
         / directive-set-component-index / 12, 0,
         / directive-override-parameters / 20, {
-          / vendor-id / 1: h'C0DDD5F15243566087DB4F5B0AA26C2F' / c0ddd5f1-5243-5660-87db-4f5b0aa26c2f /,
-          / class-id / 2: h'DB42F7093D8C55BAA8C5265FC5820F4E' / db42f709-3d8c-55ba-a8c5-265fc5820f4e /,
-          / image-digest / 3: << [
-            / algorithm-id: / -16 / SHA-256 /,
-            / digest-bytes: / h'AAABCCCDEEEF00012223444566678889ABBBCDDDEFFF01112333455567778999'
-          ] >>,
-          / image-size / 14: 64
+          / parameter-vendor-identifier / 1: h'C0DDD5F15243566087DB4F5B0AA26C2F',
+          / parameter-class-identifier / 2: h'DB42F7093D8C55BAA8C5265FC5820F4E',
         },
         / condition-vendor-identifier / 1, 15,
         / condition-class-identifier / 2, 15
       ] >>
     } >>,
     / manifest-component-id / 5: [
-      h'544545502D446576696365',  / "TEEP-Device" /
-      h'5365637572654653',        / "SecureFS" /
-      h'636F6E6669672E73756974'   / "config.suit" /
+      'TEEP-Device',
+      'SecureFS',
+      'config.suit'
     ],
     / validate / 7: << [
       / directive-set-component-index / 12, 0,
+      / directive-override-parameters / 20, {
+        / NOTE: image-digest and image-size of plaintext config.json /
+        / parameter-image-digest / 3: << [
+          / digest-algorithm-id: / -16 / SHA256 /,
+          / digest-bytes: / h'2d62bc330d02054f4028e790a161cf26fce74ae5e05f6165ccbdf23b27faf5c7'
+        ] >>,
+        / image-size / 14: 64
+      },
       / condition-image-match / 3, 15
     ] >>,
     / dependency-resolution / 15: << [
@@ -63,18 +66,47 @@
       / directive-override-parameters / 20, {
         / uri / 21: "https://example.org/8d82573a-926d-4754-9353-32dc29997f74.suit"
       },
-      / directive-fetch / 21, 2,
-      / condition-image-match / 3, 15
+      / directive-fetch / 21, 2
     ] >>,
     / install / 17: << [
       / directive-set-component-index / 12, 1,
       / directive-process-dependency / 11, 0,
+
+      / NOTE: fetch encrypted firmware /
       / directive-set-component-index / 12, 0,
       / directive-override-parameters / 20, {
-        / uri / 21: "https://example.org/config.json"
+        / NOTE: encrypted payload and encryption-info /
+        / parameter-content / 18: h'48FE0794D291C42700D614FC7EF638A6CF9C6B40CBE172CC0EB2B0ECB9DA6071BE85CACB416090E350354760A463D3D85D7E835B5E48190DBE61F2DA1C1C687062AC556B89B8459FE99D79378158BAF5',
+        / parameter-encryption-info / 19: << 96([
+          / protected: / << {
+            / alg / 1: 1 / AES-GCM-128 /
+          } >>,
+          / unprotected: / {
+            / IV / 5: h'5318E31B9825AAF12664796B5DC644EB'
+          },
+          / payload: / null / detached ciphertext /,
+          / recipients: / [
+            [
+              / protected: / << {
+              } >>,
+              / unprotected: / {
+                / alg / 1: -3 / A128KW /,
+                / kid / 4: 'kid-1'
+              },
+              / payload: / h'8A788C02AA608BAD1F94BDC4786E6BAFB9D805173A8B66DD' / CEK encrypted with KEK /
+            ]
+          ]
+        ]) >>
       },
-      / directive-fetch / 21, 2,
-      / condition-image-match / 3, 15
+
+      / decrypt encrypted firmware /
+      / directive-write / 18, 15 / consumes the SUIT_Encryption_Info above /
+    ] >>,
+    / uninstall / 24: << [
+      / directive-set-component-index / 12, 1,
+      / directive-process-dependency / 11, 0,
+      / directive-set-component-index / 12, 0,
+      / directive-unlink / 33, 15
     ] >>
   } >>
 }
