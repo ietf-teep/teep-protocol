@@ -691,6 +691,7 @@ token
 unneeded-manifest-list
 : The unneeded-manifest-list parameter enumerates the SUIT manifests to be unlinked.
   Each unneeded SUIT manifest is identified by its SUIT Manifest Component ID.
+  The SUIT manifest processor MAY execute uninstall section in the manifest.
 
 manifest-list
 : The manifest-list field is used to convey one or multiple SUIT manifests
@@ -881,7 +882,8 @@ For the full SUIT Manifest example binary, see {{suit-integrated}}.
 
 In this scenario, Personalization Data is associated with the Trusted Component Binary "tc-uuid.suit" from Scenario 1.
 
-The Trusted Component Developer places Personalization Data in a file named "config.json" and hosts it on an HTTPS server.  The Trusted Component Developer then creates a SUIT manifest with the URI, specifying which Trusted Component Binary it correlates to in the parameter 'dependency-resolution', and signs the SUIT manifest.
+The Trusted Component Developer places encrypted Personalization Data in the SUIT manifest, and it will be delivered by the TAM.
+The SUIT manifest processor decrypts it and then store it into file named "config.json", and then install the dependency component.
 
 The TAM delivers the SUIT manifest of the Personalization Data which depends on the Trusted Component Binary from Scenario 1.
 
@@ -892,97 +894,53 @@ The TAM delivers the SUIT manifest of the Personalization Data which depends on 
 
              Update  ---->
 
-      +================= teep-protocol(TAM) ======================+
-      | TEEP_Message([                                            |
-      |   TEEP-TYPE-update,                                       |
-      |   options: {                                              |
-      |     manifest-list: [                                      |
-      |       +======== suit-manifest(TC Developer) ============+ |
-      |       | SUIT_Envelope({                                 | |
-      |       |   manifest: {                                   | |
-      |       |     common: {                                   | |
-      |       |       dependencies: [                           | |
-      |       |         {{digest-of-tc.suit}}                   | |
-      |       |       ]                                         | |
-      |       |     }                                           | |
-      |       |     dependency-resolution: {                    | |
-      |       |       override-parameters: {                    | |
-      |       |         uri: "https://example.org/tc-uuid.suit" | |
-      |       |       }                                         | |
-      |       |       fetch                                     | |
-      |       |     }                                           | |
-      |       |     install: {                                  | |
-      |       |       override-parameters: {                    | |
-      |       |         uri: "https://example.org/config.json"  | |
-      |       |       },                                        | |
-      |       |       fetch                                     | |
-      |       |       set-dependency-index                      | |
-      |       |       process-dependency                        | |
-      |       |     }                                           | |
-      |       |   }                                             | |
-      |       | })                                              | |
-      |       +=================================================+ |
-      |     ]                                                     |
-      |   }                                                       |
-      | ])                                                        |
-      +===========================================================+
+      +================== teep-protocol(TAM) ======================+
+      | TEEP_Message([                                             |
+      |   TEEP-TYPE-update,                                        |
+      |   options: {                                               |
+      |     manifest-list: [                                       |
+      |       +========= suit-manifest(TC Developer) ============+ |
+      |       | SUIT_Envelope({                                  | |
+      |       |   manifest: {                                    | |
+      |       |     common: {                                    | |
+      |       |       dependencies: {                            | |
+      |       |         dependency-prefix 1: {                   | |
+      |       |           [tc-uuid, 'suit']                      | |
+      |       |         }                                        | |
+      |       |       }                                          | |
+      |       |       components: [                              | |
+      |       |         ['config.json']                          | |
+      |       |       ]                                          | |
+      |       |     },                                           | |
+      |       |     dependency-resolution: {                     | |
+      |       |       override-parameters: {                     | |
+      |       |         uri: "https://example.org/tc-uuid.suit"  | |
+      |       |       },                                         | |
+      |       |       fetch                                      | |
+      |       |     },                                           | |
+      |       |     install: {                                   | |
+      |       |       set-component-index 0,                     | |
+      |       |       override-parameters: {                     | |
+      |       |         content: h'48FE0794...'                  | |
+      |       |         encryption-info: << ... >>               | |
+      |       |       },                                         | |
+      |       |       write,                                     | |
+      |       |       set-component-index 1,                     | |
+      |       |       process-dependency                         | |
+      |       |     }                                            | |
+      |       |   }                                              | |
+      |       | })                                               | |
+      |       +==================================================+ |
+      |     ]                                                      |
+      |   }                                                        |
+      | ])                                                         |
+      +============================================================+
 
-    and then,
-
-    +-------------+          +--------------+
-    | TEEP Agent  |          | TC Developer |
-    +-------------+          +--------------+
-
-                     <----
-      fetch "https://example.org/config.json"
-
-          +=======config.json========+
-          | 7B 22 75 73 65 72 22 ... |
-          +==========================+
-
-    Figure 4: Personalization Data
+    Figure 4: Encrypted Personalization Data
 ~~~~
 
 For the full SUIT Manifest example binary, see {{suit-personalization}}.
 
-### Scenario 4: Unlinking a Trusted Component {#unlinking}
-
-A Trusted Component Developer can also generate a SUIT Manifest that unlinks the installed Trusted Component. The TAM delivers it when the TAM wants to uninstall the component.
-
-The suit-directive-unlink (see {{I-D.ietf-suit-trust-domains}} Section-6.5.4) is located in the manifest to unlink the Trusted Component, meaning that the reference count
-is decremented and the component is deleted when the reference count becomes zero.
-(If other Trusted Components depend on it, the reference count will not be zero.)
-
-~~~~
-    +------------+           +-------------+
-    | TAM        |           | TEEP Agent  |
-    +------------+           +-------------+
-
-             Update  ---->
-
-      +=========== teep-protocol(TAM) ============+
-      | TEEP_Message([                            |
-      |   TEEP-TYPE-update,                       |
-      |   options: {                              |
-      |     manifest-list: [                      |
-      |       +== suit-manifest(TC Developer) ==+ |
-      |       | SUIT_Envelope({                 | |
-      |       |   manifest: {                   | |
-      |       |     install: [                  | |
-      |       |       unlink                    | |
-      |       |     ]                           | |
-      |       |   }                             | |
-      |       | })                              | |
-      |       +=================================+ |
-      |     ]                                     |
-      |   }                                       |
-      | ])                                        |
-      +===========================================+
-
-    Figure 5: Unlink Trusted Component example (summary)
-~~~~
-
-For the full SUIT Manifest example binary, see [Appendix E. SUIT Example 4](#suit-unlink)
 
 ## Success Message
 
@@ -2085,25 +2043,8 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
 {::include cbor/suit_personalization.hex.txt}
 ~~~~
 
-
-## E.4. Example 4: Unlink a Trusted Component {#suit-unlink}
-{: numbered='no'}
-
-### CBOR Diagnostic Notation of SUIT Manifest
-{: numbered='no'}
-
-~~~~
-{::include cbor/suit_unlink.diag.txt}
-~~~~
-
-
-### CBOR Binary in Hex
-{: numbered='no'}
-
-~~~~
-{::include cbor/suit_unlink.hex.txt}
-~~~~
-
+The Personalization Data above is encrypted with A128KW.
+The secret key is h'61616161616161616161616161616161' (0x61 = 'a', and the length is 16).
 
 # F. Examples of SUIT Reports {#suit-reports}
 {: numbered='no'}

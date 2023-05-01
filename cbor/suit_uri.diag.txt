@@ -1,8 +1,8 @@
 / SUIT_Envelope / {
   / authentication-wrapper / 2: << [
     << [
-      / digest-algorithm-id: / -16 / cose-alg-sha256 /,
-      / digest-bytes: / h'B892B75B262B728EC2C16C2774A730DC804BC87252DAFC57A0098284C3E73587'
+      / digest-algorithm-id: / -16 / SHA256 /,
+      / digest-bytes: / h'EF53C7F719CB10041233850AE3211D62CEC9528924E656607688E77BC14886A0'
     ] >>,
     << / COSE_Sign1_Tagged / 18([
       / protected: / << {
@@ -10,7 +10,7 @@
       } >>,
       / unprotected: / {},
       / payload: / null,
-      / signature: / h'B888EE88553CF894A4921F5FF8B3289C354AFAC504E2526D0DB0EE576069D9599BDF68C7EE6E41B8C1BE78524F082FF62E760F3814F57B18BDB96249CBD8B3E1'
+      / signature: / h'7E367F9E124859473FBDF3D6312AA8943617B41AE4782FCA0E77A492C51F8A7252EA42C23D722E787AA235B5175DBE61DDF8F16F956E0317B9550A04BF9165DD'
     ]) >>
   ] >>,
   / manifest / 3: << {
@@ -19,10 +19,10 @@
     / common / 3: << {
       / components / 2: [
         [
-          h'544545502D446576696365',           / "TEEP-Device" /
-          h'5365637572654653',                 / "SecureFS" /
+           'TEEP-Device',
+           'SecureFS',
           h'8D82573A926D4754935332DC29997F74', / tc-uuid /
-          h'7461'                              / "ta" /
+           'ta'
         ]
       ],
       / shared-sequence / 4: << [
@@ -30,7 +30,7 @@
           / parameter-vendor-identifier / 1: h'C0DDD5F15243566087DB4F5B0AA26C2F',
           / parameter-class-identifier / 2: h'DB42F7093D8C55BAA8C5265FC5820F4E',
           / parameter-image-digest / 3: << [
-            / digest-algorithm-id: / -16 / cose-alg-sha256 /,
+            / digest-algorithm-id: / -16 / SHA256 /,
             / digest-bytes: / h'8CF71AC86AF31BE184EC7A05A411A8C3A14FD9B77A30D046397481469468ECE8'
           ] >>,
           / parameter-image-size / 14: 20
@@ -40,10 +40,10 @@
       ] >>
     } >>,
     / manifest-component-id / 5: [
-      h'544545502D446576696365',              / "TEEP-Device" /
-      h'5365637572654653',                    / "SecureFS" /
-      h'8D82573A926D4754935332DC29997F74',    / tc-uuid /
-      h'73756974'                             / "suit" /
+       'TEEP-Device',
+       'SecureFS',
+      h'8D82573A926D4754935332DC29997F74',  / tc-uuid /
+       'suit'
     ],
     / install / 17: << [
       / directive-override-parameters / 20, {
@@ -51,6 +51,9 @@
       },
       / directive-fetch / 21, 15,
       / condition-image-match / 3, 15
+    ] >>,
+    / uninstall / 24: << [
+      / directive-unlink / 33, 15
     ] >>
   } >>
 }
