@@ -905,27 +905,27 @@ The TAM delivers the SUIT manifest of the Personalization Data which depends on 
       |       |     common: {                                    | |
       |       |       dependencies: {                            | |
       |       |         dependency-prefix 1: {                   | |
-      |       |           {{dependency-manifest-component-id}}   | |
+      |       |           [tc-uuid, 'suit']                      | |
       |       |         }                                        | |
       |       |       }                                          | |
       |       |       components: [                              | |
-      |       |         {{plaintext-config-component-id}}        | |
+      |       |         ['config.json']                          | |
       |       |       ]                                          | |
-      |       |     }                                            | |
+      |       |     },                                           | |
       |       |     dependency-resolution: {                     | |
       |       |       override-parameters: {                     | |
       |       |         uri: "https://example.org/tc-uuid.suit"  | |
-      |       |       }                                          | |
+      |       |       },                                         | |
       |       |       fetch                                      | |
-      |       |     }                                            | |
+      |       |     },                                           | |
       |       |     install: {                                   | |
-      |       |       set-component-index 0                      | |
+      |       |       set-component-index 0,                     | |
       |       |       override-parameters: {                     | |
       |       |         content: h'48FE0794...'                  | |
       |       |         encryption-info: << ... >>               | |
-      |       |       }                                          | |
-      |       |       write                                      | |
-      |       |       set-component-index 1                      | |
+      |       |       },                                         | |
+      |       |       write,                                     | |
+      |       |       set-component-index 1,                     | |
       |       |       process-dependency                         | |
       |       |     }                                            | |
       |       |   }                                              | |
