@@ -81,25 +81,25 @@ normative:
   RFC5198:
   RFC8747:
   RFC8949:
+  RFC9052:
   RFC9334:
   I-D.ietf-rats-eat:
   I-D.ietf-rats-reference-interaction-models:
   I-D.ietf-suit-manifest:
+  I-D.ietf-suit-mti:
   I-D.ietf-suit-trust-domains:
   I-D.ietf-suit-report:
-  I-D.ietf-suit-firmware-encryption: 
-  I-D.ietf-cose-hpke:
   COSE.Algorithm:
     title: "COSE Algorithms"
     author:
       org: IANA
     target: https://www.iana.org/assignments/cose/cose.xhtml#algorithms
 informative:
+  I-D.ietf-suit-firmware-encryption: 
   I-D.ietf-rats-ar4si:
   I-D.ietf-teep-architecture: 
   I-D.ietf-rats-eat-media-type:
   I-D.ietf-rats-concise-ta-stores:
-  I-D.moran-suit-mti:
   RFC8610: 
   RFC8915:
   RFC5934:
@@ -420,13 +420,13 @@ supported-freshness-mechanisms
   It MUST be absent if the attestation bit is clear.
 
 challenge
-: The challenge field is an optional parameter used for ensuring the freshness of the
-  attestation payload returned with a QueryResponse message. It MUST be absent if
-  the attestation bit is clear (since the token is used instead in that case).
+: The challenge field is an optional parameter used for ensuring the freshness of
+  attestation evidence returned with a QueryResponse message. It MUST be absent if
+  the attestation bit is clear or the Passport model is used (since the token is used instead in those cases).
   When a challenge is
-  provided in the QueryRequest and an EAT is returned with a QueryResponse message
+  provided in the QueryRequest and Evidence in the form of an EAT is returned with a QueryResponse message
   then the challenge contained in this request MUST be used to generate the EAT,
-  such as by copying the challenge into the eat_nonce in the EAT profile {{eat}} if
+  by copying the challenge into the eat_nonce in the EAT profile {{eat}} if
   using the Nonce freshness mechanism.  For more details see {{freshness-mechanisms}}.
 
   If any format other than EAT is used, it is up to that
@@ -1183,7 +1183,8 @@ of this document.)
   discussion on the choice of hash algorithm.
 * Endorsement Identification: Optional, but semantics are the same
   as in Verification Key Identification.
-* Freshness: See {{freshness-mechanisms}}.
+* Freshness: See {{freshness-mechanisms}} for details.  When the
+  eat_nonce claim is used, the value is a single bstr.
 * Claims Requirements:
   * The following claims are required: ueid, oemid,
   hwmodel, hwversion, manifests, and cnf.  See {{attestation}} for discussion.  Other claims are optional.
@@ -1529,7 +1530,7 @@ confidentiality will be needed to protect sensitive fields from the TAM as
 discussed in Section 9.8 of {{I-D.ietf-teep-architecture}}.
 
 The cipher suites defined above do not do encryption at the TEEP layer, but
-permit encryption of the SUIT payload using {{I-D.ietf-suit-firmware-encryption}}.
+permit encryption of the SUIT payload using a mechanism such as {{I-D.ietf-suit-firmware-encryption}}.
 See {{security}} and {{eat-suit-ciphersuite}} for more discussion of specific payloads.
 
 For the initial QueryRequest message, unless the TAM has more specific knowledge about the TEEP Agent
@@ -1553,18 +1554,18 @@ The TEEP Agent obtains a signed EAT and then SHOULD encrypt it using the TAM
 as the recipient. A SUIT Report is created by a SUIT processor, which
 is part of the TEEP Agent itself. The TEEP Agent is therefore in control of signing
 the SUIT Report and SHOULD encrypt it. Again, the TAM is the recipient of the encrypted
-content. For content-key distribution Hybrid Public Key Encryption (HPKE) is used
-in this specification. See COSE-HPKE {{I-D.ietf-cose-hpke}} for more details.
-This specification uses the COSE-HPKE variant for a single recipient, i.e., the TAM,
-which uses COSE_Encrypt0. This variant is described in Section 3.1.1 of {{I-D.ietf-cose-hpke}}.
+content. For content-key distribution Ephemeral-Static Diffie-Hellman is used
+in this specification. See Section 8.5.5 and Appendix B of {{RFC9052}} for more details.
+(If {{I-D.ietf-suit-firmware-encryption}} is used, it is also the same as discussed in
+Section 6.2 of that document.)
 
-To perform encryption with HPKE the TEEP Agent needs to be in possession of the public
+To perform encryption with ECDH the TEEP Agent needs to be in possession of the public
 key of the recipient, i.e., the TAM. See Section 5 of {{I-D.ietf-teep-architecture}}
 for more discussion of TAM keys used by the TEEP Agent.
 
 This specification defines cipher suites for confidentiality protection of EATs and
 SUIT Reports. The TAM MUST support each cipher suite defined below, based on definitions in
-{{I-D.moran-suit-mti}}.  A TEEP Agent MUST support at least one of the cipher
+{{I-D.ietf-suit-mti}}.  A TEEP Agent MUST support at least one of the cipher
 suites below but can choose which one.  For example, a TEEP Agent might
 choose a given cipher suite if it has hardware support for it.
 A TAM or TEEP Agent MAY also support other algorithms in the COSE Algorithms registry.
@@ -1572,8 +1573,8 @@ It MAY also support use with COSE_Encrypt or other COSE types in additional ciph
 
 ~~~~ cddl-suit-cose-profile
 ; suit-cose-profile
-$suit-cose-profile /= suit-sha256-es256-hpke-a128gcm
-$suit-cose-profile /= suit-sha256-eddsa-hpke-a128gcm
+$suit-cose-profile /= suit-sha256-es256-ecdh-a128gcm
+$suit-cose-profile /= suit-sha256-eddsa-ecdh-a128gcm
 ~~~~
 
 # Freshness Mechanisms {#freshness-mechanisms}
@@ -1601,7 +1602,8 @@ An implementation MUST support the Nonce mechanism and MAY support additional
 mechanisms.
 
 In the Nonce mechanism, the attestation payload MUST include a nonce provided
-in the QueryRequest challenge.  The timestamp mechanism uses a timestamp
+in the QueryRequest challenge if the Background Check model is used, or in
+the QueryRequest token if the Passport model is used.  The timestamp mechanism uses a timestamp
 determined via mechanisms outside the TEEP protocol,
 and the challenge is only needed in the QueryRequest message
 if a challenge is needed in generating the attestation payload for reasons other
