@@ -334,6 +334,9 @@ query-request = [
     ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
     ? challenge => bstr .size (8..512),
     ? versions => [ + version ],
+    ? attestation-payload-format => text,
+    ? attestation-payload => bstr,
+    ? suit-reports => [ + bstr ],
     * $$query-request-extensions,
     * $$teep-option-extensions
   },
