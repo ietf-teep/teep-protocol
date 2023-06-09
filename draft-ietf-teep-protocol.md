@@ -458,6 +458,8 @@ query-response = [
   options: {
     ? token => bstr .size (8..64),
     ? selected-teep-cipher-suite => $teep-cipher-suite,
+    ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
+    ? challenge => bstr .size (8..512),
     ? selected-version => version,
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
