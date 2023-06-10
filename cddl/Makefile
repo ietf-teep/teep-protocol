@@ -17,6 +17,7 @@ TEEP_PROTOCOL_CDDL		:= ../draft-ietf-teep-protocol.cddl
 SUIT_ENVELOPE_SHIM_CDDL := suit-envelope-shim.cddl
 SUIT_MANIFEST_CDDL		:= draft-ietf-suit-manifest.cddl
 SUIT_TRUST_DOMAINS_CDDL	:= draft-ietf-suit-trust-domains.cddl
+SUIT_ENCRYPTED_PAYLOADS_CDDL	:= draft-ietf-suit-firmware-encryption.cddl
 SUIT_REPORT_CDDL		:= draft-ietf-suit-report.cddl
 SUIT_MTI_CDDL			:= draft-moran-suit-mti-algorithms.cddl
 COSE_XML			:= rfc-8152-cose.xml
@@ -31,7 +32,7 @@ cat-cddl: $(CONCATENATED_CDDL)
 $(CONCATENATED_CDDL): $(TEEP_PROTOCOL_CDDL) $(CONCATENATED_UNTAGGED_SUIT_CDDL)
 	cat $^ > $@
 
-$(CONCATENATED_UNTAGGED_SUIT_CDDL): $(SUIT_ENVELOPE_SHIM_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL) $(SUIT_MTI_CDDL) $(COSE_CDDL)
+$(CONCATENATED_UNTAGGED_SUIT_CDDL): $(SUIT_ENVELOPE_SHIM_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL) $(SUIT_MTI_CDDL) $(SUIT_ENCRYPTED_PAYLOADS_CDDL) $(COSE_CDDL)
 	cat $^ > $@
 
 $(TEEP_MESSAGES) $(SUIT_MANIFESTS):
