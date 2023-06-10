@@ -2,7 +2,7 @@
 ; This cddl file is Auto-generated file from md file.
 ; Edit the md file and run make for generating this cddl file.
 ; Please do not forget to commit and push this cddl file to git repo
-; every time you have revised md file.
+; every time you have revised the md file.
 
 teep-message = $teep-message-type .within teep-message-framework
 
@@ -84,8 +84,8 @@ cose-alg-es256 = -7  ; ECDSA w/ SHA-256
 cose-alg-eddsa = -8  ; EdDSA
 
 ; suit-cose-profile
-$suit-cose-profile /= suit-sha256-es256-hpke-a128gcm
-$suit-cose-profile /= suit-sha256-eddsa-hpke-a128gcm
+$suit-cose-profile /= suit-sha256-es256-ecdh-a128gcm
+$suit-cose-profile /= suit-sha256-eddsa-ecdh-a128gcm
 
 ; freshness-mechanisms
 FRESHNESS_NONCE = 0
