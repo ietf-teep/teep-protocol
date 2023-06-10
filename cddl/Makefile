@@ -8,8 +8,7 @@ TEEP_MESSAGES := \
 SUIT_MANIFESTS := \
 		../cbor/suit_uri.diag.bin \
 		../cbor/suit_integrated.diag.bin \
-		../cbor/suit_personalization.diag.bin \
-		../cbor/suit_unlink.diag.bin
+		../cbor/suit_personalization.diag.bin
 
 CONCATENATED_CDDL		:= check-draft-ietf-teep-protocol.cddl
 CONCATENATED_UNTAGGED_SUIT_CDDL	:= check-draft-ietf-suit-manifest.cddl
