@@ -46,10 +46,9 @@ $(SUIT_TRUST_DOMAINS_CDDL):
 
 $(SUIT_REPORT_CDDL):
 	curl https://raw.githubusercontent.com/suit-wg/suit-report/main/draft-ietf-suit-report.cddl -o $@
-	# cat $^ | sed -e 's/suit-record-properties     => SUIT_Parameters/suit-record-properties     => \{ \+ SUIT_Parameters \}/g' -e 's/^  \+ SUIT_Param/  * SUIT_Param/' > $@
 
 $(SUIT_MTI_CDDL):
-	curl https://raw.githubusercontent.com/bremoran/suit-mti/c9a5a3105e94e71f73841e7794995d20aaad821e/draft-moran-suit-mti-algorithms.cddl -o $@
+	curl https://raw.githubusercontent.com/bremoran/suit-mti/main/draft-moran-suit-mti-algorithms.cddl -o $@
 
 $(COSE_XML):
 	curl https://www.ietf.org/archive/id/draft-ietf-cose-msg-24.xml -o $@
