@@ -19,8 +19,8 @@
    82               # array(2) / supported-suit-cose-profiles /
       82            # array(2) / suit-sha256-es256-ecdh-a128gcm /
          26         # negative(6) / -7 = cose-alg-es256 /
-         01         # unsigned(1) / 1 = A128GCM */
+         01         # unsigned(1) / 1 = A128GCM /
       82            # array(2) / suit-sha256-eddsa-ecdh-a128gcm /
          27         # negative(7) / -8 = cose-alg-eddsa /
-         01         # unsigned(1) / 1 = A128GCM */
+         01         # unsigned(1) / 1 = A128GCM /
    03               # unsigned(3) / attestation | trusted-components /
