@@ -9,8 +9,7 @@ DIAG_TEEP_MESSAGES := \
 DIAG_SUIT_MANIFESTS := \
 		suit_uri.diag.txt \
 		suit_integrated.diag.txt \
-		suit_personalization.diag.txt \
-		suit_unlink.diag.txt
+		suit_personalization.diag.txt
 
 DIAG_FILES := $(DIAG_TEEP_MESSAGES) $(DIAG_SUIT_MANIFESTS)
 HEX_FILES := $(DIAG_TEEP_MESSAGES:.diag.txt=.hex.txt) $(DIAG_SUIT_MANIFESTS:.diag.txt=.hex.txt)
