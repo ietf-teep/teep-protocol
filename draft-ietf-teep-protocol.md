@@ -441,6 +441,36 @@ versions
   If this field is not present, it is to be treated the same as if
   it contained only version 0.
 
+attestation-payload-format
+: The attestation-payload-format parameter indicates the IANA Media Type of the
+  attestation-payload parameter, where media type parameters are permitted after
+  the media type.  For protocol version 0, the absence of this parameter indicates that
+  the format is "application/eat+cwt; eat_profile=https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-12" (see {{I-D.ietf-rats-eat-media-type}}
+  for further discussion).
+  (RFC-editor: upon RFC publication, replace URI above with
+  "https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
+  of this document.)
+  It MUST be present if the attestation-payload parameter
+  is present and the format is not an EAT in CWT format with the profile
+  defined below in {{eat}}.
+
+attestation-payload
+: The attestation-payload parameter contains Evidence or an Attestation Result
+  of the TAM for the TEEP Agent to perform attestation of the TAM.
+  If the attestation-payload-format parameter is absent,
+  the attestation payload contained in this parameter MUST be
+  an Entity Attestation Token following the encoding
+  defined in {{I-D.ietf-rats-eat}}.  See {{attestation}} for further discussion.
+
+suit-reports
+: If present, the suit-reports parameter contains a set of "boot" (including
+  starting an executable in an OS context) time SUIT Reports of the TAM
+  as defined by SUIT_Report in Section 4 of {{I-D.ietf-suit-report}},
+  encoded using COSE as discussed in {{eat-suit-ciphersuite}}.
+  SUIT Reports can be useful in QueryRequest messages to
+  pass information to the TEEP Agent without depending on a Verifier including
+  the relevant information in Attestation Results.
+
 ## QueryResponse Message {#query-response}
 
 The QueryResponse message is the successful response by the TEEP Agent after
