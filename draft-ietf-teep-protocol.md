@@ -320,7 +320,7 @@ the following features are supported:
  - Request for attestation information,
  - Listing supported extensions,
  - Querying installed Trusted Components, and
- - Listing supported SUIT commands.
+ - Request for logging information of SUIT Report.
 
 Like other TEEP messages, the QueryRequest message is
 signed, and the relevant CDDL snippet is shown below.
