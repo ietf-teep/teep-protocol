@@ -1082,6 +1082,7 @@ ERR_UNSUPPORTED_FRESHNESS_MECHANISMS = 3
 ERR_UNSUPPORTED_MSG_VERSION = 4
 ERR_UNSUPPORTED_CIPHER_SUITES = 5
 ERR_BAD_CERTIFICATE = 6
+ERR_ATTESTATION_REQUIRED = 7
 ERR_CERTIFICATE_EXPIRED = 9
 ERR_TEMPORARY_ERROR = 10
 ERR_MANIFEST_PROCESSING_FAILED = 17
@@ -1176,6 +1177,11 @@ ERR_BAD_CERTIFICATE (6)
   in the error message.  For example, the certificate was of an
   unsupported type, or the certificate was revoked by its signer.
   A TAM receiving this error might attempt to use an alternate certificate.
+
+ERR_ATTESTATION_REQUIRED (7)
+: Indicates attestation of the TAM is required at the TEEP Agent side, and to request
+  additional round of QueryRequest and Query Response to be performed before
+  proceeding to update message.
 
 ERR_CERTIFICATE_EXPIRED (9)
 : A certificate has expired or is not currently
