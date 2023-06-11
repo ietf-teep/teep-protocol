@@ -452,7 +452,7 @@ attestation-payload-format
   of this document.)
   This parameter MUST be present only when the QuearyResponse returned from the
   TEEP Agent with ERR_ATTESTATION_REQUIRED, the TAM MUST send another QearyRequest
-  with the attestation-payload.
+  with the attestation-payload before advancing to an Update message.
   It MUST be present if the attestation-payload parameter
   is present and the format is not an EAT in CWT format with the profile
   defined below in {{eat}}.
