@@ -1297,6 +1297,7 @@ have-binary = 18
 suit-reports = 19
 token = 20
 supported-freshness-mechanisms = 21
+err-code = 23
 ~~~~
 
 # Behavior Specification
