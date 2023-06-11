@@ -1,0 +1,5 @@
+suit-parameter-encryption-info = 19
+$$SUIT_Parameters //= (
+    suit-parameter-encryption-info => COSE_Encryption_Info)
+
+COSE_Encryption_Info = bstr .cbor COSE_Encrypt_Tagged

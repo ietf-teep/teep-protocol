@@ -38,7 +38,7 @@
         / directive-set-component-index / 12, 0,
         / directive-override-parameters / 20, {
           / parameter-vendor-identifier / 1: h'C0DDD5F15243566087DB4F5B0AA26C2F',
-          / parameter-class-identifier / 2: h'DB42F7093D8C55BAA8C5265FC5820F4E',
+          / parameter-class-identifier / 2: h'DB42F7093D8C55BAA8C5265FC5820F4E'
         },
         / condition-vendor-identifier / 1, 15,
         / condition-class-identifier / 2, 15
