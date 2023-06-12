@@ -1166,7 +1166,7 @@ ERR_BAD_CERTIFICATE (6)
   A TAM receiving this error might attempt to use an alternate certificate.
 
 ERR_ATTESTATION_REQUIRED (7)
-: Indicates attestation of the TAM is required at the TEEP Agent side, and to request
+: Indicates attestation of the TAM is required by the TEEP Agent side. This will lead to an
   additional round of QueryRequest and QueryResponse to be performed before
   proceeding to update message.
 
