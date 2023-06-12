@@ -332,7 +332,7 @@ query-request = [
   options: {
     ? token => bstr .size (8..64),
     ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
-    ? challenge => bstr .size (8..512),
+    ? challengei-agent => bstr .size (8..512),
     ? versions => [ + version ],
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
@@ -422,18 +422,18 @@ supported-freshness-mechanisms
   If this parameter is absent, it means only the nonce mechanism is supported.
   It MUST be absent if the attestation bit is clear.
 
-challenge
-: The challenge field is an optional parameter used for ensuring the freshness of
+challenge-agent
+: The challenge-agent field is an optional parameter used for ensuring the freshness of
   attestation evidence returned with a QueryResponse message. It MUST be absent if
   the attestation bit is clear or the Passport model is used (since the token is used instead in those cases).
-  When a challenge is
+  When a challenge-agent is
   provided in the QueryRequest and Evidence in the form of an EAT is returned with a QueryResponse message
-  then the challenge contained in this request MUST be used to generate the EAT,
-  by copying the challenge into the eat_nonce in the EAT profile {{eat}} if
+  then the challenge-agent contained in this request MUST be used to generate the EAT,
+  by copying the challenge-agent into the eat_nonce in the EAT profile {{eat}} if
   using the Nonce freshness mechanism.  For more details see {{freshness-mechanisms}}.
 
   If any format other than EAT is used, it is up to that
-  format to define the use of the challenge field.
+  format to define the use of the challenge-agent field.
 
 versions
 : The versions parameter enumerates the TEEP protocol version(s) supported by the TAM.
@@ -1304,7 +1304,7 @@ This specification uses the following mapping:
 
 | Name                             | Label |
 | supported-teep-cipher-suites     |     1 |
-| challenge                        |     2 |
+| challenge-agent                  |     2 |
 | versions                         |     3 |
 | supported-suit-cose-profiles     |     4 |
 | selected-teep-cipher-suite       |     5 |
@@ -1324,12 +1324,13 @@ This specification uses the following mapping:
 | suit-reports                     |    19 |
 | token                            |    20 |
 | supported-freshness-mechanisms   |    21 |
+| challenge-tam                    |    22 |
 | err-code                         |    23 |
 
 ~~~~ cddl-label
 ; labels of mapkey for teep message parameters, uint (0..23)
 supported-teep-cipher-suites = 1
-challenge = 2
+challenge-agent = 2
 versions = 3
 supported-suit-cose-profiles = 4
 selected-teep-cipher-suite = 5
@@ -1349,6 +1350,7 @@ have-binary = 18
 suit-reports = 19
 token = 20
 supported-freshness-mechanisms = 21
+challenge-tam = 2
 err-code = 23
 ~~~~
 
