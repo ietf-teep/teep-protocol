@@ -450,7 +450,7 @@ attestation-payload-format
   (RFC-editor: upon RFC publication, replace URI above with
   "https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
   of this document.)
-  This parameter MUST be present only when the QuearyResponse returned from the
+  This parameter MUST be present only when the QueryResponse returned from the
   TEEP Agent with ERR_ATTESTATION_REQUIRED, the TAM MUST send another QearyRequest
   with the attestation-payload before advancing to an Update message.
   It MUST be present if the attestation-payload parameter
