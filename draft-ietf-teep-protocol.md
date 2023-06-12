@@ -615,7 +615,7 @@ tc-manifest-sequence-number
   the Trusted Component.  If not present, indicates that any sequence number will do.
 
 have-binary
-: If present with a value of true, indicates that the TEEP agent already has
+: If present with a value of true, indicates that the TEEP Agent already has
   the Trusted Component binary and only needs an Update message with a SUIT manifest
   that authorizes installing it.  If have-binary is true, the
   tc-manifest-sequence-number field MUST be present.
