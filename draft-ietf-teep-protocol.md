@@ -332,7 +332,7 @@ query-request = [
   options: {
     ? token => bstr .size (8..64),
     ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
-    ? challengei-agent => bstr .size (8..512),
+    ? challenge-agent => bstr .size (8..512),
     ? versions => [ + version ],
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
