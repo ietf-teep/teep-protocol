@@ -1452,7 +1452,7 @@ and drops the message if it does not match.  Otherwise, the TAM handles
 the update in any implementation specific way, such as updating any locally
 cached information about the state of the TEEP Agent, or logging the results.
 
-If the TAM received an Error message with ERR_ATTESTATION_REQUIRED, it indicates that the TEEP Agent is requesting attestation of the TAM.
+If the TAM received an Error message with the error code ERR_ATTESTATION_REQUIRED, it indicates that the TEEP Agent is requesting attestation of the TAM.
 In this case, the TAM MUST return another QueryRequest containing attestation-payload and/or suit-report to the TEEP Agent before advancing to an Update message.
 
 If any other Error message is received, the TAM can handle it in any implementation
