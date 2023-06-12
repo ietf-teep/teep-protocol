@@ -1498,7 +1498,7 @@ When a QueryRequest message is received, the Agent responds with a
 QueryResponse message if all fields were understood, or an Error message
 if any error was encountered.
 
-If the TEEP Agent requires attesting the TAM, the TEEP Agent MUST send Error Message with ERR_ATTESTATION_REQUIRED supplying supported-freshness-mechanisms or challenge-tam.
+If the TEEP Agent requires attesting the TAM, the TEEP Agent MUST send the Error Message with the error code ERR_ATTESTATION_REQUIRED supplying the supported-freshness-mechanisms or the challenge-tam.
 
 When an Update message is received, the Agent attempts to unlink any
 SUIT manifests listed in the unneeded-manifest-list field of the message,
