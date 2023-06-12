@@ -461,7 +461,7 @@ attestation-payload
 : The attestation-payload parameter contains Evidence or an Attestation Result
   of the TAM for the TEEP Agent to perform attestation of the TAM.
   This parameter MUST be present only when the QuearyResponse returned from the
-  TEEP Agent with ERR_ATTESTATION_REQUIRED, the TAM MUST send another QearyRequest
+  TEEP Agent with ERR_ATTESTATION_REQUIRED, the TAM MUST send another QueryRequest
   with the attestation-payload.
   If the attestation-payload-format parameter is absent,
   the attestation payload contained in this parameter MUST be
