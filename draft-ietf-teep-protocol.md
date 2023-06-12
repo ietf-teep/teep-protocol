@@ -1094,7 +1094,7 @@ challenge-tam
   attestation evidence included with a QueryRequest message.
   When a challenge-tam is provided in the Error message and Evidence in the form of an EAT is
   returned with a QueryRequest message then the challenge-tam contained in the Error message
-  MUST be used to generate the EAT, by copying the challenge-tam into the eat_nonce in the
+  MUST be used to generate the EAT, by copying the challenge-tam value into the eat_nonce claim, as described in the
   EAT profile {{eat}} if using the Nonce freshness mechanism.
   For more details see {{freshness-mechanisms}}.
 
