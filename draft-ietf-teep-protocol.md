@@ -450,9 +450,6 @@ attestation-payload-format
   (RFC-editor: upon RFC publication, replace URI above with
   "https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
   of this document.)
-  This parameter MUST be present only when the QueryResponse returned from the
-  TEEP Agent with ERR_ATTESTATION_REQUIRED, the TAM MUST send another QearyRequest
-  with the attestation-payload before advancing to an Update message.
   It MUST be present if the attestation-payload parameter
   is present and the format is not an EAT in CWT format with the profile
   defined below in {{eat}}.
@@ -460,9 +457,6 @@ attestation-payload-format
 attestation-payload
 : The attestation-payload parameter contains Evidence or an Attestation Result
   of the TAM for the TEEP Agent to perform attestation of the TAM.
-  This parameter MUST be present only when the QuearyResponse returned from the
-  TEEP Agent with ERR_ATTESTATION_REQUIRED, the TAM MUST send another QueryRequest
-  with the attestation-payload.
   If the attestation-payload-format parameter is absent,
   the attestation payload contained in this parameter MUST be
   an Entity Attestation Token following the encoding
@@ -1047,6 +1041,7 @@ teep-error = [
      ? err-msg => text .size (1..128),
      ? supported-teep-cipher-suites => [ + $teep-cipher-suite ],
      ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
+     ? challenge-tam => bstr .size (8..512),
      ? versions => [ + version ],
      ? suit-reports => [ + SUIT_Report ],
      * $$teep-error-extensions,
@@ -1093,6 +1088,18 @@ supported-freshness-mechanisms
 : The supported-freshness-mechanisms parameter lists the freshness mechanism(s) supported by the TEEP Agent.
   Details about the encoding can be found in {{freshness-mechanisms}}.
   This otherwise optional parameter MUST be returned if err-code is ERR_UNSUPPORTED_FRESHNESS_MECHANISMS.
+
+challenge-tam
+: The challenge-tam field is an optional parameter used for ensuring the freshness of
+  attestation evidence included with a QueryRequest message.
+  When a challenge-tam is provided in the Error message and Evidence in the form of an EAT is
+  returned with a QueryRequest message then the challenge-tam contained in the Error message
+  MUST be used to generate the EAT, by copying the challenge-tam into the eat_nonce in the
+  EAT profile {{eat}} if using the Nonce freshness mechanism.
+  For more details see {{freshness-mechanisms}}.
+
+  If any format other than EAT is used, it is up to that
+  format to define the use of the challenge-tam field.
 
 versions
 : The versions parameter enumerates the TEEP protocol version(s) supported by the TEEP
@@ -1444,7 +1451,7 @@ the update in any implementation specific way, such as updating any locally
 cached information about the state of the TEEP Agent, or logging the results.
 
 If the TAM received an Error message with ERR_ATTESTATION_REQUIRED, it indicates that the TEEP Agent is requesting attestation of the TAM.
-In this case, the TAM MUST return another QueryRequest containing attestation-payload and/or suit-report to the TEEP Agent.
+In this case, the TAM MUST return another QueryRequest containing attestation-payload and/or suit-report to the TEEP Agent before advancing to an Update message.
 
 If any other Error message is received, the TAM can handle it in any implementation
 specific way, but {{error-message-def}} provides recommendations for such handling.
