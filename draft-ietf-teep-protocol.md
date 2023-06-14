@@ -67,7 +67,7 @@ author:
  -
   ins: A. Tsukamoto
   name: Akira Tsukamoto
-  org: ''
+  org: ALAXALA Networks Corp.
   street: ''
   city: ''
   region: ''
