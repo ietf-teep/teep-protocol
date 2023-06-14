@@ -15,10 +15,6 @@
           / suit-digest-bytes / h'a7fd6593eac32eb4be578278e6540c5c09cfd7d4d234973054833b2b93030609'
             / SHA256 digest of tc binary /
         ] >>
-      },
-      {
-        / system-component-id / 0 : [ h'1102030405060708090A0B0C0D0E0F' ],
-        / suit-parameter-version / 28 : [1, 0, 0] / ver 1.0.0 /
       }
     ]
   }

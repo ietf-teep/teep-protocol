@@ -15,7 +15,7 @@
       40            # bytes(0)
                     # ""
       08            # unsigned(8) / tc-list: /
-      82            # array(2)
+      81            # array(1)
          A2         # map(2)
             00      # unsigned(0) / system-component-id: /
             81      # array(1)
@@ -24,13 +24,3 @@
             03      # unsigned(3) / suit-parameter-image-digest: /
             58 24   # bytes(36)
                822F5820A7FD6593EAC32EB4BE578278E6540C5C09CFD7D4D234973054833B2B93030609
-         A2         # map(2)
-            00      # unsigned(0) / system-component-id: /
-            81      # array(1)
-               4F   # bytes(15)
-                  1102030405060708090A0B0C0D0E0F
-            18 1C   # unsigned(28) / suit-parameter-version: /
-            83      # array(3)
-               01   # unsigned(1)
-               00   # unsigned(0)
-               00   # unsigned(0)
