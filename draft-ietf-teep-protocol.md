@@ -314,13 +314,15 @@ information from the TEEP Agent, such as
 the features supported by the TEEP Agent, including
 cipher suites and protocol versions. Additionally,
 the TAM can selectively request data items from the
-TEEP Agent via the request parameter. Currently,
+TEEP Agent via sending the data-item-requested parameter. Currently,
 the following features are supported:
 
- - Request for attestation information,
+ - Request for attestation information of the TEEP Agent,
  - Listing supported extensions,
  - Querying installed Trusted Components, and
  - Request for logging information in SUIT Reports.
+
+If the TAM received an Error message with ERR_ATTESTATION_REQUIRED, it indicates that the TEEP Agent is requesting attestation information of the TAM in the attestation-payload and/or suit-report.
 
 Like other TEEP messages, the QueryRequest message is
 signed, and the relevant CDDL snippet is shown below.
