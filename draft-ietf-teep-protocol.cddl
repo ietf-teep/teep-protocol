@@ -34,8 +34,11 @@ query-request = [
   options: {
     ? token => bstr .size (8..64),
     ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
-    ? challenge => bstr .size (8..512),
+    ? challenge-agent => bstr .size (8..512),
     ? versions => [ + version ],
+    ? attestation-payload-format => text,
+    ? attestation-payload => bstr,
+    ? suit-reports => [ + bstr ],
     * $$query-request-extensions,
     * $$teep-option-extensions
   },
@@ -151,6 +154,7 @@ teep-error = [
      ? err-msg => text .size (1..128),
      ? supported-teep-cipher-suites => [ + $teep-cipher-suite ],
      ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
+     ? challenge-tam => bstr .size (8..512),
      ? versions => [ + version ],
      ? suit-reports => [ + SUIT_Report ],
      * $$teep-error-extensions,
@@ -166,13 +170,14 @@ ERR_UNSUPPORTED_FRESHNESS_MECHANISMS = 3
 ERR_UNSUPPORTED_MSG_VERSION = 4
 ERR_UNSUPPORTED_CIPHER_SUITES = 5
 ERR_BAD_CERTIFICATE = 6
+ERR_ATTESTATION_REQUIRED = 7
 ERR_CERTIFICATE_EXPIRED = 9
 ERR_TEMPORARY_ERROR = 10
 ERR_MANIFEST_PROCESSING_FAILED = 17
 
 ; labels of mapkey for teep message parameters, uint (0..23)
 supported-teep-cipher-suites = 1
-challenge = 2
+challenge-agent = 2
 versions = 3
 supported-suit-cose-profiles = 4
 selected-teep-cipher-suite = 5
@@ -192,4 +197,5 @@ have-binary = 18
 suit-reports = 19
 token = 20
 supported-freshness-mechanisms = 21
+challenge-tam = 22
 err-code = 23
