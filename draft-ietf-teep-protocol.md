@@ -82,9 +82,7 @@ normative:
   RFC8747:
   RFC8949:
   RFC9052:
-  RFC9334:
   I-D.ietf-rats-eat:
-  I-D.ietf-rats-reference-interaction-models:
   I-D.ietf-suit-manifest:
   I-D.ietf-suit-mti:
   I-D.ietf-suit-trust-domains:
@@ -97,12 +95,14 @@ normative:
 informative:
   I-D.ietf-suit-firmware-encryption: 
   I-D.ietf-rats-ar4si:
+  I-D.ietf-rats-reference-interaction-models:
   I-D.ietf-teep-architecture: 
   I-D.ietf-rats-eat-media-type:
   I-D.ietf-rats-concise-ta-stores:
   RFC8610: 
   RFC8915:
   RFC5934:
+  RFC9334:
 
 --- abstract
 
