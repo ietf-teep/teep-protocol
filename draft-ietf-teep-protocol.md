@@ -334,7 +334,7 @@ query-request = [
   options: {
     ? token => bstr .size (8..64),
     ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
-    ? challenge-agent => bstr .size (8..512),
+    ? challenge => bstr .size (8..512),
     ? versions => [ + version ],
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
@@ -424,18 +424,18 @@ supported-freshness-mechanisms
   If this parameter is absent, it means only the nonce mechanism is supported.
   It MUST be absent if the attestation bit is clear.
 
-challenge-agent
-: The challenge-agent field is an optional parameter used for ensuring the freshness of
+challenge
+: The challenge field is an optional parameter used for ensuring the freshness of
   attestation evidence returned with a QueryResponse message. It MUST be absent if
   the attestation bit is clear or the Passport model is used (since the token is used instead in those cases).
-  When a challenge-agent is
+  When a challenge is
   provided in the QueryRequest and Evidence in the form of an EAT is returned with a QueryResponse message
-  then the challenge-agent contained in this request MUST be used to generate the EAT,
-  by copying the challenge-agent into the eat_nonce in the EAT profile {{eat}} if
+  then the challenge contained in this request MUST be used to generate the EAT,
+  by copying the challenge into the eat_nonce in the EAT profile {{eat}} if
   using the Nonce freshness mechanism.  For more details see {{freshness-mechanisms}}.
 
   If any format other than EAT is used, it is up to that
-  format to define the use of the challenge-agent field.
+  format to define the use of the challenge field.
 
 versions
 : The versions parameter enumerates the TEEP protocol version(s) supported by the TAM.
@@ -1043,7 +1043,7 @@ teep-error = [
      ? err-msg => text .size (1..128),
      ? supported-teep-cipher-suites => [ + $teep-cipher-suite ],
      ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
-     ? challenge-tam => bstr .size (8..512),
+     ? challenge => bstr .size (8..512),
      ? versions => [ + version ],
      ? suit-reports => [ + SUIT_Report ],
      * $$teep-error-extensions,
@@ -1091,17 +1091,17 @@ supported-freshness-mechanisms
   Details about the encoding can be found in {{freshness-mechanisms}}.
   This otherwise optional parameter MUST be returned if err-code is ERR_UNSUPPORTED_FRESHNESS_MECHANISMS.
 
-challenge-tam
-: The challenge-tam field is an optional parameter used for ensuring the freshness of
+challenge
+: The challenge field is an optional parameter used for ensuring the freshness of
   attestation evidence included with a QueryRequest message.
-  When a challenge-tam is provided in the Error message and Evidence in the form of an EAT is
-  returned with a QueryRequest message then the challenge-tam contained in the Error message
-  MUST be used to generate the EAT, by copying the challenge-tam value into the eat_nonce claim, as described in the
+  When a challenge is provided in the Error message and Evidence in the form of an EAT is
+  returned with a QueryRequest message then the challenge contained in the Error message
+  MUST be used to generate the EAT, by copying the challenge value into the eat_nonce claim, as described in the
   EAT profile {{eat}}, if the nonce-based freshness mechanism is used.
   For more details see {{freshness-mechanisms}}.
 
   If any format other than EAT is used, it is up to that
-  format to define the use of the challenge-tam field.
+  format to define the use of the challenge field.
 
 versions
 : The versions parameter enumerates the TEEP protocol version(s) supported by the TEEP
@@ -1306,7 +1306,7 @@ This specification uses the following mapping:
 
 | Name                             | Label |
 | supported-teep-cipher-suites     |     1 |
-| challenge-agent                  |     2 |
+| challenge                        |     2 |
 | versions                         |     3 |
 | supported-suit-cose-profiles     |     4 |
 | selected-teep-cipher-suite       |     5 |
@@ -1326,13 +1326,12 @@ This specification uses the following mapping:
 | suit-reports                     |    19 |
 | token                            |    20 |
 | supported-freshness-mechanisms   |    21 |
-| challenge-tam                    |    22 |
 | err-code                         |    23 |
 
 ~~~~ cddl-label
 ; labels of mapkey for teep message parameters, uint (0..23)
 supported-teep-cipher-suites = 1
-challenge-agent = 2
+challenge = 2
 versions = 3
 supported-suit-cose-profiles = 4
 selected-teep-cipher-suite = 5
@@ -1352,7 +1351,6 @@ have-binary = 18
 suit-reports = 19
 token = 20
 supported-freshness-mechanisms = 21
-challenge-tam = 22
 err-code = 23
 ~~~~
 
@@ -1500,7 +1498,7 @@ When a QueryRequest message is received, the Agent responds with a
 QueryResponse message if all fields were understood, or an Error message
 if any error was encountered.
 
-If the TEEP Agent requires attesting the TAM, the TEEP Agent MUST send the Error Message with the error code ERR_ATTESTATION_REQUIRED supplying the supported-freshness-mechanisms or the challenge-tam.
+If the TEEP Agent requires attesting the TAM, the TEEP Agent MUST send the Error Message with the error code ERR_ATTESTATION_REQUIRED supplying the supported-freshness-mechanisms or the challenge.
 
 When an Update message is received, the Agent attempts to unlink any
 SUIT manifests listed in the unneeded-manifest-list field of the message,
