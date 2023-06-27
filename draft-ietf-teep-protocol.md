@@ -314,15 +314,13 @@ information from the TEEP Agent, such as
 the features supported by the TEEP Agent, including
 cipher suites and protocol versions. Additionally,
 the TAM can selectively request data items from the
-TEEP Agent via sending the data-item-requested parameter. Currently,
+TEEP Agent by using the data-item-requested parameter. Currently,
 the following features are supported:
 
  - Request for attestation information of the TEEP Agent,
  - Listing supported extensions,
  - Querying installed Trusted Components, and
  - Request for logging information in SUIT Reports.
-
-If the TAM received an Error message with ERR_ATTESTATION_REQUIRED, it indicates that the TEEP Agent is requesting attestation information of the TAM in the attestation-payload and/or suit-report.
 
 Like other TEEP messages, the QueryRequest message is
 signed, and the relevant CDDL snippet is shown below.
@@ -458,7 +456,7 @@ attestation-payload-format
 
 attestation-payload
 : The attestation-payload parameter contains Evidence or an Attestation Result
-  of the TAM for the TEEP Agent to perform attestation of the TAM.
+  for the TEEP Agent to use to perform attestation of the TAM.
   If the attestation-payload-format parameter is absent,
   the attestation payload contained in this parameter MUST be
   an Entity Attestation Token following the encoding
@@ -470,8 +468,8 @@ suit-reports
   as defined by SUIT_Report in Section 4 of {{I-D.ietf-suit-report}},
   encoded using COSE as discussed in {{eat-suit-ciphersuite}}.
   SUIT Reports can be useful in QueryRequest messages to
-  pass information to the TEEP Agent without depending on a Verifier including
-  the relevant information in Attestation Results.
+  pass additional information about the TAM to the TEEP Agent without depending on a Verifier including
+  the relevant information in the TAM's Attestation Results.
 
 ## QueryResponse Message {#query-response}
 
@@ -1168,9 +1166,7 @@ ERR_BAD_CERTIFICATE (6)
   A TAM receiving this error might attempt to use an alternate certificate.
 
 ERR_ATTESTATION_REQUIRED (7)
-: Indicates attestation of the TAM is required by the TEEP Agent side. This will lead to an
-  additional QueryRequest / QueryResponse message pair to be exchanged before
-  proceeding to the Update message.
+: Indicates that the TEEP Agent requires attestation of the TAM.
 
 ERR_CERTIFICATE_EXPIRED (9)
 : A certificate has expired or is not currently
@@ -1233,7 +1229,8 @@ of this document.)
 * Detached EAT Bundle Support: DEB use is permitted.
 * Key Identification: COSE Key ID (kid) is used, where
   the key ID is the hash of a public key (where the public key may be
-  used as a raw public key, or in a certificate).  See {{attestation-result}}
+  used as a raw public key, or in a certificate).  See {{attestation-result-tam}}
+  and {{attestation-result-agent}} for
   discussion on the choice of hash algorithm.
 * Endorsement Identification: Optional, but semantics are the same
   as in Verification Key Identification.
@@ -1392,15 +1389,15 @@ checks whether it contains Evidence or an Attestation Result by inspecting the a
 parameter.  The media type defined in {{eat}} indicates an Attestation Result, though future
 extensions might also indicate other Attestation Result formats in the future. Any other unrecognized
 value indicates Evidence.  If it contains an Attestation Result, processing continues as in
-{{attestation-result}}.
+{{attestation-result-tam}}.
 
 If the QueryResponse is instead determined to contain Evidence, the TAM passes
 the Evidence (via some mechanism out of scope of this document) to an attestation Verifier
 (see {{RFC9334}})
 to determine whether the Agent is in a trustworthy state.  Once the TAM receives an Attestation
-Result from the Verifier, processing continues as in {{attestation-result}}.
+Result from the Verifier, processing continues as in {{attestation-result-tam}}.
 
-#### Handling an Attestation Result {#attestation-result}
+#### Handling an Attestation Result {#attestation-result-tam}
 
 The Attestation Result must first be validated as follows:
 
@@ -1454,8 +1451,8 @@ and drops the message if it does not match.  Otherwise, the TAM handles
 the update in any implementation specific way, such as updating any locally
 cached information about the state of the TEEP Agent, or logging the results.
 
-If the TAM received an Error message with the error code ERR_ATTESTATION_REQUIRED, it indicates that the TEEP Agent is requesting attestation of the TAM.
-In this case, the TAM MUST return another QueryRequest containing attestation-payload and/or suit-report to the TEEP Agent before advancing to an Update message.
+If an Error message is received with the error code ERR_ATTESTATION_REQUIRED, it indicates that the TEEP Agent is requesting attestation of the TAM.
+In this case, the TAM MUST send another QueryRequest with an attestation-payload and optionally a suit-report to the TEEP Agent.
 
 If any other Error message is received, the TAM can handle it in any implementation
 specific way, but {{error-message-def}} provides recommendations for such handling.
@@ -1496,12 +1493,6 @@ as specified in {{validation}}, and if it is not valid then the Agent
 responds with an Error message.
 Otherwise, processing continues as follows based on the type of message.
 
-When a QueryRequest message is received, the Agent responds with a
-QueryResponse message if all fields were understood, or an Error message
-if any error was encountered.
-
-If the TEEP Agent requires attesting the TAM, the TEEP Agent MUST send the Error Message with the error code ERR_ATTESTATION_REQUIRED supplying the supported-freshness-mechanisms or the challenge-tam.
-
 When an Update message is received, the Agent attempts to unlink any
 SUIT manifests listed in the unneeded-manifest-list field of the message,
 and responds with an Error message if any error was encountered.
@@ -1516,6 +1507,46 @@ It is important to note that the
 Update Procedure requires resolving and installing any dependencies
 indicated in the manifest, which may take some time, and the Success
 or Error message is generated only after completing the Update Procedure.
+
+### Handling a QueryRequest Message
+
+When a QueryRequest message is received, it is processed as follows.
+
+If the TEEP Agent requires attesting the TAM and the QueryRequest message did not
+contain an attestation-payload, the TEEP Agent MUST send an Error Message
+with the error code ERR_ATTESTATION_REQUIRED supplying the supported-freshness-mechanisms and challenge if needed.
+Otherwise, processing continues as follows.
+
+If the TEEP Agent requires attesting the TAM and the QueryRequest message did
+contain an an attestation-payload, the TEEP Agent checks whether it contains Evidence or an
+Attestation Result by inspecting the attestation-payload-format
+parameter.  The media type defined in {{eat}} indicates an Attestation Result, though future
+extensions might also indicate other Attestation Result formats in the future. Any other unrecognized
+value indicates Evidence.  If it contains an Attestation Result, processing continues as in
+{{attestation-result-agent}}.
+
+If the QueryRequest is instead determined to contain Evidence, the TEEP Agent passes
+the Evidence (via some mechanism out of scope of this document) to an attestation Verifier
+(see {{RFC9334}})
+to determine whether the TAM is in a trustworthy state.  Once the TEEP Agent receives an Attestation
+Result from the Verifier, processing continues as in {{attestation-result-agent}}.
+
+Once the Attestation Result is handled, or if the TEEP Agent does not require attesting the TAM,
+the Agent responds with a
+QueryResponse message if all fields were understood, or an Error message
+if any error was encountered.
+
+#### Handling an Attestation Result {#attestation-result-agent}
+
+The Attestation Result must first be validated as follows:
+
+1. Verify that the Attestation Result was signed by a Verifier that the TEEP Agent trusts.
+2. Verify that the Attestation Result contains a "cnf" claim (as defined in Section 3.1 of {{RFC8747}}) where
+   the key ID is the hash of the TAM public key used to verify the signature on the TEEP message,
+   and the hash is computed using the Digest Algorithm specified by one of the SUIT profiles
+   supported by the TEEP Agent (SHA-256 for the ones mandated in this document).
+
+   See Sections 3.4 and 6 of {{RFC8747}} for more discussion.
 
 # Cipher Suites {#ciphersuite}
 
@@ -1704,7 +1735,8 @@ Attestation
   An impersonation attack, where one TEEP Agent attempts to use the attestation
   payload of another TEEP Agent, can be prevented using a proof-of-possession
   approach.  The "cnf" claim is mandatory in the EAT profile for EAT for this
-  purpose.  See Section 6 of {{RFC8747}} and {{attestation-result}} of this document
+  purpose.  See Section 6 of {{RFC8747}} and {{attestation-result-tam}} and
+  {{attestation-result-agent}} of this document
   for more discussion.
 
 Trusted Component Binaries
