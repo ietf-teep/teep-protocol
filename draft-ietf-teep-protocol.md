@@ -73,7 +73,7 @@ author:
   region: ''
   code: ''
   country: JP
-  email: akira.tsukamoto@gmail.com
+  email: akira.tsukamoto@alaxala.com
 
 normative:
   RFC9052:
