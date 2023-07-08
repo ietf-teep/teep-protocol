@@ -15,8 +15,8 @@ xml2rfc by Python
 
 Installing required packages on Fedora
 ```
-dnf makecache
-dnf -y install python3-pip git make gem
+sudo dnf makecache
+sudo dnf -y install python3-pip git make gem
 gem install kramdown-rfc2629
 pip3 install xml2rfc
 ```
@@ -25,14 +25,14 @@ Installing required packages on Ubuntu
 ```
 sudo apt-get update
 sudo apt-get -y install python3-pip ruby git curl
-sudo pip3 install xml2rfc
-sudo gem install kramdown-rfc2629
+pip3 install xml2rfc
+gem install kramdown-rfc2629
 ```
 
 Installing cddl tool https://rubygems.org/gems/cddl
 ```
-sudo gem install cddl
-sudo gem update
+gem install cddl
+gem update
 ```
 
 Note that the cddl validation uses this cddl tool, not the one from https://github.com/anweiss/cddl.
