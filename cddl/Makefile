@@ -19,9 +19,9 @@ SUIT_MANIFEST_CDDL		:= draft-ietf-suit-manifest.cddl
 SUIT_TRUST_DOMAINS_CDDL	:= draft-ietf-suit-trust-domains.cddl
 SUIT_ENCRYPTED_PAYLOADS_CDDL	:= draft-ietf-suit-firmware-encryption.cddl
 SUIT_REPORT_CDDL		:= draft-ietf-suit-report.cddl
-SUIT_MTI_CDDL			:= draft-moran-suit-mti-algorithms.cddl
-COSE_XML			:= rfc-8152-cose.xml
-COSE_CDDL			:= rfc-8152-cose.cddl
+SUIT_MTI_CDDL			:= draft-ietf-suit-mti.cddl
+COSE_XML			:= rfc-9052-cose.xml
+COSE_CDDL			:= rfc-9052-cose.cddl
 
 CDDLS				:= $(TEEP_PROTOCOL_CDDL)
 CDDLS				+= $(COSE_CDDL) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL)
@@ -48,10 +48,10 @@ $(SUIT_REPORT_CDDL):
 	curl https://raw.githubusercontent.com/suit-wg/suit-report/main/draft-ietf-suit-report.cddl -o $@
 
 $(SUIT_MTI_CDDL):
-	curl https://raw.githubusercontent.com/bremoran/suit-mti/main/draft-moran-suit-mti-algorithms.cddl -o $@
+	curl https://raw.githubusercontent.com/bremoran/suit-mti/main/draft-ietf-suit-mti.cddl -o $@
 
 $(COSE_XML):
-	curl https://www.ietf.org/archive/id/draft-ietf-cose-msg-24.xml -o $@
+	curl https://www.rfc-editor.org/rfc/rfc9052.xml -o $@
 
 $(COSE_CDDL): $(COSE_XML)
 	sed -n -e '/<artwork type="CDDL"/,/<\/artwork/ p' $< | sed -e '/<artwork type="CDDL"/ d' -e '/<\/artwork/ d' -e '/<\/section>/,/<figure title=""/ d' -e 's/\&gt;/>/g' > $@
