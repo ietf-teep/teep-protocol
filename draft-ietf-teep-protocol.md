@@ -1122,23 +1122,25 @@ This specification defines the following initial error messages:
 
 {: vspace='0'}
 ERR_PERMANENT_ERROR (1)
-: The TEEP
-  request contained incorrect fields or fields that are inconsistent with
+: The received TEEP
+  message contained incorrect fields or fields that are inconsistent with
   other fields.
   For diagnosis purposes it is RECOMMMENDED to identify the failure reason
-  in the error message.
-  A TAM receiving this error might refuse to communicate further with
-  the TEEP Agent for some period of time until it has reason to believe
+  in the error message field.
+  A TAM implementation receiving this error might refuse to communicate further with
+  the problematic TEEP message sender, by silently dropping any TEEP messages
+  received, for some period of time until it has reason to believe
   it is worth trying again, but it should take care not to give up on
   communication.  In contrast, ERR_TEMPORARY_ERROR is an indication
   that a more aggressive retry is warranted.
 
 ERR_UNSUPPORTED_EXTENSION (2)
-: The TEEP Agent does not support an extension included in the request
-  message.
+: The TEEP implementation does not support an extension included in the
+  TEEP message it received.
   For diagnosis purposes it is RECOMMMENDED to identify the unsupported
-  extension in the error message.
-  A TAM receiving this error might retry the request without using extensions.
+  extension in the error message field.
+  A TAM implementation receiving this error might retry sending the last message it sent to
+  the sender of this error, without using any TEEP extensions.
 
 ERR_UNSUPPORTED_FRESHNESS_MECHANISMS (3)
 : The TEEP Agent does not
@@ -1147,8 +1149,8 @@ ERR_UNSUPPORTED_FRESHNESS_MECHANISMS (3)
   set of supported freshness mechanisms in the request message.
 
 ERR_UNSUPPORTED_MSG_VERSION (4)
-: The TEEP Agent does not
-  support the TEEP protocol version indicated in the request message.
+: The TEEP implementation does not
+  support the TEEP protocol version indicated in the received message.
   A TAM receiving this error might retry the request using a different
   TEEP protocol version.
 
@@ -1161,24 +1163,25 @@ ERR_UNSUPPORTED_CIPHER_SUITES (5)
 ERR_BAD_CERTIFICATE (6)
 : Processing of a certificate failed. For diagnosis purposes it is
   RECOMMMENDED to include information about the failing certificate
-  in the error message.  For example, the certificate was of an
+  in the error message field.  For example, the certificate was of an
   unsupported type, or the certificate was revoked by its signer.
-  A TAM receiving this error might attempt to use an alternate certificate.
+  A TEEP implementation receiving this error might attempt to use an alternate certificate.
 
 ERR_ATTESTATION_REQUIRED (7)
-: Indicates that the TEEP Agent requires attestation of the TAM.
+: Indicates that the TEEP implementation sending this error requires
+  attestation of the TEEP imlementation receiving this error.
 
 ERR_CERTIFICATE_EXPIRED (9)
 : A certificate has expired or is not currently
   valid.
-  A TAM receiving this error might attempt to renew its certificate
+  A TEEP implementation receiving this error might attempt to renew its certificate
   before using it again.
 
 ERR_TEMPORARY_ERROR (10)
 : A miscellaneous
-  temporary error, such as a memory allocation failure, occurred while processing the request message.
-  A TAM receiving this error might retry the same request at a later point
-  in time.
+  temporary error, such as a memory allocation failure, occurred while processing the TEEP message.
+  A TEEP implementation receiving this error might retry the last message it sent to the sender
+  of this error at some later point, which is up to the implementation.
 
 ERR_MANIFEST_PROCESSING_FAILED (17)
 : The TEEP Agent encountered one or more manifest processing failures.
@@ -1378,7 +1381,8 @@ identify the devices and/or a device to identify TAMs or Trusted Components.
 If a QueryResponse message is received, the TAM verifies the presence of any parameters
 required based on the data-items-requested in the QueryRequest, and also validates that
 the nonce in any SUIT Report matches the token sent in the QueryRequest message if a token
-was present.  If these requirements are not met, the TAM drops the message.  It may also do
+was present.  If these requirements are not met, the TAM drops the message and sends an
+Update message containing an appropriate err-code and err-msg.  It may also do
 additional implementation specific actions such as logging the results.  If the requirements
 are met, processing continues as follows.
 
@@ -1415,9 +1419,11 @@ need to be installed, updated, or deleted, if any.  There are in typically three
 
 1. Attestation failed. This indicates that the rest of the information in the QueryResponse
    cannot necessarily be trusted, as the TEEP Agent may not be healthy (or at least up to date).
-   In this case, the TAM can attempt to use TEEP to update any Trusted Components (e.g., firmware,
+   In this case, the TAM might attempt to use TEEP to update any Trusted Components (e.g., firmware,
    the TEEP Agent itself, etc.) needed to get the TEEP Agent back into an up-to-date state that
-   would allow attestation to succeed.
+   would allow attestation to succeed.  If the TAM does not have permission to update such components
+   (this can happen if different TAMs manage different components in the device), the TAM instead
+   responds with an Update message containing an appropriate err-msg, and err-code set to ERR_ATTESTATION_REQUIRED.
 2. Attestation succeeded (so the QueryResponse information can be accepted as valid), but the set
    of Trusted Components needs to be updated based on TAM policy changes or requests from the TEEP Agent.
 3. Attestation succeeded, and no changes are needed.
