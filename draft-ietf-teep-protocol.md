@@ -1442,7 +1442,7 @@ hours or longer before the device has sufficient access.  A different
 freshness mechanism, such as timestamps, might be more appropriate in such
 cases.
 
-If no Trusted Components need to be installed, updated, or deleted, but the QueryRequest included
+If no Trusted Components need to be installed, updated, or deleted, but the QueryResponse included
 Evidence, the TAM MAY (e.g., based on attestation-payload-format parameters received from the TEEP Agent
 in the QueryResponse) still send an Update message with no SUIT Manifests, to pass the Attestation
 Result back to the TEEP Agent.
