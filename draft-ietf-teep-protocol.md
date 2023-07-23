@@ -1127,7 +1127,7 @@ ERR_PERMANENT_ERROR (1)
   other fields.
   For diagnosis purposes it is RECOMMMENDED to identify the failure reason
   in the error message field.
-  A TAM implementation receiving this error might refuse to communicate further with
+  A TEEP implementation receiving this error might refuse to communicate further with
   the problematic TEEP message sender, by silently dropping any TEEP messages
   received, for some period of time until it has reason to believe
   it is worth trying again, but it should take care not to give up on
