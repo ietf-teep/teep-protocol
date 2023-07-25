@@ -2,7 +2,7 @@
   / authentication-wrapper / 2: << [
     << [
       / digest-algorithm-id: / -16 / SHA256 /,
-      / digest-bytes: / h'1486078D504B39B2DF4C5FE97915ED579034EC47A177ED0543584287B5DAF480'
+      / digest-bytes: / h'A38549A32276DD4531BAB48D62468D56B4EA65AB4870C27A8CCA82FB269B1838'
     ] >>,
     << / COSE_Sign1_Tagged / 18([
       / protected: / << {
@@ -10,7 +10,7 @@
       } >>,
       / unprotected: / {},
       / payload: / null,
-      / signature: / h'CE9428D5DC5545F01BA5EB6650560611C4ED79BC88E5D28E0223675EB2489CC0C8835EDF0B5F3EB8F9BA674CC84B15EDCA1675DDCE2BEF753457AED2556C6E68'
+      / signature: / h'9DAFC79CD67E4FD65DC86E7CD8E45E1918AD84E247C722BC4B5E653BE194A74C15DE6DF83117675A3C84116F82B6E721D53328122608EB6BED4F141BD1238929'
     ]) >>
   ] >>,
   / manifest / 3: << {
@@ -55,9 +55,9 @@
         / NOTE: image-digest and image-size of plaintext config.json /
         / parameter-image-digest / 3: << [
           / digest-algorithm-id: / -16 / SHA256 /,
-          / digest-bytes: / h'2D62BC330D02054F4028E790A161CF26FCE74AE5E05F6165CCBDF23B27FAF5C7'
+          / digest-bytes: / h'15e9422582f8169a17b63785390a979caa5d3f4c5590b72583c5bcbdf5f17d36'
         ] >>,
-        / image-size / 14: 64
+        / image-size / 14: 62
       },
       / condition-image-match / 3, 15
     ] >>,
@@ -76,13 +76,13 @@
       / directive-set-component-index / 12, 0,
       / directive-override-parameters / 20, {
         / NOTE: encrypted payload and encryption-info /
-        / parameter-content / 18: h'3CF783497F522D2B8D3815D693C38DB95BB6D68457D7C9F95EF12D49119B185204A5BE4787AB62E2F425B046C5B25EE9DD7DB944D03BB2D953A0E654F228CAC48A9656BD3286EC201E07EFC99DA63AF7',
+        / parameter-content / 18: h'CA9F36A934BC33F2C38714441B9213F6CC792F2E049EE79D5F1B0245B8852B596702C3F6393BA28BEC8BAF2700B388697E0844369D311E136E510988D5802CFB753474ED17FCA69B3D7BCD80BC11',
         / parameter-encryption-info / 19: << 96([
           / protected: / << {
             / alg / 1: 1 / AES-GCM-128 /
           } >>,
           / unprotected: / {
-            / IV / 5: h'52AB7D92FE820EB7E73301942A883C57'
+            / IV / 5: h'CE4FE30E50A055530163DD8E12046A17'
           },
           / payload: / null / detached ciphertext /,
           / recipients: / [
@@ -94,11 +94,11 @@
                 / ephemeral key / -1: {
                   / kty / 1: 2 / EC2 /,
                   / crv / -1: 1 / P-256 /,
-                  / x / -2: h'BB36F083210EC0FAEC3753369E2A09E8750814330F7C107C656FF5E1D896B7A6',
-                  / y / -3: h'C4C785E07F1C311DE283F2DE5483AA7431553CC825ED677C714B091239D332D1'
+                  / x / -2: h'D4A25A49FFC3DB6B537455D5A2EA2CF002B660BA094F01D064C6B45230515593',
+                  / y / -3: h'CB95F7A327B0B6DE36877AE62939929F0216A211638A319B1BFD23873107A813'
                 }
               },
-              / payload: / h'AB3DE99E2E4B7B3D349FE76AE262FD2ED77ECAE93FBE1584'
+              / payload: / h'39D4CC8E20930E4EC92ED03707F646ADEEF42BD65020B914'
                 / CEK encrypted with KEK /
             ]
           ]
@@ -107,6 +107,7 @@
 
       / decrypt encrypted firmware /
       / directive-write / 18, 15 / consumes the SUIT_Encryption_Info above /
+      / NOTE: decrypted payload would be ``{"name":"FOO Bar","secret":"0123456789abfcdef0123456789abcd"}'' /
     ] >>,
     / uninstall / 24: << [
       / directive-set-component-index / 12, 1,
