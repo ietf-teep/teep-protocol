@@ -2,7 +2,7 @@
   / authentication-wrapper / 2: << [
     << [
       / digest-algorithm-id: / -16 / SHA256 /,
-      / digest-bytes: / h'17A1803070884E8FAC59EB5A7D94337AEEAE31BFFB4081473E9EFF7261CF0400'
+      / digest-bytes: / h'1486078D504B39B2DF4C5FE97915ED579034EC47A177ED0543584287B5DAF480'
     ] >>,
     << / COSE_Sign1_Tagged / 18([
       / protected: / << {
@@ -10,7 +10,7 @@
       } >>,
       / unprotected: / {},
       / payload: / null,
-      / signature: / h'AB2E76868C39991B68D67FA123843FCF178DBC75B411651DBCCA8F8C28FF903525797EBF1F5BB975FB304BA1E6785E8D43FBC1F25A1FDE95C4ABB41302B0A125'
+      / signature: / h'CE9428D5DC5545F01BA5EB6650560611C4ED79BC88E5D28E0223675EB2489CC0C8835EDF0B5F3EB8F9BA674CC84B15EDCA1675DDCE2BEF753457AED2556C6E68'
     ]) >>
   ] >>,
   / manifest / 3: << {
@@ -55,7 +55,7 @@
         / NOTE: image-digest and image-size of plaintext config.json /
         / parameter-image-digest / 3: << [
           / digest-algorithm-id: / -16 / SHA256 /,
-          / digest-bytes: / h'2d62bc330d02054f4028e790a161cf26fce74ae5e05f6165ccbdf23b27faf5c7'
+          / digest-bytes: / h'2D62BC330D02054F4028E790A161CF26FCE74AE5E05F6165CCBDF23B27FAF5C7'
         ] >>,
         / image-size / 14: 64
       },
@@ -76,30 +76,29 @@
       / directive-set-component-index / 12, 0,
       / directive-override-parameters / 20, {
         / NOTE: encrypted payload and encryption-info /
-        / parameter-content / 18: h'7D753E8052353C7CA7C9EB3A0A162DB553C2FF99506CC93EC283996C90D7ADCB594247FE8AAA1F38ADDB1D32957A4D287C8912D558E2411A88E9F07FBDCD1BD695109CB4578F29CA2FCE3B99A6113F22',
+        / parameter-content / 18: h'3CF783497F522D2B8D3815D693C38DB95BB6D68457D7C9F95EF12D49119B185204A5BE4787AB62E2F425B046C5B25EE9DD7DB944D03BB2D953A0E654F228CAC48A9656BD3286EC201E07EFC99DA63AF7',
         / parameter-encryption-info / 19: << 96([
           / protected: / << {
             / alg / 1: 1 / AES-GCM-128 /
           } >>,
           / unprotected: / {
-            / IV / 5: h'649ACDA4A5EB3663A7F5E8B826C8BE82'
+            / IV / 5: h'52AB7D92FE820EB7E73301942A883C57'
           },
           / payload: / null / detached ciphertext /,
           / recipients: / [
             [
               / protected: / << {
-                / alg / 1: -29 / ECDH-ES + A128KW /,
+                / alg / 1: -29 / ECDH-ES + A128KW /
               } >>,
               / unprotected: / {
                 / ephemeral key / -1: {
                   / kty / 1: 2 / EC2 /,
                   / crv / -1: 1 / P-256 /,
-                  / x / -2: h'358323DD6DF3EDF098213A901950B5F862591AC5FF8E80B0147E646BD57A6C3F',
-                  / y / -3: h'A26CA8BEFBC534A6E18A1BCF257E09133E5ACCDF45BB8C4AE82E9A4CF0FC5212'
-                },
-                / kid / 4: 'kid-3'
+                  / x / -2: h'BB36F083210EC0FAEC3753369E2A09E8750814330F7C107C656FF5E1D896B7A6',
+                  / y / -3: h'C4C785E07F1C311DE283F2DE5483AA7431553CC825ED677C714B091239D332D1'
+                }
               },
-              / payload: / h'D4B473F6F18BAC233F275949F30F0BBBA973C38026C1D01B'
+              / payload: / h'AB3DE99E2E4B7B3D349FE76AE262FD2ED77ECAE93FBE1584'
                 / CEK encrypted with KEK /
             ]
           ]
