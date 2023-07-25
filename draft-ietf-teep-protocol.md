@@ -96,7 +96,7 @@ informative:
   I-D.ietf-suit-firmware-encryption: 
   I-D.ietf-rats-ar4si:
   I-D.ietf-rats-reference-interaction-models:
-  I-D.ietf-teep-architecture: 
+  RFC9397:
   I-D.ietf-rats-eat-media-type:
   I-D.ietf-rats-concise-ta-stores:
   RFC8610: 
