@@ -82,6 +82,7 @@ normative:
   RFC8747:
   RFC8949:
   RFC9052:
+  I-D.ietf-cose-key-thumbprint:
   I-D.ietf-rats-eat:
   I-D.ietf-suit-manifest:
   I-D.ietf-suit-mti:
@@ -1232,7 +1233,8 @@ of this document.)
 * Detached EAT Bundle Support: DEB use is permitted.
 * Key Identification: COSE Key ID (kid) is used, where
   the key ID is the hash of a public key (where the public key may be
-  used as a raw public key, or in a certificate).  See {{attestation-result-tam}}
+  used as a raw public key, or in a certificate) as specified in
+  {{I-D.ietf-cose-key-thumbprint}}.  See {{attestation-result-tam}}
   and {{attestation-result-agent}} for
   discussion on the choice of hash algorithm.
 * Endorsement Identification: Optional, but semantics are the same
