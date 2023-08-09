@@ -1789,8 +1789,8 @@ Replay Protection
   If non-attested QueryRequest messages are replayed, the TEEP Agent will generate
   QueryResponse or Error messages, but the REE can already conduct Denial of Service
   attacks against the TEE and/or the TAM even without the TEEP protocol.
-  QueryResponse messages have replay protection via attestation freshness mechanism or (if
-  attestation is not used) the token field in the message.
+  QueryResponse messages have replay protection via attestation freshness mechanism,
+  or the token field in the message if attestation is not used.
   Update messages have replay protection via the suit-manifest-sequence-number
   (see Section 8.4.2 of {{I-D.ietf-suit-manifest}}).
   Error and Success messages have replay protection via SUIT Reports and/or the token
