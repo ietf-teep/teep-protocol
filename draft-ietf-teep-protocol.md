@@ -131,7 +131,7 @@ This document specifies the protocol for communicating between a TAM
 and a TEEP Agent.
 
 The Trusted Execution Environment Provisioning (TEEP) architecture
-document {{I-D.ietf-teep-architecture}} provides design
+document {{RFC9397}} provides design
 guidance and introduces the
 necessary terminology.
 
@@ -140,7 +140,7 @@ necessary terminology.
 
 {::boilerplate bcp14}
 
-This specification re-uses the terminology defined in {{I-D.ietf-teep-architecture}}.
+This specification re-uses the terminology defined in {{RFC9397}}.
 
 As explained in Section 4.4 of that document, the TEEP protocol treats
 each Trusted Application (TA), any dependencies the TA has, and personalization data as separate
@@ -283,7 +283,7 @@ To create a TEEP message, the following steps are performed.
 ### Validating a TEEP Message {#validation}
 
 When TEEP message is received (see the ProcessTeepMessage conceptual API
-defined in {{I-D.ietf-teep-architecture}} section 6.2.1),
+defined in {{RFC9397}} section 6.2.1),
 the following validation steps are performed. If any of
 the listed steps fail, then the TEEP message MUST be rejected.
 
@@ -585,7 +585,7 @@ requested-tc-list
   Component as a dependency.  Requested Trusted Components are expressed in
   the form of requested-tc-info objects.
   A TEEP Agent can get this information from the RequestTA conceptual API
-  defined in {{I-D.ietf-teep-architecture}} section 6.2.1.
+  defined in {{RFC9397}} section 6.2.1.
 
 unneeded-manifest-list
 : The unneeded-manifest-list parameter enumerates the SUIT manifests whose components are
@@ -596,7 +596,7 @@ unneeded-manifest-list
   itself, which is different from the Component ID of a component installed by the manifest,
   see {{I-D.ietf-suit-trust-domains}} for more discussion).
   A TEEP Agent can get this information from the UnrequestTA conceptual API
-  defined in {{I-D.ietf-teep-architecture}} section 6.2.1.
+  defined in {{RFC9397}} section 6.2.1.
 
 ext-list
 : The ext-list parameter lists the supported extensions. This document does not
@@ -623,7 +623,7 @@ have-binary
 
 ### Evidence and Attestation Results {#attestation}
 
-Section 7 of {{I-D.ietf-teep-architecture}} lists information that may appear
+Section 7 of {{RFC9397}} lists information that may appear
 in Evidence depending on the circumstance.  However, the Evidence is
 opaque to the TEEP protocol and there are no formal requirements on the contents
 of Evidence.
@@ -631,7 +631,7 @@ of Evidence.
 TAMs however consume Attestation Results and do need enough information therein to
 make decisions on how to remediate a TEE that is out of compliance, or update a TEE
 that is requesting an authorized change.  To do so, the information in
-Section 7 of {{I-D.ietf-teep-architecture}} is often required depending on the policy.
+Section 7 of {{RFC9397}} is often required depending on the policy.
 
 Attestation Results SHOULD use Entity Attestation Tokens (EATs).  Use of any other
 format, such as a widely implemented format for a specific processor vendor, is
@@ -784,7 +784,7 @@ Trusted Component to actually run, so the manifest signature could be
 checked at install time or load (or run) time or both, and this checking is
 done by the TEE independent of whether TEEP is used or some other update
 mechanism.
-See section 5 of {{I-D.ietf-teep-architecture}} for further discussion.
+See section 5 of {{RFC9397}} for further discussion.
 
 
 The Update Message has a SUIT_Envelope containing SUIT manifests. Following are some example scenarios using SUIT manifests in the Update Message.
@@ -1359,7 +1359,7 @@ err-code = 23
 # Behavior Specification
 
 Behavior is specified in terms of the conceptual APIs defined in
-section 6.2.1 of {{I-D.ietf-teep-architecture}}.
+section 6.2.1 of {{RFC9397}}.
 
 ## TAM Behavior {#tam}
 
@@ -1627,12 +1627,12 @@ with COSE_Sign or other COSE types in additional cipher suites.
 Any cipher suites without confidentiality protection can only be added if the
 associated specification includes a discussion of security considerations and
 applicability, since manifests may carry sensitive information. For example,
-Section 6 of {{I-D.ietf-teep-architecture}} permits implementations that
+Section 6 of {{RFC9397}} permits implementations that
 terminate transport security inside the TEE and if the transport security
 provides confidentiality then additional encryption might not be needed in
 the manifest for some use cases. For most use cases, however, manifest
 confidentiality will be needed to protect sensitive fields from the TAM as
-discussed in Section 9.8 of {{I-D.ietf-teep-architecture}}.
+discussed in Section 9.8 of {{RFC9397}}.
 
 The cipher suites defined above do not do encryption at the TEEP layer, but
 permit encryption of the SUIT payload using a mechanism such as {{I-D.ietf-suit-firmware-encryption}}.
@@ -1665,7 +1665,7 @@ in this specification. See Section 8.5.5 and Appendix B of {{RFC9052}} for more 
 Section 6.2 of that document.)
 
 To perform encryption with ECDH the TEEP Agent needs to be in possession of the public
-key of the recipient, i.e., the TAM. See Section 5 of {{I-D.ietf-teep-architecture}}
+key of the recipient, i.e., the TAM. See Section 5 of {{RFC9397}}
 for more discussion of TAM keys used by the TEEP Agent.
 
 This specification defines cipher suites for confidentiality protection of EATs and
@@ -1768,7 +1768,7 @@ Personalization Data
   is used.
 
 TEEP Broker
-: As discussed in section 6 of {{I-D.ietf-teep-architecture}},
+: As discussed in section 6 of {{RFC9397}},
   the TEEP protocol typically relies on a TEEP Broker to relay messages
   between the TAM and the TEEP Agent.  When the TEEP Broker is
   compromised it can drop messages, delay the delivery of messages,
@@ -1778,6 +1778,23 @@ TEEP Broker
   version of a Trusted Component. Information in the manifest ensures that TEEP
   Agents are protected against such downgrade attacks based on
   features offered by the manifest itself.
+
+Replay Protection
+: TEEP supports replay protection as follows.
+  The transport protocol under the TEEP protocol might provide replay
+  protection, but may be terminated in the TEEP Broker which is not trusted
+  by the TEEP and so the TEEP protocol does replay protection itself.
+  If attestation of the TAM is used, the attestation freshness mechanism
+  provides replay protection for attested QueryRequest messages.
+  If non-attested QueryRequest messages are replayed, the TEEP Agent will generate
+  QueryResponse or Error messages, but the REE can already conduct Denial of Service
+  attacks against the TEE and/or the TAM even without the TEEP protocol.
+  QueryResponse messages have replay protection via attestation freshness mechanism or (if
+  attestation is not used) the token field in the message.
+  Update messages have replay protection via the suit-manifest-sequence-number
+  (see Section 8.4.2 of {{I-D.ietf-suit-manifest}}).
+  Error and Success messages have replay protection via SUIT Reports and/or the token
+  field in the message, where a TAM can detect which message it is in response to.
 
 Trusted Component Signer Compromise
 : A TAM is responsible for vetting a Trusted Component and
