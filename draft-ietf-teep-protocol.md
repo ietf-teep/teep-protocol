@@ -1783,7 +1783,7 @@ Replay Protection
 : The TEEP protocol supports replay protection as follows.
   The transport protocol under the TEEP protocol might provide replay
   protection, but may be terminated in the TEEP Broker which is not trusted
-  by the TEEP and so the TEEP protocol does replay protection itself.
+  by the TEEP Agent and so the TEEP protocol does replay protection itself.
   If attestation of the TAM is used, the attestation freshness mechanism
   provides replay protection for attested QueryRequest messages.
   If non-attested QueryRequest messages are replayed, the TEEP Agent will generate
