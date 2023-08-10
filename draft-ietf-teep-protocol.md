@@ -1780,7 +1780,7 @@ TEEP Broker
   features offered by the manifest itself.
 
 Replay Protection
-: TEEP supports replay protection as follows.
+: The TEEP protocol supports replay protection as follows.
   The transport protocol under the TEEP protocol might provide replay
   protection, but may be terminated in the TEEP Broker which is not trusted
   by the TEEP and so the TEEP protocol does replay protection itself.
