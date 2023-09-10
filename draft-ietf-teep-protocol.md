@@ -725,7 +725,9 @@ token
 unneeded-manifest-list
 : The unneeded-manifest-list parameter enumerates the SUIT manifests to be unlinked.
   Each unneeded SUIT manifest is identified by its SUIT Manifest Component ID.
-  The SUIT manifest processor MAY execute uninstall section in the manifest.
+  The SUIT manifest processor MAY execute uninstall section in the manifest. See
+  Section 7 of {{I-D.ietf-suit-trust-domains}} for more information about the 
+  suit-uninstall Command Sequence.
 
 manifest-list
 : The manifest-list field is used to convey one or multiple SUIT manifests
