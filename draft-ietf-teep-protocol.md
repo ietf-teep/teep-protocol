@@ -2126,6 +2126,13 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
 ## Example 3: Supplying Personalization Data for Trusted Component Binary {#suit-personalization}
 {: numbered='no'}
 
+This example uses the following parameters:
+
+- Algorithm for payload encryption: AES-GCM-128
+- Algorithm id for key wrap: A128KW
+- KEK: 'aaaaaaaaaaaaaaaa'
+- COSE_KDF_Context.SuppPubInfo.other: 'SUIT Payload Encryption'
+
 ### CBOR Diagnostic Notation of SUIT Manifest
 {: numbered='no'}
 
