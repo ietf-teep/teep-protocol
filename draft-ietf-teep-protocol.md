@@ -282,8 +282,8 @@ To create a TEEP message, the following steps are performed.
 
 ### Validating a TEEP Message {#validation}
 
-When TEEP message is received (see the ProcessTeepMessage conceptual API
-defined in {{RFC9397}} section 6.2.1),
+When a TEEP message is received (see the ProcessTeepMessage conceptual API
+defined in Section 6.2.1 pf {{RFC9397}}),
 the following validation steps are performed. If any of
 the listed steps fail, then the TEEP message MUST be rejected.
 
