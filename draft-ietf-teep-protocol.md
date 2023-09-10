@@ -371,7 +371,7 @@ token
   that request, or to ignore responses to older QueryRequest messages before
   some configuration changes were made that affected their content.
   This is particularly useful when a TAM issues multiple concurrent requests
-  to a TEEP Agent. The token MUST be present if and only if the attestation bit is clear in
+  to a TEEP Agent. The token MUST be present if and only if the attestation bit is cleared in
   the data-item-requested value. The size of the token is at least 8 bytes
   (64 bits) and maximum of 64 bytes, which is the same as in an EAT Nonce
   Claim (see {{I-D.ietf-rats-eat}} Section 3.3). The first usage of a token
@@ -421,12 +421,12 @@ supported-freshness-mechanisms
 : The supported-freshness-mechanisms parameter lists the freshness mechanism(s) supported by the TAM.
   Details about the encoding can be found in {{freshness-mechanisms}}.
   If this parameter is absent, it means only the nonce mechanism is supported.
-  It MUST be absent if the attestation bit is clear.
+  It MUST be absent if the attestation bit is cleared.
 
 challenge
 : The challenge field is an optional parameter used for ensuring the freshness of
   attestation evidence returned with a QueryResponse message. It MUST be absent if
-  the attestation bit is clear or the Passport model is used (since the token is used instead in those cases).
+  the attestation bit is cleared or the Passport model is used (since the token is used instead in those cases).
   When a challenge is
   provided in the QueryRequest and Evidence in the form of an EAT is returned with a QueryResponse message
   then the challenge contained in this request MUST be used to generate the EAT,
