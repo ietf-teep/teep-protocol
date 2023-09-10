@@ -2148,8 +2148,6 @@ This example uses the following parameters:
 {::include cbor/suit_personalization.hex.txt}
 ~~~~
 
-The Personalization Data above is encrypted with A128KW.
-The secret key is h'61616161616161616161616161616161' (0x61 = 'a', and the length is 16).
 
 # F. Examples of SUIT Reports {#suit-reports}
 {: numbered='no'}
