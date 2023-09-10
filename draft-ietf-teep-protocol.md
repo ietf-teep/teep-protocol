@@ -653,8 +653,8 @@ for the Verifier to use when generating Attestation Results of some form:
 | TEE firmware type | manifests | Section 4.2.15 of {{I-D.ietf-rats-eat}} |
 | TEE firmware version | manifests | Section 4.2.15 of {{I-D.ietf-rats-eat}} |
 
-The "manifests" claim should include information about the TEEP Agent as well
-as any of its dependencies such as firmware.
+The "manifests" claim, see Section 4.2.15 of {{I-D.ietf-rats-eat}}, should include
+information about the TEEP Agent as well as any of its dependencies such as firmware.
 
 ## Update Message {#update-msg-def}
 
