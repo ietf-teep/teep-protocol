@@ -2111,7 +2111,7 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
 ~~~~
 
 
-## Example 1: SUIT Manifest pointing to URI of the Trusted Component Binary {#suit-uri}
+## Example 1: SUIT Manifest pointing to URI of the TC Binary {#suit-uri}
 {: numbered='no'}
 
 ### CBOR Diagnostic Notation of SUIT Manifest
@@ -2129,7 +2129,7 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
 ~~~~
 
 
-## Example 2: SUIT Manifest including the Trusted Component Binary {#suit-integrated}
+## Example 2: SUIT Manifest including the TC Binary {#suit-integrated}
 {: numbered='no'}
 
 ### CBOR Diagnostic Notation of SUIT Manifest
