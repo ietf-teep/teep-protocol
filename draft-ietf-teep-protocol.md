@@ -1682,7 +1682,7 @@ $suit-cose-profile /= suit-sha256-es256-ecdh-a128gcm
 $suit-cose-profile /= suit-sha256-eddsa-ecdh-a128gcm
 ~~~~
 
-# Freshness Mechanisms {#freshness-mechanisms}
+# Attestation Freshness Mechanisms {#freshness-mechanisms}
 
 A freshness mechanism determines how a TAM can tell whether an attestation payload provided
 in a QueryResponse is fresh.  There are multiple ways this can be done
