@@ -1664,9 +1664,29 @@ in this specification. See Section 8.5.5 and Appendix B of {{RFC9052}} for more 
 (If {{I-D.ietf-suit-firmware-encryption}} is used, it is also the same as discussed in
 Section 6.2 of that document.)
 
-To perform encryption with ECDH the TEEP Agent needs to be in possession of the public
-key of the recipient, i.e., the TAM. See Section 5 of {{RFC9397}}
-for more discussion of TAM keys used by the TEEP Agent.
+Ephemeral-Static Diffie-Hellman (ES-DH) is a scheme that provides public key encryption given
+a recipient's public key. Hence, the TEEP Agent needs to be in possession of the public
+key of the TAM. See Section 5 of {{RFC9397}} for more discussion of TAM keys used by the
+TEEP Agent. There are multiple variants of this scheme; this document uses the
+variant specified in Section 8.5.5 of {{RFC9052}}.
+
+The following two layer structure is used:
+
+- Layer 0: Has a content encrypted with the Content Encryption Key (CEK), a symmetric key.
+  For encrypting SUIT Reports and EATs the content MUST NOT be detached.
+- Layer 1: Uses the AES Key Wrap algorithm to encrypt the randomly generated CEK with the
+  Key Encryption Key (KEK) derived with ES-DH, whereby the resulting symmetric key is fed
+  into the HKDF-based key derivation function.
+
+As a result, the two layers combine ES-DH with AES-KW and HKDF.
+
+This document re-uses the CDDL defined in Section 6.2.3 of
+{{I-D.ietf-suit-firmware-encryption}} and the context information structure defined in
+Section 6.2.4 of {{I-D.ietf-suit-firmware-encryption}} although with an important modification.
+The COSE_KDF_Context.SuppPubInfo.other value MUST be set to "SUIT Report Encryption" when a
+SUIT Report is encrypted and MUST be set to "EAT Encryption" when an EAT is encrypted. The
+COSE_KDF_Context.SuppPubInfo.other field captures the protocol in which the ES-DH content key
+distribution algorithm is used.
 
 This specification defines cipher suites for confidentiality protection of EATs and
 SUIT Reports. The TAM MUST support each cipher suite defined below, based on definitions in
