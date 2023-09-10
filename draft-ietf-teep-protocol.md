@@ -2148,7 +2148,7 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
 ~~~~
 
 
-## Example 3: Supplying Personalization Data for Trusted Component Binary {#suit-personalization}
+## Example 3: Supplying Personalization Data for TC Binary {#suit-personalization}
 {: numbered='no'}
 
 ### CBOR Diagnostic Notation of SUIT Manifest
