@@ -446,10 +446,9 @@ attestation-payload-format
 : The attestation-payload-format parameter indicates the IANA Media Type of the
   attestation-payload parameter, where media type parameters are permitted after
   the media type.  For protocol version 0, the absence of this parameter indicates that
-  the format is "application/eat+cwt; eat_profile=https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-12" (see {{I-D.ietf-rats-eat-media-type}}
+  the format is "application/eat+cwt; eat_profile=urn:ietf:rfc:rfcXXXX" (see {{I-D.ietf-rats-eat-media-type}}
   for further discussion).
-  (RFC-editor: upon RFC publication, replace URI above with
-  "https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
+  (RFC-editor: upon RFC publication, replace XXXX above with the RFC number
   of this document.)
   It MUST be present if the attestation-payload parameter
   is present and the format is not an EAT in CWT format with the profile
@@ -538,10 +537,9 @@ attestation-payload-format
 : The attestation-payload-format parameter indicates the IANA Media Type of the
   attestation-payload parameter, where media type parameters are permitted after
   the media type.  For protocol version 0, the absence of this parameter indicates that
-  the format is "application/eat+cwt; eat_profile=https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-12" (see {{I-D.ietf-rats-eat-media-type}}
+  the format is "application/eat+cwt; eat_profile=urn:ietf:rfc:rfcXXXX" (see {{I-D.ietf-rats-eat-media-type}}
   for further discussion).
-  (RFC-editor: upon RFC publication, replace URI above with
-  "https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
+  (RFC-editor: upon RFC publication, replace XXXX above with the RFC number
   of this document.)
   It MUST be present if the attestation-payload parameter
   is present and the format is not an EAT in CWT format with the profile
@@ -742,10 +740,9 @@ attestation-payload-format
 : The attestation-payload-format parameter indicates the IANA Media Type of the
   attestation-payload parameter, where media type parameters are permitted after
   the media type.  The absence of this parameter indicates that
-  the format is "application/eat+cwt; eat_profile=https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-12" (see {{I-D.ietf-rats-eat-media-type}}
+  the format is "application/eat+cwt; eat_profile=urn:ietf:rfc:rfcXXXX" (see {{I-D.ietf-rats-eat-media-type}}
   for further discussion).
-  (RFC-editor: upon RFC publication, replace URI above with
-  "https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
+  (RFC-editor: upon RFC publication, replace XXXX above with the RFC number
   of this document.)
   It MUST be present if the attestation-payload parameter
   is present and the format is not an EAT in CWT format with the profile
@@ -1217,9 +1214,8 @@ Entity Attestation Token profiles.  This section defines an EAT profile
 for use with TEEP.
 
 * profile-label: The profile-label for this specification is the URI
-<https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-12>.
-(RFC-editor: upon RFC publication, replace string with
-"https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
+<urn:ietf:rfc:rfcXXXX>.
+(RFC-editor: upon RFC publication, replace XXXX with the RFC number
 of this document.)
 
 * Use of JSON, CBOR, or both: CBOR only.
