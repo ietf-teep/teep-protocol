@@ -1847,6 +1847,12 @@ reveals its IP address to the Trusted Component Binary server.  This
 can reveal to that server at least a clue as to its location, which
 might be sensitive information in some cases.
 
+EATs and SUIT Reports from a TAM can also be present in
+a QueryRequest. Typically, the ability to uniquely identify a TAM
+is less of a concern than it is for TEEP Agents, but where confidentiality
+is a concern for the TAM, such EATs and SUIT Reports SHOULD be encrypted
+just like ones from TEEP Agents.
+
 # IANA Considerations {#IANA}
 
 ## Media Type Registration
