@@ -54,7 +54,7 @@ $(COSE_XML):
 	curl https://www.rfc-editor.org/rfc/rfc9052.xml -o $@
 
 $(COSE_CDDL): $(COSE_XML)
-	sed -n -e '/<artwork type="CDDL"/,/<\/artwork/ p' $< | sed -e '/<artwork type="CDDL"/ d' -e '/<\/artwork/ d' -e '/<\/section>/,/<figure title=""/ d' -e 's/\&gt;/>/g' > $@
+	sed -n -e '/<sourcecode type="cddl"/,/<\/sourcecode>/ p' $< | sed -e '/<sourcecode type="cddl"/ d' -e '/<\/sourcecode>/ d' -e 's/\&gt;/>/g' > $@
 
 .PHONY: validate-cddl
 validate-cddl: validate-suit-cddl $(CONCATENATED_CDDL) $(TEEP_MESSAGES)
