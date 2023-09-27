@@ -1698,8 +1698,8 @@ It MAY also support use with COSE_Encrypt or other COSE types in additional ciph
 
 ~~~~ cddl-suit-cose-profile
 ; suit-cose-profile
-$suit-cose-profile /= suit-sha256-es256-ecdh-a128gcm
-$suit-cose-profile /= suit-sha256-eddsa-ecdh-a128gcm
+$suit-cose-profile /= suit-sha256-es256-ecdh-a128ctr
+$suit-cose-profile /= suit-sha256-eddsa-ecdh-a128ctr
 ~~~~
 
 # Attestation Freshness Mechanisms {#freshness-mechanisms}
@@ -2267,12 +2267,12 @@ and the suit-record-section-offset refers to:
 
 ~~~~
 <<[
-  / directive-set-dependency-index / 13,0 ,
+  / directive-set-dependency-index / 13,0,
   / directive-set-parameters / 19,{
     / uri / 21:'tam.teep.example/'
                'edd94cd8-9d9c-4cc8-9216-b3ad5a2d5b8a',
     } ,
-  / directive-fetch / 21,2 ,
+  / directive-fetch / 21,2,
   / condition-image-match / 3,15
 ]>>,
 ~~~~
