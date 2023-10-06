@@ -282,8 +282,8 @@ To create a TEEP message, the following steps are performed.
 
 ### Validating a TEEP Message {#validation}
 
-When TEEP message is received (see the ProcessTeepMessage conceptual API
-defined in {{RFC9397}} section 6.2.1),
+When a TEEP message is received (see the ProcessTeepMessage conceptual API
+defined in Section 6.2.1 of {{RFC9397}}),
 the following validation steps are performed. If any of
 the listed steps fail, then the TEEP message MUST be rejected.
 
@@ -425,7 +425,7 @@ supported-freshness-mechanisms
 
 challenge
 : The challenge field is an optional parameter used for ensuring the freshness of
-  attestation evidence returned with a QueryResponse message. It MUST be absent if
+  attestation Evidence returned with a QueryResponse message. It MUST be absent if
   the attestation bit is clear or the Passport model is used.
   When a challenge is
   provided in the QueryRequest and Evidence in the form of an EAT is returned with a QueryResponse message
@@ -447,10 +447,9 @@ attestation-payload-format
 : The attestation-payload-format parameter indicates the IANA Media Type of the
   attestation-payload parameter, where media type parameters are permitted after
   the media type.  For protocol version 0, the absence of this parameter indicates that
-  the format is "application/eat+cwt; eat_profile=https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-12" (see {{I-D.ietf-rats-eat-media-type}}
+  the format is "application/eat+cwt; eat_profile=urn:ietf:rfc:rfcXXXX" (see {{I-D.ietf-rats-eat-media-type}}
   for further discussion).
-  (RFC-editor: upon RFC publication, replace URI above with
-  "https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
+  (RFC-editor: upon RFC publication, replace XXXX above with the RFC number
   of this document.)
   It MUST be present if the attestation-payload parameter
   is present and the format is not an EAT in CWT format with the profile
@@ -539,10 +538,9 @@ attestation-payload-format
 : The attestation-payload-format parameter indicates the IANA Media Type of the
   attestation-payload parameter, where media type parameters are permitted after
   the media type.  For protocol version 0, the absence of this parameter indicates that
-  the format is "application/eat+cwt; eat_profile=https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-12" (see {{I-D.ietf-rats-eat-media-type}}
+  the format is "application/eat+cwt; eat_profile=urn:ietf:rfc:rfcXXXX" (see {{I-D.ietf-rats-eat-media-type}}
   for further discussion).
-  (RFC-editor: upon RFC publication, replace URI above with
-  "https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
+  (RFC-editor: upon RFC publication, replace XXXX above with the RFC number
   of this document.)
   It MUST be present if the attestation-payload parameter
   is present and the format is not an EAT in CWT format with the profile
@@ -726,7 +724,9 @@ token
 unneeded-manifest-list
 : The unneeded-manifest-list parameter enumerates the SUIT manifests to be unlinked.
   Each unneeded SUIT manifest is identified by its SUIT Manifest Component ID.
-  The SUIT manifest processor MAY execute uninstall section in the manifest.
+  The SUIT manifest processor MAY execute uninstall section in the manifest. See
+  Section 7 of {{I-D.ietf-suit-trust-domains}} for more information about the 
+  suit-uninstall Command Sequence.
 
 manifest-list
 : The manifest-list field is used to convey one or multiple SUIT manifests
@@ -743,10 +743,9 @@ attestation-payload-format
 : The attestation-payload-format parameter indicates the IANA Media Type of the
   attestation-payload parameter, where media type parameters are permitted after
   the media type.  The absence of this parameter indicates that
-  the format is "application/eat+cwt; eat_profile=https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-12" (see {{I-D.ietf-rats-eat-media-type}}
+  the format is "application/eat+cwt; eat_profile=urn:ietf:rfc:rfcXXXX" (see {{I-D.ietf-rats-eat-media-type}}
   for further discussion).
-  (RFC-editor: upon RFC publication, replace URI above with
-  "https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
+  (RFC-editor: upon RFC publication, replace XXXX above with the RFC number
   of this document.)
   It MUST be present if the attestation-payload parameter
   is present and the format is not an EAT in CWT format with the profile
@@ -1093,7 +1092,7 @@ supported-freshness-mechanisms
 
 challenge
 : The challenge field is an optional parameter used for ensuring the freshness of
-  attestation evidence included with a QueryRequest message.
+  attestation Evidence included with a QueryRequest message.
   When a challenge is provided in the Error message and Evidence in the form of an EAT is
   returned with a QueryRequest message then the challenge contained in the Error message
   MUST be used to generate the EAT, by copying the challenge value into the eat_nonce claim, as described in the
@@ -1218,9 +1217,8 @@ Entity Attestation Token profiles.  This section defines an EAT profile
 for use with TEEP.
 
 * profile-label: The profile-label for this specification is the URI
-<https://datatracker.ietf.org/doc/html/draft-ietf-teep-protocol-12>.
-(RFC-editor: upon RFC publication, replace string with
-"https://www.rfc-editor.org/info/rfcXXXX" where XXXX is the RFC number
+<urn:ietf:rfc:rfcXXXX>.
+(RFC-editor: upon RFC publication, replace XXXX with the RFC number
 of this document.)
 
 * Use of JSON, CBOR, or both: CBOR only.
@@ -1567,7 +1565,7 @@ The Attestation Result must first be validated as follows:
 TEEP requires algorithms for various purposes:
 
 * Algorithms for signing TEEP messages exchanged between the TEEP Agent and the TAM.
-* Algorithms for signing EAT-based Evidence sent by the Attester via the TEEP Agent and the TAM to the Verifier. (If evidence is not encrypted by the TEEP Agent then it will be opaque to the TEEP Agent and to the TAM.)
+* Algorithms for signing EAT-based Evidence sent by the Attester via the TEEP Agent and the TAM to the Verifier.
 * Algorithms for encrypting EAT-based Evidence sent by the TEEP Agent to the TAM. (The TAM will decrypt the encrypted Evidence and will forward it to the Verifier.)
 * Algorithms for signing and optionally encrypting SUIT reports sent by the TEEP Agent to the TAM.
 * Algorithms for signing and optionally encrypting SUIT manifests sent by the Trusted Component Signer to the TEEP Agent.
