@@ -430,7 +430,7 @@ challenge
   When a challenge is
   provided in the QueryRequest and Evidence in the form of an EAT is returned with a QueryResponse message
   then the challenge contained in the QueryRequest MUST be used to generate the EAT,
-  by copying the challenge into the eat_nonce claim, see {{eat}}, if
+  by copying the challenge into the eat_nonce claim (Section 4.1 of {{eat}}) if
   the nonce-based freshness mechanism is used for attestation evidence.  For more details about freshness
   of Evidence see {{freshness-mechanisms}}.
 
