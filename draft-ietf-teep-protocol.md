@@ -1562,7 +1562,7 @@ The Attestation Result must first be validated as follows:
 TEEP requires algorithms for various purposes:
 
 * Algorithms for signing TEEP messages exchanged between the TEEP Agent and the TAM.
-* Algorithms for signing EAT-based Evidence sent by the Attester via the TEEP Agent and the TAM to the Verifier. (If evidence is not encrypted by the TEEP Agent then it will be opaque to the TEEP Agent and to the TAM.)
+* Algorithms for signing EAT-based Evidence sent by the Attester via the TEEP Agent and the TAM to the Verifier.
 * Algorithms for encrypting EAT-based Evidence sent by the TEEP Agent to the TAM. (The TAM will decrypt the encrypted Evidence and will forward it to the Verifier.)
 * Algorithms for signing and optionally encrypting SUIT reports sent by the TEEP Agent to the TAM.
 * Algorithms for signing and optionally encrypting SUIT manifests sent by the Trusted Component Signer to the TEEP Agent.
