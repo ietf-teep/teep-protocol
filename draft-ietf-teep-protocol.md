@@ -425,7 +425,7 @@ supported-freshness-mechanisms
 
 challenge
 : The challenge field is an optional parameter used for ensuring the freshness of
-  attestation evidence returned with a QueryResponse message. It MUST be absent if
+  attestation Evidence returned with a QueryResponse message. It MUST be absent if
   the attestation bit is clear or the Passport model is used (since the token is used instead in those cases).
   When a challenge is
   provided in the QueryRequest and Evidence in the form of an EAT is returned with a QueryResponse message
@@ -1091,7 +1091,7 @@ supported-freshness-mechanisms
 
 challenge
 : The challenge field is an optional parameter used for ensuring the freshness of
-  attestation evidence included with a QueryRequest message.
+  attestation Evidence included with a QueryRequest message.
   When a challenge is provided in the Error message and Evidence in the form of an EAT is
   returned with a QueryRequest message then the challenge contained in the Error message
   MUST be used to generate the EAT, by copying the challenge value into the eat_nonce claim, as described in the
