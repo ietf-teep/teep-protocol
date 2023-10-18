@@ -88,13 +88,13 @@ normative:
   I-D.ietf-suit-mti:
   I-D.ietf-suit-trust-domains:
   I-D.ietf-suit-report:
-  I-D.ietf-suit-firmware-encryption: 
   COSE.Algorithm:
     title: "COSE Algorithms"
     author:
       org: IANA
     target: https://www.iana.org/assignments/cose/cose.xhtml#algorithms
 informative:
+  I-D.ietf-suit-firmware-encryption: 
   I-D.ietf-rats-ar4si:
   I-D.ietf-rats-reference-interaction-models:
   RFC9397:
