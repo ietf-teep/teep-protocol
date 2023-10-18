@@ -793,7 +793,7 @@ The Update Message has a SUIT_Envelope containing SUIT manifests. Following are 
 
 In this scenario, a SUIT Manifest has a URI pointing to a Trusted Component Binary.
 
-A Trusted Component Developer creates a new Trusted Component Binary and hosts it at a Trusted Component Developer's URI.  Then the Trusted Component Developer generates an associated SUIT manifest with the filename "tc-uuid.suit" that contains the URI. The filename "tc-uuid.suit" is used in Scenario 3 later.
+A Trusted Component Developer creates a new Trusted Component Binary and hosts it at a Trusted Component Developer's URI.  Then the Trusted Component Developer generates an associated SUIT manifest with the filename "tc-uuid" that contains the URI. The filename "tc-uuid" is used in Scenario 3 later.
 
 The TAM receives the latest SUIT manifest from the Trusted Component Developer, and
 the URI it contains will not be changeable by the TAM since the SUIT manifest is signed by the Trusted Component Developer.
@@ -822,7 +822,7 @@ Cons:
     |   TEEP-TYPE-update,                                     |
     |   options: {                                            |
     |     manifest-list: [                                    |
-    |       += suit-manifest "tc-uuid.suit" (TC Developer) =+ |
+    |       += suit-manifest "tc-uuid" (TC Developer) ======+ |
     |       | SUIT_Envelope({                               | |
     |       |   manifest: {                                 | |
     |       |     install: {                                | |
@@ -914,7 +914,7 @@ For the full SUIT Manifest example binary, see {{suit-integrated}}.
 
 ### Scenario 3: Supplying Personalization Data for the Trusted Component Binary
 
-In this scenario, Personalization Data is associated with the Trusted Component Binary "tc-uuid.suit" from Scenario 1.
+In this scenario, Personalization Data is associated with the Trusted Component Binary "tc-uuid" from Scenario 1.
 
 The Trusted Component Developer places encrypted Personalization Data in the SUIT manifest, and it will be delivered by the TAM.
 The SUIT manifest processor decrypts it and then store it into file named "config.json", and then install the dependency component.
@@ -948,7 +948,7 @@ The TAM delivers the SUIT manifest of the Personalization Data which depends on 
       |       |     },                                           | |
       |       |     dependency-resolution: {                     | |
       |       |       override-parameters: {                     | |
-      |       |         uri: "https://example.org/tc-uuid.suit"  | |
+      |       |         uri: "https://example.org/tc-uuid"       | |
       |       |       },                                         | |
       |       |       fetch                                      | |
       |       |     },                                           | |
@@ -2212,7 +2212,7 @@ The URI in this example is the reference URI provided in the SUIT manifest.
     / digest-bytes / h'a7fd6593eac32eb4be578278e6540c5c'
                      h'09cfd7d4d234973054833b2b93030609'
   ]>>,
-  / suit-report-manifest-uri / 2: "tam.teep.example/personalisation.suit",
+  / suit-report-manifest-uri / 2: "tam.teep.example/personalisation",
   / suit-report-records / 4: []
 }
 ~~~~
@@ -2226,7 +2226,7 @@ The URI in this example is the reference URI provided in the SUIT manifest.
     / algorithm-id / -16 / "sha256" /,
     / digest-bytes / h'a7fd6593eac32eb4be578278e6540c5c09cfd7d4d234973054833b2b93030609'
   ]>>,
-  / suit-report-manifest-uri / 2: "tam.teep.example/personalisation.suit",
+  / suit-report-manifest-uri / 2: "tam.teep.example/personalisation",
   / suit-report-records / 4: [
     {
       / suit-record-manifest-id / 1:[],
@@ -2264,7 +2264,7 @@ and the suit-record-section-offset refers to:
   / directive-set-dependency-index / 13,0 ,
   / directive-set-parameters / 19,{
     / uri / 21:'tam.teep.example/'
-               'edd94cd8-9d9c-4cc8-9216-b3ad5a2d5b8a.suit',
+               'edd94cd8-9d9c-4cc8-9216-b3ad5a2d5b8a',
     } ,
   / directive-fetch / 21,2 ,
   / condition-image-match / 3,15
