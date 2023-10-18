@@ -1659,12 +1659,12 @@ The TEEP Agent obtains a signed EAT and then SHOULD encrypt it using the TAM
 as the recipient. A SUIT Report is created by a SUIT processor, which
 is part of the TEEP Agent itself. The TEEP Agent is therefore in control of signing
 the SUIT Report and SHOULD encrypt it. Again, the TAM is the recipient of the encrypted
-content. For content-key distribution Ephemeral-Static Diffie-Hellman is used
+content. For content-key distribution Ephemeral-Static Diffie-Hellman (ES-DH) is used
 in this specification. See Section 8.5.5 and Appendix B of {{RFC9052}} for more details.
 (If {{I-D.ietf-suit-firmware-encryption}} is used, it is also the same as discussed in
 Section 6.2 of that document.)
 
-Ephemeral-Static Diffie-Hellman (ES-DH) is a scheme that provides public key encryption given
+ES-DH is a scheme that provides public key encryption given
 a recipient's public key. Hence, the TEEP Agent needs to be in possession of the public
 key of the TAM. See Section 5 of {{RFC9397}} for more discussion of TAM keys used by the
 TEEP Agent. There are multiple variants of this scheme; this document uses the
@@ -1954,7 +1954,7 @@ to the Open Trust Protocol (OTrP), which influenced the design of this specifica
 
 We would like to thank Eve Schooler for the suggestion of the protocol name.
 
-We would like to thank Kohei Isobe (TRASIO/SECOM), Ken Takayama (SECOM)
+We would like to thank Kohei Isobe (TRASIO/SECOM), Ken Takayama (SECOM),
 Kuniyasu Suzaki (TRASIO/AIST), Tsukasa Oi (TRASIO), and Yuichi Takita (SECOM)
 for their valuable implementation feedback.
 
