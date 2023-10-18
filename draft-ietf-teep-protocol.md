@@ -371,8 +371,8 @@ token
   that request, or to ignore responses to older QueryRequest messages before
   some configuration changes were made that affected their content.
   This is particularly useful when a TAM issues multiple concurrent requests
-  to a TEEP Agent. The token MUST be present if and only if the attestation bit is clear
-  in the data-item-requested value. When the attestation bit is
+  to a TEEP Agent. The token MUST be present if and only if the attestation bit is clear in
+  the data-item-requested value. When the attestation bit is
   clear then a challenge will be included, which offers replay protection
   capabilities. The size of the token is at least 8 bytes
   (64 bits) and maximum of 64 bytes. The first usage of a token
