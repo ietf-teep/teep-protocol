@@ -16,11 +16,25 @@
          82         # array(2)
             12      # unsigned(18) / cose-sign1 /
             27      # negative(7) / -8 = cose-alg-eddsa /
-   82               # array(2) / supported-suit-cose-profiles /
-      82            # array(2) / suit-sha256-es256-ecdh-a128gcm /
-         26         # negative(6) / -7 = cose-alg-es256 /
-         01         # unsigned(1) / 1 = A128GCM /
-      82            # array(2) / suit-sha256-eddsa-ecdh-a128gcm /
-         27         # negative(7) / -8 = cose-alg-eddsa /
-         01         # unsigned(1) / 1 = A128GCM /
+   84               # array(4) / supported-suit-cose-profiles /
+      84            # array(4) / suit-sha256-es256-ecdh-a128ctr /,
+         2f         # negative(15) / -16 = SHA-256 /
+         26         # negative(6) / -7 = ES256 /
+         38 18      # negative(24) / -25 = ECDH-ES + HKDF-256 /
+         39 fffd    # negative(65533) / -65534 = A128CTR /
+      84            # array(4) / suit-sha256-eddsa-ecdh-a128ctr /
+         2f         # negative(15) / -16 = SHA-256 /
+         27         # negative(7) / -8 = EdDSA /
+         38 18      # negative(24) / -25 = ECDH-ES + HKDF-256 /
+         39 fffd    # negative(65533) / -65534 = A128CTR /
+      84            # array(4) / suit-sha256-es256-ecdh-a128gcm /
+         2f         # negative(15) / -16 = SHA-256 /
+         26         # negative(6) / -7 = ES256 /
+         38 18      # negative(24) / -25 = ECDH-ES + HKDF-256 /
+         01         # unsigned(1) / A128GCM /
+      84            # array(4) / suit-sha256-eddsa-ecdh-chacha-poly /
+         2f         # negative(15) / -16 = SHA-256 /
+         27         # negative(7) / EdDSA /
+         38 18      # negative(24) / -25 = ECDH-ES + HKDF-256 /
+         18 18      # unsigned(24) / 24 = ChaCha20/Poly1305 /
    03               # unsigned(3) / attestation | trusted-components /
