@@ -56,16 +56,22 @@ $(COSE_XML):
 $(COSE_CDDL): $(COSE_XML)
 	sed -n -e '/<sourcecode type="cddl"/,/<\/sourcecode>/ p' $< | sed -e '/<sourcecode type="cddl"/ d' -e '/<\/sourcecode>/ d' -e 's/\&gt;/>/g' > $@
 
+define FuncValidateCddl
+	cddl $1 validate $2
+
+endef
+
+
 .PHONY: validate-cddl
 validate-cddl: validate-suit-cddl $(CONCATENATED_CDDL) $(TEEP_MESSAGES)
 	@echo "Checking each TEEP Protocol binary file matches TEEP Protcol CDDL"
-	$(foreach msg,$(TEEP_MESSAGES),cddl $(CONCATENATED_CDDL) validate $(msg) || exit 1;)
+	$(foreach msg,$(TEEP_MESSAGES),$(call FuncValidateCddl,$(CONCATENATED_CDDL),$(msg)))
 	@echo "Success: Each TEEP Protocol message matches the CDDL"
 
 .PHONY: validate-suit-cddl
 validate-suit-cddl: $(CONCATENATED_UNTAGGED_SUIT_CDDL) $(SUIT_MANIFESTS)
 	@echo "Checking each SUIT Manifest binary file matches SUIT Manifest CDDL"
-	$(foreach mfst,$(SUIT_MANIFESTS),cddl $(CONCATENATED_UNTAGGED_SUIT_CDDL) validate $(mfst) || exit 1;)
+	$(foreach mfst,$(SUIT_MANIFESTS),$(call FuncValidateCddl,$(CONCATENATED_UNTAGGED_SUIT_CDDL),$(mfst)))
 	@echo "Success: Each SUIT Manifest matches the CDDL"
 
 .PHONY: validate-teep-cddl
