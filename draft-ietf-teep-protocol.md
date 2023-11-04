@@ -1700,6 +1700,8 @@ It MAY also support use with COSE_Encrypt or other COSE types in additional ciph
 ; suit-cose-profile
 $suit-cose-profile /= suit-sha256-es256-ecdh-a128ctr
 $suit-cose-profile /= suit-sha256-eddsa-ecdh-a128ctr
+$suit-cose-profile /= suit-sha256-es256-ecdh-a128gcm
+$suit-cose-profile /= suit-sha256-eddsa-ecdh-chacha-poly
 ~~~~
 
 # Attestation Freshness Mechanisms {#freshness-mechanisms}
