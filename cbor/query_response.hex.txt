@@ -8,7 +8,7 @@
       81            # array(1)
          82         # array(2)
             12      # unsigned(18) / cose-sign1 /
-            26      # negative(6) / -7 = cose-alg-es256 /
+            26      # negative(6) / -7 = ES256 /
       06            # unsigned(6) / selected-version: /
       00            # unsigned(0)
       07            # unsigned(7) / attestation-payload: /
