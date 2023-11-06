@@ -393,7 +393,7 @@ supported-teep-cipher-suites
 
 supported-suit-cose-profiles
 : The supported-suit-cose-profiles parameter lists the SUIT profiles
-  supported by the TAM. Details
+  supported by the TAM for parsing SUIT Reports. Details
   about the cipher suite encoding can be found in {{eat-suit-ciphersuite}}.
 
 data-item-requested
