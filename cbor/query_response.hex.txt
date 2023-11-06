@@ -1,14 +1,9 @@
 82                  # array(2)
    02               # unsigned(2) / TEEP-TYPE-query-response /
-   A5               # map(5)
+   A4               # map(4)
       14            # unsigned(20) / token: /
       50            # bytes(16)
          A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
-      05            # unsigned(5) / selected-teep-cipher-suite: /
-      81            # array(1)
-         82         # array(2)
-            12      # unsigned(18) / cose-sign1 /
-            26      # negative(6) / -7 = ES256 /
       06            # unsigned(6) / selected-version: /
       00            # unsigned(0)
       07            # unsigned(7) / attestation-payload: /
