@@ -2,7 +2,7 @@
   / authentication-wrapper / 2: << [
     << [
       / digest-algorithm-id: / -16 / SHA256 /,
-      / digest-bytes: / h'DDFC55B9FF63C1A27A7DA1CFB64DC924ACD5EFBAD5D5CAD2E7CFEDEB296C74D5'
+      / digest-bytes: / h'0936A4CF3A75D96B43BF88FA6AFA4220800EDC20C32B489BAAAF02EF72438A26'
     ] >>,
     << / COSE_Sign1_Tagged / 18([
       / protected: / << {
@@ -10,7 +10,7 @@
       } >>,
       / unprotected: / {},
       / payload: / null,
-      / signature: / h'7BBA826B1F0F2D3607C239D94D2ECE75629FD56F86E120CC7731531E61C92ABF436B9CCE296F070FAFD94AE8BA3D33EC37256350DB95E3A67C50978563E76389'
+      / signature: / h'104D09EE04B4B10D67A6CA9D9C638044FE4F09B870CADFBA191997749D43C30BD15E01240FA6B681280769BAA090C0234B7BECD4008C2AD9D35E4349C56C07DC'
     ]) >>
   ] >>,
   / manifest / 3: << {
@@ -64,9 +64,15 @@
     / dependency-resolution / 15: << [
       / directive-set-component-index / 12, 1,
       / directive-override-parameters / 20, {
+        / parameter-image-digest / 3: << [
+          / algorithm-id / -16 / SHA256 /,
+          / digest-bytes / h'EF53C7F719CB10041233850AE3211D62CEC9528924E656607688E77BC14886A0'
+        ] >>,
+        / parameter-image-size / 14: 389,
         / uri / 21: "https://example.org/8d82573a-926d-4754-9353-32dc29997f74.suit"
       },
-      / directive-fetch / 21, 2
+      / directive-fetch / 21, 2,
+      / directive-process-dependency / 11, 15
     ] >>,
     / install / 17: << [
       / directive-set-component-index / 12, 1,
@@ -76,30 +82,29 @@
       / directive-set-component-index / 12, 0,
       / directive-override-parameters / 20, {
         / NOTE: encrypted payload and encryption-info /
-        / parameter-content / 18: h'1A6D7C82357219BF85C334F673FB93E37A7443945A5B4E8E2391668E92B5936AB2B285FB4CEA6EADACC75242CE0B1C779DB36D34E2BDAD74666934778EC534628EFBA31805F5C699F66D7E4A03',
+        / parameter-content / 18: h'8E8E6E4C63DEC2B1EC68720EBDF9636B9409485C296EF68EB79F93CCB1A1B136DD227BAC33CFD93F7A98F1CD020E559B8EBC33CE7C5009A47EB3D11574',
         / parameter-encryption-info / 19: << 96([
           / protected: / << {
-            / alg / 1: 1 / AES-GCM-128 /
+            / alg / 1: -65534 / A128CTR /
           } >>,
           / unprotected: / {
-            / IV / 5: h'56255F07A12A0FCD0877D199EBE878DF'
+            / IV / 5: h'6CE59E41746D36492CAFCB9E3C2E85A2'
           },
           / payload: / null / detached ciphertext /,
           / recipients: / [
             [
               / protected: / << {
-                / alg / 1: -29 / ECDH-ES + A128KW /
+                / alg / 1: -25 / ECDH-ES + HKDF-256 /
               } >>,
               / unprotected: / {
                 / ephemeral key / -1: {
                   / kty / 1: 2 / EC2 /,
                   / crv / -1: 1 / P-256 /,
-                  / x / -2: h'F8D76E4011FAD67E236AFCE61CC2F472706BD08B451FC588EF758E0D4BF5E200',
-                  / y / -3: h'2D8A9B35903CD560F15DC011AB6398209724C6F41A7E9EBC9F3EB1B7BB30FBB8'
+                  / x / -2: h'C32A41E1853B16DA0319654C438EA6882BB119670C8F1C84980CDFD1BBDB60E3',
+                  / y / -3: h'764A34B5D63F800A46384BA6474BA8C7FEEE7CCF9C74B84C9E2E4CF62C00A235'
                 }
               },
-              / payload: / h'ABACADEC902D882096A50D88A222644C25E6152B66B96B84'
-                / CEK encrypted with KEK /
+              / payload: / h''
             ]
           ]
         ]) >>
