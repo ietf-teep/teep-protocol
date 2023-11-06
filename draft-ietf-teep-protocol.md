@@ -1174,6 +1174,12 @@ ERR_ATTESTATION_REQUIRED (7)
 : Indicates that the TEEP implementation sending this error requires
   attestation of the TEEP imlementation receiving this error.
 
+ERR_UNSUPPORTED_SUIT_REPORT (8)
+: Indicates that the TEEP Agent does not support the suit-cose-profile of
+  the SUIT Reports which was sent by the TAM. The TEEP Agent must report the
+  error code ERR_UNSUPPORTED_SUIT_REPORT supplying the
+  supported-suit-cose-profiles.
+
 ERR_CERTIFICATE_EXPIRED (9)
 : A certificate has expired or is not currently
   valid.
