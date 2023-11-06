@@ -103,7 +103,6 @@ query-response = [
   type: TEEP-TYPE-query-response,
   options: {
     ? token => bstr .size (8..64),
-    ? selected-teep-cipher-suite => $teep-cipher-suite,
     ? selected-version => version,
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
@@ -182,7 +181,6 @@ supported-teep-cipher-suites = 1
 challenge = 2
 versions = 3
 supported-suit-cose-profiles = 4
-selected-teep-cipher-suite = 5
 selected-version = 6
 attestation-payload = 7
 tc-list = 8

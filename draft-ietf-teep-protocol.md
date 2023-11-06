@@ -489,7 +489,6 @@ query-response = [
   type: TEEP-TYPE-query-response,
   options: {
     ? token => bstr .size (8..64),
-    ? selected-teep-cipher-suite => $teep-cipher-suite,
     ? selected-version => version,
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
@@ -523,12 +522,6 @@ token
   value MUST correspond to the value received with the QueryRequest message
   if one was present, and MUST be absent if no token was present in the
   QueryRequest.
-
-selected-teep-cipher-suite
-: The selected-teep-cipher-suite parameter indicates the selected TEEP cipher suite. If this
-  parameter is not present, it is to be treated as if the TEEP Agent accepts
-  any TEEP cipher suites listed in the QueryRequest, so the TAM can select one.
-  Details about the TEEP cipher suite encoding can be found in {{teep-ciphersuite}}.
 
 selected-version
 : The selected-version parameter indicates the TEEP protocol version selected by the
@@ -1311,7 +1304,6 @@ This specification uses the following mapping:
 | challenge                        |     2 |
 | versions                         |     3 |
 | supported-suit-cose-profiles     |     4 |
-| selected-teep-cipher-suite       |     5 |
 | selected-version                 |     6 |
 | attestation-payload              |     7 |
 | tc-list                          |     8 |
@@ -1336,7 +1328,6 @@ supported-teep-cipher-suites = 1
 challenge = 2
 versions = 3
 supported-suit-cose-profiles = 4
-selected-teep-cipher-suite = 5
 selected-version = 6
 attestation-payload = 7
 tc-list = 8
@@ -1589,7 +1580,7 @@ $teep-cipher-suite /= teep-cipher-suite-sign1-es256
 
 ;The following two cipher suites have only a single operation each.
 ;Other cipher suites may be defined to have multiple operations.
-;MANDATORY for TAM to support them, and OPTIONAL
+;It is MANDATORY for TAM to support them, and OPTIONAL
 ;to support any additional ones that use COSE_Sign_Tagged, or other
 ;signing, encryption, or MAC algorithms.
 
