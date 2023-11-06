@@ -62,7 +62,7 @@ author:
   region: ''
   code: ''
   country: US
-  email: dthaler@microsoft.com
+  email: dave.thaler.ietf@gmail.com
 
  -
   ins: A. Tsukamoto
