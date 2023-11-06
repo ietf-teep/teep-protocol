@@ -1036,6 +1036,7 @@ teep-error = [
      ? err-msg => text .size (1..128),
      ? supported-teep-cipher-suites => [ + $teep-cipher-suite ],
      ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
+     ? supported-suit-cose-profiles => [ + $suit-cose-profile ],
      ? challenge => bstr .size (8..512),
      ? versions => [ + version ],
      ? suit-reports => [ + SUIT_Report ],
@@ -1053,6 +1054,7 @@ ERR_UNSUPPORTED_MSG_VERSION = 4
 ERR_UNSUPPORTED_CIPHER_SUITES = 5
 ERR_BAD_CERTIFICATE = 6
 ERR_ATTESTATION_REQUIRED = 7
+ERR_UNSUPPORTED_SUIT_REPORT = 8
 ERR_CERTIFICATE_EXPIRED = 9
 ERR_TEMPORARY_ERROR = 10
 ERR_MANIFEST_PROCESSING_FAILED = 17
@@ -1083,6 +1085,12 @@ supported-freshness-mechanisms
 : The supported-freshness-mechanisms parameter lists the freshness mechanism(s) supported by the TEEP Agent.
   Details about the encoding can be found in {{freshness-mechanisms}}.
   This otherwise optional parameter MUST be returned if err-code is ERR_UNSUPPORTED_FRESHNESS_MECHANISMS.
+
+supported-suit-cose-profiles
+: The supported-suit-cose-profiles parameter lists the SUIT profiles
+  supported by the TEEP Agent. Details
+  about the cipher suite encoding can be found in {{eat-suit-ciphersuite}}.
+  This otherwise optional parameter MUST be returned if err-code is ERR_UNSUPPORTED_SUIT_REPORT.
 
 challenge
 : The challenge field is an optional parameter used for ensuring the freshness of
@@ -1500,7 +1508,7 @@ with the error code ERR_ATTESTATION_REQUIRED supplying the supported-freshness-m
 Otherwise, processing continues as follows.
 
 If the TEEP Agent requires attesting the TAM and the QueryRequest message did
-contain an an attestation-payload, the TEEP Agent checks whether it contains Evidence or an
+contain an attestation-payload, the TEEP Agent checks whether it contains Evidence or an
 Attestation Result by inspecting the attestation-payload-format
 parameter.  The media type defined in {{eat}} indicates an Attestation Result, though future
 extensions might also indicate other Attestation Result formats in the future. Any other unrecognized
@@ -1512,6 +1520,12 @@ the Evidence (via some mechanism out of scope of this document) to an attestatio
 (see {{RFC9334}})
 to determine whether the TAM is in a trustworthy state.  Once the TEEP Agent receives an Attestation
 Result from the Verifier, processing continues as in {{attestation-result-agent}}.
+
+The TEEP Agent MAY also use (in any implementation specific way) any SUIT Reports in the
+QueryRequest in determining whether it trusts the TAM.  If a SUIT Report
+uses a suit-cose-profile that the TEEP Agent does not support, then the TEEP
+Agent MUST send an Error Message with the error code ERR_UNSUPPORTED_SUIT_REPORT supplying
+the supported-suit-cose-profiles.  Otherwise, processing continues as follows.
 
 Once the Attestation Result is handled, or if the TEEP Agent does not require attesting the TAM,
 the Agent responds with a
