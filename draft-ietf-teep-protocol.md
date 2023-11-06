@@ -1499,27 +1499,6 @@ as specified in {{validation}}, and if it is not valid then the Agent
 responds with an Error message.
 Otherwise, processing continues as follows based on the type of message.
 
-When a QueryRequest message is received, the Agent responds with a
-QueryResponse message if all fields were understood, or an Error message
-if any error was encountered.
-
-If the TEEP Agent requires attesting the TAM, the TEEP Agent MUST send the Error Message with the error code ERR_ATTESTATION_REQUIRED supplying the supported-freshness-mechanisms or the challenge.
-
-When an Update message is received, the Agent attempts to unlink any
-SUIT manifests listed in the unneeded-manifest-list field of the message,
-and responds with an Error message if any error was encountered.
-If the unneeded-manifest-list was empty, or no error was encountered processing it,
-the Agent attempts to update
-the Trusted Components specified in the SUIT manifests
-by following the Update Procedure specified
-in {{I-D.ietf-suit-manifest}}, and responds with a Success message if
-all SUIT manifests were successfully installed, or an Error message
-if any error was encountered.
-It is important to note that the
-Update Procedure requires resolving and installing any dependencies
-indicated in the manifest, which may take some time, and the Success
-or Error message is generated only after completing the Update Procedure.
-
 ### Handling a QueryRequest Message
 
 When a QueryRequest message is received, it is processed as follows.
@@ -1559,6 +1538,23 @@ The Attestation Result must first be validated as follows:
    supported by the TEEP Agent (SHA-256 for the ones mandated in this document).
 
    See Sections 3.4 and 6 of {{RFC8747}} for more discussion.
+
+### Handling an Update Message
+
+When an Update message is received, the Agent attempts to unlink any
+SUIT manifests listed in the unneeded-manifest-list field of the message,
+and responds with an Error message if any error was encountered.
+If the unneeded-manifest-list was empty, or no error was encountered processing it,
+the Agent attempts to update
+the Trusted Components specified in the SUIT manifests
+by following the Update Procedure specified
+in {{I-D.ietf-suit-manifest}}, and responds with a Success message if
+all SUIT manifests were successfully installed, or an Error message
+if any error was encountered.
+It is important to note that the
+Update Procedure requires resolving and installing any dependencies
+indicated in the manifest, which may take some time, and the Success
+or Error message is generated only after completing the Update Procedure.
 
 # Cipher Suites {#ciphersuite}
 
