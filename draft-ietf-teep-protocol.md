@@ -2189,7 +2189,7 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
 This example uses the following parameters:
 
 - Algorithm for payload encryption: A128CTR (-65534)
-- Algorithm id for key wrap: ECDH-ES + A128KW
+- Algorithm id for key wrap: ECDH-ES + A128KW (-29)
 - KEK (Receiver's Private Key):
   - kty: EC2
   - crv: P-256
