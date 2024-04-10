@@ -2188,8 +2188,8 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
 
 This example uses the following parameters:
 
-- Algorithm for payload encryption: AES-CTR-128
-- Algorithm id for key wrap: ECDH-ES + HKDF-256
+- Algorithm for payload encryption: A128CTR (-65534)
+- Algorithm id for key wrap: ECDH-ES + A128KW
 - KEK (Receiver's Private Key):
   - kty: EC2
   - crv: P-256
@@ -2197,10 +2197,10 @@ This example uses the following parameters:
   - y: h'9EED8125E932CD60C0EAD3650D0A485CF726D378D1B016ED4298B2961E258F1B'
   - d: h'60FE6DD6D85D5740A5349B6F91267EEAC5BA81B8CB53EE249E4B4EB102C476B3'
 - COSE_KDF_Context
-  - AlgorithmID: -65534 (A128CTR)
+  - AlgorithmID: -3 (A128KW)
   - SuppPubInfo
     - keyDataLength: 128
-    - protected: << {/ alg / 1: -25 / ECDH-ES+HKDF-256 / } >>
+    - protected: << {/ alg / 1: -29 / ECDH-ES+A128KW / } >>
     - other: 'SUIT Payload Encryption'
 
 ### CBOR Diagnostic Notation of SUIT Manifest
