@@ -2188,8 +2188,9 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
 
 This example uses the following parameters:
 
-- Algorithm for payload encryption: A128CTR (-65534)
-- Algorithm id for key wrap: ECDH-ES + A128KW (-29)
+- SUIT Profile: suit-sha256-es256-ecdh-a128ctr (see {{I-D.ietf-suit-mti}} Section 3.2)
+  - Algorithm for payload encryption: A128CTR (-65534)
+  - Algorithm for key wrap: ECDH-ES + A128KW (-29)
 - KEK (Receiver's Private Key):
   - kty: EC2
   - crv: P-256
