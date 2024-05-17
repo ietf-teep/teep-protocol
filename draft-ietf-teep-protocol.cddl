@@ -64,7 +64,7 @@ $teep-cipher-suite /= teep-cipher-suite-sign1-es256
 
 ;The following two cipher suites have only a single operation each.
 ;Other cipher suites may be defined to have multiple operations.
-;MANDATORY for TAM to support them, and OPTIONAL
+;It is MANDATORY for TAM to support them, and OPTIONAL
 ;to support any additional ones that use COSE_Sign_Tagged, or other
 ;signing, encryption, or MAC algorithms.
 
@@ -155,7 +155,7 @@ teep-error = [
      ? err-msg => text .size (1..128),
      ? supported-teep-cipher-suites => [ + $teep-cipher-suite ],
      ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
-     ? supported-suit-cose-profiles: [ + $suit-cose-profile ],
+     ? supported-suit-cose-profiles => [ + $suit-cose-profile ],
      ? challenge => bstr .size (8..512),
      ? versions => [ + version ],
      ? suit-reports => [ + SUIT_Report ],
