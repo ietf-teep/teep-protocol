@@ -47,7 +47,7 @@
     ],
     / install / 17: << [
       / directive-override-parameters / 20, {
-        / uri / 21: "#tc"
+        / parameter-uri / 21: "#tc"
       },
       / directive-fetch / 21, 15,
       / condition-image-match / 3, 15
