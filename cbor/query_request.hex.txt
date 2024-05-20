@@ -20,21 +20,21 @@
       84            # array(4) / suit-sha256-es256-ecdh-a128ctr /,
          2f         # negative(15) / -16 = SHA-256 /
          26         # negative(6) / -7 = ES256 /
-         38 18      # negative(24) / -25 = ECDH-ES + HKDF-256 /
+         38 1C      # negative(28) / -29 = ECDH-ES + A128KW /
          39 fffd    # negative(65533) / -65534 = A128CTR /
       84            # array(4) / suit-sha256-eddsa-ecdh-a128ctr /
          2f         # negative(15) / -16 = SHA-256 /
          27         # negative(7) / -8 = EdDSA /
-         38 18      # negative(24) / -25 = ECDH-ES + HKDF-256 /
+         38 1C      # negative(28) / -29 = ECDH-ES + A128KW /
          39 fffd    # negative(65533) / -65534 = A128CTR /
       84            # array(4) / suit-sha256-es256-ecdh-a128gcm /
          2f         # negative(15) / -16 = SHA-256 /
          26         # negative(6) / -7 = ES256 /
-         38 18      # negative(24) / -25 = ECDH-ES + HKDF-256 /
+         38 1C      # negative(28) / -29 = ECDH-ES + A128KW /
          01         # unsigned(1) / A128GCM /
       84            # array(4) / suit-sha256-eddsa-ecdh-chacha-poly /
          2f         # negative(15) / -16 = SHA-256 /
          27         # negative(7) / EdDSA /
-         38 18      # negative(24) / -25 = ECDH-ES + HKDF-256 /
+         38 1C      # negative(28) / -29 = ECDH-ES + A128KW /
          18 18      # unsigned(24) / 24 = ChaCha20/Poly1305 /
    03               # unsigned(3) / attestation | trusted-components /
