@@ -67,13 +67,13 @@ author:
  -
   ins: A. Tsukamoto
   name: Akira Tsukamoto
-  org: ALAXALA Networks Corp.
+  org: ''
   street: ''
   city: ''
   region: ''
   code: ''
   country: JP
-  email: akira.tsukamoto@alaxala.com
+  email: akira.tsukamoto@gmail.com
 
 normative:
   RFC9052:
