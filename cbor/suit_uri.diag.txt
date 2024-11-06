@@ -2,7 +2,7 @@
   / authentication-wrapper / 2: << [
     << [
       / digest-algorithm-id: / -16 / SHA256 /,
-      / digest-bytes: / h'EF53C7F719CB10041233850AE3211D62CEC9528924E656607688E77BC14886A0'
+      / digest-bytes: / h'B39B52B0B747EA79588C190F567BFC2C8437BA8A73F7EA983182E79F0148D59B'
     ] >>,
     << / COSE_Sign1_Tagged / 18([
       / protected: / << {
@@ -10,7 +10,7 @@
       } >>,
       / unprotected: / {},
       / payload: / null,
-      / signature: / h'7E367F9E124859473FBDF3D6312AA8943617B41AE4782FCA0E77A492C51F8A7252EA42C23D722E787AA235B5175DBE61DDF8F16F956E0317B9550A04BF9165DD'
+      / signature: / h'80E54AB485B320A61654666362928B15EAAABFE6957B1BCB65F16A367E4B19888BFFDBD6F7EA2892FA36FA18A2FCB5DBFEC9832E09B91ED9CD348AB77E25FA74'
     ]) >>
   ] >>,
   / manifest / 3: << {
@@ -45,7 +45,7 @@
       h'8D82573A926D4754935332DC29997F74',  / tc-uuid /
        'suit'
     ],
-    / install / 17: << [
+    / install / 20: << [
       / directive-override-parameters / 20, {
         / parameter-uri / 21: "https://example.org/8d82573a-926d-4754-9353-32dc29997f74.ta"
       },
