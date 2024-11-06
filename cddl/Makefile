@@ -19,6 +19,7 @@ SUIT_MANIFEST_CDDL		:= draft-ietf-suit-manifest.cddl
 SUIT_TRUST_DOMAINS_CDDL	:= draft-ietf-suit-trust-domains.cddl
 SUIT_ENCRYPTED_PAYLOADS_CDDL	:= draft-ietf-suit-firmware-encryption.cddl
 SUIT_REPORT_CDDL		:= draft-ietf-suit-report.cddl
+SUIT_REPORT_XML			:= draft-ietf-suit-report.xml
 SUIT_MTI_CDDL			:= draft-ietf-suit-mti.cddl
 COSE_XML			:= rfc-9052-cose.xml
 COSE_CDDL			:= rfc-9052-cose.cddl
@@ -40,12 +41,17 @@ $(TEEP_MESSAGES) $(SUIT_MANIFESTS):
 
 $(SUIT_MANIFEST_CDDL):
 	curl https://raw.githubusercontent.com/suit-wg/manifest-spec/master/draft-ietf-suit-manifest.cddl -o $@
+	sed -i -e 's/suit-install = 17/suit-install = 20/' $@
 
 $(SUIT_TRUST_DOMAINS_CDDL):
 	curl https://raw.githubusercontent.com/suit-wg/suit-multiple-trust-domains/main/draft-ietf-suit-trust-domains.cddl -o $@
 
-$(SUIT_REPORT_CDDL):
-	curl https://raw.githubusercontent.com/suit-wg/suit-report/main/draft-ietf-suit-report.cddl -o $@
+$(SUIT_REPORT_XML):
+	curl https://www.ietf.org/archive/id/draft-ietf-suit-report-10.xml -o $@
+
+$(SUIT_REPORT_CDDL): $(SUIT_REPORT_XML)
+	#curl https://raw.githubusercontent.com/suit-wg/suit-report/main/draft-ietf-suit-report.cddl -o $@
+	sed -n -e '/<section anchor="full-cddl">/,/<\/sourcecode>/ p' $< | sed -n -e '/<sourcecode type="CDDL"/,/<\/sourcecode>/ p' | sed -e '/<sourcecode type="CDDL"/ d' -e '/<\/sourcecode>/ d' -e 's/\&gt;/>/g' > $@
 
 $(SUIT_MTI_CDDL):
 	curl https://raw.githubusercontent.com/bremoran/suit-mti/main/draft-ietf-suit-mti.cddl -o $@
