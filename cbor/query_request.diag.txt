@@ -11,10 +11,10 @@
     [ [ 18, -8 ] ] / Sign1 using EdDSA /
   ],
   / supported-suit-cose-profiles: / [
-    [-16, -7, -25, -65534] / suit-sha256-es256-ecdh-a128ctr /,
-    [-16, -8, -25, -65534] / suit-sha256-eddsa-ecdh-a128ctr /,
-    [-16, -7, -25, 1] / suit-sha256-es256-ecdh-a128gcm /,
-    [-16, -8, -25, 24] / suit-sha256-eddsa-ecdh-chacha-poly /
+    [-16, -7, -29, -65534] / suit-sha256-es256-ecdh-a128ctr /,
+    [-16, -8, -29, -65534] / suit-sha256-eddsa-ecdh-a128ctr /,
+    [-16, -7, -29, 1]      / suit-sha256-es256-ecdh-a128gcm /,
+    [-16, -8, -29, 24]     / suit-sha256-eddsa-ecdh-chacha-poly /
   ],
   / data-item-requested: / 3 / attestation | trusted-components /
 ]
