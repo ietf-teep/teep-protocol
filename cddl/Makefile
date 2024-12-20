@@ -41,7 +41,6 @@ $(TEEP_MESSAGES) $(SUIT_MANIFESTS):
 
 $(SUIT_MANIFEST_CDDL):
 	curl https://raw.githubusercontent.com/suit-wg/manifest-spec/master/draft-ietf-suit-manifest.cddl -o $@
-	sed -i -e 's/suit-install = 17/suit-install = 20/' $@
 
 $(SUIT_TRUST_DOMAINS_CDDL):
 	curl https://raw.githubusercontent.com/suit-wg/suit-multiple-trust-domains/main/draft-ietf-suit-trust-domains.cddl -o $@
