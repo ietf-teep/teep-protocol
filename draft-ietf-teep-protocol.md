@@ -67,7 +67,7 @@ author:
  -
   ins: A. Tsukamoto
   name: Akira Tsukamoto
-  org: ''
+  org: 'Openchip & Software Technologies, S.L.'
   street: ''
   city: ''
   region: ''
