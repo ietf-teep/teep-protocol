@@ -52,8 +52,8 @@ $(SUIT_REPORT_XML):
 	curl https://www.ietf.org/archive/id/draft-ietf-suit-report-10.xml -o $@
 
 $(SUIT_REPORT_CDDL): $(SUIT_REPORT_XML)
-	#curl https://raw.githubusercontent.com/suit-wg/suit-report/main/draft-ietf-suit-report.cddl -o $@
-	sed -n -e '/<section anchor="full-cddl">/,/<\/sourcecode>/ p' $< | sed -n -e '/<sourcecode type="CDDL"/,/<\/sourcecode>/ p' | sed -e '/<sourcecode type="CDDL"/ d' -e '/<\/sourcecode>/ d' -e 's/\&gt;/>/g' > $@
+	curl https://raw.githubusercontent.com/suit-wg/suit-report/main/draft-ietf-suit-report.cddl -o $@
+	#sed -n -e '/<section anchor="full-cddl">/,/<\/sourcecode>/ p' $< | sed -n -e '/<sourcecode type="CDDL"/,/<\/sourcecode>/ p' | sed -e '/<sourcecode type="CDDL"/ d' -e '/<\/sourcecode>/ d' -e 's/\&gt;/>/g' > $@
 
 $(SUIT_MTI_CDDL):
 	curl https://raw.githubusercontent.com/bremoran/suit-mti/main/draft-ietf-suit-mti.cddl -o $@
@@ -93,4 +93,4 @@ gen-cddl: cat-cddl $(CONCATENATED_CDDL)
 
 .PHONY: clean
 clean:
-	$(RM) $(CONCATENATED_CDDL) $(CONCATENATED_UNTAGGED_SUIT_CDDL) $(COSE_CDDL) $(COSE_XML) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL)
+	$(RM) $(CONCATENATED_CDDL) $(CONCATENATED_UNTAGGED_SUIT_CDDL) $(COSE_CDDL) $(COSE_XML) $(SUIT_MANIFEST_CDDL) $(SUIT_TRUST_DOMAINS_CDDL) $(SUIT_REPORT_CDDL) $(SUIT_MTI_CDDL)
