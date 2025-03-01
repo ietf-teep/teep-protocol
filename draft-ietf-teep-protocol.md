@@ -17,7 +17,7 @@ abbrev: TEEP Protocol
 area: Security
 wg: TEEP
 kw: Trusted Execution Environment
-date: 2024
+date: 2025
 author:
 
  -
