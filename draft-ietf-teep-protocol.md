@@ -1591,8 +1591,8 @@ information, future extensions might specify support for encryption and/or MAC o
 
 ~~~~ cddl-cipher-suite
 ; teep-cipher-suites
-$teep-cipher-suite /= teep-cipher-suite-sign1-eddsa
-$teep-cipher-suite /= teep-cipher-suite-sign1-es256
+$teep-cipher-suite /= teep-cipher-suite-sign1-ed25519
+$teep-cipher-suite /= teep-cipher-suite-sign1-esp256
 
 ;The following two cipher suites have only a single operation each.
 ;Other cipher suites may be defined to have multiple operations.
@@ -1600,11 +1600,11 @@ $teep-cipher-suite /= teep-cipher-suite-sign1-es256
 ;to support any additional ones that use COSE_Sign_Tagged, or other
 ;signing, encryption, or MAC algorithms.
 
-teep-operation-sign1-eddsa = [ cose-sign1, cose-alg-eddsa ]
-teep-operation-sign1-es256 = [ cose-sign1, cose-alg-es256 ]
+teep-operation-sign1-ed25519 = [ cose-sign1, cose-alg-ed25519 ]
+teep-operation-sign1-esp256  = [ cose-sign1, cose-alg-esp256 ]
 
-teep-cipher-suite-sign1-eddsa = [ teep-operation-sign1-eddsa ]
-teep-cipher-suite-sign1-es256 = [ teep-operation-sign1-es256 ]
+teep-cipher-suite-sign1-ed25519 = [ teep-operation-sign1-ed25519 ]
+teep-cipher-suite-sign1-esp256  = [ teep-operation-sign1-esp256 ]
 
 ;MANDATORY for TAM and TEEP Agent to support the following COSE
 ;operations, and OPTIONAL to support additional ones such as
@@ -1615,8 +1615,8 @@ cose-sign1 = 18      ; CoAP Content-Format value
 ;MANDATORY for TAM to support the following, and OPTIONAL to implement
 ;any additional algorithms from the IANA COSE Algorithms registry.
 
-cose-alg-es256 = -7  ; ECDSA w/ SHA-256
-cose-alg-eddsa = -8  ; EdDSA
+cose-alg-esp256  = -9   ; ECDSA using P-256 curve and SHA-256
+cose-alg-ed25519 = -19  ; EdDSA using Ed25519 curve
 ~~~~
 
 Each operation in a given cipher suite has two elements:
@@ -1705,10 +1705,10 @@ It MAY also support use with COSE_Encrypt or other COSE types in additional ciph
 
 ~~~~ cddl-suit-cose-profile
 ; suit-cose-profile
-$suit-cose-profile /= suit-sha256-es256-ecdh-a128ctr
-$suit-cose-profile /= suit-sha256-eddsa-ecdh-a128ctr
-$suit-cose-profile /= suit-sha256-es256-ecdh-a128gcm
-$suit-cose-profile /= suit-sha256-eddsa-ecdh-chacha-poly
+$suit-cose-profile /= suit-sha256-esp256-ecdh-a128ctr
+$suit-cose-profile /= suit-sha256-ed25519-ecdh-a128ctr
+$suit-cose-profile /= suit-sha256-esp256-ecdh-a128gcm
+$suit-cose-profile /= suit-sha256-ed25519-ecdh-chacha-poly
 ~~~~
 
 # Attestation Freshness Mechanisms {#freshness-mechanisms}
@@ -2188,7 +2188,7 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
 
 This example uses the following parameters:
 
-- SUIT Profile: suit-sha256-es256-ecdh-a128ctr (see {{I-D.ietf-suit-mti}} Section 3.2)
+- SUIT Profile: suit-sha256-esp256-ecdh-a128ctr (see {{I-D.ietf-suit-mti}} Section 3.2)
   - Algorithm for payload encryption: A128CTR (-65534)
   - Algorithm for key wrap: ECDH-ES + A128KW (-29)
 - KEK (Receiver's Private Key):

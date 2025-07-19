@@ -87,10 +87,10 @@ cose-alg-es256 = -7  ; ECDSA w/ SHA-256
 cose-alg-eddsa = -8  ; EdDSA
 
 ; suit-cose-profile
-$suit-cose-profile /= suit-sha256-es256-ecdh-a128ctr
-$suit-cose-profile /= suit-sha256-eddsa-ecdh-a128ctr
-$suit-cose-profile /= suit-sha256-es256-ecdh-a128gcm
-$suit-cose-profile /= suit-sha256-eddsa-ecdh-chacha-poly
+$suit-cose-profile /= suit-sha256-esp256-ecdh-a128ctr
+$suit-cose-profile /= suit-sha256-ed25519-ecdh-a128ctr
+$suit-cose-profile /= suit-sha256-esp256-ecdh-a128gcm
+$suit-cose-profile /= suit-sha256-ed25519-ecdh-chacha-poly
 
 ; freshness-mechanisms
 FRESHNESS_NONCE = 0
