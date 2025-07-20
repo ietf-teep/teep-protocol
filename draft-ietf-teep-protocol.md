@@ -72,7 +72,7 @@ author:
   city: ''
   region: ''
   code: ''
-  country: JP
+  country: ES
   email: akira.tsukamoto@gmail.com
 
 normative:
