@@ -249,7 +249,7 @@ $teep-message-type /= teep-success
 $teep-message-type /= teep-error
 
 ; message type numbers, in one byte which could take a number from 0 to 23
-$teep-type = (0..23)
+$teep-type /= (0..23)
 TEEP-TYPE-query-request = 1
 TEEP-TYPE-query-response = 2
 TEEP-TYPE-update = 3
