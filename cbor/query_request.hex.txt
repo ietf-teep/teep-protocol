@@ -17,22 +17,22 @@
             12      # unsigned(18) / cose-sign1 /
             32      # negative(18) / -19 = cose-alg-ed25519 /
    84               # array(4) / supported-suit-cose-profiles /
-      84            # array(4) / suit-sha256-es256-ecdh-a128ctr /,
+      84            # array(4) / suit-sha256-esp256-ecdh-a128ctr /,
          2f         # negative(15) / -16 = SHA-256 /
          28         # negative(8) / -9 = ESP256 /
          38 1C      # negative(28) / -29 = ECDH-ES + A128KW /
          39 fffd    # negative(65533) / -65534 = A128CTR /
-      84            # array(4) / suit-sha256-eddsa-ecdh-a128ctr /
+      84            # array(4) / suit-sha256-ed25519-ecdh-a128ctr /
          2f         # negative(15) / -16 = SHA-256 /
          32         # negative(18) / -19 = Ed25519 /
          38 1C      # negative(28) / -29 = ECDH-ES + A128KW /
          39 fffd    # negative(65533) / -65534 = A128CTR /
-      84            # array(4) / suit-sha256-es256-ecdh-a128gcm /
+      84            # array(4) / suit-sha256-esp256-ecdh-a128gcm /
          2f         # negative(15) / -16 = SHA-256 /
          28         # negative(6) / -9 = ESP256 /
          38 1C      # negative(28) / -29 = ECDH-ES + A128KW /
          01         # unsigned(1) / A128GCM /
-      84            # array(4) / suit-sha256-eddsa-ecdh-chacha-poly /
+      84            # array(4) / suit-sha256-ed25519-ecdh-chacha-poly /
          2f         # negative(15) / -16 = SHA-256 /
          32         # negative(18) / Ed25519 /
          38 1C      # negative(28) / -29 = ECDH-ES + A128KW /
