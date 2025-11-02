@@ -21,16 +21,11 @@ date: 2025
 author:
 
  -
-  ins: H. Tschofenig
-  name: Hannes Tschofenig
-  org: ''
-  street: ''
-  city: ''
-  region: ''
-  code: ''
-  country: Austria
-  email: hannes.tschofenig@gmx.net
-
+  fullname: Hannes Tschofenig
+  organization: University of Applied Sciences Bonn-Rhein-Sieg
+  abbrev: H-BRS
+  country: Germany
+  email: "hannes.tschofenig@gmx.net"
  -
   ins: M. Pei
   name: Mingliang Pei
@@ -996,7 +991,7 @@ The Success message has the following fields:
 
 {: vspace='0'}
 type
-: The value of (5) corresponds to corresponds to a Success message sent from the TEEP Agent to the
+: The value of (5) corresponds to a Success message sent from the TEEP Agent to the
   TAM.
 
 token
@@ -1128,7 +1123,7 @@ ERR_PERMANENT_ERROR (1)
 : The received TEEP
   message contained incorrect fields or fields that are inconsistent with
   other fields.
-  For diagnosis purposes it is RECOMMMENDED to identify the failure reason
+  For diagnosis purposes it is RECOMMENDED to identify the failure reason
   in the error message field.
   A TEEP implementation receiving this error might refuse to communicate further with
   the problematic TEEP message sender, by silently dropping any TEEP messages
@@ -1140,7 +1135,7 @@ ERR_PERMANENT_ERROR (1)
 ERR_UNSUPPORTED_EXTENSION (2)
 : The TEEP implementation does not support an extension included in the
   TEEP message it received.
-  For diagnosis purposes it is RECOMMMENDED to identify the unsupported
+  For diagnosis purposes it is RECOMMENDED to identify the unsupported
   extension in the error message field.
   A TAM implementation receiving this error might retry sending the last message it sent to
   the sender of this error, without using any TEEP extensions.
@@ -1165,14 +1160,14 @@ ERR_UNSUPPORTED_CIPHER_SUITES (5)
 
 ERR_BAD_CERTIFICATE (6)
 : Processing of a certificate failed. For diagnosis purposes it is
-  RECOMMMENDED to include information about the failing certificate
+  RECOMMENDED to include information about the failing certificate
   in the error message field.  For example, the certificate was of an
   unsupported type, or the certificate was revoked by its signer.
   A TEEP implementation receiving this error might attempt to use an alternate certificate.
 
 ERR_ATTESTATION_REQUIRED (7)
 : Indicates that the TEEP implementation sending this error requires
-  attestation of the TEEP imlementation receiving this error.
+  attestation of the TEEP implementation receiving this error.
 
 ERR_UNSUPPORTED_SUIT_REPORT (8)
 : Indicates that the TEEP Agent does not support the suit-cose-profile of
