@@ -7,14 +7,14 @@
     / versions / 3 : [ 0 ]  / 0 is current TEEP Protocol /
   },
   / supported-teep-cipher-suites: / [
-    [ [ 18, -7 ] ] / Sign1 using ES256 /,
-    [ [ 18, -8 ] ] / Sign1 using EdDSA /
+    [ [ 18, -9 ] ] / Sign1 using ESP256 /,
+    [ [ 18, -19 ] ] / Sign1 using Ed25519 /
   ],
   / supported-suit-cose-profiles: / [
-    [-16, -7, -29, -65534] / suit-sha256-es256-ecdh-a128ctr /,
-    [-16, -8, -29, -65534] / suit-sha256-eddsa-ecdh-a128ctr /,
-    [-16, -7, -29, 1]      / suit-sha256-es256-ecdh-a128gcm /,
-    [-16, -8, -29, 24]     / suit-sha256-eddsa-ecdh-chacha-poly /
+    [-16, -9, -29, -65534] / suit-sha256-esp256-ecdh-a128ctr /,
+    [-16, -19, -29, -65534] / suit-sha256-ed25519-ecdh-a128ctr /,
+    [-16, -9, -29, 1]      / suit-sha256-esp256-ecdh-a128gcm /,
+    [-16, -19, -29, 24]     / suit-sha256-ed25519-ecdh-chacha-poly /
   ],
   / data-item-requested: / 3 / attestation | trusted-components /
 ]
