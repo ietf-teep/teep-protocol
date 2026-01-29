@@ -77,8 +77,8 @@ normative:
   RFC8747:
   RFC8949:
   RFC9052:
-  I-D.ietf-cose-key-thumbprint:
-  I-D.ietf-rats-eat:
+  RFC9679:
+  RFC9711:
   I-D.ietf-suit-manifest:
   I-D.ietf-suit-mti:
   I-D.ietf-suit-trust-domains:
@@ -93,7 +93,7 @@ informative:
   I-D.ietf-rats-ar4si:
   I-D.ietf-rats-reference-interaction-models:
   RFC9397:
-  I-D.ietf-rats-eat-media-type:
+  RFC9782:
   I-D.ietf-rats-concise-ta-stores:
   RFC8610: 
   RFC8915:
@@ -112,15 +112,15 @@ protocol for managing the lifecycle of Trusted Components.
 
 # Introduction {#introduction}
 
-The Trusted Execution Environment (TEE) concept has been designed to
-separate a regular operating system, also referred as a Rich Execution
-Environment (REE), from security-sensitive applications. In a TEE
+ The Trusted Execution Environment (TEE) concept has been designed to
+ separate a regular operating system, also referred to as a Rich Execution
+ Environment (REE), from security-sensitive applications. In a TEE
 ecosystem, device vendors may use different operating systems in the
 REE and may use different types of TEEs. When Trusted Component Developers or
-Device Administrators use Trusted Application Managers (TAMs) to
-install, update, and delete Trusted Applications and their dependencies on a wide range
-of devices with potentially different TEEs then an interoperability
-need arises.
+ Device Administrators use Trusted Application Managers (TAMs) to
+ install, update, and delete Trusted Applications and their dependencies on a wide range
+ of devices with potentially different TEEs, then an interoperability
+ need arises.
 
 This document specifies the protocol for communicating between a TAM
 and a TEEP Agent.
@@ -135,7 +135,7 @@ necessary terminology.
 
 {::boilerplate bcp14}
 
-This specification re-uses the terminology defined in {{RFC9397}}.
+This specification reuses the terminology defined in {{RFC9397}}.
 
 As explained in Section 4.4 of that document, the TEEP protocol treats
 each Trusted Application (TA), any dependencies the TA has, and personalization data as separate
@@ -166,7 +166,7 @@ Device Administrator.
 The TEEP protocol not only uses
 CBOR but also the respective security wrapper, namely COSE {{RFC9052}}. Furthermore, for software updates the SUIT
 manifest format {{I-D.ietf-suit-manifest}} is used, and
-for attestation the Entity Attestation Token (EAT) {{I-D.ietf-rats-eat}}
+for attestation the Entity Attestation Token (EAT) {{RFC9711}}
 format is supported although other attestation formats are also permitted.
 
 This specification defines five messages: QueryRequest, QueryResponse,
@@ -443,7 +443,7 @@ attestation-payload-format
 : The attestation-payload-format parameter indicates the IANA Media Type of the
   attestation-payload parameter, where media type parameters are permitted after
   the media type.  For protocol version 0, the absence of this parameter indicates that
-  the format is "application/eat+cwt; eat_profile=urn:ietf:rfc:rfcXXXX" (see {{I-D.ietf-rats-eat-media-type}}
+  the format is "application/eat+cwt; eat_profile=urn:ietf:rfc:rfcXXXX" (see {{RFC9782}}
   for further discussion).
   (RFC-editor: upon RFC publication, replace XXXX above with the RFC number
   of this document.)
@@ -457,7 +457,7 @@ attestation-payload
   If the attestation-payload-format parameter is absent,
   the attestation payload contained in this parameter MUST be
   an Entity Attestation Token following the encoding
-  defined in {{I-D.ietf-rats-eat}}.  See {{attestation}} for further discussion.
+  defined in {{RFC9711}}.  See {{attestation}} for further discussion.
 
 suit-reports
 : If present, the suit-reports parameter contains a set of "boot" (including
@@ -499,7 +499,7 @@ query-response = [
 
 requested-tc-info = {
   component-id => SUIT_Component_Identifier,
-  ? tc-manifest-sequence-number => uint .size 8,
+  ? tc-manifest-sequence-number => uint,
   ? have-binary => bool
 }
 ~~~~
@@ -527,7 +527,7 @@ attestation-payload-format
 : The attestation-payload-format parameter indicates the IANA Media Type of the
   attestation-payload parameter, where media type parameters are permitted after
   the media type.  For protocol version 0, the absence of this parameter indicates that
-  the format is "application/eat+cwt; eat_profile=urn:ietf:rfc:rfcXXXX" (see {{I-D.ietf-rats-eat-media-type}}
+  the format is "application/eat+cwt; eat_profile=urn:ietf:rfc:rfcXXXX" (see {{RFC9782}}
   for further discussion).
   (RFC-editor: upon RFC publication, replace XXXX above with the RFC number
   of this document.)
@@ -541,7 +541,7 @@ attestation-payload
   with the attestation bit set.  If the attestation-payload-format parameter is absent,
   the attestation payload contained in this parameter MUST be
   an Entity Attestation Token following the encoding
-  defined in {{I-D.ietf-rats-eat}}.  See {{attestation}} for further discussion.
+  defined in {{RFC9711}}.  See {{attestation}} for further discussion.
 
 suit-reports
 : If present, the suit-reports parameter contains a set of "boot" (including
@@ -632,16 +632,16 @@ requirements, whether these claims appear in Attestation Results, or in Evidence
 for the Verifier to use when generating Attestation Results of some form:
 
 | Requirement  | Claim | Reference |
-| Freshness proof | nonce | Section 4.1 of {{I-D.ietf-rats-eat}} |
-| Device unique identifier | ueid | Section 4.2.1 of {{I-D.ietf-rats-eat}} |
-| Vendor of the device | oemid | Section 4.2.3 of {{I-D.ietf-rats-eat}} |
-| Class of the device | hwmodel | Section 4.2.4 of {{I-D.ietf-rats-eat}} |
-| TEE hardware type | hwversion | Section 4.2.5 of {{I-D.ietf-rats-eat}} |
-| TEE hardware version | hwversion | Section 4.2.5 of {{I-D.ietf-rats-eat}} |
-| TEE firmware type | manifests | Section 4.2.15 of {{I-D.ietf-rats-eat}} |
-| TEE firmware version | manifests | Section 4.2.15 of {{I-D.ietf-rats-eat}} |
+| Freshness proof | nonce | Section 4.1 of {{RFC9711}} |
+| Device unique identifier | ueid | Section 4.2.1 of {{RFC9711}} |
+| Vendor of the device | oemid | Section 4.2.3 of {{RFC9711}} |
+| Class of the device | hwmodel | Section 4.2.4 of {{RFC9711}} |
+| TEE hardware type | hwversion | Section 4.2.5 of {{RFC9711}} |
+| TEE hardware version | hwversion | Section 4.2.5 of {{RFC9711}} |
+| TEE firmware type | manifests | Section 4.2.15 of {{RFC9711}} |
+| TEE firmware version | manifests | Section 4.2.15 of {{RFC9711}} |
 
-The "manifests" claim (see Section 4.2.15 of {{I-D.ietf-rats-eat}}) should include
+The "manifests" claim (see Section 4.2.15 of {{RFC9711}}) should include
 information about the TEEP Agent as well as any of its dependencies such as firmware.
 
 ## Update Message {#update-msg-def}
@@ -732,7 +732,7 @@ attestation-payload-format
 : The attestation-payload-format parameter indicates the IANA Media Type of the
   attestation-payload parameter, where media type parameters are permitted after
   the media type.  The absence of this parameter indicates that
-  the format is "application/eat+cwt; eat_profile=urn:ietf:rfc:rfcXXXX" (see {{I-D.ietf-rats-eat-media-type}}
+  the format is "application/eat+cwt; eat_profile=urn:ietf:rfc:rfcXXXX" (see {{RFC9782}}
   for further discussion).
   (RFC-editor: upon RFC publication, replace XXXX above with the RFC number
   of this document.)
@@ -745,7 +745,7 @@ attestation-payload
   If the attestation-payload-format parameter is absent,
   the attestation payload contained in this parameter MUST be
   an Entity Attestation Token following the encoding
-  defined in {{I-D.ietf-rats-eat}}.  See {{attestation}} for further discussion.
+  defined in {{RFC9711}}.  See {{attestation}} for further discussion.
 
 err-code
 : The err-code parameter contains one of the error codes listed in the
@@ -768,9 +768,9 @@ signature is checked by the TEEP Agent at protocol message processing time.
 so that Agents only send potentially sensitive data such as Evidence to
 trusted TAMs.)
 
-The Trusted Component signer on the other hand is what authorizes the
+The Trusted Component signer, on the other hand, is what authorizes the
 Trusted Component to actually run, so the manifest signature could be
-checked at install time or load (or run) time or both, and this checking is
+checked at install time, load (or run) time, or both, and this checking is
 done by the TEE independent of whether TEEP is used or some other update
 mechanism.
 See section 5 of {{RFC9397}} for further discussion.
@@ -785,7 +785,7 @@ In this scenario, a SUIT Manifest has a URI pointing to a Trusted Component Bina
 A Trusted Component Developer creates a new Trusted Component Binary and hosts it at a Trusted Component Developer's URI.  Then the Trusted Component Developer generates an associated SUIT manifest with the filename "tc-uuid" that contains the URI. The filename "tc-uuid" is used in Scenario 3 later.
 
 The TAM receives the latest SUIT manifest from the Trusted Component Developer, and
-the URI it contains will not be changeable by the TAM since the SUIT manifest is signed by the Trusted Component Developer.
+the URI it contains cannot be changed by the TAM since the SUIT manifest is signed by the Trusted Component Developer.
 
 
 Pros:
@@ -906,7 +906,7 @@ For the full SUIT Manifest example binary, see {{suit-integrated}}.
 In this scenario, Personalization Data is associated with the Trusted Component Binary "tc-uuid" from Scenario 1.
 
 The Trusted Component Developer places encrypted Personalization Data in the SUIT manifest, and it will be delivered by the TAM.
-The SUIT manifest processor decrypts it and then store it into file named "config.json", and then install the dependency component.
+The SUIT manifest processor decrypts it, then stores it in a file named "config.json", and then installs the dependency component.
 
 The TAM delivers the SUIT manifest of the Personalization Data which depends on the Trusted Component Binary from Scenario 1.
 
@@ -1215,7 +1215,7 @@ Although Attestation Results required by a TAM are separable from the TEEP proto
 per se, this section is included as part of the requirements for building
 a compliant TAM that uses EATs for Attestation Results.
 
-Section 7 of {{I-D.ietf-rats-eat}} defines the requirement for
+Section 7 of {{RFC9711}} defines the requirement for
 Entity Attestation Token profiles.  This section defines an EAT profile
 for use with TEEP.
 
@@ -1236,7 +1236,7 @@ of this document.)
 * Key Identification: COSE Key ID (kid) is used, where
   the key ID is the hash of a public key (where the public key may be
   used as a raw public key, or in a certificate) as specified in
-  {{I-D.ietf-cose-key-thumbprint}}.  See {{attestation-result-tam}}
+  {{RFC9679}}.  See {{attestation-result-tam}}
   and {{attestation-result-agent}} for
   discussion on the choice of hash algorithm.
 * Endorsement Identification: Optional, but semantics are the same
@@ -1417,7 +1417,7 @@ Based on the results of attestation (if any), any SUIT Reports,
 and the lists of installed, requested,
 and unneeded Trusted Components reported in the QueryResponse, the TAM
 determines, in any implementation specific manner, which Trusted Components
-need to be installed, updated, or deleted, if any.  There are in typically three cases:
+need to be installed, updated, or deleted, if any.  There are typically three cases:
 
 1. Attestation failed. This indicates that the rest of the information in the QueryResponse
    cannot necessarily be trusted, as the TEEP Agent may not be healthy (or at least up to date).
@@ -1795,8 +1795,8 @@ TEEP Broker
 : As discussed in section 6 of {{RFC9397}},
   the TEEP protocol typically relies on a TEEP Broker to relay messages
   between the TAM and the TEEP Agent.  When the TEEP Broker is
-  compromised it can drop messages, delay the delivery of messages,
-  and replay messages but it cannot modify those messages. (A replay
+  compromised, it can drop messages, delay the delivery of messages,
+  and replay messages, but it cannot modify those messages. (A replay
   would be, however, detected by the TEEP Agent.) A compromised TEEP
   Broker could reorder messages in an attempt to install an old
   version of a Trusted Component. Information in the manifest ensures that TEEP
@@ -1821,8 +1821,7 @@ Replay Protection
   field in the message, where a TAM can detect which message it is in response to.
 
 Trusted Component Signer Compromise
-: A TAM is responsible for vetting a Trusted Component and
-  before distributing them to TEEP Agents.  
+: A TAM is responsible for vetting Trusted Components before distributing them to TEEP Agents.
   It is RECOMMENDED to provide a way to
   update the trust anchor store used by the TEE, for example using
   a firmware update mechanism such as {{I-D.ietf-rats-concise-ta-stores}}.  Thus, if a Trusted Component
@@ -1854,10 +1853,9 @@ Depending on
 the properties of the attestation mechanism, it is possible to
 uniquely identify a device based on information in the
 attestation payload or in the certificate used to sign the
-attestation payload.  This uniqueness may raise privacy concerns. To lower the
-privacy implications the TEEP Agent MUST present its
-attestation payload only to an authenticated and authorized TAM and when using
-an EAT, it SHOULD use encryption as discussed in {{I-D.ietf-rats-eat}}, since
+attestation payload.  This uniqueness may raise privacy concerns. To lower the privacy implications, the TEEP Agent MUST present its
+attestation payload only to an authenticated and authorized TAM and, when using
+an EAT, it SHOULD use encryption as discussed in {{RFC9711}}, since
 confidentiality is not provided by the TEEP protocol itself and
 the transport protocol under the TEEP protocol might be implemented
 outside of any TEE. If any mechanism other than EAT is used, it is
@@ -2028,7 +2026,7 @@ COSE is shown.
     / oemid /      258: h'894823', / IEEE OUI format OEM ID /
     / hwmodel /    259: h'549dcecc8b987c737b44e40f7c635ce8'
                           / Hash of chip model name /,
-    / hwversion /  260: ["1.3.4", 1], / Multipartnumeric  /
+    / hwversion /  260: ["1.3.4", 1], / Multipart numeric  /
     / manifests /  273: [
                           [ 60, / application/cbor, TO BE REPLACED /
                                 / with the format value for a /
@@ -2238,7 +2236,7 @@ The URI in this example is the reference URI provided in the SUIT manifest.
 }
 ~~~~
 
-## F.2. Example 2: Faiure
+## F.2. Example 2: Failure
 {: numbered='no'}
 
 ~~~~
