@@ -73,6 +73,7 @@ author:
 normative:
   RFC9052:
   RFC3629:
+  RFC5646:
   RFC5198:
   RFC8747:
   RFC8949:
@@ -695,6 +696,7 @@ update = [
     ? attestation-payload => bstr,
     ? err-code => (0..23),
     ? err-msg => text .size (1..128),
+    ? err-lang => text .size (1..35),
     * $$update-extensions,
     * $$teep-option-extensions
   }
@@ -760,6 +762,12 @@ err-code
 err-msg
 : The err-msg parameter is human-readable diagnostic text that MUST be encoded
   using UTF-8 {{RFC3629}} in Net-Unicode format {{RFC5198}} with a maximum of 128 bytes.
+ 
+err-lang
+: The err-lang parameter is an OPTIONAL RFC 5646 {{RFC5646}} language tag identifying the
+  language of the `err-msg` text.  When present, implementations MUST use the
+  language tag to aid human operators in interpreting diagnostic text.  The
+  err-msg field SHOULD be formatted in the language indicated by this tag.
 
 Note that an Update message carrying one or more SUIT manifests will inherently
 involve multiple signatures, one by the TAM in the TEEP message and one from
@@ -1034,6 +1042,7 @@ teep-error = [
   options: {
      ? token => bstr .size (8..64),
      ? err-msg => text .size (1..128),
+     ? err-lang => text .size (1..35),
      ? supported-teep-cipher-suites => [ + $teep-cipher-suite ],
      ? supported-freshness-mechanisms => [ + $freshness-mechanism ],
      ? supported-suit-cose-profiles => [ + $suit-cose-profile ],
@@ -1075,6 +1084,12 @@ token
 err-msg
 : The err-msg parameter is human-readable diagnostic text that MUST be encoded
   using UTF-8 {{RFC3629}} using Net-Unicode form {{RFC5198}} with max 128 bytes.
+
+err-lang
+: The err-lang parameter is an OPTIONAL RFC 5646 {{RFC5646}} language tag identifying the
+  language of the `err-msg` text. When present, implementations SHOULD use the
+  language tag to aid human operators in interpreting diagnostic text. The
+  err-msg field SHOULD be formatted in the language indicated by this tag.
 
 supported-teep-cipher-suites
 : The supported-teep-cipher-suites parameter lists the TEEP cipher suite(s) supported by the TEEP Agent.
@@ -2176,7 +2191,7 @@ for their valuable implementation feedback.
 
 We would also like to thank Carsten Bormann and Henk Birkholz for their help with the CDDL.
 
-Finally, we would like to thank the following IESG members for their review feedback: Sean Turner and Paul Kyzivat
+Finally, we would like to thank the following IESG members for their review feedback: Sean Turner, Paul Kyzivat, Scott Hollenbeck, and Yoshifumi Nishida
 
 # C. Complete CDDL
 {: numbered='no'}
