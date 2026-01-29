@@ -99,6 +99,7 @@ informative:
   RFC8915:
   RFC5934:
   RFC9334:
+  RFC9124:
 
 --- abstract
 
@@ -301,8 +302,6 @@ the listed steps fail, then the TEEP message MUST be rejected.
   TEEP message according to this specification.
 
 
-
-
 ## QueryRequest Message
 
 
@@ -368,7 +367,8 @@ token
   some configuration changes were made that affected their content.
   This is particularly useful when a TAM issues multiple concurrent requests
   to a TEEP Agent. The token MUST be present if and only if the attestation bit is clear in
-  the data-item-requested value. When the attestation bit is
+  the data-item-requested value (i.e., the attestation bit, which is bit 0 in the bitmap, is not set).
+  When the attestation bit is
   clear then a challenge will be included, which offers replay protection
   capabilities. The size of the token is at least 8 bytes
   (64 bits) and maximum of 64 bytes. The first usage of a token
@@ -424,7 +424,7 @@ supported-freshness-mechanisms
 challenge
 : The challenge field is an optional parameter used for ensuring the freshness of
   attestation Evidence returned with a QueryResponse message. It MUST be absent if
-  the attestation bit is clear or the Passport model is used.
+  the attestation bit is clear or the Passport model (see {{RFC9334}}) is used.
   When a challenge is
   provided in the QueryRequest and Evidence in the form of an EAT is returned with a QueryResponse message
   then the challenge contained in the QueryRequest MUST be used to generate the EAT,
@@ -599,7 +599,7 @@ The requested-tc-info message has the following fields:
 {: vspace='0'}
 
 component-id
-: A SUIT Component Identifier.
+: A SUIT Component Identifier; see {{RFC9124}}.
 
 tc-manifest-sequence-number
 : The minimum suit-manifest-sequence-number value from a SUIT manifest for
@@ -1438,7 +1438,7 @@ The Attestation Result must first be validated as follows:
 2. Verify that the Attestation Result contains a "cnf" claim (as defined in Section 3.1 of {{RFC8747}}) where
    the key ID is the hash of the TEEP Agent public key used to verify the signature on the TEEP message,
    and the hash is computed using the Digest Algorithm specified by one of the SUIT profiles
-   supported by the TAM (SHA-256 for the ones mandated in this document).
+   supported by the TAM.
 
    See Sections 3.4 and 6 of {{RFC8747}} for more discussion.
 
@@ -1570,7 +1570,7 @@ The Attestation Result must first be validated as follows:
 2. Verify that the Attestation Result contains a "cnf" claim (as defined in Section 3.1 of {{RFC8747}}) where
    the key ID is the hash of the TAM public key used to verify the signature on the TEEP message,
    and the hash is computed using the Digest Algorithm specified by one of the SUIT profiles
-   supported by the TEEP Agent (SHA-256 for the ones mandated in this document).
+   supported by the TEEP Agent.
 
    See Sections 3.4 and 6 of {{RFC8747}} for more discussion.
 
@@ -1892,8 +1892,8 @@ an EAT, it SHOULD use encryption as discussed in {{RFC9711}} unless the transpor
 layer provides sufficient confidentiality protection. Encryption is particularly
 important since confidentiality is not provided by the TEEP protocol itself and
 the transport protocol under the TEEP protocol might be implemented
-outside of any TEE. If any mechanism other than EAT is used, it is
-up to that mechanism to specify how privacy is provided.
+outside of any TEE. If any mechanism other than EAT is used, that
+mechanism MUST specify how privacy is provided.
 
 Since SUIT Reports can also contain sensitive information, a TEEP Agent
 SHOULD also encrypt SUIT Reports as discussed in {{eat-suit-ciphersuite}}, particularly
@@ -1996,6 +1996,8 @@ Kuniyasu Suzaki (TRASIO/AIST), Tsukasa Oi (TRASIO), and Yuichi Takita (SECOM)
 for their valuable implementation feedback.
 
 We would also like to thank Carsten Bormann and Henk Birkholz for their help with the CDDL.
+
+Finally, we would like to thank the following IESG members for their review feedback: Sean Turner and Paul Kyzivat
 
 # C. Complete CDDL
 {: numbered='no'}
