@@ -1,8 +1,3 @@
-; DO NOT EDIT this cddl file manually.
-; This cddl file is Auto-generated file from md file.
-; Edit the md file and run make for generating this cddl file.
-; Please do not forget to commit and push this cddl file to git repo
-; every time you have revised the md file.
 
 teep-message = $teep-message-type .within teep-message-framework
 
@@ -21,7 +16,8 @@ $teep-message-type /= update
 $teep-message-type /= teep-success
 $teep-message-type /= teep-error
 
-; message type numbers, in one byte which could take a number from 0 to 23
+; message type numbers, in one byte which could take a
+; number from 0 to 23
 $teep-type /= (0..23)
 TEEP-TYPE-query-request = 1
 TEEP-TYPE-query-response = 2
@@ -80,8 +76,9 @@ teep-cipher-suite-sign1-esp256  = [ teep-operation-sign1-esp256 ]
 
 cose-sign1 = 18      ; CoAP Content-Format value
 
-;MANDATORY for TAM to support the following, and OPTIONAL to implement
-;any additional algorithms from the IANA COSE Algorithms registry.
+;MANDATORY for TAM to support the following, and OPTIONAL to
+;implement any additional algorithms from the IANA COSE Algorithms
+;registry.
 
 cose-alg-esp256  = -9   ; ECDSA using P-256 curve and SHA-256
 cose-alg-ed25519 = -19  ; EdDSA using Ed25519 curve

@@ -17,7 +17,7 @@ abbrev: TEEP Protocol
 area: Security
 wg: TEEP
 kw: Trusted Execution Environment
-date: 2025
+date: 2026
 author:
 
  -
@@ -243,7 +243,8 @@ $teep-message-type /= update
 $teep-message-type /= teep-success
 $teep-message-type /= teep-error
 
-; message type numbers, in one byte which could take a number from 0 to 23
+; message type numbers, in one byte which could take a
+; number from 0 to 23
 $teep-type /= (0..23)
 TEEP-TYPE-query-request = 1
 TEEP-TYPE-query-response = 2
@@ -376,10 +377,11 @@ token
   to distinguish the correct response from multiple requests.
   The token value MUST NOT be used for other purposes, such as a TAM to
   identify the devices and/or a device to identify TAMs or Trusted Components.
-  The TAM SHOULD set an expiration time for each token and MUST ignore any messages with expired tokens.
+  The TAM SHOULD set an expiration time for each token to facilitate cleanup of  stale request state, and MUST ignore any messages with expired tokens. Implementations without explicit token management (e.g., simple TAMs that process requests synchronously\n  and do not maintain state) may not need explicit token expiration.
   The TAM MUST expire the token value after receiving the first response
   containing the token value and ignore any subsequent messages that have the same token
-  value.
+  value. Implementations SHOULD use a timeout mechanism (see {{tam}}) to eventually
+  discard unanswered requests that have been awaiting responses for an excessive duration.
 
 supported-teep-cipher-suites
 : The supported-teep-cipher-suites parameter lists the TEEP cipher suites
@@ -435,7 +437,7 @@ challenge
 
 versions
 : The versions parameter enumerates the TEEP protocol version(s) supported by the TAM.
-  A value of 0 refers to the current version of the TEEP protocol.
+  A value of 0 refers to the version of the TEEP protocol defined in this document.
   If this field is not present, it is to be treated the same as if
   it contained only version 0.
 
@@ -621,11 +623,13 @@ make decisions on how to remediate a TEE that is out of compliance, or update a 
 that is requesting an authorized change.  To do so, the information in
 Section 7 of {{RFC9397}} is often required depending on the policy.
 
-Attestation Results SHOULD use Entity Attestation Tokens (EATs).  Use of any other
-format, such as a widely implemented format for a specific processor vendor, is
-permitted but increases the complexity of the TAM by requiring it to understand
-the format for each such format rather than only the common EAT format so is not
-recommended.
+Attestation Results SHOULD use Entity Attestation Tokens (EATs) to use a standardized
+format and to reduce TAM implementation complexity. Use of any other format, such as a widely
+implemented format for a specific processor vendor, is permitted when standardized EAT
+support is not available or when proprietary formats provide essential functionality,
+but this increases the complexity of the TAM by requiring it to understand
+the format for each such format rather than only the common EAT format and is not
+recommended for interoperable deployments.
 
 When an EAT is used, the following claims can be used to meet those
 requirements, whether these claims appear in Attestation Results, or in Evidence
@@ -1112,9 +1116,15 @@ suit-reports
   message.
 
 err-code
-: The err-code parameter contains one of the
-  error codes listed below). Only selected values are applicable
-  to each message.
+: The err-code parameter contains one of the error codes listed below.
+  Only selected values are applicable to each message.
+  Note that error codes are restricted to the range (0..23) to permit
+  encoding as single-byte CBOR unsigned integers. Error code values 0, 11-16,
+  and 18-22 are currently unassigned and reserved for future use.
+  Error code 0 is intentionally reserved to prevent accidental use.
+  Extensions that define new error codes SHOULD constrain values to this range;
+  however, implementations that receive unrecognized error code values greater than 23
+  SHOULD handle them gracefully, treating them as unknown errors.
 
 This specification defines the following initial error messages:
 
@@ -1306,6 +1316,14 @@ encoding. Since the word "key" is mainly used in its other meaning, as a
 cryptographic key, this specification uses the term "label" for this usage
 as a map key.
 
+Message parameter labels are restricted to the range [0..23] to permit
+encoding as single-byte CBOR unsigned integers, providing compact message representation.
+Currently, labels 0, 5, and 22 are unassigned and reserved for future use.
+Extensions that define new message parameters SHOULD constrain label values to this range.
+If future standards require additional parameters beyond this range, implementations
+SHOULD be designed to handle gracefully any unrecognized labels, treating them
+as unknown optional parameters without failing to process the message.
+
 This specification uses the following mapping:
 
 | Name                             | Label |
@@ -1377,6 +1395,17 @@ The TAM MUST expire the token value after receiving the first response
 from the device that has a valid signature and ignore any subsequent messages that have the same token
 value.  The token value MUST NOT be used for other purposes, such as a TAM to
 identify the devices and/or a device to identify TAMs or Trusted Components.
+
+A TAM implementation that sends multiple concurrent requests to a TEEP Agent
+needs to track outstanding requests and their associated tokens. To prevent
+unbounded storage of token state, a TAM MUST implement a timeout mechanism
+to eventually discard unanswered requests and their tokens. This timeout SHOULD be
+configurable, with a recommended minimum duration of several hours to account for
+scenarios where devices may take considerable time to process updates and resolve
+dependencies (as noted in {{tam}}, such processing may take hours or longer).
+A TAM MAY also implement a per-device maximum storage limit for outstanding requests,
+reusing tokens for new requests once the per-device limit is reached (after discarding
+the oldest outstanding request).
 
 ### Handling a QueryResponse Message
 
@@ -1607,8 +1636,9 @@ teep-cipher-suite-sign1-esp256  = [ teep-operation-sign1-esp256 ]
 
 cose-sign1 = 18      ; CoAP Content-Format value
 
-;MANDATORY for TAM to support the following, and OPTIONAL to implement
-;any additional algorithms from the IANA COSE Algorithms registry.
+;MANDATORY for TAM to support the following, and OPTIONAL to
+;implement any additional algorithms from the IANA COSE Algorithms
+;registry.
 
 cose-alg-esp256  = -9   ; ECDSA using P-256 curve and SHA-256
 cose-alg-ed25519 = -19  ; EdDSA using Ed25519 curve
@@ -1658,9 +1688,12 @@ the selected TEEP cipher suite MUST be used in both directions.
 
 TEEP uses COSE for confidentiality of EATs and SUIT Reports sent by a TEEP Agent.
 The TEEP Agent obtains a signed EAT and then SHOULD encrypt it using the TAM
-as the recipient. A SUIT Report is created by a SUIT processor, which
+as the recipient, unless the transport layer provides sufficient confidentiality
+protection or the TEEP Agent's deployment environment does not permit access to
+the TAM's public key. A SUIT Report is created by a SUIT processor, which
 is part of the TEEP Agent itself. The TEEP Agent is therefore in control of signing
-the SUIT Report and SHOULD encrypt it. Again, the TAM is the recipient of the encrypted
+the SUIT Report and SHOULD encrypt it for the same reasons, to protect sensitive
+information from intermediate processors and transport mechanisms. Again, the TAM is the recipient of the encrypted
 content. For content-key distribution Ephemeral-Static Diffie-Hellman (ES-DH) is used
 in this specification. See Section 8.5.5 and Appendix B of {{RFC9052}} for more details.
 (If {{I-D.ietf-suit-firmware-encryption}} is used, it is also the same as discussed in
@@ -1855,14 +1888,16 @@ uniquely identify a device based on information in the
 attestation payload or in the certificate used to sign the
 attestation payload.  This uniqueness may raise privacy concerns. To lower the privacy implications, the TEEP Agent MUST present its
 attestation payload only to an authenticated and authorized TAM and, when using
-an EAT, it SHOULD use encryption as discussed in {{RFC9711}}, since
-confidentiality is not provided by the TEEP protocol itself and
+an EAT, it SHOULD use encryption as discussed in {{RFC9711}} unless the transport
+layer provides sufficient confidentiality protection. Encryption is particularly
+important since confidentiality is not provided by the TEEP protocol itself and
 the transport protocol under the TEEP protocol might be implemented
 outside of any TEE. If any mechanism other than EAT is used, it is
 up to that mechanism to specify how privacy is provided.
 
 Since SUIT Reports can also contain sensitive information, a TEEP Agent
-SHOULD also encrypt SUIT Reports as discussed in {{eat-suit-ciphersuite}}.
+SHOULD also encrypt SUIT Reports as discussed in {{eat-suit-ciphersuite}}, particularly
+when they contain device identifiers or other sensitive operational data.
 
 In addition, in the usage scenario discussed in {{directtam}}, a device
 reveals its IP address to the Trusted Component Binary server.  This
@@ -1973,7 +2008,7 @@ This section is informative and merely summarizes the normative CDDL
 snippets in the body of this document.
 
 ~~~~ CDDL
-{::include draft-ietf-teep-protocol.cddl}
+{::include-fold draft-ietf-teep-protocol.cddl}
 ~~~~
 
 # D. Examples of Diagnostic Notation and Binary Representation
@@ -1994,7 +2029,7 @@ This section includes some examples with the following assumptions:
 {: numbered='no'}
 
 ~~~~
-{::include cbor/query_request.diag.txt}
+{::include-fold cbor/query_request.diag.txt}
 ~~~~
 
 ### D.1.2. CBOR Binary Representation
@@ -2002,7 +2037,7 @@ This section includes some examples with the following assumptions:
 
 ~~~~
 
-{::include cbor/query_request.hex.txt}
+{::include-fold cbor/query_request.hex.txt}
 ~~~~
 
 ## D.2. Entity Attestation Token
@@ -2015,33 +2050,7 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-/ eat-claim-set = /
-{
-    / cnf /          8: {
-                         / kid / 3 : h'ba7816bf8f01cfea414140de5dae2223'
-                                     h'b00361a396177a9cb410ff61f20015ad'
-                        },
-    / eat_nonce /   10: h'948f8860d13a463e8e',
-    / ueid /       256: h'0198f50a4ff6c05861c8860d13a638ea',
-    / oemid /      258: h'894823', / IEEE OUI format OEM ID /
-    / hwmodel /    259: h'549dcecc8b987c737b44e40f7c635ce8'
-                          / Hash of chip model name /,
-    / hwversion /  260: ["1.3.4", 1], / Multipart numeric  /
-    / manifests /  273: [
-                          [ 60, / application/cbor, TO BE REPLACED /
-                                / with the format value for a /
-                                / SUIT_Reference once one is allocated /
-                            {   / SUIT_Reference /
-                              / suit-report-manifest-uri / 1: "https://example.com/manifest.cbor",
-                              / suit-report-manifest-digest / 0:[
-                                / algorithm-id / -16 / "sha256" /,
-                                / digest-bytes / h'a7fd6593eac32eb4be578278e6540c5c'
-                                                 h'09cfd7d4d234973054833b2b93030609'
-                                ]
-                            }
-                          ]
-                        ]
-}
+{::include-fold cbor/eat_diagnostic.txt}
 ~~~~
 
 ## D.3. QueryResponse Message
@@ -2051,14 +2060,14 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-{::include cbor/query_response.diag.txt}
+{::include-fold cbor/query_response.diag.txt}
 ~~~~
 
 ### D.3.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
-{::include cbor/query_response.hex.txt}
+{::include-fold cbor/query_response.hex.txt}
 ~~~~
 
 ## D.4. Update Message
@@ -2068,14 +2077,14 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-{::include cbor/update.diag.txt}
+{::include-fold cbor/update.diag.txt}
 ~~~~
 
 ### D.4.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
-{::include cbor/update.hex.txt}
+{::include-fold cbor/update.hex.txt}
 ~~~~
 
 ## D.5. Success Message
@@ -2085,14 +2094,14 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-{::include cbor/teep_success.diag.txt}
+{::include-fold cbor/teep_success.diag.txt}
 ~~~~
 
 ### D.5.2. CBOR Binary Representation
 {: numbered='no'}
 
 ~~~~
-{::include cbor/teep_success.hex.txt}
+{::include-fold cbor/teep_success.hex.txt}
 ~~~~
 
 ## D.6. Error Message
@@ -2102,14 +2111,14 @@ COSE is shown.
 {: numbered='no'}
 
 ~~~~
-{::include cbor/teep_error.diag.txt}
+{::include-fold cbor/teep_error.diag.txt}
 ~~~~
 
 ### D.6.2. CBOR binary Representation
 {: numbered='no'}
 
 ~~~~
-{::include cbor/teep_error.hex.txt}
+{::include-fold cbor/teep_error.hex.txt}
 ~~~~
 
 # E. Examples of SUIT Manifests {#suit-examples}
@@ -2146,14 +2155,14 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
 {: numbered='no'}
 
 ~~~~
-{::include cbor/suit_uri.diag.txt}
+{::include-fold cbor/suit_uri.diag.txt}
 ~~~~
 
 ### CBOR Binary in Hex
 {: numbered='no'}
 
 ~~~~
-{::include cbor/suit_uri.hex.txt}
+{::include-fold cbor/suit_uri.hex.txt}
 ~~~~
 
 
@@ -2164,7 +2173,7 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
 {: numbered='no'}
 
 ~~~~
-{::include cbor/suit_integrated.diag.txt}
+{::include-fold cbor/suit_integrated.diag.txt}
 ~~~~
 
 
@@ -2172,7 +2181,7 @@ bz/m4rVlnIXbwK07HypLbAmBMcCjbazR14vTgdzfsJwFLbM5kdtzOLSolg==
 {: numbered='no'}
 
 ~~~~
-{::include cbor/suit_integrated.hex.txt}
+{::include-fold cbor/suit_integrated.hex.txt}
 ~~~~
 
 
@@ -2187,9 +2196,12 @@ This example uses the following parameters:
 - KEK (Receiver's Private Key):
   - kty: EC2
   - crv: P-256
-  - x: h'5886CD61DD875862E5AAA820E7A15274C968A9BC96048DDCACE32F50C3651BA3'
-  - y: h'9EED8125E932CD60C0EAD3650D0A485CF726D378D1B016ED4298B2961E258F1B'
-  - d: h'60FE6DD6D85D5740A5349B6F91267EEAC5BA81B8CB53EE249E4B4EB102C476B3'
+  - x: h'5886CD61DD875862E5AAA820E7A15274
+C968A9BC96048DDCACE32F50C3651BA3'
+  - y: h'9EED8125E932CD60C0EAD3650D0A485C
+F726D378D1B016ED4298B2961E258F1B'
+  - d: h'60FE6DD6D85D5740A5349B6F91267EEA
+C5BA81B8CB53EE249E4B4EB102C476B3'
 - COSE_KDF_Context
   - AlgorithmID: -3 (A128KW)
   - SuppPubInfo
@@ -2201,7 +2213,7 @@ This example uses the following parameters:
 {: numbered='no'}
 
 ~~~~
-{::include cbor/suit_personalization.diag.txt}
+{::include-fold cbor/suit_personalization.diag.txt}
 ~~~~
 
 
@@ -2209,7 +2221,7 @@ This example uses the following parameters:
 {: numbered='no'}
 
 ~~~~
-{::include cbor/suit_personalization.hex.txt}
+{::include-fold cbor/suit_personalization.hex.txt}
 ~~~~
 
 
@@ -2243,7 +2255,8 @@ The URI in this example is the reference URI provided in the SUIT manifest.
 {
   / suit-report-manifest-digest / 1:<<[
     / algorithm-id / -16 / "sha256" /,
-    / digest-bytes / h'a7fd6593eac32eb4be578278e6540c5c09cfd7d4d234973054833b2b93030609'
+    / digest-bytes / h'a7fd6593eac32eb4be578278e6540c5c09cfd7d4d23497
+3054833b2b93030609'
   ]>>,
   / suit-report-manifest-uri / 2: "tam.teep.example/personalisation",
   / suit-report-records / 4: [
