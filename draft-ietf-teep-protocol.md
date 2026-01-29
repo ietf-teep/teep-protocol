@@ -92,6 +92,7 @@ informative:
   I-D.ietf-suit-firmware-encryption: 
   I-D.ietf-rats-ar4si:
   I-D.ietf-rats-reference-interaction-models:
+  I-D.ietf-teep-otrp-over-http:
   RFC9397:
   RFC9782:
   I-D.ietf-rats-concise-ta-stores:
@@ -154,6 +155,40 @@ Each Trusted Component is uniquely identified by a SUIT Component Identifier
 
 Attestation related terms, such as Evidence and Attestation Results,
 are as defined in {{RFC9334}}.
+
+# Transport Considerations {#transport}
+
+This specification defines the TEEP protocol as a set of messages to be exchanged
+between a TAM and a TEEP Agent.  However, this specification is transport-agnostic
+and does not mandate use of a specific transport protocol.  The TEEP protocol messages
+are signed and can be optionally encrypted at the protocol layer, providing end-to-end
+security independent of the underlying transport.
+
+Companion specifications define how TEEP messages are transported over specific
+protocols. For example, {{I-D.ietf-teep-otrp-over-http}} defines how TEEP messages
+are transported over HTTP/HTTPS. Transport specifications MUST define or reference:
+
+* Whether the transport provides reliability guarantees and ordered delivery
+* How message loss and retransmission are handled
+* Recovery mechanisms for mid-transaction transport failures
+* How the transport handles duplicate messages and idempotency
+* How transport-layer errors are reported to the TEEP Agent and TAM
+
+Implementations MUST use a transport that provides authentication of the
+remote endpoint and confidentiality protection of messages in flight, or
+provide these protections at the TEEP protocol layer.  As discussed in
+{{RFC9397}}, the TEEP protocol uses end-to-end cryptographic protection
+(COSE signatures and optional encryption) to ensure that messages cannot
+be modified by intermediaries such as the TEEP Broker, even if the
+transport layer is compromised.
+
+The token field in TEEP messages (present in QueryRequest and Update messages)
+is used for request-response matching. As described in {{tam}}, the token MUST
+be unique among outstanding requests for a given device at a given TAM, but
+tokens MAY be reused for new requests once the previous request has received
+a response or timed out. Token reuse across multiple devices or TAMs is permitted
+but not required; implementations MAY choose to make tokens globally unique
+for audit or logging purposes.
 
 # Message Overview {#messages}
 
