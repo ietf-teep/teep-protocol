@@ -94,6 +94,7 @@ informative:
   I-D.ietf-rats-ar4si:
   I-D.ietf-rats-reference-interaction-models:
   I-D.ietf-teep-otrp-over-http:
+  I-D.ietf-opsarea-rfc5706bis:
   RFC9397:
   RFC9782:
   I-D.ietf-rats-concise-ta-stores:
@@ -1896,6 +1897,86 @@ Compromised Time Source
   source of time, such as {{RFC8915}}.  A compromised time source could
   thus be used to subvert such validity checks.
 
+
+## Operational Considerations {#operational}
+
+This section summarizes operational and management guidance for
+deployments using the TEEP protocol.  It complements the general
+operational guidelines in the IETF operations-area document {{I-D.ietf-opsarea-rfc5706bis}}
+and refers implementers to the architecture and conceptual APIs in
+{{RFC9397}} for configuration and management points.
+
+- Configuration and placement: Protocol-specific configuration is
+  typically performed in the TAM, the TEEP Agent, and any Verifier used
+  by the TAM.  See the conceptual APIs in {{RFC9397}} for the
+  configuration points exposed by implementations (e.g., which
+  Trusted Components to manage, trust anchors, and per-device state).
+
+- Token lifecycle and state management: Tokens are used to match
+  requests and responses and to provide limited replay protection.  The
+  guidance in this document requires random initial tokens and
+  non-reuse; implementers MUST ensure bounded storage of outstanding
+  tokens (timeouts, per-device caps) and MUST expire tokens after the
+  first valid response.  Operational deployments SHOULD tune token
+  timeouts to accommodate device processing time (see {{tam}}).
+
+- Key and certificate lifecycle: Operators MUST run procedures for
+  certificate and key issuance, rollover, revocation, and timely
+  renewal.  Implementations SHOULD support certificate status checks
+  and have clear behavior when certificates are expired or revoked
+  (see err-code behaviors such as ERR_CERTIFICATE_EXPIRED and
+  ERR_BAD_CERTIFICATE).
+
+- Logging, monitoring, and diagnostics: Implementations SHOULD log
+  operational events, but MUST avoid placing sensitive data (e.g., raw
+  Evidence, private keys) into logs.  Diagnostic fields, such as
+  `err-msg` (optionally accompanied by `err-lang`), are intended for
+  human operators; logs should capture structured error codes and
+  minimal diagnostic text to aid incident response.
+
+- Rate limiting and DoS protection: Implementations SHOULD apply
+  rate limits and backoff policies to mitigate malformed or
+  high-volume requests.  Agents SHOULD limit the size and number of
+  concurrent manifests processed and protect local resources (CPU,
+  memory, storage) from exhausting.
+
+- Time synchronization: Accurate device time is important for
+  certificate validity checks and for some attestation freshness
+  mechanisms.  Operators SHOULD ensure devices maintain adequate
+  time synchronization.
+
+- Privacy and data minimization Attestation results, SUIT reports,
+  and system-property-claims can contain identifying information.  Do
+  not expose such data to unauthorised parties; apply least-privilege
+  principles when requesting or returning attestation or component
+  lists.
+
+- Upgrade and rollback procedures: Manifest processing can be
+  disruptive.  Operators SHOULD plan for safe upgrade and rollback
+  procedures, including verification of manifests prior to execution,
+  mechanisms for retry, and consideration of partial failure modes.
+
+- Transport and deployment-specific concerns: TEEP is transport
+  agnostic; operators MUST ensure the chosen transport provides
+  adequate confidentiality, integrity, authentication, and replay
+  protection.  See the HTTP binding draft {{I-D.ietf-teep-otrp-over-http}}
+  for transport-specific operational details when that binding is used.
+
+- Scaling and batching: Large-scale deployments SHOULD consider
+  batching updates and asynchronous workflows to avoid overwhelming
+  devices or management servers.  Unsolicited messages and polling
+  behavior should be chosen to balance timeliness and operational
+  load.
+
+- Emergency recovery: Provide procedures for emergency recovery,
+  including factory-reset processes, certificate revocation handling,
+  and operational steps for devices that become non-responsive after
+  updates.
+
+Where operational considerations are covered by other documents (for
+example, the TEEP architecture {{RFC9397}}), implementers SHOULD follow
+the guidance in those documents as applicable.
+
 # Transport Considerations {#transport}
 
 This specification defines the TEEP protocol as a set of messages to be exchanged
@@ -2191,7 +2272,7 @@ for their valuable implementation feedback.
 
 We would also like to thank Carsten Bormann and Henk Birkholz for their help with the CDDL.
 
-Finally, we would like to thank the following IESG members for their review feedback: Sean Turner, Paul Kyzivat, Scott Hollenbeck, and Yoshifumi Nishida
+Finally, we would like to thank the following IESG members for their review feedback: Sean Turner, Paul Kyzivat, Scott Hollenbeck, Luigi Iannone, and Yoshifumi Nishida
 
 # C. Complete CDDL
 {: numbered='no'}
