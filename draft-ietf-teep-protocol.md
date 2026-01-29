@@ -156,40 +156,6 @@ Each Trusted Component is uniquely identified by a SUIT Component Identifier
 Attestation related terms, such as Evidence and Attestation Results,
 are as defined in {{RFC9334}}.
 
-# Transport Considerations {#transport}
-
-This specification defines the TEEP protocol as a set of messages to be exchanged
-between a TAM and a TEEP Agent.  However, this specification is transport-agnostic
-and does not mandate use of a specific transport protocol.  The TEEP protocol messages
-are signed and can be optionally encrypted at the protocol layer, providing end-to-end
-security independent of the underlying transport.
-
-Companion specifications define how TEEP messages are transported over specific
-protocols. For example, {{I-D.ietf-teep-otrp-over-http}} defines how TEEP messages
-are transported over HTTP/HTTPS. Transport specifications MUST define or reference:
-
-* Whether the transport provides reliability guarantees and ordered delivery
-* How message loss and retransmission are handled
-* Recovery mechanisms for mid-transaction transport failures
-* How the transport handles duplicate messages and idempotency
-* How transport-layer errors are reported to the TEEP Agent and TAM
-
-Implementations MUST use a transport that provides authentication of the
-remote endpoint and confidentiality protection of messages in flight, or
-provide these protections at the TEEP protocol layer.  As discussed in
-{{RFC9397}}, the TEEP protocol uses end-to-end cryptographic protection
-(COSE signatures and optional encryption) to ensure that messages cannot
-be modified by intermediaries such as the TEEP Broker, even if the
-transport layer is compromised.
-
-The token field in TEEP messages (present in QueryRequest and Update messages)
-is used for request-response matching. As described in {{tam}}, the token MUST
-be unique among outstanding requests for a given device at a given TAM, but
-tokens MAY be reused for new requests once the previous request has received
-a response or timed out. Token reuse across multiple devices or TAMs is permitted
-but not required; implementations MAY choose to make tokens globally unique
-for audit or logging purposes.
-
 # Message Overview {#messages}
 
 The TEEP protocol consists of messages exchanged between a TAM
@@ -1260,7 +1226,7 @@ Although Attestation Results required by a TAM are separable from the TEEP proto
 per se, this section is included as part of the requirements for building
 a compliant TAM that uses EATs for Attestation Results.
 
-Section 7 of {{RFC9711}} defines the requirement for
+Section 6 of {{RFC9711}} defines the requirement for
 Entity Attestation Token profiles.  This section defines an EAT profile
 for use with TEEP.
 
@@ -1915,6 +1881,39 @@ Compromised Time Source
   source of time, such as {{RFC8915}}.  A compromised time source could
   thus be used to subvert such validity checks.
 
+# Transport Considerations {#transport}
+
+This specification defines the TEEP protocol as a set of messages to be exchanged
+between a TAM and a TEEP Agent.  However, this specification is transport-agnostic
+and does not mandate use of a specific transport protocol.  The TEEP protocol messages
+are signed and can be optionally encrypted at the protocol layer, providing end-to-end
+security independent of the underlying transport.
+
+Companion specifications define how TEEP messages are transported over specific
+protocols. For example, {{I-D.ietf-teep-otrp-over-http}} defines how TEEP messages
+are transported over HTTP/HTTPS. Transport specifications MUST define or reference:
+
+* Whether the transport provides reliability guarantees and ordered delivery
+* How message loss and retransmission are handled
+* Recovery mechanisms for mid-transaction transport failures
+* How the transport handles duplicate messages and idempotency
+* How transport-layer errors are reported to the TEEP Agent and TAM
+
+Implementations MUST use a transport that provides authentication of the
+remote endpoint and confidentiality protection of messages in flight, or
+provide these protections at the TEEP protocol layer.  As discussed in
+{{RFC9397}}, the TEEP protocol uses end-to-end cryptographic protection
+(COSE signatures and optional encryption) to ensure that messages cannot
+be modified by intermediaries such as the TEEP Broker.
+
+The token field in TEEP messages (present in QueryRequest and Update messages)
+is used for request-response matching. As described in {{tam}}, the token MUST
+be unique among outstanding requests for a given device at a given TAM, but
+tokens MAY be reused for new requests once the previous request has received
+a response or timed out. Token reuse across multiple devices or TAMs is permitted
+but not required; implementations MAY choose to make tokens globally unique
+for audit or logging purposes.
+
 # Privacy Considerations {#privacy}
 
 Depending on
@@ -2012,7 +2011,152 @@ Author:
 Change controller:
 : IETF
 
---- back
+## TEEP Message Type Registry
+
+IANA is requested to create a new registry titled "TEEP Message Types" within the TEEP
+registry.  The registry has the following format:
+
+| Value | Name | Reference |
+|-------|------|-----------|
+| 0 | (Reserved) | | 0 | (Reserved) | This document | |
+| 1 | TEEP-TYPE-query-request | This document |
+| 2 | TEEP-TYPE-query-response | This document |
+| 3 | TEEP-TYPE-update | This document |
+| 4 | (Reserved) | This document |
+| 5 | TEEP-TYPE-teep-success | This document |
+| 6 | TEEP-TYPE-teep-error | This document |
+| 7-23 | (Reserved for future use) | This document |
+
+Registration procedures are as follows:
+
+* 0-12: Standards Action
+* 13-23: Specification Required
+
+## data-item-requested Bitmap Registry
+
+IANA is requested to create a registry titled "TEEP data-item-requested Bits" within the TEEP
+registry. The registry has the following format:
+
+| Bit | Name | Description | Reference |
+|-----|------|-------------|-----------|
+| 0 | attestation | TAM requests attestation payload | This document |
+| 1 | trusted-components | TAM queries installed Trusted Components | This document |
+| 2 | extensions | TAM queries supported extensions | This document |
+| 3 | suit-reports | TAM requests SUIT Reports | This document |
+| 4-31 | (Reserved for future use) | | This document |
+
+Registration procedures are as follows:
+
+* 0-23: Standards Action
+* 24-31: Specification Required
+
+## TEEP Error Code Registry
+
+IANA is requested to create a registry titled "TEEP Error Codes" within the TEEP
+registry. The registry has the following format:
+
+| Value | Name | Description | Reference |
+|-------|------|-------------|-----------|
+| 0 | (Reserved) | Reserved to prevent accidental use | This document |
+| 1 | ERR_PERMANENT_ERROR | Incorrect or inconsistent fields | This document |
+| 2 | ERR_UNSUPPORTED_EXTENSION | Unsupported extension in message | This document |
+| 3 | ERR_UNSUPPORTED_FRESHNESS_MECHANISMS | Unsupported freshness mechanism | This document |
+| 4 | ERR_UNSUPPORTED_MSG_VERSION | Unsupported TEEP protocol version | This document |
+| 5 | ERR_UNSUPPORTED_CIPHER_SUITES | Unsupported cipher suites | This document |
+| 6 | ERR_BAD_CERTIFICATE | Certificate processing failed | This document |
+| 7 | ERR_ATTESTATION_REQUIRED | Attestation is required | This document |
+| 8 | ERR_UNSUPPORTED_SUIT_REPORT | Unsupported SUIT Report profile | This document |
+| 9 | ERR_CERTIFICATE_EXPIRED | Certificate has expired or is invalid | This document |
+| 10 | ERR_TEMPORARY_ERROR | Temporary error (e.g., memory allocation) | This document |
+| 11-16 | (Reserved for future use) | | |
+| 17 | ERR_MANIFEST_PROCESSING_FAILED | Manifest processing failure | This document |
+| 18-22 | (Reserved for future use) | | |
+| 23 | (Reserved) | Reserved for future use |  |
+
+Note: Error codes are constrained to the range 0-23 to permit encoding as single-byte
+CBOR unsigned integers.
+
+Registration procedures are as follows:
+
+* 1-10, 17: Standards Action
+* 11-16, 18-23: Reserved for future use by Specification Required
+
+## TEEP CBOR Label Registry
+
+IANA is requested to create a registry titled "TEEP CBOR Labels" within the TEEP registry. The registry has the following format:
+
+| Label | Name | Type | Reference |
+|-------|------|------|-----------|
+| 0 | (Reserved) | | |
+| 1 | supported-teep-cipher-suites | array | This document |
+| 2 | challenge | bstr | This document |
+| 3 | versions | array | This document |
+| 4 | supported-suit-cose-profiles | array | This document |
+| 5 | (Reserved) | | |
+| 6 | selected-version | uint | This document |
+| 7 | attestation-payload | bstr | This document |
+| 8 | tc-list | array | This document |
+| 9 | ext-list | array | This document |
+| 10 | manifest-list | array | This document |
+| 11 | msg | text | This document |
+| 12 | err-msg | text | This document |
+| 13 | attestation-payload-format | text | This document |
+| 14 | requested-tc-list | array | This document |
+| 15 | unneeded-manifest-list | array | This document |
+| 16 | component-id | SUIT_Component_Identifier | This document |
+| 17 | tc-manifest-sequence-number | uint | This document |
+| 18 | have-binary | bool | This document |
+| 19 | suit-reports | array | This document |
+| 20 | token | bstr | This document |
+| 21 | supported-freshness-mechanisms | array | This document |
+| 22 | (Reserved) | | |
+| 23 | err-code | uint | This document |
+| 2-255 | (Reserved for future use) | |
+| 256- | (Reserved for future use) | |
+
+Note: Labels are not constrained to a specific range.
+
+Registration procedures are as follows:
+
+* 0-255:: Standards Action
+* 256 and above: Specification Required
+
+## TEEP Cipher Suite Registry
+
+IANA is requested to create a registry titled "TEEP Cipher Suites" within the TEEP
+registry. The registry has the following format:
+
+| Value | Name | Reference |
+|-------|------|-----------|
+| 0 | teep-cipher-suite-sign1-ed25519 | This document |
+| 1 | teep-cipher-suite-sign1-esp256 | This document |
+| 2-255 | (Reserved for future use) | |
+
+Registration procedures are as follows:
+
+* 0-23: Standards Action
+* 24-255: Specification Required
+
+Any new cipher suites MUST provide authentication, integrity, and SHOULD provide
+confidentiality protection.
+
+## TEEP Freshness Mechanism Registry
+
+IANA is requested to create a registry titled "TEEP Freshness Mechanisms" within the TEEP
+registry. The registry has the following format:
+
+| Value | Name | Reference |
+|-------|------|-----------|
+| 0 | FRESHNESS_NONCE | This document |
+| 1 | FRESHNESS_TIMESTAMP | This document |
+| 2-255 | (Reserved for future use) | |
+
+Registration procedures are as follows:
+
+* 0-23: Standards Action
+* 24-255: Specification Required
+
+---  back
 
 
 # A. Contributors
