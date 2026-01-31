@@ -2113,7 +2113,7 @@ registry.  The registry has the following format:
 
 | Value | Name | Reference |
 |-------|------|-----------|
-| 0 | (Reserved) | | 0 | (Reserved) | This document | |
+| 0 | (Reserved) | This document |
 | 1 | TEEP-TYPE-query-request | This document |
 | 2 | TEEP-TYPE-query-response | This document |
 | 3 | TEEP-TYPE-update | This document |
