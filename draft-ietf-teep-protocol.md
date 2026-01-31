@@ -271,8 +271,8 @@ To create a TEEP message, the following steps are performed.
   using a cryptographically secure random source.  Subsequent token values
   MUST be different for each message the TAM creates.
 
-1. Create a COSE Header containing the desired set of Header
-  Parameters.  The COSE Header MUST be valid per the {{RFC9052}} specification.
+1. Create a COSE header containing the desired set of header
+  parameters.  The COSE header MUST be valid per the {{RFC9052}} specification.
 
 1. Create a COSE_Sign1 or COSE_Sign object
   using the TEEP message as the COSE_Sign1 or COSE_Sign Payload; all
@@ -290,7 +290,7 @@ the listed steps fail, then the TEEP message MUST be rejected.
 
 1. Verify that the message contains a COSE_Sign1 or COSE_Sign structure.
 
-1. Verify that the resulting COSE Header includes only parameters
+1. Verify that the resulting COSE header includes only parameters
   and values whose syntax and semantics are both understood and
   supported or that are specified as being ignored when not
   understood.
@@ -379,7 +379,7 @@ token
   to distinguish the correct response from multiple requests.
   The token value MUST NOT be used for other purposes, such as a TAM to
   identify the devices and/or a device to identify TAMs or Trusted Components.
-  The TAM SHOULD set an expiration time for each token to facilitate cleanup of  stale request state, and MUST ignore any messages with expired tokens. Implementations without explicit token management (e.g., simple TAMs that process requests synchronously\n  and do not maintain state) may not need explicit token expiration.
+  The TAM SHOULD set an expiration time for each token to facilitate cleanup of  stale request state, and MUST ignore any messages with expired tokens. Implementations without explicit token management (e.g., simple TAMs that process requests synchronously  and do not maintain state) may not need explicit token expiration.
   The TAM MUST expire the token value after receiving the first response
   containing the token value and ignore any subsequent messages that have the same token
   value. Implementations SHOULD use a timeout mechanism (see {{tam}}) to eventually
@@ -399,19 +399,19 @@ data-item-requested
 : The data-item-requested parameter indicates what information the TAM requests from the TEEP
   Agent in the form of a bitmap.
 
-   attestation (1)
+   attestation (1):
    : With this value the TAM requests the TEEP Agent to return an attestation payload,
      whether Evidence (e.g., an EAT) or an Attestation Result, in the response.
 
-   trusted-components (2)
+   trusted-components (2):
    : With this value the TAM queries the TEEP Agent for all installed Trusted Components.
 
-   extensions (4)
+   extensions (4):
    : With this value the TAM queries the TEEP Agent for supported capabilities
      and extensions, which allows a TAM to discover the capabilities of a TEEP
      Agent implementation.
 
-   suit-reports (8)
+   suit-reports (8):
    : With this value the TAM requests the TEEP Agent to return SUIT Reports
      in the response.
 
@@ -430,7 +430,7 @@ challenge
   When a challenge is
   provided in the QueryRequest and Evidence in the form of an EAT is returned with a QueryResponse message
   then the challenge contained in the QueryRequest MUST be used to generate the EAT,
-  by copying the challenge into the eat_nonce claim (Section 4.1 of {{eat}}) if
+  by copying the challenge into the eat_nonce claim (Section 4.1 of {{RFC9711}}) if
   the nonce-based freshness mechanism is used for attestation Evidence.  For more details about freshness
   of Evidence see {{freshness-mechanisms}}.
 
@@ -464,9 +464,9 @@ attestation-payload
   defined in {{RFC9711}}.  See {{attestation}} for further discussion.
 
 suit-reports
-: If present, the suit-reports parameter contains a set of "boot" (including
-  starting an executable in an OS context) time SUIT Reports of the TAM
-  as defined by SUIT_Report in Section 4 of {{I-D.ietf-suit-report}}.
+: If present, the suit-reports parameter contains a set of TAM SUIT Reports related
+  to “boot” time (including the start of an executable in an OS context), as defined
+  by SUIT_Report in Section 4 of {{I-D.ietf-suit-report}}.
   SUIT Reports are encoded as CBOR byte strings. When a SUIT Report includes its own COSE
   protection (via signatures or MACs), the cryptographic key used MUST be distinct
   from the key used for the TEEP message's COSE security wrapper since otherwise its authenticity relies on the TEEP message's signature/MAC keys without adding any additional security.
@@ -579,7 +579,7 @@ requested-tc-list
   Component as a dependency.  Requested Trusted Components are expressed in
   the form of requested-tc-info objects.
   A TEEP Agent can get this information from the RequestTA conceptual API
-  defined in {{RFC9397}} section 6.2.1.
+  defined in {{RFC9397}} Section 6.2.1.
 
 unneeded-manifest-list
 : The unneeded-manifest-list parameter enumerates the SUIT manifests whose components are
@@ -590,7 +590,7 @@ unneeded-manifest-list
   itself, which is different from the Component ID of a component installed by the manifest,
   see {{I-D.ietf-suit-trust-domains}} for more discussion).
   A TEEP Agent can get this information from the UnrequestTA conceptual API
-  defined in {{RFC9397}} section 6.2.1.
+  defined in {{RFC9397}} Section 6.2.1.
 
 ext-list
 : The ext-list parameter lists the supported extensions. This document does not
@@ -622,7 +622,7 @@ in Evidence depending on the circumstance.  However, the Evidence is
 opaque to the TEEP protocol and there are no formal requirements on the contents
 of Evidence.
 
-TAMs however consume Attestation Results and do need enough information therein to
+TAMs consume Attestation Results and do need enough information therein to
 make decisions on how to remediate a TEE that is out of compliance, or update a TEE
 that is requesting an authorized change.  To do so, the information in
 Section 7 of {{RFC9397}} is often required depending on the policy.
@@ -657,9 +657,9 @@ information about the TEEP Agent as well as any of its dependencies such as firm
 The Update message is used by the TAM to install and/or delete one or more Trusted
 Components via the TEEP Agent.  It can also be used to pass a successful
 Attestation Report back to the TEEP Agent when the TAM is configured as
-an intermediary between the TEEP Agent and a Verifier, as shown in the figure
-below, where the Attestation Result passed back to the Attester can be used
-as a so-called "passport" (see section 5.1 of {{RFC9334}})
+an intermediary between the TEEP Agent and a Verifier, as shown in {{fig-arch}},
+where the Attestation Result passed back to the Attester can be used
+as a so-called "passport" (see Section 5.1 of {{RFC9334}})
 that can be presented to other Relying Parties.
 
 ~~~~
@@ -679,9 +679,8 @@ that can be presented to other Relying Parties.
          |  TEEP Agent   |------------>|     Other     |
          |  / Attester   | Attestation | Relying Party |
          +---------------+    Result   +---------------+
-
-    Figure 1: Example use of TEEP and attestation
 ~~~~
+{: #fig-arch title="Example use of TEEP and Attestation."}
 
 Like other TEEP messages, the Update message is
 signed, and the relevant CDDL snippet is shown below.
@@ -747,7 +746,7 @@ attestation-payload-format
   of this document.)
   It MUST be present if the attestation-payload parameter
   is present and the format is not an EAT in CWT format with the profile
-  defined below in {{eat}}.
+  defined in {{eat}}.
 
 attestation-payload
 : The attestation-payload parameter contains an Attestation Result. If the
@@ -788,31 +787,41 @@ Trusted Component to actually run, so the manifest signature could be
 checked at install time, load (or run) time, or both, and this checking is
 done by the TEE independent of whether TEEP is used or some other update
 mechanism.
-See section 5 of {{RFC9397}} for further discussion.
+See Section 5 of {{RFC9397}} for further discussion.
 
 
-The Update Message has a SUIT_Envelope containing SUIT manifests. Following are some example scenarios using SUIT manifests in the Update Message.
+The Update message has a SUIT_Envelope containing SUIT manifests. Following
+are some example scenarios using SUIT manifests in the Update Message.
 
 ### Scenario 1: Having one SUIT Manifest pointing to a URI of a Trusted Component Binary {#directtam}
 
 In this scenario, a SUIT Manifest has a URI pointing to a Trusted Component Binary.
 
-A Trusted Component Developer creates a new Trusted Component Binary and hosts it at a Trusted Component Developer's URI.  Then the Trusted Component Developer generates an associated SUIT manifest with the filename "tc-uuid" that contains the URI. The filename "tc-uuid" is used in Scenario 3 later.
+A Trusted Component Developer creates a new Trusted Component Binary and hosts it
+at a Trusted Component Developer's URI. Then, the Trusted Component Developer
+generates an associated SUIT manifest with the filename "tc-uuid" that contains
+the URI. The filename "tc-uuid" is used in Scenario 3 later.
 
-The TAM receives the latest SUIT manifest from the Trusted Component Developer, and
-the URI it contains cannot be changed by the TAM since the SUIT manifest is signed by the Trusted Component Developer.
+The TAM receives the latest SUIT manifest from the Trusted Component Developer,
+and the URI it contains cannot be changed by the TAM since the SUIT manifest is
+signed by the Trusted Component Developer.
 
+{{fig-tc}} shows the exchange graphically.
 
 Pros:
 
- - The Trusted Component Developer can ensure that the intact Trusted Component Binary is downloaded by devices
- - The TAM does not have to send large Update messages containing the Trusted Component Binary
+ - The Trusted Component Developer can ensure that the intact Trusted Component
+   Binary is downloaded by devices
+ - The TAM does not have to send large Update messages containing the Trusted
+   Component Binary
 
 Cons:
 
  - The Trusted Component Developer must host the Trusted Component Binary server
- - The device must fetch the Trusted Component Binary in another connection after receiving an Update message
- - A device's IP address and therefore location may be revealed to the Trusted Component Binary server
+ - The device must fetch the Trusted Component Binary in another connection
+   after receiving an Update message
+ - A device's IP address and therefore location may be revealed to the Trusted
+   Component Binary server
 
 ~~~~
     +------------+           +-------------+
@@ -856,29 +865,41 @@ Cons:
           +======= tc-uuid.ta =======+
           | 48 65 6C 6C 6F 2C 20 ... |
           +==========================+
-
-    Figure 2: URI of the Trusted Component Binary
 ~~~~
+{: #fig-tc title="URI of the Trusted Component Binary."}
 
 For the full SUIT Manifest example binary, see {{suit-uri}}.
 
 ### Scenario 2: Having a SUIT Manifest include the Trusted Component Binary
 
-In this scenario, the SUIT manifest contains the entire Trusted Component Binary as an integrated payload (see {{I-D.ietf-suit-manifest}} Section 7.5).
+In this scenario, the SUIT manifest contains the entire Trusted Component
+Binary as an integrated payload (see {{I-D.ietf-suit-manifest}} Section 7.5).
 
-A Trusted Component Developer delegates the task of delivering the Trusted Component Binary to the TAM inside the SUIT manifest. The Trusted Component Developer creates a SUIT manifest and embeds the Trusted Component Binary, which is referenced in the suit-integrated-payload element containing the fragment-only reference "#tc", in the envelope. The Trusted Component Developer transmits the entire bundle to the TAM.
+A Trusted Component Developer delegates the task of delivering the Trusted
+Component Binary to the TAM inside the SUIT manifest. The Trusted Component
+Developer creates a SUIT manifest and embeds the Trusted Component Binary,
+which is referenced in the suit-integrated-payload element containing the
+fragment-only reference "#tc", in the envelope. The Trusted Component Developer
+transmits the entire bundle to the TAM.
 
-The TAM serves the SUIT manifest containing the Trusted Component Binary to the device in an Update message.
+The TAM serves the SUIT manifest containing the Trusted Component Binary to
+the device in an Update message.
+
+{{fig-tc-integrated}} shows the exchange graphically.
 
 Pros:
 
- - The device can obtain the Trusted Component Binary and the SUIT manifest in one Update message.
- - The Trusted Component Developer does not have to host a server to deliver the Trusted Component Binary to devices.
+ - The device can obtain the Trusted Component Binary and the SUIT manifest
+   in one Update message.
+ - The Trusted Component Developer does not have to host a server to deliver
+   the Trusted Component Binary to devices.
 
 Cons:
 
- - The TAM must host the Trusted Component Binary rather than delegating storage to the Trusted Component Developer.
- - The TAM must deliver Trusted Component Binaries in Update messages, which increases the size of the Update message.
+ - The TAM must host the Trusted Component Binary rather than delegating
+   storage to the Trusted Component Developer.
+ - The TAM must deliver Trusted Component Binaries in Update messages, which
+   increases the size of the Update message.
 
 ~~~~
     +------------+           +-------------+
@@ -909,21 +930,26 @@ Cons:
       |   }                                       |
       | ])                                        |
       +===========================================+
-
-    Figure 3: Integrated Payload with Trusted Component Binary
 ~~~~
+{: #fig-tc-integrated title="Integrated Payload with Trusted Component Binary."}
 
 For the full SUIT Manifest example binary, see {{suit-integrated}}.
 
 
 ### Scenario 3: Supplying Personalization Data for the Trusted Component Binary
 
-In this scenario, Personalization Data is associated with the Trusted Component Binary "tc-uuid" from Scenario 1.
+In this scenario, Personalization Data is associated with the Trusted Component
+Binary "tc-uuid" from Scenario 1.
 
-The Trusted Component Developer places encrypted Personalization Data in the SUIT manifest, and it will be delivered by the TAM.
-The SUIT manifest processor decrypts it, then stores it in a file named "config.json", and then installs the dependency component.
+The Trusted Component Developer places encrypted Personalization Data in the
+SUIT manifest, and it will be delivered by the TAM. The SUIT manifest processor
+decrypts it, then stores it in a file named "config.json", and then installs
+the dependency component.
 
-The TAM delivers the SUIT manifest of the Personalization Data which depends on the Trusted Component Binary from Scenario 1.
+The TAM delivers the SUIT manifest of the Personalization Data which depends
+on the Trusted Component Binary from Scenario 1.
+
+{{fig-pers-data}} shows the exchange graphically.
 
 ~~~~
     +------------+           +-------------+
@@ -973,9 +999,8 @@ The TAM delivers the SUIT manifest of the Personalization Data which depends on 
       |   }                                                        |
       | ])                                                         |
       +============================================================+
-
-    Figure 4: Encrypted Personalization Data
 ~~~~
+{: #fig-pers-data title="Encrypted Personalization Data."}
 
 For the full SUIT Manifest example binary, see {{suit-personalization}}.
 
@@ -1242,12 +1267,11 @@ the TEEP protocol does not require use of EAT, use of EAT is encouraged and
 {{query-response}} explicitly defines a way to carry an Entity Attestation Token
 in a QueryResponse.  
 
-As discussed in {{attestation}}, the content of Evidence is opaque to the TEEP
-architecture, but the content of Attestation Results is not, where Attestation
-Results flow between a Verifier and a TAM (as the Relying Party).
-Although Attestation Results required by a TAM are separable from the TEEP protocol
-per se, this section is included as part of the requirements for building
-a compliant TAM that uses EATs for Attestation Results.
+As noted in {{attestation}}, Evidence is opaque to the TAM, while Attestation
+Results are processed by the TAM in its role as the Relying Party. Although
+Attestation Results required by a TAM are logically separate from the TEEP
+protocol, this section defines requirements for building a compliant TAM
+that uses EATs for Attestation Results.
 
 Section 6 of {{RFC9711}} defines the requirement for
 Entity Attestation Token profiles.  This section defines an EAT profile
@@ -1401,7 +1425,7 @@ err-code = 23
 # Behavior Specification
 
 Behavior is specified in terms of the conceptual APIs defined in
-section 6.2.1 of {{RFC9397}}.
+Section 6.2.1 of {{RFC9397}}.
 
 ## TAM Behavior {#tam}
 
@@ -1464,7 +1488,7 @@ The Attestation Result must first be validated as follows:
    and the hash is computed using the Digest Algorithm specified by one of the SUIT profiles
    supported by the TAM.
 
-   See Sections 3.4 and 6 of {{RFC8747}} for more discussion.
+   See Sections 3.4 and Section 6 of {{RFC8747}} for more discussion.
 
 Based on the results of attestation (if any), any SUIT Reports,
 and the lists of installed, requested,
@@ -1596,7 +1620,7 @@ The Attestation Result must first be validated as follows:
    and the hash is computed using the Digest Algorithm specified by one of the SUIT profiles
    supported by the TEEP Agent.
 
-   See Sections 3.4 and 6 of {{RFC8747}} for more discussion.
+   See Sections 3.4 and Section 6 of {{RFC8747}} for more discussion.
 
 ### Handling an Update Message
 
@@ -1849,7 +1873,7 @@ Personalization Data
   is used.
 
 TEEP Broker
-: As discussed in section 6 of {{RFC9397}},
+: As discussed in Section 6 of {{RFC9397}},
   the TEEP protocol typically relies on a TEEP Broker to relay messages
   between the TAM and the TEEP Agent.  When the TEEP Broker is
   compromised, it can drop messages, delay the delivery of messages,
@@ -1994,7 +2018,8 @@ security independent of the underlying transport.
 
 Companion specifications define how TEEP messages are transported over specific
 protocols. For example, {{I-D.ietf-teep-otrp-over-http}} defines how TEEP messages
-are transported over HTTP/HTTPS. Transport specifications MUST define or reference:
+are transported over HTTP/HTTPS. TEEP transport specifications MUST provide the
+following information:
 
 * Whether the transport provides reliability guarantees and ordered delivery
 * How message loss and retransmission are handled
@@ -2002,12 +2027,12 @@ are transported over HTTP/HTTPS. Transport specifications MUST define or referen
 * How the transport handles duplicate messages and idempotency
 * How transport-layer errors are reported to the TEEP Agent and TAM
 
-Implementations MUST use a transport that provides authentication of the
+Implementations SHOULD use a transport that provides authentication of the
 remote endpoint and confidentiality protection of messages in flight, or
 provide these protections at the TEEP protocol layer.  As discussed in
 {{RFC9397}}, the TEEP protocol uses end-to-end cryptographic protection
-(COSE signatures and optional encryption) to ensure that messages cannot
-be modified by intermediaries such as the TEEP Broker.
+via COSE to ensure that messages cannot
+be modified by intermediaries, such as the TEEP Broker.
 
 The token field in TEEP messages (present in QueryRequest and Update messages)
 is used for request-response matching. As described in {{tam}}, the token MUST
@@ -2087,17 +2112,10 @@ Fragment identifier considerations:
 : N/A
 
 Additional information:
-: Deprecated alias names for this type:
-  : N/A
-
-  Magic number(s):
-  : N/A
-
-  File extension(s):
-  : N/A
-
-  Macintosh file type code(s):
-  : N/A
+: - Deprecated alias names for this type: N/A
+  - Magic number(s): N/A
+  - File extension(s): N/A
+  - Macintosh file type code(s): N/A
 
 Person to contact for further information:
 : teep@ietf.org
