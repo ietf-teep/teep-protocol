@@ -34,7 +34,7 @@ query-request = [
     ? versions => [ + version ],
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
-    ? suit-reports => [ + bstr ],
+    ? suit-reports => [ + bstr .cbor SUIT_Report ],
     * $$query-request-extensions,
     * $$teep-option-extensions
   },
@@ -103,7 +103,7 @@ query-response = [
     ? selected-version => version,
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
-    ? suit-reports => [ + bstr ],
+    ? suit-reports => [ + bstr .cbor SUIT_Report ],
     ? tc-list => [ + system-property-claims ],
     ? requested-tc-list => [ + requested-tc-info ],
     ? unneeded-manifest-list => [ + SUIT_Component_Identifier ],
@@ -140,7 +140,7 @@ teep-success = [
   options: {
     ? token => bstr .size (8..64),
     ? msg => text .size (1..128),
-    ? suit-reports => [ + SUIT_Report ],
+    ? suit-reports => [ + bstr .cbor SUIT_Report ],
     * $$teep-success-extensions,
     * $$teep-option-extensions
   }
@@ -157,7 +157,7 @@ teep-error = [
      ? supported-suit-cose-profiles => [ + $suit-cose-profile ],
      ? challenge => bstr .size (8..512),
      ? versions => [ + version ],
-     ? suit-reports => [ + SUIT_Report ],
+     ? suit-reports => [ + bstr .cbor SUIT_Report ],
      * $$teep-error-extensions,
      * $$teep-option-extensions
   },

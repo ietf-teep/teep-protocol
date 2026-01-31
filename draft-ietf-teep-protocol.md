@@ -334,7 +334,7 @@ query-request = [
     ? versions => [ + version ],
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
-    ? suit-reports => [ + bstr ],
+    ? suit-reports => [ + bstr .cbor SUIT_Report ],
     * $$query-request-extensions,
     * $$teep-option-extensions
   },
@@ -466,8 +466,10 @@ attestation-payload
 suit-reports
 : If present, the suit-reports parameter contains a set of "boot" (including
   starting an executable in an OS context) time SUIT Reports of the TAM
-  as defined by SUIT_Report in Section 4 of {{I-D.ietf-suit-report}},
-  encoded using COSE as discussed in {{eat-suit-ciphersuite}}.
+  as defined by SUIT_Report in Section 4 of {{I-D.ietf-suit-report}}.
+  SUIT Reports are encoded as CBOR byte strings. When a SUIT Report includes its own COSE
+  protection (via signatures or MACs), the cryptographic key used MUST be distinct
+  from the key used for the TEEP message's COSE security wrapper since otherwise its authenticity relies on the TEEP message's signature/MAC keys without adding any additional security.
   SUIT Reports can be useful in QueryRequest messages to
   pass additional information about the TAM to the TEEP Agent without depending on a Verifier including
   the relevant information in the TAM's Attestation Results.
@@ -491,7 +493,7 @@ query-response = [
     ? selected-version => version,
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
-    ? suit-reports => [ + bstr ],
+    ? suit-reports => [ + bstr .cbor SUIT_Report ],
     ? tc-list => [ + system-property-claims ],
     ? requested-tc-list => [ + requested-tc-info ],
     ? unneeded-manifest-list => [ + SUIT_Component_Identifier ],
@@ -993,7 +995,7 @@ teep-success = [
   options: {
     ? token => bstr .size (8..64),
     ? msg => text .size (1..128),
-    ? suit-reports => [ + SUIT_Report ],
+    ? suit-reports => [ + bstr .cbor SUIT_Report ],
     * $$teep-success-extensions,
     * $$teep-option-extensions
   }
@@ -1020,7 +1022,10 @@ msg
 
 suit-reports
 : If present, the suit-reports parameter contains a set of SUIT Reports
-  as defined in Section 4 of {{I-D.ietf-suit-report}}.
+  as defined in Section 4 of {{I-D.ietf-suit-report}}, encoded as CBOR byte strings
+  containing either protected or unprotected SUIT Report payloads. When a SUIT Report
+  includes its own COSE protection (signatures or MACs), the cryptographic key used
+  MUST be distinct from the key used for the TEEP message's COSE security wrapper.
   If a token parameter was present in the Update
   message the Success message is in response to,
   the suit-report-nonce field MUST be present in the SUIT Report with a
@@ -1048,7 +1053,7 @@ teep-error = [
      ? supported-suit-cose-profiles => [ + $suit-cose-profile ],
      ? challenge => bstr .size (8..512),
      ? versions => [ + version ],
-     ? suit-reports => [ + SUIT_Report ],
+     ? suit-reports => [ + bstr .cbor SUIT_Report ],
      * $$teep-error-extensions,
      * $$teep-option-extensions
   },
@@ -1125,8 +1130,11 @@ versions
 
 suit-reports
 : If present, the suit-reports parameter contains a set of SUIT Reports
-  as defined in Section 4 of {{I-D.ietf-suit-report}}.  If
-  a token parameter was present in the Update message the Error message is in response to,
+  as defined in Section 4 of {{I-D.ietf-suit-report}}, encoded as CBOR byte strings
+  containing either protected or unprotected SUIT Report payloads. When a SUIT Report
+  includes its own COSE protection (signatures or MACs), the cryptographic key used
+  MUST be distinct from the key used for the TEEP message's COSE security wrapper.
+  If a token parameter was present in the Update message the Error message is in response to,
   the suit-report-nonce field MUST be present in the SUIT Report with a
   value matching the token parameter in the Update
   message.
