@@ -1395,6 +1395,7 @@ This specification uses the following mapping:
 | suit-reports                     |    19 |
 | token                            |    20 |
 | supported-freshness-mechanisms   |    21 |
+| err-lang                         |    22 |
 | err-code                         |    23 |
 
 The following CDDL description is used:
@@ -1421,6 +1422,7 @@ have-binary = 18
 suit-reports = 19
 token = 20
 supported-freshness-mechanisms = 21
+err-lang = 22
 err-code = 23
 ~~~~
 
