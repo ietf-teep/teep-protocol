@@ -1364,11 +1364,11 @@ encoding. Since the word "key" is mainly used in its other meaning, as a
 cryptographic key, this specification uses the term "label" for this usage
 as a map key.
 
-Message parameter labels are restricted to the range [0..23] to permit
+Message parameter labels are current defined only in the range [0..23] to permit
 encoding as single-byte CBOR unsigned integers, providing compact message representation.
 Currently, labels 0, 5, and 22 are unassigned and reserved for future use.
 Extensions that define new message parameters SHOULD constrain label values to this range.
-If future standards require additional parameters beyond this range, implementations
+If future standards require additional messages beyond this range, implementations
 SHOULD be designed to handle gracefully any unrecognized labels, treating them
 as unknown optional parameters without failing to process the message.
 
@@ -1396,6 +1396,8 @@ This specification uses the following mapping:
 | token                            |    20 |
 | supported-freshness-mechanisms   |    21 |
 | err-code                         |    23 |
+
+The following CDDL description is used:
 
 ~~~~ cddl-label
 ; labels of mapkey for teep message parameters, uint (0..23)
@@ -1485,11 +1487,13 @@ The Attestation Result must first be validated as follows:
 1. Verify that the Attestation Result was signed by a Verifier that the TAM trusts.
 2. Verify that the Attestation Result contains a "cnf" claim (as defined in Section 3.1 of {{RFC8747}}) where
    the key ID is the hash of the TEEP Agent public key used to verify the signature on the TEEP message,
-   and the hash is computed using the Digest Algorithm specified by one of the SUIT profiles
+   and the hash is computed using the digest algorithm specified by one of the SUIT profiles
    supported by the TAM.
 
    See Sections 3.4 and Section 6 of {{RFC8747}} for more discussion.
 
+Note: The proof-of-possession functionality for the Attestation Result may not be supported by every attestation technology or may not be enabled for use in every deployment.
+ 
 Based on the results of attestation (if any), any SUIT Reports,
 and the lists of installed, requested,
 and unneeded Trusted Components reported in the QueryResponse, the TAM
@@ -1763,7 +1767,7 @@ The following two layer structure is used:
 
 As a result, the two layers combine ES-DH with AES-KW and HKDF.
 
-This document re-uses the CDDL defined in Section 6.2.3 of
+This document reuses the CDDL defined in Section 6.2.3 of
 {{I-D.ietf-suit-firmware-encryption}} and the context information structure defined in
 Section 6.2.4 of {{I-D.ietf-suit-firmware-encryption}} although with an important modification.
 The COSE_KDF_Context.SuppPubInfo.other value MUST be set to "SUIT Report Encryption" when a
