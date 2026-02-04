@@ -71,7 +71,6 @@ author:
   email: akira.tsukamoto@gmail.com
 
 normative:
-  RFC9052:
   RFC3629:
   RFC5646:
   RFC5198:
