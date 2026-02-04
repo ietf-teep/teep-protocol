@@ -1,1 +1,1 @@
-# A place holder file to fix MAKE error
+/ This file needs to be populated with actual EAT diagnostic notation /
