@@ -161,6 +161,11 @@ are as defined in {{RFC9334}}.
 
 The TEEP protocol consists of messages exchanged between a TAM
 and a TEEP Agent.
+The TEEP protocol is transport-agnostic; bindings to specific transports
+are defined in separate companion specifications.
+Deployments MAY use a single TAM or multiple TAMs; local policy
+determines which TAMs are permitted to manage a given device. Since
+single TAM deployments are more likely, we assume them as a default.
 The messages are encoded in CBOR and designed to provide end-to-end security.
 TEEP protocol messages are signed by the endpoints, i.e., the TAM and the
 TEEP Agent, but Trusted
@@ -184,6 +189,8 @@ could not be processed. A TAM will process the QueryResponse message and
 determine
 whether to initiate subsequent message exchanges to install, update, or delete Trusted
 Applications.
+As discussed in {{agent}}, a QueryResponse can also be sent unsolicited when the
+contents of the corresponding QueryRequest are already known and do not vary per message.
 
 ~~~~
   +------------+           +-------------+
@@ -227,6 +234,8 @@ otherwise.
 
 TEEP messages are protected by the COSE_Sign1 or COSE_Sign structure as described in {{teep-ciphersuite}}.
 The TEEP protocol messages are described in CDDL format {{RFC8610}} below.
+The complete CDDL definitions for all messages appear in Appendix C; the snippets in this
+section focus on the fields discussed.
 
 ~~~~ cddl-teep-message
 teep-message = $teep-message-type .within teep-message-framework
@@ -243,8 +252,8 @@ teep-option = (uint => any)
 $teep-message-type /= query-request
 $teep-message-type /= query-response
 $teep-message-type /= update
-$teep-message-type /= teep-success
-$teep-message-type /= teep-error
+$teep-message-type /= success
+$teep-message-type /= error
 
 ; message type numbers, in one byte which could take a
 ; number from 0 to 23
@@ -252,8 +261,10 @@ $teep-type /= (0..23)
 TEEP-TYPE-query-request = 1
 TEEP-TYPE-query-response = 2
 TEEP-TYPE-update = 3
-TEEP-TYPE-teep-success = 5
-TEEP-TYPE-teep-error = 6
+TEEP-TYPE-success = 5
+TEEP-TYPE-error = 6
+; value 4 is reserved for future use; registries are intentionally sparse
+; and values are not required to be contiguous.
 ~~~~
 
 ## Creating and Validating TEEP Messages
@@ -321,7 +332,6 @@ the following features are supported:
 
 Like other TEEP messages, the QueryRequest message is
 signed, and the relevant CDDL snippet is shown below.
-The complete CDDL structure is shown in Appendix C.
 
 ~~~~ cddl-query-request
 query-request = [
@@ -482,7 +492,6 @@ per message.
 
 Like other TEEP messages, the QueryResponse message is
 signed, and the relevant CDDL snippet is shown below.
-The complete CDDL structure is shown in Appendix C.
 
 ~~~~ cddl-query-response
 query-response = [
@@ -526,7 +535,8 @@ token
 selected-version
 : The selected-version parameter indicates the TEEP protocol version selected by the
   TEEP Agent. The absence of this parameter indicates the same as if it
-  was present with a value of 0.
+  was present with a value of 0.  Version values are defined by Standards Track
+  RFCs; this document does not create a separate IANA registry for versions.
 
 attestation-payload-format
 : The attestation-payload-format parameter indicates the IANA Media Type of the
@@ -632,7 +642,9 @@ implemented format for a specific processor vendor, is permitted when standardiz
 support is not available or when proprietary formats provide essential functionality,
 but this increases the complexity of the TAM by requiring it to understand
 the format for each such format rather than only the common EAT format and is not
-recommended for interoperable deployments.
+recommended for interoperable deployments. Deployments that choose a non-EAT format
+SHOULD document the format and pre-configure both the TAM and TEEP Agent accordingly;
+otherwise interoperability across vendors is likely to be reduced.
 
 When an EAT is used, the following claims can be used to meet those
 requirements, whether these claims appear in Attestation Results, or in Evidence
@@ -653,7 +665,7 @@ information about the TEEP Agent as well as any of its dependencies such as firm
 
 ## Update Message {#update-msg-def}
 
-The Update message is used by the TAM to install and/or delete one or more Trusted
+The Update message is used by a TAM to install and/or delete one or more Trusted
 Components via the TEEP Agent.  It can also be used to pass a successful
 Attestation Report back to the TEEP Agent when the TAM is configured as
 an intermediary between the TEEP Agent and a Verifier, as shown in {{fig-arch}},
@@ -683,7 +695,6 @@ that can be presented to other Relying Parties.
 
 Like other TEEP messages, the Update message is
 signed, and the relevant CDDL snippet is shown below.
-The complete CDDL structure is shown in Appendix C.
 
 ~~~~ cddl-update
 update = [
@@ -694,7 +705,7 @@ update = [
     ? manifest-list => [ + bstr .cbor SUIT_Envelope ],
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
-    ? err-code => (0..23),
+    ? err-code => err-code-values,
     ? err-msg => text .size (1..128),
     ? err-lang => text .size (1..35),
     * $$update-extensions,
@@ -757,17 +768,19 @@ attestation-payload
 err-code
 : The err-code parameter contains one of the error codes listed in the
   {{error-message-def}}, which describes the reasons for the error when
-  performing QueryResponse in the TAM.
+  performing QueryResponse in the TAM.  The value 0 is reserved and MUST NOT be used.
 
 err-msg
 : The err-msg parameter is human-readable diagnostic text that MUST be encoded
   using UTF-8 {{RFC3629}} in Net-Unicode format {{RFC5198}} with a maximum of 128 bytes.
  
 err-lang
-: The err-lang parameter is an OPTIONAL RFC 5646 {{RFC5646}} language tag identifying the
+: The err-lang parameter is an optional RFC 5646 {{RFC5646}} language tag identifying the
   language of the `err-msg` text.  When present, implementations MUST use the
   language tag to aid human operators in interpreting diagnostic text.  The
   err-msg field SHOULD be formatted in the language indicated by this tag.
+  If the indicated language is not supported, implementations MAY ignore the
+  tag and treat `err-msg` as opaque text, but MUST still process `err-code`.
 
 Note that an Update message carrying one or more SUIT manifests will inherently
 involve multiple signatures, one by the TAM in the TEEP message and one from
@@ -1011,16 +1024,15 @@ response to an Update message.
 
 Like other TEEP messages, the Success message is
 signed, and the relevant CDDL snippet is shown below.
-The complete CDDL structure is shown in Appendix C.
 
-~~~~ cddl-teep-success
-teep-success = [
-  type: TEEP-TYPE-teep-success,
+~~~~ cddl-success
+success = [
+  type: TEEP-TYPE-success,
   options: {
     ? token => bstr .size (8..64),
     ? msg => text .size (1..128),
     ? suit-reports => [ + bstr .cbor SUIT_Report ],
-    * $$teep-success-extensions,
+    * $$success-extensions,
     * $$teep-option-extensions
   }
 ]
@@ -1063,11 +1075,10 @@ response to a message from the TAM.
 
 Like other TEEP messages, the Error message is
 signed, and the relevant CDDL snippet is shown below.
-The complete CDDL structure is shown in Appendix C.
 
-~~~~ cddl-teep-error
-teep-error = [
-  type: TEEP-TYPE-teep-error,
+~~~~ cddl-error
+error = [
+  type: TEEP-TYPE-error,
   options: {
      ? token => bstr .size (8..64),
      ? err-msg => text .size (1..128),
@@ -1078,13 +1089,13 @@ teep-error = [
      ? challenge => bstr .size (8..512),
      ? versions => [ + version ],
      ? suit-reports => [ + bstr .cbor SUIT_Report ],
-     * $$teep-error-extensions,
+     * $$error-extensions,
      * $$teep-option-extensions
   },
-  err-code: (0..23)
+  err-code: err-code-values
 ]
 
-; The err-code parameter, uint (0..23)
+; The err-code parameter, uint (1..23)
 ERR_PERMANENT_ERROR = 1
 ERR_UNSUPPORTED_EXTENSION = 2
 ERR_UNSUPPORTED_FRESHNESS_MECHANISMS = 3
@@ -1096,6 +1107,18 @@ ERR_UNSUPPORTED_SUIT_REPORT = 8
 ERR_CERTIFICATE_EXPIRED = 9
 ERR_TEMPORARY_ERROR = 10
 ERR_MANIFEST_PROCESSING_FAILED = 17
+
+err-code-values = ERR_PERMANENT_ERROR
+         / ERR_UNSUPPORTED_EXTENSION
+         / ERR_UNSUPPORTED_FRESHNESS_MECHANISMS
+         / ERR_UNSUPPORTED_MSG_VERSION
+         / ERR_UNSUPPORTED_CIPHER_SUITES
+         / ERR_BAD_CERTIFICATE
+         / ERR_ATTESTATION_REQUIRED
+         / ERR_UNSUPPORTED_SUIT_REPORT
+         / ERR_CERTIFICATE_EXPIRED
+         / ERR_TEMPORARY_ERROR
+         / ERR_MANIFEST_PROCESSING_FAILED
 ~~~~
 
 The Error message has the following fields:
@@ -1115,10 +1138,12 @@ err-msg
   using UTF-8 {{RFC3629}} using Net-Unicode form {{RFC5198}} with max 128 bytes.
 
 err-lang
-: The err-lang parameter is an OPTIONAL RFC 5646 {{RFC5646}} language tag identifying the
+: The err-lang parameter is an optional RFC 5646 {{RFC5646}} language tag identifying the
   language of the `err-msg` text. When present, implementations SHOULD use the
   language tag to aid human operators in interpreting diagnostic text. The
   err-msg field SHOULD be formatted in the language indicated by this tag.
+  If the indicated language is not supported, implementations MAY ignore the
+  tag and treat `err-msg` as opaque text, but MUST still process `err-code`.
 
 supported-teep-cipher-suites
 : The supported-teep-cipher-suites parameter lists the TEEP cipher suite(s) supported by the TEEP Agent.
@@ -1165,6 +1190,7 @@ suit-reports
 
 err-code
 : The err-code parameter contains one of the error codes listed below.
+  The value 0 is reserved and MUST NOT be used.
   Only selected values are applicable to each message.
   Note that error codes are restricted to the range (0..23) to permit
   encoding as single-byte CBOR unsigned integers. Error code values 0, 11-16,
@@ -1673,7 +1699,7 @@ $teep-cipher-suite /= teep-cipher-suite-sign1-esp256
 
 ;The following two cipher suites have only a single operation each.
 ;Other cipher suites may be defined to have multiple operations.
-;It is MANDATORY for TAM to support them, and OPTIONAL
+;It is mandatory for TAM to support them, and optional
 ;to support any additional ones that use COSE_Sign_Tagged, or other
 ;signing, encryption, or MAC algorithms.
 
@@ -1683,13 +1709,13 @@ teep-operation-sign1-esp256  = [ cose-sign1, cose-alg-esp256 ]
 teep-cipher-suite-sign1-ed25519 = [ teep-operation-sign1-ed25519 ]
 teep-cipher-suite-sign1-esp256  = [ teep-operation-sign1-esp256 ]
 
-;MANDATORY for TAM and TEEP Agent to support the following COSE
-;operations, and OPTIONAL to support additional ones such as
+;Mandatory for TAM and TEEP Agent to support the following COSE
+;operations, and optional to support additional ones such as
 ;COSE_Sign_Tagged, COSE_Encrypt0_Tagged, etc.
 
 cose-sign1 = 18      ; CoAP Content-Format value
 
-;MANDATORY for TAM to support the following, and OPTIONAL to
+;Mandatory for TAM to support the following, and optional to
 ;implement any additional algorithms from the IANA COSE Algorithms
 ;registry.
 
@@ -2149,9 +2175,12 @@ registry.  The registry has the following format:
 | 2 | TEEP-TYPE-query-response | This document |
 | 3 | TEEP-TYPE-update | This document |
 | 4 | (Reserved) | This document |
-| 5 | TEEP-TYPE-teep-success | This document |
-| 6 | TEEP-TYPE-teep-error | This document |
+| 5 | TEEP-TYPE-success | This document |
+| 6 | TEEP-TYPE-error | This document |
 | 7-23 | (Reserved for future use) | This document |
+
+Registry values are not required to be contiguous; reserved values allow future
+extensions without renumbering.
 
 Registration procedures are as follows:
 
@@ -2210,6 +2239,7 @@ Registration procedures are as follows:
 ## TEEP CBOR Label Registry
 
 IANA is requested to create a registry titled "TEEP CBOR Labels" within the TEEP registry. The registry has the following format:
+Label values are not required to be contiguous; gaps are reserved for future use.
 
 | Label | Name | Type | Reference |
 |-------|------|------|-----------|

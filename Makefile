@@ -47,9 +47,9 @@ $(CDDL_FILE): $(MD_FILE)
 	echo >> $@
 	sed -n '/${CODE_PAT} cddl-update/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' >> $@
 	echo >> $@
-	sed -n '/${CODE_PAT} cddl-teep-success/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' >> $@
+	sed -n '/${CODE_PAT} cddl-success/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' >> $@
 	echo >> $@
-	sed -n '/${CODE_PAT} cddl-teep-error/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' >> $@
+	sed -n '/${CODE_PAT} cddl-error/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' >> $@
 	echo >> $@
 	sed -n '/${CODE_PAT} cddl-label/,/${CODE_PAT}/ p' $< | sed '/${CODE_PAT}.*/ d' >> $@
 
