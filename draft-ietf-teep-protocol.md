@@ -2339,7 +2339,7 @@ for their valuable implementation feedback.
 
 We would also like to thank Carsten Bormann and Henk Birkholz for their help with the CDDL.
 
-Finally, we would like to thank the following IESG members for their review feedback: Sean Turner, Paul Kyzivat, Scott Hollenbeck, Luigi Iannone, Paul Wouters, and Yoshifumi Nishida
+Finally, we would like to thank the following IESG members for their review feedback: Sean Turner, Paul Kyzivat, Scott Hollenbeck, Luigi Iannone, Paul Wouters, Mohamed Boucadair, and Yoshifumi Nishida
 
 # C. Complete CDDL
 {: numbered='no'}
