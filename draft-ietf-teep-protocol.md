@@ -79,6 +79,8 @@ normative:
   RFC9052:
   RFC9679:
   RFC9711:
+  RFC9397:
+  RFC8610:
   I-D.ietf-suit-manifest:
   I-D.ietf-suit-mti:
   I-D.ietf-suit-trust-domains:
@@ -94,10 +96,8 @@ informative:
   I-D.ietf-rats-reference-interaction-models:
   I-D.ietf-teep-otrp-over-http:
   I-D.ietf-opsawg-rfc5706bis:
-  RFC9397:
   RFC9782:
   I-D.ietf-rats-concise-ta-stores:
-  RFC8610: 
   RFC8915:
   RFC5934:
   RFC9334:
