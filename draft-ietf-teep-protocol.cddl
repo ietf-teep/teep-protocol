@@ -24,6 +24,8 @@ TEEP-TYPE-query-response = 2
 TEEP-TYPE-update = 3
 TEEP-TYPE-success = 5
 TEEP-TYPE-error = 6
+; value 4 is reserved for future use; registries are
+; intentionally sparse and values are not required to be contiguous.
 
 query-request = [
   type: TEEP-TYPE-query-request,
@@ -34,7 +36,8 @@ query-request = [
     ? versions => [ + version ],
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
-    ? suit-reports => [ + bstr .cbor SUIT_Report ],
+    ? suit-reports => [ + bstr .cbor
+             (SUIT_Report_Protected / SUIT_Report_Unprotected) ],
     * $$query-request-extensions,
     * $$teep-option-extensions
   },
@@ -60,7 +63,7 @@ $teep-cipher-suite /= teep-cipher-suite-sign1-esp256
 
 ;The following two cipher suites have only a single operation each.
 ;Other cipher suites may be defined to have multiple operations.
-;It is MANDATORY for TAM to support them, and OPTIONAL
+;It is mandatory for TAM to support them, and optional
 ;to support any additional ones that use COSE_Sign_Tagged, or other
 ;signing, encryption, or MAC algorithms.
 
@@ -70,13 +73,13 @@ teep-operation-sign1-esp256  = [ cose-sign1, cose-alg-esp256 ]
 teep-cipher-suite-sign1-ed25519 = [ teep-operation-sign1-ed25519 ]
 teep-cipher-suite-sign1-esp256  = [ teep-operation-sign1-esp256 ]
 
-;MANDATORY for TAM and TEEP Agent to support the following COSE
-;operations, and OPTIONAL to support additional ones such as
+;Mandatory for TAM and TEEP Agent to support the following COSE
+;operations, and optional to support additional ones such as
 ;COSE_Sign_Tagged, COSE_Encrypt0_Tagged, etc.
 
 cose-sign1 = 18      ; CoAP Content-Format value
 
-;MANDATORY for TAM to support the following, and OPTIONAL to
+;Mandatory for TAM to support the following, and optional to
 ;implement any additional algorithms from the IANA COSE Algorithms
 ;registry.
 
@@ -103,7 +106,8 @@ query-response = [
     ? selected-version => version,
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
-    ? suit-reports => [ + bstr .cbor SUIT_Report ],
+    ? suit-reports => [ + bstr .cbor
+             (SUIT_Report_Protected / SUIT_Report_Unprotected) ],
     ? tc-list => [ + system-property-claims ],
     ? requested-tc-list => [ + requested-tc-info ],
     ? unneeded-manifest-list => [ + SUIT_Component_Identifier ],
@@ -140,7 +144,8 @@ success = [
   options: {
     ? token => bstr .size (8..64),
     ? msg => text .size (1..128),
-    ? suit-reports => [ + bstr .cbor SUIT_Report ],
+    ? suit-reports => [ + bstr .cbor
+             (SUIT_Report_Protected / SUIT_Report_Unprotected) ],
     * $$success-extensions,
     * $$teep-option-extensions
   }
@@ -157,14 +162,15 @@ error = [
      ? supported-suit-cose-profiles => [ + $suit-cose-profile ],
      ? challenge => bstr .size (8..512),
      ? versions => [ + version ],
-     ? suit-reports => [ + bstr .cbor SUIT_Report ],
+     ? suit-reports => [ + bstr .cbor
+             (SUIT_Report_Protected / SUIT_Report_Unprotected) ],
      * $$error-extensions,
      * $$teep-option-extensions
   },
   err-code: err-code-values
 ]
 
-; The err-code parameter
+; The err-code parameter, uint (1..23)
 ERR_PERMANENT_ERROR = 1
 ERR_UNSUPPORTED_EXTENSION = 2
 ERR_UNSUPPORTED_FRESHNESS_MECHANISMS = 3
@@ -189,7 +195,7 @@ err-code-values = ERR_PERMANENT_ERROR
          / ERR_TEMPORARY_ERROR
          / ERR_MANIFEST_PROCESSING_FAILED
 
-; labels of mapkey for teep message parameters
+; labels of mapkey for teep message parameters, uint (0..23)
 supported-teep-cipher-suites = 1
 challenge = 2
 versions = 3

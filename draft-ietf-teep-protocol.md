@@ -263,8 +263,8 @@ TEEP-TYPE-query-response = 2
 TEEP-TYPE-update = 3
 TEEP-TYPE-success = 5
 TEEP-TYPE-error = 6
-; value 4 is reserved for future use; registries are intentionally sparse
-; and values are not required to be contiguous.
+; value 4 is reserved for future use; registries are
+; intentionally sparse and values are not required to be contiguous.
 ~~~~
 
 ## Creating and Validating TEEP Messages
@@ -343,7 +343,8 @@ query-request = [
     ? versions => [ + version ],
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
-    ? suit-reports => [ + bstr .cbor SUIT_Report ],
+    ? suit-reports => [ + bstr .cbor
+             (SUIT_Report_Protected / SUIT_Report_Unprotected) ],
     * $$query-request-extensions,
     * $$teep-option-extensions
   },
@@ -476,7 +477,8 @@ suit-reports
 : If present, the suit-reports parameter contains a set of TAM SUIT Reports related
   to “boot” time (including the start of an executable in an OS context), as defined
   by SUIT_Report in Section 4 of {{I-D.ietf-suit-report}}.
-  SUIT Reports are encoded as CBOR byte strings. When a SUIT Report includes its own COSE
+  SUIT Reports are encoded as CBOR byte strings containing either SUIT_Report_Protected
+  or SUIT_Report_Unprotected. When a SUIT Report includes its own COSE
   protection (via signatures or MACs), the cryptographic key used MUST be distinct
   from the key used for the TEEP message's COSE security wrapper since otherwise its authenticity relies on the TEEP message's signature/MAC keys without adding any additional security.
   SUIT Reports can be useful in QueryRequest messages to
@@ -501,7 +503,8 @@ query-response = [
     ? selected-version => version,
     ? attestation-payload-format => text,
     ? attestation-payload => bstr,
-    ? suit-reports => [ + bstr .cbor SUIT_Report ],
+    ? suit-reports => [ + bstr .cbor
+             (SUIT_Report_Protected / SUIT_Report_Unprotected) ],
     ? tc-list => [ + system-property-claims ],
     ? requested-tc-list => [ + requested-tc-info ],
     ? unneeded-manifest-list => [ + SUIT_Component_Identifier ],
@@ -562,7 +565,9 @@ suit-reports
 : If present, the suit-reports parameter contains a set of "boot" (including
   starting an executable in an OS context) time SUIT Reports
   as defined by SUIT_Report in Section 4 of {{I-D.ietf-suit-report}},
-  encoded using COSE as discussed in {{eat-suit-ciphersuite}}.
+  encoded as CBOR byte strings containing either SUIT_Report_Protected or
+  SUIT_Report_Unprotected. When protected, SUIT reports use COSE as discussed
+  in {{eat-suit-ciphersuite}}.
   If a token parameter was present in the QueryRequest
   message the QueryResponse message is in response to,
   the suit-report-nonce field MUST be present in the SUIT Report with a
@@ -1031,7 +1036,8 @@ success = [
   options: {
     ? token => bstr .size (8..64),
     ? msg => text .size (1..128),
-    ? suit-reports => [ + bstr .cbor SUIT_Report ],
+    ? suit-reports => [ + bstr .cbor
+             (SUIT_Report_Protected / SUIT_Report_Unprotected) ],
     * $$success-extensions,
     * $$teep-option-extensions
   }
@@ -1059,7 +1065,7 @@ msg
 suit-reports
 : If present, the suit-reports parameter contains a set of SUIT Reports
   as defined in Section 4 of {{I-D.ietf-suit-report}}, encoded as CBOR byte strings
-  containing either protected or unprotected SUIT Report payloads. When a SUIT Report
+  containing either SUIT_Report_Protected or SUIT_Report_Unprotected. When a SUIT Report
   includes its own COSE protection (signatures or MACs), the cryptographic key used
   MUST be distinct from the key used for the TEEP message's COSE security wrapper.
   If a token parameter was present in the Update
@@ -1088,7 +1094,8 @@ error = [
      ? supported-suit-cose-profiles => [ + $suit-cose-profile ],
      ? challenge => bstr .size (8..512),
      ? versions => [ + version ],
-     ? suit-reports => [ + bstr .cbor SUIT_Report ],
+     ? suit-reports => [ + bstr .cbor
+             (SUIT_Report_Protected / SUIT_Report_Unprotected) ],
      * $$error-extensions,
      * $$teep-option-extensions
   },
