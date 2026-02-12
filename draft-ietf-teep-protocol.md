@@ -157,6 +157,8 @@ Each Trusted Component is uniquely identified by a SUIT Component Identifier
 Attestation related terms, such as Evidence and Attestation Results,
 are as defined in {{RFC9334}}.
 
+Examples are folded following the conventions in {{?RFC8792}}.
+
 # Message Overview {#messages}
 
 The TEEP protocol consists of messages exchanged between a TAM
@@ -1967,7 +1969,7 @@ Compromised Time Source
   thus be used to subvert such validity checks.
 
 
-## Operational Considerations {#operational}
+# Operational Considerations {#operational}
 
 This section summarizes operational and management guidance for
 deployments using the TEEP protocol.  It complements the general
