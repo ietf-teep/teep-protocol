@@ -1,7 +1,7 @@
 85                  # array(5)
    01               # unsigned(1) / TEEP-TYPE-query-request /
    A2               # map(2)
-      14            # unsigned(20) / token: /
+      13            # unsigned(19) / token: /
       50            # bytes(16)
          A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
       03            # unsigned(3) / versions: /
