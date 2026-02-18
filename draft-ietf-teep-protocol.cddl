@@ -16,16 +16,18 @@ $teep-message-type /= update
 $teep-message-type /= success
 $teep-message-type /= error
 
-; message type numbers, in one byte which could take a
-; number from 0 to 23
-$teep-type /= (0..23)
+$teep-type /= TEEP-TYPE-query-request
+$teep-type /= TEEP-TYPE-query-response
+$teep-type /= TEEP-TYPE-update
+$teep-type /= TEEP-TYPE-success
+$teep-type /= TEEP-TYPE-error
+
+; message type numbers
 TEEP-TYPE-query-request = 1
 TEEP-TYPE-query-response = 2
 TEEP-TYPE-update = 3
-TEEP-TYPE-success = 5
-TEEP-TYPE-error = 6
-; value 4 is reserved for future use; registries are
-; intentionally sparse and values are not required to be contiguous.
+TEEP-TYPE-success = 4
+TEEP-TYPE-error = 5
 
 query-request = [
   type: TEEP-TYPE-query-request,
@@ -170,7 +172,7 @@ error = [
   err-code: err-code-values
 ]
 
-; The err-code parameter, uint (1..23)
+; The err-code parameter
 ERR_PERMANENT_ERROR = 1
 ERR_UNSUPPORTED_EXTENSION = 2
 ERR_UNSUPPORTED_FRESHNESS_MECHANISMS = 3
@@ -181,7 +183,7 @@ ERR_ATTESTATION_REQUIRED = 7
 ERR_UNSUPPORTED_SUIT_REPORT = 8
 ERR_CERTIFICATE_EXPIRED = 9
 ERR_TEMPORARY_ERROR = 10
-ERR_MANIFEST_PROCESSING_FAILED = 17
+ERR_MANIFEST_PROCESSING_FAILED = 11
 
 err-code-values = ERR_PERMANENT_ERROR
          / ERR_UNSUPPORTED_EXTENSION
@@ -195,26 +197,26 @@ err-code-values = ERR_PERMANENT_ERROR
          / ERR_TEMPORARY_ERROR
          / ERR_MANIFEST_PROCESSING_FAILED
 
-; labels of mapkey for teep message parameters, uint (0..23)
+; labels of mapkey for teep message parameters
 supported-teep-cipher-suites = 1
 challenge = 2
 versions = 3
 supported-suit-cose-profiles = 4
-selected-version = 6
-attestation-payload = 7
-tc-list = 8
-ext-list = 9
-manifest-list = 10
-msg = 11
-err-msg = 12
-attestation-payload-format = 13
-requested-tc-list = 14
-unneeded-manifest-list = 15
-component-id = 16
-tc-manifest-sequence-number = 17
-have-binary = 18
-suit-reports = 19
-token = 20
-supported-freshness-mechanisms = 21
-err-lang = 22
-err-code = 23
+selected-version = 5
+attestation-payload = 6
+tc-list = 7
+ext-list = 8
+manifest-list = 9
+msg = 10
+err-msg = 11
+attestation-payload-format = 12
+requested-tc-list = 13
+unneeded-manifest-list = 14
+component-id = 15
+tc-manifest-sequence-number = 16
+have-binary = 17
+suit-reports = 18
+token = 19
+supported-freshness-mechanisms = 20
+err-lang = 21
+err-code = 22

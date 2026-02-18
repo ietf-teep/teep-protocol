@@ -255,16 +255,18 @@ $teep-message-type /= update
 $teep-message-type /= success
 $teep-message-type /= error
 
-; message type numbers, in one byte which could take a
-; number from 0 to 23
-$teep-type /= (0..23)
+$teep-type /= TEEP-TYPE-query-request
+$teep-type /= TEEP-TYPE-query-response
+$teep-type /= TEEP-TYPE-update
+$teep-type /= TEEP-TYPE-success
+$teep-type /= TEEP-TYPE-error
+
+; message type numbers
 TEEP-TYPE-query-request = 1
 TEEP-TYPE-query-response = 2
 TEEP-TYPE-update = 3
-TEEP-TYPE-success = 5
-TEEP-TYPE-error = 6
-; value 4 is reserved for future use; registries are
-; intentionally sparse and values are not required to be contiguous.
+TEEP-TYPE-success = 4
+TEEP-TYPE-error = 5
 ~~~~
 
 ## Creating and Validating TEEP Messages
@@ -1048,7 +1050,7 @@ The Success message has the following fields:
 
 {: vspace='0'}
 type
-: The value of (5) corresponds to a Success message sent from the TEEP Agent to the
+: The value of (4) corresponds to a Success message sent from the TEEP Agent to the
   TAM.
 
 token
@@ -1102,7 +1104,7 @@ error = [
   err-code: err-code-values
 ]
 
-; The err-code parameter, uint (1..23)
+; The err-code parameter
 ERR_PERMANENT_ERROR = 1
 ERR_UNSUPPORTED_EXTENSION = 2
 ERR_UNSUPPORTED_FRESHNESS_MECHANISMS = 3
@@ -1113,7 +1115,7 @@ ERR_ATTESTATION_REQUIRED = 7
 ERR_UNSUPPORTED_SUIT_REPORT = 8
 ERR_CERTIFICATE_EXPIRED = 9
 ERR_TEMPORARY_ERROR = 10
-ERR_MANIFEST_PROCESSING_FAILED = 17
+ERR_MANIFEST_PROCESSING_FAILED = 11
 
 err-code-values = ERR_PERMANENT_ERROR
          / ERR_UNSUPPORTED_EXTENSION
@@ -1132,7 +1134,7 @@ The Error message has the following fields:
 
 {: vspace='0'}
 type
-: The value of (6) corresponds to an Error message sent from the TEEP Agent to the TAM.
+: The value of (5) corresponds to an Error message sent from the TEEP Agent to the TAM.
 
 token
 : The value in the token parameter is used to match responses to requests.
@@ -1200,8 +1202,8 @@ err-code
   The value 0 is reserved and MUST NOT be used.
   Only selected values are applicable to each message.
   Note that error codes are restricted to the range (0..23) to permit
-  encoding as single-byte CBOR unsigned integers. Error code values 0, 11-16,
-  and 18-22 are currently unassigned and reserved for future use.
+  encoding as single-byte CBOR unsigned integers. Error code values 0 and 12-23
+  are currently unassigned and reserved for future use.
   Error code 0 is intentionally reserved to prevent accidental use.
   Extensions that define new error codes SHOULD constrain values to this range;
   however, implementations that receive unrecognized error code values greater than 23
@@ -1278,7 +1280,7 @@ ERR_TEMPORARY_ERROR (10)
   A TEEP implementation receiving this error might retry the last message it sent to the sender
   of this error at some later point, which is up to the implementation.
 
-ERR_MANIFEST_PROCESSING_FAILED (17)
+ERR_MANIFEST_PROCESSING_FAILED (11)
 : The TEEP Agent encountered one or more manifest processing failures.
   If the suit-reports parameter is present, it contains the failure details.
   A TAM receiving this error might still attempt to install or update
@@ -1398,7 +1400,7 @@ as a map key.
 
 Message parameter labels are current defined only in the range [0..23] to permit
 encoding as single-byte CBOR unsigned integers, providing compact message representation.
-Currently, labels 0, 5, and 22 are unassigned and reserved for future use.
+Currently, labels 0 and 23 are unassigned and reserved for future use.
 Extensions that define new message parameters SHOULD constrain label values to this range.
 If future standards require additional messages beyond this range, implementations
 SHOULD be designed to handle gracefully any unrecognized labels, treating them
@@ -1411,51 +1413,51 @@ This specification uses the following mapping:
 | challenge                        |     2 |
 | versions                         |     3 |
 | supported-suit-cose-profiles     |     4 |
-| selected-version                 |     6 |
-| attestation-payload              |     7 |
-| tc-list                          |     8 |
-| ext-list                         |     9 |
-| manifest-list                    |    10 |
-| msg                              |    11 |
-| err-msg                          |    12 |
-| attestation-payload-format       |    13 |
-| requested-tc-list                |    14 |
-| unneeded-manifest-list           |    15 |
-| component-id                     |    16 |
-| tc-manifest-sequence-number      |    17 |
-| have-binary                      |    18 |
-| suit-reports                     |    19 |
-| token                            |    20 |
-| supported-freshness-mechanisms   |    21 |
-| err-lang                         |    22 |
-| err-code                         |    23 |
+| selected-version                 |     5 |
+| attestation-payload              |     6 |
+| tc-list                          |     7 |
+| ext-list                         |     8 |
+| manifest-list                    |     9 |
+| msg                              |    10 |
+| err-msg                          |    11 |
+| attestation-payload-format       |    12 |
+| requested-tc-list                |    13 |
+| unneeded-manifest-list           |    14 |
+| component-id                     |    15 |
+| tc-manifest-sequence-number      |    16 |
+| have-binary                      |    17 |
+| suit-reports                     |    18 |
+| token                            |    19 |
+| supported-freshness-mechanisms   |    20 |
+| err-lang                         |    21 |
+| err-code                         |    22 |
 
 The following CDDL description is used:
 
 ~~~~ cddl-label
-; labels of mapkey for teep message parameters, uint (0..23)
+; labels of mapkey for teep message parameters
 supported-teep-cipher-suites = 1
 challenge = 2
 versions = 3
 supported-suit-cose-profiles = 4
-selected-version = 6
-attestation-payload = 7
-tc-list = 8
-ext-list = 9
-manifest-list = 10
-msg = 11
-err-msg = 12
-attestation-payload-format = 13
-requested-tc-list = 14
-unneeded-manifest-list = 15
-component-id = 16
-tc-manifest-sequence-number = 17
-have-binary = 18
-suit-reports = 19
-token = 20
-supported-freshness-mechanisms = 21
-err-lang = 22
-err-code = 23
+selected-version = 5
+attestation-payload = 6
+tc-list = 7
+ext-list = 8
+manifest-list = 9
+msg = 10
+err-msg = 11
+attestation-payload-format = 12
+requested-tc-list = 13
+unneeded-manifest-list = 14
+component-id = 15
+tc-manifest-sequence-number = 16
+have-binary = 17
+suit-reports = 18
+token = 19
+supported-freshness-mechanisms = 20
+err-lang = 21
+err-code = 22
 ~~~~
 
 # Behavior Specification
@@ -2181,18 +2183,14 @@ registry.  The registry has the following format:
 | 1 | TEEP-TYPE-query-request | This document |
 | 2 | TEEP-TYPE-query-response | This document |
 | 3 | TEEP-TYPE-update | This document |
-| 4 | (Reserved) | This document |
-| 5 | TEEP-TYPE-success | This document |
-| 6 | TEEP-TYPE-error | This document |
-| 7-23 | (Reserved for future use) | This document |
-
-Registry values are not required to be contiguous; reserved values allow future
-extensions without renumbering.
+| 4 | TEEP-TYPE-success | This document |
+| 5 | TEEP-TYPE-error | This document |
+| 6-255 | (Reserved for future use) | |
 
 Registration procedures are as follows:
 
-* 0-12: Standards Action
-* 13-23: Specification Required
+* 0-23: Standards Action
+* 24-255: Specification Required
 
 ## data-item-requested Bitmap Registry
 
@@ -2205,12 +2203,12 @@ registry. The registry has the following format:
 | 1 | trusted-components | TAM queries installed Trusted Components | This document |
 | 2 | extensions | TAM queries supported extensions | This document |
 | 3 | suit-reports | TAM requests SUIT Reports | This document |
-| 4-31 | (Reserved for future use) | | This document |
+| 4-255 | (Reserved for future use) | | |
 
 Registration procedures are as follows:
 
 * 0-23: Standards Action
-* 24-31: Specification Required
+* 24-255: Specification Required
 
 ## TEEP Error Code Registry
 
@@ -2230,23 +2228,20 @@ registry. The registry has the following format:
 | 8 | ERR_UNSUPPORTED_SUIT_REPORT | Unsupported SUIT Report profile | This document |
 | 9 | ERR_CERTIFICATE_EXPIRED | Certificate has expired or is invalid | This document |
 | 10 | ERR_TEMPORARY_ERROR | Temporary error (e.g., memory allocation) | This document |
-| 11-16 | (Reserved for future use) | | |
-| 17 | ERR_MANIFEST_PROCESSING_FAILED | Manifest processing failure | This document |
-| 18-22 | (Reserved for future use) | | |
-| 23 | (Reserved) | Reserved for future use |  |
+| 11 | ERR_MANIFEST_PROCESSING_FAILED | Manifest processing failure | This document |
+| 12-255 | (Reserved) | Reserved for future use |  |
 
 Note: Error codes are constrained to the range 0-23 to permit encoding as single-byte
 CBOR unsigned integers.
 
 Registration procedures are as follows:
 
-* 1-10, 17: Standards Action
-* 11-16, 18-23: Reserved for future use by Specification Required
+* 1-23: Standards Action
+* 24-255: Specification Required
 
 ## TEEP CBOR Label Registry
 
 IANA is requested to create a registry titled "TEEP CBOR Labels" within the TEEP registry. The registry has the following format:
-Label values are not required to be contiguous; gaps are reserved for future use.
 
 | Label | Name | Type | Reference |
 |-------|------|------|-----------|
@@ -2255,34 +2250,30 @@ Label values are not required to be contiguous; gaps are reserved for future use
 | 2 | challenge | bstr | This document |
 | 3 | versions | array | This document |
 | 4 | supported-suit-cose-profiles | array | This document |
-| 5 | (Reserved) | | |
-| 6 | selected-version | uint | This document |
-| 7 | attestation-payload | bstr | This document |
-| 8 | tc-list | array | This document |
-| 9 | ext-list | array | This document |
-| 10 | manifest-list | array | This document |
-| 11 | msg | text | This document |
-| 12 | err-msg | text | This document |
-| 13 | attestation-payload-format | text | This document |
-| 14 | requested-tc-list | array | This document |
-| 15 | unneeded-manifest-list | array | This document |
-| 16 | component-id | SUIT_Component_Identifier | This document |
-| 17 | tc-manifest-sequence-number | uint | This document |
-| 18 | have-binary | bool | This document |
-| 19 | suit-reports | array | This document |
-| 20 | token | bstr | This document |
-| 21 | supported-freshness-mechanisms | array | This document |
-| 22 | (Reserved) | | |
-| 23 | err-code | uint | This document |
-| 2-255 | (Reserved for future use) | |
-| 256- | (Reserved for future use) | |
-
-Note: Labels are not constrained to a specific range.
+| 5 | selected-version | uint | This document |
+| 6 | attestation-payload | bstr | This document |
+| 7 | tc-list | array | This document |
+| 8 | ext-list | array | This document |
+| 9 | manifest-list | array | This document |
+| 10 | msg | text | This document |
+| 11 | err-msg | text | This document |
+| 12 | attestation-payload-format | text | This document |
+| 13 | requested-tc-list | array | This document |
+| 14 | unneeded-manifest-list | array | This document |
+| 15 | component-id | SUIT_Component_Identifier | This document |
+| 16 | tc-manifest-sequence-number | uint | This document |
+| 17 | have-binary | bool | This document |
+| 18 | suit-reports | array | This document |
+| 19 | token | bstr | This document |
+| 20 | supported-freshness-mechanisms | array | This document |
+| 21 | err-lang | text | This document |
+| 22 | err-code | uint | This document |
+| 23-1023 | (Reserved for future use) | |
 
 Registration procedures are as follows:
 
 * 0-255:: Standards Action
-* 256 and above: Specification Required
+* 256-1023: Specification Required
 
 ## TEEP Cipher Suite Registry
 
