@@ -1398,13 +1398,8 @@ encoding. Since the word "key" is mainly used in its other meaning, as a
 cryptographic key, this specification uses the term "label" for this usage
 as a map key.
 
-Message parameter labels are current defined only in the range [0..23] to permit
-encoding as single-byte CBOR unsigned integers, providing compact message representation.
-Currently, labels 0 and 23 are unassigned and reserved for future use.
-Extensions that define new message parameters SHOULD constrain label values to this range.
-If future standards require additional messages beyond this range, implementations
-SHOULD be designed to handle gracefully any unrecognized labels, treating them
-as unknown optional parameters without failing to process the message.
+Message parameter labels in the range [0..23] permit encoding as single-byte
+CBOR unsigned integers, providing compact message representation.
 
 This specification uses the following mapping:
 
@@ -2236,7 +2231,7 @@ CBOR unsigned integers.
 
 Registration procedures are as follows:
 
-* 1-23: Standards Action
+* 0-23: Standards Action
 * 24-255: Specification Required
 
 ## TEEP CBOR Label Registry
@@ -2272,7 +2267,7 @@ IANA is requested to create a registry titled "TEEP CBOR Labels" within the TEEP
 
 Registration procedures are as follows:
 
-* 0-255:: Standards Action
+* 0-255: Standards Action
 * 256-1023: Specification Required
 
 ## TEEP Cipher Suite Registry
