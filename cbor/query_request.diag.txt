@@ -3,7 +3,7 @@
   / type: / 1 / TEEP-TYPE-query-request /,
   / options: /
   {
-    / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
+    / token / 19 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
     / versions / 3 : [ 0 ]  / 0 is current TEEP Protocol /
   },
   / supported-teep-cipher-suites: / [

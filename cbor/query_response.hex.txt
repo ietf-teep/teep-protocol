@@ -1,15 +1,15 @@
 82                  # array(2)
    02               # unsigned(2) / TEEP-TYPE-query-response /
    A4               # map(4)
-      14            # unsigned(20) / token: /
+      13            # unsigned(19) / token: /
       50            # bytes(16)
          A0A1A2A3A4A5A6A7A8A9AAABACADAEAF
-      06            # unsigned(6) / selected-version: /
+      05            # unsigned(5) / selected-version: /
       00            # unsigned(0)
-      07            # unsigned(7) / attestation-payload: /
+      06            # unsigned(6) / attestation-payload: /
       40            # bytes(0)
                     # ""
-      08            # unsigned(8) / tc-list: /
+      07            # unsigned(7) / tc-list: /
       81            # array(1)
          A2         # map(2)
             00      # unsigned(0) / system-component-id: /

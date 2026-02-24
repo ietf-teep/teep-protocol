@@ -3,8 +3,8 @@
   / type: / 3 / TEEP-TYPE-update /,
   / options: /
   {
-    / token / 20 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
-    / manifest-list / 10 : [
+    / token / 19 : h'A0A1A2A3A4A5A6A7A8A9AAABACADAEAF',
+    / manifest-list / 9 : [
       <<
         / SUIT_Envelope / {
           / suit-authentication-wrapper / 2: << [
