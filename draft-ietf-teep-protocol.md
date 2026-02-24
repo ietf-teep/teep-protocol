@@ -790,11 +790,13 @@ err-msg
  
 err-lang
 : The err-lang parameter is an optional RFC 5646 {{RFC5646}} language tag identifying the
-  language of the `err-msg` text.  When present, implementations MUST use the
-  language tag to aid human operators in interpreting diagnostic text.  The
-  err-msg field SHOULD be formatted in the language indicated by this tag.
-  If the indicated language is not supported, implementations MAY ignore the
-  tag and treat `err-msg` as opaque text, but MUST still process `err-code`.
+  language of the `err-msg` text.  When present, implementations SHOULD use
+  the language tag to aid human operators in interpreting diagnostic text.
+  The `err-msg` field SHOULD be formatted in the language indicated by this
+  tag.  If the indicated language is not supported, or the implementation only
+  has diagnostics available in another language, implementations MAY use a
+  different language and SHOULD treat `err-msg` as optional diagnostic text;
+  `err-code` remains authoritative for machine processing.
 
 Note that an Update message carrying one or more SUIT manifests will inherently
 involve multiple signatures, one by the TAM in the TEEP message and one from
@@ -1156,10 +1158,12 @@ err-msg
 err-lang
 : The err-lang parameter is an optional RFC 5646 {{RFC5646}} language tag identifying the
   language of the `err-msg` text. When present, implementations SHOULD use the
-  language tag to aid human operators in interpreting diagnostic text. The
+  language tag to aid human operators in interpreting diagnostic text.  The
   err-msg field SHOULD be formatted in the language indicated by this tag.
-  If the indicated language is not supported, implementations MAY ignore the
-  tag and treat `err-msg` as opaque text, but MUST still process `err-code`.
+  If the indicated language is not supported, or the implementation only has
+  diagnostics available in another language, implementations MAY use a
+  different language and SHOULD treat `err-msg` as optional diagnostic text;
+  `err-code` remains authoritative for machine processing.
 
 supported-teep-cipher-suites
 : The supported-teep-cipher-suites parameter lists the TEEP cipher suite(s) supported by the TEEP Agent.
@@ -1990,12 +1994,13 @@ and refers implementers to the architecture and conceptual APIs in
   first valid response.  Operational deployments SHOULD tune token
   timeouts to accommodate device processing time (see {{tam}}).
 
-- Key and certificate lifecycle: Operators MUST run procedures for
-  certificate and key issuance, rollover, revocation, and timely
-  renewal.  Implementations SHOULD support certificate status checks
-  and have clear behavior when certificates are expired or revoked
-  (see err-code behaviors such as ERR_CERTIFICATE_EXPIRED and
-  ERR_BAD_CERTIFICATE).
+- Key and certificate lifecycle: Operators SHOULD run documented
+  procedures for certificate and key issuance, rollover, revocation,
+  and renewal, with renewal intervals defined by local policy and
+  deployment requirements.  Implementations SHOULD support certificate
+  status checks and have clear behavior when certificates are expired
+  or revoked (see err-code behaviors such as ERR_CERTIFICATE_EXPIRED
+  and ERR_BAD_CERTIFICATE).
 
 - Logging, monitoring, and diagnostics: Implementations SHOULD log
   operational events, but MUST avoid placing sensitive data (e.g., raw
@@ -2012,8 +2017,9 @@ and refers implementers to the architecture and conceptual APIs in
 
 - Time synchronization: Accurate device time is important for
   certificate validity checks and for some attestation freshness
-  mechanisms.  Operators SHOULD ensure devices maintain adequate
-  time synchronization.
+  mechanisms.  Operators SHOULD ensure devices maintain time
+  synchronization within the tolerance required by deployed certificate
+  validation and freshness mechanisms.
 
 - Privacy and data minimization Attestation results, SUIT reports,
   and system-property-claims can contain identifying information.  Do
