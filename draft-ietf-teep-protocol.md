@@ -107,10 +107,13 @@ informative:
 --- abstract
 
 
-This document specifies a protocol that installs, updates, and deletes
-Trusted Components in a device with a Trusted Execution
-Environment (TEE).  This specification defines an interoperable
-protocol for managing the lifecycle of Trusted Components.
+This document specifies the Trusted Execution Environment Provisioning
+(TEEP) Protocol, which enables secure lifecycle management of Trusted
+Components in devices with a Trusted Execution Environment (TEE).
+The protocol defines message exchanges between a Trusted Application
+Manager (TAM) and a TEEP Agent to query device state, convey
+attestation evidence, and install, update, or delete Trusted
+Components.  Messages are encoded in CBOR and secured using COSE.
 
 --- middle
 
@@ -2351,7 +2354,7 @@ for their valuable implementation feedback.
 
 We would also like to thank Carsten Bormann and Henk Birkholz for their help with the CDDL.
 
-Finally, we would like to thank the following reviewers for their feedback during the IESG evaluation phase: Sean Turner, Paul Kyzivat, Scott Hollenbeck, Luigi Iannone, Paul Wouters, Mohamed Boucadair, Gorry Fairhurst, and Yoshifumi Nishida
+Finally, we would like to thank the following reviewers for their feedback during the IESG evaluation phase: Sean Turner, Paul Kyzivat, Scott Hollenbeck, Luigi Iannone, Paul Wouters, Mohamed Boucadair, Gorry Fairhurst, Gunter Van de Velde, and Yoshifumi Nishida
 
 # C. Complete CDDL
 {: numbered='no'}
