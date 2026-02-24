@@ -2114,13 +2114,19 @@ just like ones from TEEP Agents.
 
 # IANA Considerations {#IANA}
 
+IANA is requested to create a new registry group titled "Trusted Execution
+Environment Provisioning (TEEP) Protocol Parameters".  The registries in
+Sections 13.2 through 13.7 are to be created within this registry group.
+The allocation tables in those sections define the initial allocations made by
+this document.
+
 ## Guidance for Designated Experts
 
 For all TEEP registries (or registry ranges) using the "Specification Required"
 policy, the following guidance applies to Designated Experts (DEs), in addition
 to {{RFC8126}}.
 
-When evaluating a registration request, the DE SHOULD verify that:
+When evaluating a registration request, the DE evaluates whether:
 
 * The requested value has a stable, public specification that is sufficiently
   detailed to enable interoperable independent implementations.
@@ -2131,10 +2137,12 @@ When evaluating a registration request, the DE SHOULD verify that:
 * Any security, privacy, and interoperability considerations are adequately
   described, including behavior when peers do not understand the new value.
 * The request does not conflict with active IETF work in related areas.
+* For the "TEEP Cipher Suites" registry, the new suite definition includes
+  authentication and integrity protection, and includes confidentiality
+  protection unless the specification clearly documents why it is not needed.
 
-The DE MAY request additional information or clarifications before approving a
-request.  The DE SHOULD provide a brief rationale for approvals and MUST provide
-a clear rationale for rejections.
+The DE can request additional information or clarifications before approval.
+Approvals and rejections include a brief rationale.
 
 ## Media Type Registration
 
@@ -2196,8 +2204,9 @@ Change controller:
 
 ## TEEP Message Type Registry
 
-IANA is requested to create a new registry titled "TEEP Message Types" within the TEEP
-registry.  The registry has the following format:
+IANA is requested to create a new registry titled "TEEP Message Types" within
+the "Trusted Execution Environment Provisioning (TEEP) Protocol Parameters"
+registry group.  The registry has the following format:
 
 | Value | Name | Reference |
 |-------|------|-----------|
@@ -2207,7 +2216,7 @@ registry.  The registry has the following format:
 | 3 | TEEP-TYPE-update | This document |
 | 4 | TEEP-TYPE-success | This document |
 | 5 | TEEP-TYPE-error | This document |
-| 6-255 | (Reserved for future use) | |
+| 6-255 | (Unassigned) | |
 
 Registration procedures are as follows:
 
@@ -2216,8 +2225,9 @@ Registration procedures are as follows:
 
 ## data-item-requested Bitmap Registry
 
-IANA is requested to create a registry titled "TEEP data-item-requested Bits" within the TEEP
-registry. The registry has the following format:
+IANA is requested to create a registry titled "TEEP data-item-requested Bits"
+within the "Trusted Execution Environment Provisioning (TEEP) Protocol
+Parameters" registry group. The registry has the following format:
 
 | Bit | Name | Description | Reference |
 |-----|------|-------------|-----------|
@@ -2225,7 +2235,7 @@ registry. The registry has the following format:
 | 1 | trusted-components | TAM queries installed Trusted Components | This document |
 | 2 | extensions | TAM queries supported extensions | This document |
 | 3 | suit-reports | TAM requests SUIT Reports | This document |
-| 4-255 | (Reserved for future use) | | |
+| 4-255 | (Unassigned) | | |
 
 Registration procedures are as follows:
 
@@ -2234,8 +2244,9 @@ Registration procedures are as follows:
 
 ## TEEP Error Code Registry
 
-IANA is requested to create a registry titled "TEEP Error Codes" within the TEEP
-registry. The registry has the following format:
+IANA is requested to create a registry titled "TEEP Error Codes" within the
+"Trusted Execution Environment Provisioning (TEEP) Protocol Parameters"
+registry group. The registry has the following format:
 
 | Value | Name | Description | Reference |
 |-------|------|-------------|-----------|
@@ -2251,10 +2262,7 @@ registry. The registry has the following format:
 | 9 | ERR_CERTIFICATE_EXPIRED | Certificate has expired or is invalid | This document |
 | 10 | ERR_TEMPORARY_ERROR | Temporary error (e.g., memory allocation) | This document |
 | 11 | ERR_MANIFEST_PROCESSING_FAILED | Manifest processing failure | This document |
-| 12-255 | (Reserved) | Reserved for future use |  |
-
-Note: Error codes are constrained to the range 0-23 to permit encoding as single-byte
-CBOR unsigned integers.
+| 12-255 | (Unassigned) | Available for future assignment |  |
 
 Registration procedures are as follows:
 
@@ -2263,7 +2271,9 @@ Registration procedures are as follows:
 
 ## TEEP CBOR Label Registry
 
-IANA is requested to create a registry titled "TEEP CBOR Labels" within the TEEP registry. The registry has the following format:
+IANA is requested to create a registry titled "TEEP CBOR Labels" within the
+"Trusted Execution Environment Provisioning (TEEP) Protocol Parameters"
+registry group. The registry has the following format:
 
 | Label | Name | Type | Reference |
 |-------|------|------|-----------|
@@ -2290,7 +2300,7 @@ IANA is requested to create a registry titled "TEEP CBOR Labels" within the TEEP
 | 20 | supported-freshness-mechanisms | array | This document |
 | 21 | err-lang | text | This document |
 | 22 | err-code | uint | This document |
-| 23-1023 | (Reserved for future use) | |
+| 23-1023 | (Unassigned) | |
 
 Registration procedures are as follows:
 
@@ -2299,35 +2309,32 @@ Registration procedures are as follows:
 
 ## TEEP Cipher Suite Registry
 
-IANA is requested to create a registry titled "TEEP Cipher Suites" within the TEEP
-registry. The registry has the following format:
+IANA is requested to create a registry titled "TEEP Cipher Suites" within the
+"Trusted Execution Environment Provisioning (TEEP) Protocol Parameters"
+registry group. The registry has the following format:
 
 | Value | Name | Reference |
 |-------|------|-----------|
 | 0 | teep-cipher-suite-sign1-ed25519 | This document |
 | 1 | teep-cipher-suite-sign1-esp256 | This document |
-| 2-255 | (Reserved for future use) | |
+| 2-255 | (Unassigned) | |
 
 Registration procedures are as follows:
 
 * 0-23: Standards Action
 * 24-255: Specification Required
 
-For registration requests in this registry under "Specification Required",
-the Designated Expert SHOULD verify that new cipher suites provide
-authentication and integrity protection, and that confidentiality protection
-is provided unless the specification justifies why it is not needed.
-
 ## TEEP Freshness Mechanism Registry
 
-IANA is requested to create a registry titled "TEEP Freshness Mechanisms" within the TEEP
-registry. The registry has the following format:
+IANA is requested to create a registry titled "TEEP Freshness Mechanisms"
+within the "Trusted Execution Environment Provisioning (TEEP) Protocol
+Parameters" registry group. The registry has the following format:
 
 | Value | Name | Reference |
 |-------|------|-----------|
 | 0 | FRESHNESS_NONCE | This document |
 | 1 | FRESHNESS_TIMESTAMP | This document |
-| 2-255 | (Reserved for future use) | |
+| 2-255 | (Unassigned) | |
 
 Registration procedures are as follows:
 
@@ -2335,7 +2342,6 @@ Registration procedures are as follows:
 * 24-255: Specification Required
 
 ---  back
-
 
 # A. Contributors
 {: numbered='no'}
@@ -2354,7 +2360,7 @@ for their valuable implementation feedback.
 
 We would also like to thank Carsten Bormann and Henk Birkholz for their help with the CDDL.
 
-Finally, we would like to thank the following reviewers for their feedback during the IESG evaluation phase: Sean Turner, Paul Kyzivat, Scott Hollenbeck, Luigi Iannone, Paul Wouters, Mohamed Boucadair, Gorry Fairhurst, Gunter Van de Velde, and Yoshifumi Nishida
+Finally, we would like to thank the following reviewers for their feedback during the IESG evaluation phase: Sean Turner, Paul Kyzivat, Scott Hollenbeck, Luigi Iannone, Paul Wouters, Mohamed Boucadair, Gorry Fairhurst, Gunter Van de Velde, Ketan Talaulikar, and Yoshifumi Nishida
 
 # C. Complete CDDL
 {: numbered='no'}
