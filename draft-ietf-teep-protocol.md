@@ -173,7 +173,8 @@ are defined in separate companion specifications.  Section {{transport}}
 defines requirements for such transport bindings.
 Deployments MAY use a single TAM or multiple TAMs; local policy
 determines which TAMs are permitted to manage a given device. Since
-single TAM deployments are more likely, we assume them as a default.
+single TAM deployments are more likely, this document assumes them as
+the default.
 The messages are encoded in CBOR and designed to provide end-to-end security.
 TEEP protocol messages are signed by the endpoints, i.e., the TAM and the
 TEEP Agent, but Trusted
@@ -200,7 +201,7 @@ Applications.
 As discussed in {{agent}}, a QueryResponse can also be sent unsolicited when the
 contents of the corresponding QueryRequest are already known and do not vary per message.
 
-~~~~
+~~~~ aasvg
   +------------+           +-------------+
   | TAM        |           |TEEP Agent   |
   +------------+           +-------------+
@@ -224,7 +225,7 @@ A Success message is returned when the operation has been completed successfully
 or an Error message
 otherwise.
 
-~~~~
+~~~~ aasvg
  +------------+           +-------------+
  | TAM        |           |TEEP Agent   |
  +------------+           +-------------+
@@ -399,7 +400,12 @@ token
   to distinguish the correct response from multiple requests.
   The token value MUST NOT be used for other purposes, such as a TAM to
   identify the devices and/or a device to identify TAMs or Trusted Components.
-  The TAM SHOULD set an expiration time for each token to facilitate cleanup of  stale request state, and MUST ignore any messages with expired tokens. Implementations without explicit token management (e.g., simple TAMs that process requests synchronously  and do not maintain state) may not need explicit token expiration.
+  The TAM SHOULD set an expiration time for each token to facilitate
+  cleanup of stale request state, and MUST ignore any messages with
+  expired tokens.  Implementations without explicit token management
+  (e.g., simple TAMs that process requests synchronously and do not
+  maintain state) might not need explicit token expiration and can rely
+  on immediate token invalidation after the first valid response.
   The TAM MUST expire the token value after receiving the first response
   containing the token value and ignore any subsequent messages that have the same token
   value. Implementations SHOULD use a timeout mechanism (see {{tam}}) to eventually
@@ -417,7 +423,8 @@ supported-suit-cose-profiles
 
 data-item-requested
 : The data-item-requested parameter indicates what information the TAM requests from the TEEP
-  Agent in the form of a bitmap.
+  Agent in the form of a bitmap.  Bit assignments are maintained in the
+  "TEEP data-item-requested Bits" registry (see Section {{data-item-registry}}).
 
    attestation (1):
    : With this value the TAM requests the TEEP Agent to return an attestation payload,
@@ -688,7 +695,7 @@ where the Attestation Result passed back to the Attester can be used
 as a so-called "passport" (see Section 5.1 of {{RFC9334}})
 that can be presented to other Relying Parties.
 
-~~~~
+~~~~ aasvg
          +---------------+
          |   Verifier    |
          +---------------+
@@ -852,7 +859,7 @@ Cons:
  - A device's IP address and therefore location may be revealed to the Trusted
    Component Binary server
 
-~~~~
+~~~~ aasvg
     +------------+           +-------------+
     | TAM        |           | TEEP Agent  |
     +------------+           +-------------+
@@ -930,7 +937,7 @@ Cons:
  - The TAM must deliver Trusted Component Binaries in Update messages, which
    increases the size of the Update message.
 
-~~~~
+~~~~ aasvg
     +------------+           +-------------+
     | TAM        |           | TEEP Agent  |
     +------------+           +-------------+
@@ -980,7 +987,7 @@ on the Trusted Component Binary from Scenario 1.
 
 {{fig-pers-data}} shows the exchange graphically.
 
-~~~~
+~~~~ aasvg
     +------------+           +-------------+
     | TAM        |           | TEEP Agent  |
     +------------+           +-------------+
@@ -2234,7 +2241,7 @@ Registration procedures are as follows:
 * 0-23: Standards Action
 * 24-255: Specification Required
 
-## data-item-requested Bitmap Registry
+## data-item-requested Bitmap Registry {#data-item-registry}
 
 IANA is requested to create a registry titled "TEEP data-item-requested Bits"
 within the "Trusted Execution Environment Provisioning (TEEP) Protocol
@@ -2246,12 +2253,14 @@ Parameters" registry group. The registry has the following format:
 | 1 | trusted-components | TAM queries installed Trusted Components | This document |
 | 2 | extensions | TAM queries supported extensions | This document |
 | 3 | suit-reports | TAM requests SUIT Reports | This document |
-| 4-255 | (Unassigned) | | |
+| 4-254 | (Unassigned) | | |
+| 255 | Private Use | Not registered with IANA | This document |
 
 Registration procedures are as follows:
 
 * 0-23: Standards Action
-* 24-255: Specification Required
+* 24-254: Specification Required
+* 255: Private Use
 
 ## TEEP Error Code Registry
 
