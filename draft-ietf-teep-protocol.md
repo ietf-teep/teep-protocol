@@ -165,7 +165,8 @@ Examples are folded following the conventions in {{?RFC8792}}.
 The TEEP protocol consists of messages exchanged between a TAM
 and a TEEP Agent.
 The TEEP protocol is transport-agnostic; bindings to specific transports
-are defined in separate companion specifications.
+are defined in separate companion specifications.  Section {{transport}}
+defines requirements for such transport bindings.
 Deployments MAY use a single TAM or multiple TAMs; local policy
 determines which TAMs are permitted to manage a given device. Since
 single TAM deployments are more likely, we assume them as a default.
@@ -2023,9 +2024,8 @@ and refers implementers to the architecture and conceptual APIs in
   mechanisms for retry, and consideration of partial failure modes.
 
 - Transport and deployment-specific concerns: TEEP is transport
-  agnostic; operators MUST ensure the chosen transport provides
-  adequate confidentiality, integrity, authentication, and replay
-  protection.  See the HTTP binding draft {{I-D.ietf-teep-otrp-over-http}}
+  agnostic.  See {{transport}} for requirements that apply to transport
+  bindings, and see the HTTP binding draft {{I-D.ietf-teep-otrp-over-http}}
   for transport-specific operational details when that binding is used.
 
 - Scaling and batching: Large-scale deployments SHOULD consider
@@ -2043,13 +2043,15 @@ Where operational considerations are covered by other documents (for
 example, the TEEP architecture {{RFC9397}}), implementers SHOULD follow
 the guidance in those documents as applicable.
 
-# Transport Considerations {#transport}
+# Transport Binding Requirements {#transport}
 
 This specification defines the TEEP protocol as a set of messages to be exchanged
 between a TAM and a TEEP Agent.  However, this specification is transport-agnostic
 and does not mandate use of a specific transport protocol.  The TEEP protocol messages
 are signed and can be optionally encrypted at the protocol layer, providing end-to-end
-security independent of the underlying transport.
+security independent of the underlying transport.  This section defines
+requirements for companion specifications that bind TEEP to concrete transport
+protocols.
 
 Companion specifications define how TEEP messages are transported over specific
 protocols. For example, {{I-D.ietf-teep-otrp-over-http}} defines how TEEP messages
