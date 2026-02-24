@@ -100,6 +100,7 @@ informative:
   I-D.ietf-rats-concise-ta-stores:
   RFC8915:
   RFC5934:
+  RFC8126:
   RFC9334:
   RFC9124:
 
@@ -1201,15 +1202,8 @@ suit-reports
 
 err-code
 : The err-code parameter contains one of the error codes listed below.
-  The value 0 is reserved and MUST NOT be used.
-  Only selected values are applicable to each message.
-  Note that error codes are restricted to the range (0..23) to permit
-  encoding as single-byte CBOR unsigned integers. Error code values 0 and 12-23
-  are currently unassigned and reserved for future use.
-  Error code 0 is intentionally reserved to prevent accidental use.
-  Extensions that define new error codes SHOULD constrain values to this range;
-  however, implementations that receive unrecognized error code values greater than 23
-  SHOULD handle them gracefully, treating them as unknown errors.
+  The value 0 is reserved and MUST NOT be used. Only selected values are
+  applicable to each message.
 
 This specification defines the following initial error messages:
 
@@ -1741,6 +1735,10 @@ A TAM or TEEP Agent MAY also support any other algorithms in the COSE Algorithms
 registry in addition to the mandatory ones listed above.  It MAY also support use
 with COSE_Sign or other COSE types in additional cipher suites.
 
+Any new TEEP cipher suites defined by this specification or by
+extensions MUST provide authentication and integrity protection, and SHOULD
+provide confidentiality protection.
+
 Any cipher suites without confidentiality protection can only be added if the
 associated specification includes a discussion of security considerations and
 applicability, since manifests may carry sensitive information. For example,
@@ -2111,6 +2109,28 @@ just like ones from TEEP Agents.
 
 # IANA Considerations {#IANA}
 
+## Guidance for Designated Experts
+
+For all TEEP registries (or registry ranges) using the "Specification Required"
+policy, the following guidance applies to Designated Experts (DEs), in addition
+to {{RFC8126}}.
+
+When evaluating a registration request, the DE SHOULD verify that:
+
+* The requested value has a stable, public specification that is sufficiently
+  detailed to enable interoperable independent implementations.
+* The registration is not redundant with an existing entry and does not
+  introduce avoidable overlap or ambiguity with existing TEEP assignments.
+* The requested semantics are clear, well-scoped, and consistent with this
+  specification's architecture, security model, and terminology.
+* Any security, privacy, and interoperability considerations are adequately
+  described, including behavior when peers do not understand the new value.
+* The request does not conflict with active IETF work in related areas.
+
+The DE MAY request additional information or clarifications before approving a
+request.  The DE SHOULD provide a brief rationale for approvals and MUST provide
+a clear rationale for rejections.
+
 ## Media Type Registration
 
 IANA is requested to assign a media type for
@@ -2288,8 +2308,10 @@ Registration procedures are as follows:
 * 0-23: Standards Action
 * 24-255: Specification Required
 
-Any new cipher suites MUST provide authentication, integrity, and SHOULD provide
-confidentiality protection.
+For registration requests in this registry under "Specification Required",
+the Designated Expert SHOULD verify that new cipher suites provide
+authentication and integrity protection, and that confidentiality protection
+is provided unless the specification justifies why it is not needed.
 
 ## TEEP Freshness Mechanism Registry
 
@@ -2327,7 +2349,7 @@ for their valuable implementation feedback.
 
 We would also like to thank Carsten Bormann and Henk Birkholz for their help with the CDDL.
 
-Finally, we would like to thank the following IESG members for their review feedback: Sean Turner, Paul Kyzivat, Scott Hollenbeck, Luigi Iannone, Paul Wouters, Mohamed Boucadair, and Yoshifumi Nishida
+Finally, we would like to thank the following reviewers for their feedback during the IESG evaluation phase: Sean Turner, Paul Kyzivat, Scott Hollenbeck, Luigi Iannone, Paul Wouters, Mohamed Boucadair, Gorry Fairhurst, and Yoshifumi Nishida
 
 # C. Complete CDDL
 {: numbered='no'}
