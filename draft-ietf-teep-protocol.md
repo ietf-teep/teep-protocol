@@ -97,6 +97,7 @@ informative:
   I-D.ietf-teep-otrp-over-http:
   I-D.ietf-opsawg-rfc5706bis:
   RFC9782:
+  RFC9459:
   I-D.ietf-rats-concise-ta-stores:
   RFC8915:
   RFC5934:
@@ -1352,7 +1353,8 @@ of this document.)
     in {{I-D.ietf-suit-report}}.
 
 A TAM implementation might simply accept a TEEP Agent as trustworthy based on a
-successful Attestation Result, and if not then attempt to update the TEEP Agent
+successful Attestation Result and, if the result is not accepted as
+trustworthy, then attempt to update the TEEP Agent
 and all of its dependencies.  This logic is simple but it might result in updating
 some components that do not need to be updated.
 
@@ -1805,6 +1807,9 @@ The following two layer structure is used:
   into the HKDF-based key derivation function.
 
 As a result, the two layers combine ES-DH with AES-KW and HKDF.
+When AES-CTR content encryption is used (for example, A128CTR), integrity and
+authentication are provided by the surrounding COSE structures rather than by
+CTR mode itself; see {{RFC9459}} for guidance on AES-CTR usage.
 
 This document reuses the CDDL defined in Section 6.2.3 of
 {{I-D.ietf-suit-firmware-encryption}} and the context information structure defined in
@@ -2366,7 +2371,7 @@ for their valuable implementation feedback.
 
 We would also like to thank Carsten Bormann and Henk Birkholz for their help with the CDDL.
 
-Finally, we would like to thank the following reviewers for their feedback during the IESG evaluation phase: Sean Turner, Paul Kyzivat, Scott Hollenbeck, Luigi Iannone, Paul Wouters, Mohamed Boucadair, Gorry Fairhurst, Gunter Van de Velde, Ketan Talaulikar, and Yoshifumi Nishida
+Finally, we would like to thank the following reviewers for their feedback during the IESG evaluation phase: Sean Turner, Paul Kyzivat, Scott Hollenbeck, Luigi Iannone, Paul Wouters, Mohamed Boucadair, Gorry Fairhurst, Gunter Van de Velde, Ketan Talaulikar, Roman Danyliw, Deb Cooley, and Yoshifumi Nishida
 
 # C. Complete CDDL
 {: numbered='no'}
