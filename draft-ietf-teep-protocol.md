@@ -1156,7 +1156,7 @@ type
 token
 : The value in the token parameter is used to match responses to requests.
   It MUST match the value of the token parameter in the
-  message the Success is in response to, if one was present.  If none was
+  message the Error is in response to, if one was present.  If none was
   present, the token MUST be absent in the Error message.
 
 err-msg
@@ -1752,9 +1752,8 @@ A TAM or TEEP Agent MAY also support any other algorithms in the COSE Algorithms
 registry in addition to the mandatory ones listed above.  It MAY also support use
 with COSE_Sign or other COSE types in additional cipher suites.
 
-Any new TEEP cipher suites defined by this specification or by
-extensions MUST provide authentication and integrity protection, and SHOULD
-provide confidentiality protection.
+Any new TEEP cipher suites MUST provide authentication and integrity protection,
+and SHOULD provide confidentiality protection.
 
 Any cipher suites without confidentiality protection can only be added if the
 associated specification includes a discussion of security considerations and
@@ -1768,7 +1767,7 @@ discussed in Section 9.8 of {{RFC9397}}.
 
 The cipher suites defined above do not do encryption at the TEEP layer, but
 permit encryption of the SUIT payload using a mechanism such as {{I-D.ietf-suit-firmware-encryption}}.
-See {{security}} and {{eat-suit-ciphersuite}} for more discussion of specific payloads.
+See {{security}} and {{eat-suit-ciphersuite}} for more discussion.
 
 For the initial QueryRequest message, unless the TAM has more specific knowledge about the TEEP Agent
 (e.g., if the QueryRequest is sent in response to some underlying transport message that contains a hint),
@@ -1792,12 +1791,10 @@ as the recipient, unless the transport layer provides sufficient confidentiality
 protection or the TEEP Agent's deployment environment does not permit access to
 the TAM's public key. A SUIT Report is created by a SUIT processor, which
 is part of the TEEP Agent itself. The TEEP Agent is therefore in control of signing
-the SUIT Report and SHOULD encrypt it for the same reasons, to protect sensitive
+the SUIT Report and SHOULD encrypt it to protect sensitive
 information from intermediate processors and transport mechanisms. Again, the TAM is the recipient of the encrypted
 content. For content-key distribution Ephemeral-Static Diffie-Hellman (ES-DH) is used
 in this specification. See Section 8.5.5 and Appendix B of {{RFC9052}} for more details.
-(If {{I-D.ietf-suit-firmware-encryption}} is used, it is also the same as discussed in
-Section 6.2 of that document.)
 
 ES-DH is a scheme that provides public key encryption given
 a recipient's public key. Hence, the TEEP Agent needs to be in possession of the public
@@ -1818,9 +1815,9 @@ When AES-CTR content encryption is used (for example, A128CTR), integrity and
 authentication are provided by the surrounding COSE structures rather than by
 CTR mode itself; see {{RFC9459}} for guidance on AES-CTR usage.
 
-This document reuses the CDDL defined in Section 6.2.3 of
-{{I-D.ietf-suit-firmware-encryption}} and the context information structure defined in
-Section 6.2.4 of {{I-D.ietf-suit-firmware-encryption}} although with an important modification.
+This document reuses the CDDL defined in {{I-D.ietf-suit-firmware-encryption}}
+and the context information structure defined in
+{{I-D.ietf-suit-firmware-encryption}} although with an important modification.
 The COSE_KDF_Context.SuppPubInfo.other value MUST be set to "SUIT Report Encryption" when a
 SUIT Report is encrypted and MUST be set to "EAT Encryption" when an EAT is encrypted. The
 COSE_KDF_Context.SuppPubInfo.other field captures the protocol in which the ES-DH content key
@@ -2001,35 +1998,35 @@ and refers implementers to the architecture and conceptual APIs in
 - Token lifecycle and state management: Tokens are used to match
   requests and responses and to provide limited replay protection.  The
   guidance in this document requires random initial tokens and
-  non-reuse; implementers MUST ensure bounded storage of outstanding
-  tokens (timeouts, per-device caps) and MUST expire tokens after the
-  first valid response.  Operational deployments SHOULD tune token
+  non-reuse; implementers must ensure bounded storage of outstanding
+  tokens (timeouts, per-device caps) and must expire tokens after the
+  first valid response.  Operational deployments should tune token
   timeouts to accommodate device processing time (see {{tam}}).
 
-- Key and certificate lifecycle: Operators SHOULD run documented
+- Key and certificate lifecycle: Operators should run documented
   procedures for certificate and key issuance, rollover, revocation,
   and renewal, with renewal intervals defined by local policy and
-  deployment requirements.  Implementations SHOULD support certificate
+  deployment requirements.  Implementations should support certificate
   status checks and have clear behavior when certificates are expired
   or revoked (see err-code behaviors such as ERR_CERTIFICATE_EXPIRED
   and ERR_BAD_CERTIFICATE).
 
-- Logging, monitoring, and diagnostics: Implementations SHOULD log
-  operational events, but MUST avoid placing sensitive data (e.g., raw
+- Logging, monitoring, and diagnostics: Implementations should log
+  operational events, but must avoid placing sensitive data (e.g., raw
   Evidence, private keys) into logs.  Diagnostic fields, such as
   `err-msg` (optionally accompanied by `err-lang`), are intended for
   human operators; logs should capture structured error codes and
   minimal diagnostic text to aid incident response.
 
-- Rate limiting and DoS protection: Implementations SHOULD apply
+- Rate limiting and DoS protection: Implementations should apply
   rate limits and backoff policies to mitigate malformed or
-  high-volume requests.  Agents SHOULD limit the size and number of
+  high-volume requests.  Agents should limit the size and number of
   concurrent manifests processed and protect local resources (CPU,
   memory, storage) from exhausting.
 
 - Time synchronization: Accurate device time is important for
   certificate validity checks and for some attestation freshness
-  mechanisms.  Operators SHOULD ensure devices maintain time
+  mechanisms.  Operators should ensure devices maintain time
   synchronization within the tolerance required by deployed certificate
   validation and freshness mechanisms.
 
@@ -2040,17 +2037,17 @@ and refers implementers to the architecture and conceptual APIs in
   lists.
 
 - Upgrade and rollback procedures: Manifest processing can be
-  disruptive.  Operators SHOULD plan for safe upgrade and rollback
+  disruptive.  Operators should plan for safe upgrade and rollback
   procedures, including verification of manifests prior to execution,
   mechanisms for retry, and consideration of partial failure modes.
 
-- Transport and deployment-specific concerns: TEEP is transport
+- Transport and deployment-specific concerns: The TEEP protocol is transport
   agnostic.  See {{transport}} for requirements that apply to transport
-  bindings, and see the HTTP binding draft {{I-D.ietf-teep-otrp-over-http}}
+  bindings, and see the HTTP binding {{I-D.ietf-teep-otrp-over-http}}
   for transport-specific operational details when that binding is used.
 
-- Scaling and batching: Large-scale deployments SHOULD consider
-  batching updates and asynchronous workflows to avoid overwhelming
+- Scaling: Large-scale deployments should consider
+  batching updates to avoid overwhelming
   devices or management servers.  Unsolicited messages and polling
   behavior should be chosen to balance timeliness and operational
   load.
@@ -2060,9 +2057,8 @@ and refers implementers to the architecture and conceptual APIs in
   and operational steps for devices that become non-responsive after
   updates.
 
-Where operational considerations are covered by other documents (for
-example, the TEEP architecture {{RFC9397}}), implementers SHOULD follow
-the guidance in those documents as applicable.
+Where other documents already cover operational considerations
+(e.g., {{RFC9397}}), implementers should follow that guidance.
 
 # Transport Binding Requirements {#transport}
 
@@ -2134,7 +2130,7 @@ just like ones from TEEP Agents.
 
 IANA is requested to create a new registry group titled "Trusted Execution
 Environment Provisioning (TEEP) Protocol Parameters".  The registries in
-Sections 13.2 through 13.7 are to be created within this registry group.
+Sections 13.2 through 13.6 are to be created within this registry group.
 The allocation tables in those sections define the initial allocations made by
 this document.
 
@@ -2155,9 +2151,6 @@ When evaluating a registration request, the DE evaluates whether:
 * Any security, privacy, and interoperability considerations are adequately
   described, including behavior when peers do not understand the new value.
 * The request does not conflict with active IETF work in related areas.
-* For the "TEEP Cipher Suites" registry, the new suite definition includes
-  authentication and integrity protection, and includes confidentiality
-  protection unless the specification clearly documents why it is not needed.
 
 The DE can request additional information or clarifications before approval.
 Approvals and rejections include a brief rationale.
@@ -2327,23 +2320,6 @@ Registration procedures are as follows:
 * 0-255: Standards Action
 * 256-1023: Specification Required
 
-## TEEP Cipher Suite Registry
-
-IANA is requested to create a registry titled "TEEP Cipher Suites" within the
-"Trusted Execution Environment Provisioning (TEEP) Protocol Parameters"
-registry group. The registry has the following format:
-
-| Value | Name | Reference |
-|-------|------|-----------|
-| 0 | teep-cipher-suite-sign1-ed25519 | This document |
-| 1 | teep-cipher-suite-sign1-esp256 | This document |
-| 2-255 | (Unassigned) | |
-
-Registration procedures are as follows:
-
-* 0-23: Standards Action
-* 24-255: Specification Required
-
 ## TEEP Freshness Mechanism Registry
 
 IANA is requested to create a registry titled "TEEP Freshness Mechanisms"
@@ -2380,7 +2356,7 @@ for their valuable implementation feedback.
 
 We would also like to thank Carsten Bormann and Henk Birkholz for their help with the CDDL.
 
-Finally, we would like to thank the following reviewers for their feedback during the IESG evaluation phase: Sean Turner, Paul Kyzivat, Scott Hollenbeck, Luigi Iannone, Paul Wouters, Mohamed Boucadair, Gorry Fairhurst, Gunter Van de Velde, Ketan Talaulikar, Roman Danyliw, Deb Cooley, and Yoshifumi Nishida
+Finally, we would like to thank the following reviewers for their feedback during the IESG evaluation phase: Sean Turner, Paul Kyzivat, Scott Hollenbeck, Luigi Iannone, Paul Wouters, Mohamed Boucadair, Gorry Fairhurst, Gunter Van de Velde, Ketan Talaulikar, Roman Danyliw, Deb Cooley, Darrel Miller, and Yoshifumi Nishida
 
 # C. Complete CDDL
 {: numbered='no'}
